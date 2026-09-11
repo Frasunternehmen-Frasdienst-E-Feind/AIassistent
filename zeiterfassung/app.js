@@ -69,6 +69,7 @@
     renderWeeks(weeks);
     renderSettings();
     renderOptiTime();
+    renderStorage();
     $('data-info').textContent = state.bookings.length + ' Buchungen an ' + days.length + ' Tagen'
       + (days.length ? ' (' + Z.toGermanDate(days[days.length - 1].date) + ' bis ' + Z.toGermanDate(days[0].date) + ')' : '') + '.';
   }
@@ -120,9 +121,10 @@
       const o = server.optitime || {};
       const found = !!o.path;
       const who = o.identity && o.identity.matchedPerson;
+      const noPersonColumn = found && !who && !(o.persons || []).length;
       tiles.push({ k: 'OptiTime', v: found ? String(o.imported || 0) : '–', s: found ? 'Buchungen' : '',
-        m: !found ? 'Ordner nicht gefunden' : (who ? 'für ' + who : 'Benutzer nicht zugeordnet'),
-        cls: !found || !who ? 'crit' : 'good' });
+        m: !found ? 'Ordner nicht gefunden' : (who ? 'für ' + who : (noPersonColumn ? 'aus Ihrem Benutzerprofil' : 'Benutzer nicht zugeordnet')),
+        cls: !found || (!who && !noPersonColumn) ? 'crit' : (o.imported ? 'good' : 'warn') });
     }
     $('kpis').innerHTML = tiles.map(t =>
       '<div class="kpi ' + t.cls + '"><div class="k">' + esc(t.k) + '</div><div class="v">' + esc(t.v) + (t.s ? ' <small>' + esc(t.s) + '</small>' : '') + '</div><div class="m">' + esc(t.m) + '</div></div>').join('');
@@ -262,6 +264,37 @@
         toast((r.info.optitime.imported || 0) + ' Buchungen aus OptiTime übernommen');
       } catch (err) { toast('Fehler: ' + err.message); }
     });
+  }
+
+  function renderStorage() {
+    const card = $('card-storage');
+    card.hidden = !server;
+    if (!server) return;
+    const isDefault = server.dataDir === server.defaultDataDir;
+    const suggestions = (server.dataSuggestions || []).filter(p => p !== server.dataDir);
+    card.querySelector('#storage-body').innerHTML = '<div class="stack">'
+      + '<dl class="kv">'
+      + '<dt>Ordner</dt><dd><span class="mono">' + esc(server.dataDir) + '</span> <span class="chip ' + (isDefault ? 'ok' : 'src') + '">' + (isDefault ? 'Standard' : 'eigener Ordner') + '</span></dd>'
+      + '<dt>Datei</dt><dd><span class="mono">' + esc(server.dataFile) + '</span></dd>'
+      + '</dl>'
+      + '<form class="form" id="storage-form">'
+      + '<div class="field"><label for="st-dir">Datenordner (leer = Standard)</label><input type="text" id="st-dir" value="' + (isDefault ? '' : esc(server.dataDir)) + '" placeholder="' + esc(server.defaultDataDir) + '"></div>'
+      + (suggestions.length ? '<div class="check-row">' + suggestions.map(p => '<button type="button" class="btn sm" data-suggest="' + esc(p) + '">' + esc(p) + '</button>').join('') + '</div>' : '')
+      + '<div class="check-row"><button class="btn sm primary" type="submit">Speichern &amp; übernehmen</button>'
+      + (isDefault ? '' : '<button class="btn sm" type="button" id="btn-data-default">Standard wiederherstellen</button>') + '</div>'
+      + '</form>'
+      + '<p class="foot">Im gewählten Ordner wird je Benutzer ein Unterordner angelegt, damit sich mehrere Personen einen Ordner teilen können. Für dieselben Buchungen auf mehreren Geräten einen OneDrive-Ordner wählen. Beim Wechsel werden vorhandene Buchungen übernommen, eine Datei im Zielordner wird zusammengeführt, und die bisherige Datei bleibt als Sicherung liegen.</p>'
+      + '</div>';
+    const setDir = async dir => {
+      try {
+        const r = await api('/api/datadir', { method: 'POST', body: JSON.stringify({ dataDir: dir }) });
+        server = r.info; state = normalizeState(r.state); render(); toast(r.message || 'Datenordner gespeichert');
+      } catch (err) { toast('Fehler: ' + err.message); }
+    };
+    card.querySelectorAll('[data-suggest]').forEach(b => b.addEventListener('click', () => { $('st-dir').value = b.dataset.suggest; }));
+    card.querySelector('#storage-form').addEventListener('submit', e => { e.preventDefault(); setDir($('st-dir').value); });
+    const def = card.querySelector('#btn-data-default');
+    if (def) def.addEventListener('click', () => setDir(''));
   }
 
   const DAY_NAMES = ['', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
@@ -429,6 +462,10 @@
       server = r.info; state = normalizeState(r.state); render();
       toast((r.info.optitime.imported || 0) + ' Buchungen aus OptiTime übernommen');
     } catch (err) { toast('Abgleich fehlgeschlagen: ' + err.message); }
+  });
+  $('btn-open-data').addEventListener('click', async () => {
+    try { const r = await api('/api/open', { method: 'POST' }); toast('Ordner geöffnet: ' + r.path); }
+    catch (err) { toast('Ordner konnte nicht geöffnet werden: ' + err.message); }
   });
   $('btn-diagnose').addEventListener('click', async () => {
     const box = $('diagnose-box'); box.hidden = false;

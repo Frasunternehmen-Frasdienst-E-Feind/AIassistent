@@ -5,7 +5,7 @@ Zeiterfassung. Zwei Betriebsarten:
 
 | Betriebsart | Start | Datenablage | OptiTime |
 | --- | --- | --- | --- |
-| **Windows-Programm** `Stempeluhr.exe` | Doppelklick | je Windows-Benutzer unter `%APPDATA%\Stempeluhr\<Benutzer>\data.json` | wird bei jedem Start gesucht und eingelesen |
+| **Windows-Programm** `Stempeluhr.exe` | Doppelklick | je Benutzer unter `%APPDATA%\Stempeluhr\<Benutzer>\data.json`, Ordner frei wählbar | wird bei jedem Start gesucht und eingelesen |
 | **HTML-Seite** `index.html` | im Browser öffnen | Browser (localStorage) | nur per CSV-Import |
 
 ## Windows-Programm (EXE)
@@ -65,7 +65,7 @@ Tabellen, Spalten und Beispielzeilen der Datenbanken und die Erkennung je Datei.
 ```
 Stempeluhr.exe --user d.halko                            Benutzer als Variable setzen (auch STEMPELUHR_USER)
 Stempeluhr.exe --optitime "\\server\OptiTime\Export"   OptiTime-Ordner fest vorgeben
-Stempeluhr.exe --data "C:\Users\...\OneDrive\Stempeluhr"  Datenordner (z. B. OneDrive für mehrere Geräte)
+Stempeluhr.exe --data "%OneDrive%\Stempeluhr"            Datenordner vorgeben (sonst in der Oberfläche einstellbar)
 Stempeluhr.exe --port 8123 --no-browser                  fester Port, Browser nicht öffnen
 Stempeluhr.exe --idle 0                                  nie automatisch beenden
 Stempeluhr.exe --diagnose                                Diagnosebericht schreiben und beenden
@@ -76,11 +76,29 @@ Protokoll: `%APPDATA%\Stempeluhr\stempeluhr.log`. Einstellungen: `%APPDATA%\Stem
 
 Beispiel-Verknüpfung (Ziel): `"C:\Tools\Stempeluhr.exe" --user d.halko`
 
+### Datenablage
+
+Standard ist `%APPDATA%\Stempeluhr\<Benutzer>\data.json`. Der Ordner lässt sich in der Oberfläche
+unter „Daten & Einstellungen" → **Datenablage** ändern: Pfad eintragen oder einen der Vorschläge
+(OneDrive, Dokumente, Standard) anklicken, dann „Speichern & übernehmen". `%VARIABLE%` im Pfad wird
+aufgelöst. Beim Wechsel gilt:
+
+- Vorhandene Buchungen werden in den neuen Ordner übernommen.
+- Liegt dort bereits eine `data.json`, werden beide zusammengeführt (gleiches Datum und gleiche
+  Startzeit zählt als dieselbe Buchung).
+- Die bisherige Datei bleibt als Sicherung liegen und wird nicht gelöscht.
+- Der Ordner wird in `config.json` gespeichert und beim nächsten Start wieder verwendet.
+
+Im gewählten Ordner wird je Benutzer ein Unterordner angelegt, damit sich mehrere Personen einen
+Ordner (Netzlaufwerk, gemeinsames Laufwerk) teilen können, ohne sich zu überschreiben.
+„Ordner öffnen" startet den Explorer im Datenordner.
+
 ### Mehrere Geräte
 
 Die EXE ist portabel (z. B. auf einem USB-Stick oder Netzlaufwerk). Auf jedem Gerät gilt der dort
-angemeldete Benutzer; die Daten liegen je Gerät in `%APPDATA%`. Sollen manuelle Buchungen auf allen
-Geräten gleich sein, den Datenordner per `--data` auf einen OneDrive-Ordner legen.
+angemeldete Benutzer. Sollen manuelle Buchungen auf allen Geräten gleich sein, den Datenordner auf
+einen OneDrive-Ordner legen – entweder in der Oberfläche oder per `--data`. OptiTime wird auf jedem
+Gerät weiterhin lokal gelesen.
 
 ### Bauen
 

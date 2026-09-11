@@ -31,6 +31,13 @@ func openBrowser(url string) error {
 	return cmd.Start()
 }
 
+// openFolder öffnet den Ordner im Explorer. Der Explorer meldet auch bei Erfolg
+// einen Rückgabewert ungleich 0, deshalb wird nur der Start geprüft.
+func openFolder(path string) error {
+	cmd := exec.Command("explorer", path)
+	return cmd.Start()
+}
+
 // fixedDrives liefert die lokalen Festplattenlaufwerke (kein Netz, kein Wechselmedium),
 // damit die Suche nicht an getrennten Netzlaufwerken hängt.
 func fixedDrives() []string {

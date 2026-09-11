@@ -34,6 +34,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { background: var(--bg); }
 body {
   margin: 0; background: var(--bg); color: var(--ink);
@@ -269,6 +270,10 @@ dialog h3 { font-size: 20px; margin-bottom: 12px; }
           <textarea id="diagnose-area" readonly aria-label="Diagnosebericht" style="min-height:260px"></textarea>
           <div><button class="btn sm" id="btn-diagnose-copy">In Zwischenablage</button></div>
         </div>
+      </div>
+      <div class="card" id="card-storage" hidden style="grid-column: 1 / -1">
+        <div class="panel-head"><h3>Datenablage</h3><div class="tools"><button class="btn sm" id="btn-open-data">Ordner öffnen</button></div></div>
+        <div id="storage-body"></div>
       </div>
       <div class="card">
         <h3>Arbeitszeit-Soll</h3>

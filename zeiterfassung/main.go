@@ -20,6 +20,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"sync"
@@ -29,7 +30,7 @@ import (
 //go:embed index.html app.js zeit.js seed-data.js
 var webFS embed.FS
 
-const version = "1.3.0"
+const version = "1.4.0"
 
 const (
 	kindWork  = "Arbeitszeit"
@@ -88,6 +89,7 @@ type App struct {
 	mu        sync.Mutex
 	cfg       Config
 	cfgPath   string
+	dataDir   string
 	dataFile  string
 	state     State
 	id        Identity
@@ -193,6 +195,114 @@ func safeName(s string) string {
 		return "benutzer"
 	}
 	return sb.String()
+}
+
+// expandPath löst %VARIABLE% in Pfaden auf und entfernt Leerzeichen.
+var winEnvRe = regexp.MustCompile(`%([A-Za-z_][A-Za-z0-9_()]*)%`)
+
+func expandPath(p string) string {
+	p = winEnvRe.ReplaceAllStringFunc(strings.TrimSpace(p), func(m string) string {
+		if v := os.Getenv(strings.Trim(m, "%")); v != "" {
+			return v
+		}
+		return m
+	})
+	return strings.TrimSpace(strings.Trim(p, `"`))
+}
+
+// ensureWritable legt den Ordner an und prüft, ob wirklich geschrieben werden kann.
+func ensureWritable(dir string) error {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return err
+	}
+	probe := filepath.Join(dir, ".stempeluhr-schreibtest")
+	if err := os.WriteFile(probe, []byte("ok"), 0o644); err != nil {
+		return err
+	}
+	return os.Remove(probe)
+}
+
+// userDataFile: <Ordner>\<Benutzer>\data.json – der Unterordner trennt die
+// Benutzer, wenn mehrere denselben Ordner (OneDrive, Netzlaufwerk) verwenden.
+func (a *App) userDataFile(dir string) string {
+	return filepath.Join(dir, safeName(a.id.Username), "data.json")
+}
+
+// dataSuggestions liefert sinnvolle Ordner zur Auswahl in der Oberfläche.
+func (a *App) dataSuggestions() []string {
+	var out []string
+	add := func(p string) {
+		if p == "" {
+			return
+		}
+		for _, o := range out {
+			if strings.EqualFold(o, p) {
+				return
+			}
+		}
+		out = append(out, p)
+	}
+	for _, env := range []string{"OneDriveCommercial", "OneDrive"} {
+		if v := os.Getenv(env); v != "" {
+			add(filepath.Join(v, "Stempeluhr"))
+		}
+	}
+	if a.id.ProfileDir != "" {
+		add(filepath.Join(a.id.ProfileDir, "Documents", "Stempeluhr"))
+	}
+	add(baseDir())
+	return out
+}
+
+// switchDataDir wechselt den Datenordner. Vorhandene Buchungen werden
+// übernommen; liegt im Zielordner bereits eine Datei, werden beide
+// zusammengeführt. Die bisherige Datei bleibt als Sicherung liegen.
+// Aufruf mit gehaltener Sperre.
+func (a *App) switchDataDir(dir string) (string, error) {
+	dir = expandPath(dir)
+	if dir == "" {
+		dir = baseDir()
+	}
+	abs, err := filepath.Abs(dir)
+	if err != nil {
+		return "", fmt.Errorf("Pfad nicht verwendbar: %w", err)
+	}
+	dir = abs
+	target := a.userDataFile(dir)
+	if strings.EqualFold(target, a.dataFile) {
+		return "Dieser Ordner ist bereits eingestellt.", nil
+	}
+	if err := ensureWritable(filepath.Dir(target)); err != nil {
+		return "", fmt.Errorf("Ordner nicht beschreibbar: %w", err)
+	}
+	msg := fmt.Sprintf("%d Buchungen in den neuen Ordner übernommen.", len(a.state.Bookings))
+	if b, rerr := os.ReadFile(target); rerr == nil {
+		var existing State
+		if json.Unmarshal(b, &existing) == nil {
+			before := len(existing.Bookings)
+			a.state.Bookings = mergeBookings(existing.Bookings, a.state.Bookings)
+			msg = fmt.Sprintf("Im Zielordner lagen bereits %d Buchungen – zusammengeführt auf %d.", before, len(a.state.Bookings))
+		}
+	}
+	oldDir, oldFile := a.dataDir, a.dataFile
+	a.dataDir, a.dataFile = dir, target
+	if err := a.saveState(); err != nil {
+		a.dataDir, a.dataFile = oldDir, oldFile
+		return "", fmt.Errorf("Speichern im neuen Ordner fehlgeschlagen: %w", err)
+	}
+	if dir == baseDir() {
+		a.cfg.DataDir = ""
+	} else {
+		a.cfg.DataDir = dir
+	}
+	if err := a.saveConfig(); err != nil {
+		log.Printf("Konfiguration speichern: %v", err)
+	}
+	if _, err := os.Stat(oldFile); err == nil {
+		msg += " Die bisherige Datei bleibt als Sicherung unter " + oldFile + "."
+	}
+	log.Printf("Datenordner gewechselt: %s -> %s", oldFile, target)
+	return msg, nil
 }
 
 // ---------- Laden / Speichern ----------
@@ -328,6 +438,7 @@ func (a *App) writeJSON(w http.ResponseWriter, v interface{}) {
 func (a *App) info() map[string]interface{} {
 	return map[string]interface{}{
 		"mode": "server", "version": version, "user": a.id, "dataFile": a.dataFile, "configFile": a.cfgPath,
+		"dataDir": a.dataDir, "defaultDataDir": baseDir(), "dataSuggestions": a.dataSuggestions(),
 		"logFile": a.logFile, "optitime": a.sync, "startedAt": a.startedAt,
 	}
 }
@@ -415,6 +526,56 @@ func (a *App) handleConfig(w http.ResponseWriter, r *http.Request) {
 	a.writeJSON(w, map[string]interface{}{"info": a.info(), "state": a.state})
 }
 
+func (a *App) handleDataDir(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	var in struct {
+		DataDir string `json:"dataDir"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
+		http.Error(w, "ungültiges JSON", http.StatusBadRequest)
+		return
+	}
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	msg, err := a.switchDataDir(in.DataDir)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	a.writeJSON(w, map[string]interface{}{"info": a.info(), "state": a.state, "message": msg})
+}
+
+// handleOpen öffnet einen der bekannten Ordner im Explorer – keine freien Pfade.
+func (a *App) handleOpen(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	a.mu.Lock()
+	var target string
+	switch r.URL.Query().Get("was") {
+	case "optitime":
+		target = a.sync.Path
+	case "protokoll":
+		target = filepath.Dir(a.logFile)
+	default:
+		target = filepath.Dir(a.dataFile)
+	}
+	a.mu.Unlock()
+	if target == "" {
+		http.Error(w, "Kein Ordner vorhanden", http.StatusNotFound)
+		return
+	}
+	if err := openFolder(target); err != nil {
+		http.Error(w, "Ordner konnte nicht geöffnet werden: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	a.writeJSON(w, map[string]interface{}{"ok": true, "path": target})
+}
+
 func (a *App) handleDiagnose(w http.ResponseWriter, r *http.Request) {
 	report := a.diagnose()
 	_ = os.WriteFile(filepath.Join(filepath.Dir(a.logFile), "diagnose.txt"), []byte(report), 0o644)
@@ -442,6 +603,8 @@ func (a *App) routes() http.Handler {
 	mux.HandleFunc("/api/optitime/sync", a.handleSync)
 	mux.HandleFunc("/api/config", a.handleConfig)
 	mux.HandleFunc("/api/optitime/diagnose", a.handleDiagnose)
+	mux.HandleFunc("/api/datadir", a.handleDataDir)
+	mux.HandleFunc("/api/open", a.handleOpen)
 	mux.HandleFunc("/api/ping", a.handlePing)
 	mux.HandleFunc("/api/quit", a.handleQuit)
 	sub, _ := fs.Sub(webFS, ".")
@@ -473,11 +636,13 @@ func main() {
 	if *dataFlag != "" {
 		a.cfg.DataDir = *dataFlag
 	}
-	dataDir := dir
+	a.dataDir = dir
 	if a.cfg.DataDir != "" {
-		dataDir = a.cfg.DataDir
+		if abs, err := filepath.Abs(expandPath(a.cfg.DataDir)); err == nil {
+			a.dataDir = abs
+		}
 	}
-	a.dataFile = filepath.Join(dataDir, safeName(a.id.Username), "data.json")
+	a.dataFile = a.userDataFile(a.dataDir)
 	a.logFile = filepath.Join(dir, "stempeluhr.log")
 	if err := os.MkdirAll(dir, 0o755); err == nil {
 		if f, err := os.OpenFile(a.logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644); err == nil {
