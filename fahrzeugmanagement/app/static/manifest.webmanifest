@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "Fahrzeugmanagement Feind",
+  "name": "Fuhrpark",
   "short_name": "Fuhrpark",
-  "description": "Fuhrpark der Fräsdienst-Service E. Feind GmbH: Fahrten, Fälligkeiten, Verwaltung",
+  "description": "Fuhrpark: Fahrten, Fälligkeiten, Verwaltung",
   "lang": "de",
   "start_url": "/?source=pwa",
   "scope": "/",

@@ -7,7 +7,10 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
 
-DB_PATH = Path(os.environ.get("FAHRZEUG_DB", Path(__file__).resolve().parent.parent / "fahrzeuge.db"))
+# Die Datenbank liegt bewusst außerhalb des Projektordners (privates Benutzerverzeichnis),
+# damit Daten und Code strikt getrennt bleiben. Überschreibbar per FAHRZEUG_DB.
+DEFAULT_DB_DIR = Path.home() / ".fuhrpark"
+DB_PATH = Path(os.environ.get("FAHRZEUG_DB", DEFAULT_DB_DIR / "fahrzeuge.db"))
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS vehicles (
@@ -71,7 +74,9 @@ CREATE INDEX IF NOT EXISTS idx_maintenance_vehicle ON maintenance(vehicle_id, da
 
 
 def connect(path: Path | None = None) -> sqlite3.Connection:
-    conn = sqlite3.connect(path or DB_PATH, check_same_thread=False)
+    target = Path(path or DB_PATH)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(target, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     return conn

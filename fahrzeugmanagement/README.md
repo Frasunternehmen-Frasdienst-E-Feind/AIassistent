@@ -1,10 +1,10 @@
-# Fahrzeugmanagement – Fräsdienst-Service E. Feind GmbH
+# Fuhrpark – Fahrzeugmanagement
 
-Leichtgewichtige Fuhrpark-App für kleine und mittlere Betriebe: Fahrten starten und
+Leichtgewichtige, private Fuhrpark-App: Fahrten starten und
 beenden, Fälligkeiten im Blick, Fahrzeuge, Fahrer, Buchungen und Wartung verwalten.
 
 Ohne Cloud, ohne Lizenzkosten: Python + SQLite, läuft auf jedem PC oder kleinen
-Server im Firmennetz. Bedienung im Browser oder als installierte App auf dem Handy
+Server im eigenen Netz. Bedienung im Browser oder als installierte App auf dem Handy
 (PWA, optional als Android-APK). Komplett auf Deutsch.
 
 ## Funktionen
@@ -48,14 +48,16 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 Dann im Browser öffnen: <http://localhost:8000>
 API-Dokumentation (Swagger): <http://localhost:8000/docs>
 
-Die Datenbank liegt als Datei `fahrzeuge.db` im Projektordner.
+Die Datenbank liegt bewusst **außerhalb des Projektordners** unter `~/.fuhrpark/fahrzeuge.db`
+(Windows: `%USERPROFILE%\.fuhrpark\fahrzeuge.db`), damit Code und Daten strikt getrennt
+bleiben. Der Ordner wird beim ersten Start angelegt.
 
 ### Umgebungsvariablen
 
 | Variable | Bedeutung |
 |---|---|
-| `FAHRZEUG_DB` | Pfad zur SQLite-Datei (Standard: `fahrzeuge.db` im Projektordner) |
-| `TWA_PACKAGE_NAME` | Package-ID der Android-App (Standard `de.feind.fuhrpark`), siehe Android-Doku |
+| `FAHRZEUG_DB` | Pfad zur SQLite-Datei (Standard: `~/.fuhrpark/fahrzeuge.db`) |
+| `TWA_PACKAGE_NAME` | Package-ID der Android-App (Standard `de.privat.fuhrpark`), siehe Android-Doku |
 | `TWA_SHA256_FINGERPRINT` | SHA-256-Fingerprint des APK-Signaturschlüssels, kommagetrennt bei mehreren |
 
 ## Installation auf dem Handy (PWA / Android-APK)
@@ -75,22 +77,23 @@ Die Fahrerwahl auf der Startseite wird nur auf dem Gerät gemerkt und ist **kein
 python -m pytest
 ```
 
-## Betrieb im Firmennetz (Empfehlung)
+## Betrieb im eigenen Netz (Empfehlung)
 
-- Auf einem kleinen Server oder einem Büro-PC dauerhaft starten (z. B. als
+- Auf einem eigenen kleinen Server, NAS oder PC dauerhaft starten (z. B. als
   Windows-Dienst via NSSM oder als systemd-Unit unter Linux).
-- Zugriff nur im internen Netz oder per VPN. Die App hat **keine eigene
+- Zugriff nur im eigenen Netz oder per VPN. Die App hat **keine eigene
   Benutzeranmeldung**, dafür ist bei Bedarf ein Reverse-Proxy mit Login
-  (z. B. nginx + Basic Auth oder SSO) vorzuschalten.
-- Backup: die Datei `fahrzeuge.db` regelmäßig sichern.
+  (z. B. nginx + Basic Auth) vorzuschalten.
+- Backup: den Ordner `~/.fuhrpark/` regelmäßig sichern (die App-Daten liegen nur dort).
 
-## Datenschutz
+## Privat und getrennt
 
-Fahrerdaten sind personenbezogene Daten. Es werden nur dienstlich notwendige Felder
-erfasst (Name, Abteilung, Führerscheinklasse, Kontrollnachweis, dienstliche
-Kontaktdaten). Vor Produktivbetrieb: Verarbeitungsverzeichnis ergänzen,
-Mitarbeitende informieren. Bei Fragen zur Rechtsgrundlage der
-Führerscheinkontrolle und des Fahrtenbuchs: Bitte Rechtsabteilung prüfen.
+- Alle Daten bleiben auf dem eigenen Gerät bzw. Server; es gibt keine Cloud-Anbindung,
+  keine Telemetrie und keine externen Dienste.
+- Die Datenbank liegt außerhalb des Code-Ordners und ist per `.gitignore` vom Repository
+  ausgeschlossen. Code und Daten lassen sich so getrennt sichern und weitergeben.
+- Fahrerdaten sind personenbezogene Daten: nur notwendige Felder erfassen und die
+  betroffenen Personen informieren.
 
 ## Technischer Aufbau
 

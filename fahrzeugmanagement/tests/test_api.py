@@ -16,7 +16,7 @@ def client(tmp_path, monkeypatch):
 
 
 def _vehicle(client, **overrides):
-    payload = {"kennzeichen": "EF-FD 100", "hersteller": "VW", "modell": "Crafter", "typ": "Transporter",
+    payload = {"kennzeichen": "AB-XY 100", "hersteller": "VW", "modell": "Crafter", "typ": "Transporter",
                "kilometerstand": 45000}
     payload.update(overrides)
     r = client.post("/api/vehicles", json=payload)
@@ -40,9 +40,9 @@ def test_index_served(client):
 
 
 def test_vehicle_crud_and_plate_normalization(client):
-    v = _vehicle(client, kennzeichen="ef-fd 100")
-    assert v["kennzeichen"] == "EF-FD 100"
-    assert client.post("/api/vehicles", json={"kennzeichen": "ef-fd  100", "hersteller": "x", "modell": "y"}).status_code == 409
+    v = _vehicle(client, kennzeichen="ab-xy 100")
+    assert v["kennzeichen"] == "AB-XY 100"
+    assert client.post("/api/vehicles", json={"kennzeichen": "ab-xy  100", "hersteller": "x", "modell": "y"}).status_code == 409
 
     r = client.put(f"/api/vehicles/{v['id']}", json={**v, "kilometerstand": 46000, "status": "werkstatt"})
     assert r.status_code == 200 and r.json()["kilometerstand"] == 46000
@@ -61,7 +61,7 @@ def test_booking_overlap_and_km_update(client):
     r = client.post("/api/bookings", json={**base, "von": "2026-09-14T08:00", "bis": "2026-09-14T12:00", "status": "aktiv"})
     assert r.status_code == 201, r.text
     first = r.json()
-    assert first["kennzeichen"] == "EF-FD 100" and first["fahrer_name"] == "Max Muster"
+    assert first["kennzeichen"] == "AB-XY 100" and first["fahrer_name"] == "Max Muster"
     assert client.get(f"/api/vehicles/{v['id']}").json()["status"] == "unterwegs"
 
     # Überschneidung -> 409
@@ -120,7 +120,7 @@ def test_maintenance_updates_vehicle_dates_and_km(client):
     assert veh["kilometerstand"] == 51000
     assert veh["naechste_wartung_km"] == 60000
     assert veh["hu_termin"] == "2028-09-01"
-    assert client.get(f"/api/maintenance?vehicle_id={v['id']}").json()[0]["kennzeichen"] == "EF-FD 100"
+    assert client.get(f"/api/maintenance?vehicle_id={v['id']}").json()[0]["kennzeichen"] == "AB-XY 100"
 
 
 def test_dashboard_due_items(client):
@@ -159,7 +159,7 @@ def test_csv_exports(client):
     client.post("/api/bookings", json={"vehicle_id": v["id"], "driver_id": d["id"], "von": "2026-09-14T08:00",
                                        "bis": "2026-09-14T12:00", "km_start": 100, "km_ende": 180, "status": "abgeschlossen"})
     r = client.get("/api/export/vehicles.csv")
-    assert r.status_code == 200 and "EF-FD 100" in r.text and r.text.startswith("﻿")
+    assert r.status_code == 200 and "AB-XY 100" in r.text and r.text.startswith("﻿")
     r = client.get("/api/export/fahrtenbuch.csv?von=2026-09-01&bis=2026-09-30")
     assert "Max Muster" in r.text and ";80;" in r.text
     r = client.get("/api/export/fahrtenbuch.csv?von=2026-10-01")

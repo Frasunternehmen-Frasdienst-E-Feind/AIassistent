@@ -8,12 +8,12 @@ mit dem Server verbunden, alle Daten liegen weiterhin in der SQLite-Datenbank au
 ## 1. Voraussetzung: öffentlich gültige HTTPS-Adresse
 
 Eine TWA funktioniert **nur** mit einer HTTPS-Adresse, deren Zertifikat Android vertraut
-(z. B. Let's Encrypt). Ein selbstsigniertes Zertifikat oder eine interne Firmen-CA reicht
+(z. B. Let's Encrypt). Ein selbstsigniertes Zertifikat oder eine eigene CA reicht
 nicht: die App startet dann mit sichtbarem Chrome-Adressbalken, oder gar nicht.
 
-Empfehlung: Domain wie `fuhrpark.fraesdienst-feind.de` auf einen Reverse-Proxy (nginx,
-Caddy, Traefik) mit Let's Encrypt legen und den Zugriff per VPN oder IP-Allowlist auf das
-Firmennetz begrenzen. **Bitte mit der IT abstimmen, bevor Schritt 3 beginnt.**
+Empfehlung: Domain wie `fuhrpark.example.de` auf einen Reverse-Proxy (nginx,
+Caddy, Traefik) mit Let's Encrypt legen und den Zugriff per VPN oder IP-Allowlist auf die
+eigenen Geräte begrenzen. Das ist die einzige Infrastruktur-Voraussetzung.
 
 ## 2. Vorprüfung auf dem Server
 
@@ -34,16 +34,16 @@ Platzhalter. Das ist für Schritt 3 in Ordnung, muss aber vor Schritt 4 ersetzt 
 2. Der Report prüft Manifest, Service Worker und HTTPS. Alle drei sollten grün sein.
 3. **Package for stores → Android** wählen.
 4. Einstellungen:
-   - Package ID: `de.feind.fuhrpark` (muss zu `TWA_PACKAGE_NAME` auf dem Server passen)
-   - App name: `Fahrzeugmanagement Feind`, Short name: `Fuhrpark`
+   - Package ID: `de.privat.fuhrpark` (muss zu `TWA_PACKAGE_NAME` auf dem Server passen)
+   - App name: `Fuhrpark`, Short name: `Fuhrpark`
    - Signing key: **Create new** (PWABuilder erzeugt einen Schlüssel)
 5. **Generate** klicken und das ZIP herunterladen. Es enthält:
-   - `*.apk` zum direkten Installieren (Sideload / MDM)
+   - `*.apk` zum direkten Installieren (Sideload)
    - `*.aab` für den Play Store (nur nötig, wenn die App dort erscheinen soll)
    - `signing.keystore` + Passwörter in `signing-key-info.txt`
    - `assetlinks.json` mit dem SHA-256-Fingerprint des Schlüssels
 
-**Wichtig:** `signing.keystore` und die Passwörter sicher ablegen (Passwortmanager der IT).
+**Wichtig:** `signing.keystore` und die Passwörter sicher ablegen (Passwortmanager).
 Ohne diesen Schlüssel kann später keine aktualisierte APK installiert werden.
 
 ## 4. Fingerprint auf dem Server hinterlegen
@@ -53,7 +53,7 @@ Den Wert `sha256_cert_fingerprints` aus der heruntergeladenen `assetlinks.json` 
 neu starten:
 
 ```bash
-export TWA_PACKAGE_NAME="de.feind.fuhrpark"
+export TWA_PACKAGE_NAME="de.privat.fuhrpark"
 export TWA_SHA256_FINGERPRINT="AB:CD:EF:...:12"      # mehrere Werte kommagetrennt
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
@@ -64,7 +64,7 @@ Google bietet dafür auch einen Tester:
 
 ## 5. APK installieren und prüfen
 
-- APK per E-Mail, Dateifreigabe oder MDM auf das Handy bringen und installieren
+- APK per Kabel oder Dateifreigabe auf das Handy bringen und installieren
   („Unbekannte Quellen“ einmalig erlauben).
 - Erfolgskriterium: Die App startet **ohne** Chrome-Adressbalken im Vollbild mit dem
   Fuhrpark-Icon. Ist der Adressbalken sichtbar, stimmt Fingerprint oder Package-ID nicht

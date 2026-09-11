@@ -532,7 +532,7 @@ def assetlinks():
             "relation": ["delegate_permission/common.handle_all_urls"],
             "target": {
                 "namespace": "android_app",
-                "package_name": os.environ.get("TWA_PACKAGE_NAME", "de.feind.fuhrpark"),
+                "package_name": os.environ.get("TWA_PACKAGE_NAME", "de.privat.fuhrpark"),
                 "sha256_cert_fingerprints": fingerprints,
             },
         }
