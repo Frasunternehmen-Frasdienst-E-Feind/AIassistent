@@ -12,30 +12,35 @@ Zeiterfassung. Zwei Betriebsarten:
 
 `Stempeluhr.exe` ist eine einzelne Datei ohne Installation. Beim Start:
 
-1. **Benutzer ermitteln**: Windows-Anmeldename, Anzeigename, Domäne, Rechner.
+1. **Benutzer festlegen**: Standard ist der angemeldete Windows-Benutzer. Mit dem Startparameter
+   `--user d.halko` oder der Umgebungsvariable `STEMPELUHR_USER=d.halko` wird der Benutzer als
+   Variable gesetzt, z. B. in einer Verknüpfung oder Batch-Datei. Daraus ergibt sich das Profil
+   `C:\Users\d.halko`, auch wenn das Programm unter einem anderen Konto läuft.
 2. **OptiTime-Ordner suchen**, in dieser Reihenfolge: Startparameter `--optitime`,
    Umgebungsvariable `OPTITIME_PATH`, gespeicherter Pfad aus den Einstellungen, dann
-   automatische Suche nach einem Ordner mit „OptiTime" im Namen unter OneDrive, Benutzerprofil
-   (Dokumente, Desktop, Downloads), `%APPDATA%`, `%LOCALAPPDATA%`, `%ProgramData%`,
-   `%ProgramFiles%`, `%ProgramFiles(x86)%`, `%PUBLIC%` und allen lokalen Festplatten
-   (jeweils bis zwei Ebenen tief; Netzlaufwerke nur über expliziten Pfad, damit nichts hängt).
-3. **Dateien einlesen**: alle `.csv`, `.txt`, `.tsv`, `.json` bis vier Ebenen unter dem Ordner.
-   Zeichensätze UTF-8 (mit/ohne BOM), UTF-16 und Windows-1252 werden erkannt.
-   Zwei Formate werden verstanden:
-   - **Intervall**: Spalten `Datum`, `von`, `bis` (+ optional `Auftrag`, `Tätigkeit`, `Zeitart`, `Bemerkung`).
-   - **Ereignisse** (Terminal-Buchungen): `Datum`, `Uhrzeit`, `Buchung` mit Werten wie
-     „Kommen", „Pause Beginn", „Pause Ende", „Gehen"; sie werden zu Buchungen gepaart.
+   **`C:\Users\<user>\AppData\Local\OptiTime`** (sowie `AppData\Roaming\OptiTime`,
+   `AppData\LocalLow\OptiTime` und abweichend geschriebene Ordner wie „Opti-Time" unter
+   `AppData\Local`), zuletzt eine allgemeine Suche unter OneDrive, Benutzerprofil, `%ProgramData%`,
+   `%ProgramFiles%`, `%ProgramFiles(x86)%`, `%PUBLIC%` und allen lokalen Festplatten.
+3. **Zeitstempeldaten einlesen**: alle `.csv`, `.txt`, `.tsv`, `.json`, `.xml`, `.log`, `.dat`,
+   `.asc` bis sechs Ebenen unter dem Ordner. Zeichensätze UTF-8 (mit/ohne BOM), UTF-16 und
+   Windows-1252 werden erkannt. Verstanden werden:
+   - **Intervalle**: `Datum`, `von`, `bis` (+ optional `Auftrag`, `Tätigkeit`, `Zeitart`, `Bemerkung`).
+   - **Stempelereignisse**: `Datum`, `Uhrzeit` (oder `Zeitstempel`) und `Buchung`/`Buchungsart`
+     mit Werten wie „Kommen", „Pause", „Pause Ende", „Gehen"; sie werden zu Buchungen gepaart.
+   - Beides gemischt, als CSV-Spalten, JSON-Felder oder XML-Attribute/-Elemente.
    Spaltennamen werden tolerant erkannt (z. B. `Beginn`/`Start`, `Ende`, `Mitarbeiter`,
-   `Personalnummer`, `PersNr`, `Benutzer`, `Login`).
+   `Personalnummer`, `PersNr`, `Benutzer`, `Login`). Andere Dateitypen (z. B. `.db`) werden im
+   OptiTime-Bereich der Oberfläche gezählt und angezeigt, aber nicht gelesen.
 4. **Nur eigene Daten übernehmen**:
-   - Hat die Datei eine Personenspalte, werden nur Zeilen übernommen, die zum Windows-Konto
+   - Hat die Datei eine Personenspalte, werden nur Zeilen übernommen, die zum Benutzer
      (Anmeldename, Anzeigename), zur Personalnummer oder zum in den Einstellungen bestätigten
      Namen passen. Zeilen anderer Personen werden gezählt, aber nie importiert.
    - Ist die Zuordnung nur automatisch über den Windows-Namen erfolgt, zeigt die App
      „automatisch erkannt – bitte bestätigen". Mit „Das bin ich" wird sie fest gespeichert.
-   - Dateien **ohne** Personenspalte werden nur übernommen, wenn Dateiname oder Ordner den
-     Benutzer nennen oder die Datei im eigenen Benutzerprofil liegt. Andernfalls erscheinen sie
-     als „nicht zugeordnet".
+   - Dateien **ohne** Personenspalte gelten als eigene, wenn sie im Profil des Benutzers liegen
+     (`C:\Users\<user>\…`) oder Dateiname bzw. Ordner den Benutzer nennen. Andernfalls erscheinen
+     sie als „nicht zugeordnet".
 5. **Oberfläche öffnen**: lokaler Server nur auf `127.0.0.1` mit freiem Port, Standardbrowser
    startet automatisch. Wird das Browserfenster geschlossen, beendet sich das Programm nach
    zwei Minuten von selbst; „Stempeluhr beenden" beendet sofort.
@@ -46,6 +51,7 @@ mit gleichem Datum und gleicher Startzeit. Manuelle Buchungen bleiben sonst erha
 ### Startparameter
 
 ```
+Stempeluhr.exe --user d.halko                            Benutzer als Variable setzen (auch STEMPELUHR_USER)
 Stempeluhr.exe --optitime "\\server\OptiTime\Export"   OptiTime-Ordner fest vorgeben
 Stempeluhr.exe --data "C:\Users\...\OneDrive\Stempeluhr"  Datenordner (z. B. OneDrive für mehrere Geräte)
 Stempeluhr.exe --port 8123 --no-browser                  fester Port, Browser nicht öffnen
@@ -54,6 +60,8 @@ Stempeluhr.exe --idle 0                                  nie automatisch beenden
 
 Protokoll: `%APPDATA%\Stempeluhr\stempeluhr.log`. Einstellungen: `%APPDATA%\Stempeluhr\config.json`.
 `Stempeluhr-Konsole.exe` ist dieselbe App mit sichtbarem Konsolenfenster für die Fehlersuche.
+
+Beispiel-Verknüpfung (Ziel): `"C:\Tools\Stempeluhr.exe" --user d.halko`
 
 ### Mehrere Geräte
 

@@ -29,7 +29,7 @@ import (
 //go:embed index.html app.js zeit.js seed-data.js
 var webFS embed.FS
 
-const version = "1.1.0"
+const version = "1.2.0"
 
 const (
 	kindWork  = "Arbeitszeit"
@@ -101,9 +101,21 @@ type App struct {
 
 // ---------- Benutzer und Pfade ----------
 
-func currentIdentity() Identity {
-	id := Identity{}
-	if u, err := user.Current(); err == nil {
+// currentIdentity ermittelt den Benutzer. override (Startparameter --user oder
+// Umgebungsvariable STEMPELUHR_USER) hat Vorrang vor dem Windows-Konto.
+func currentIdentity(override, source string) Identity {
+	id := Identity{Source: "windows"}
+	if override = strings.TrimSpace(override); override != "" {
+		if i := strings.LastIndexAny(override, `\/`); i >= 0 {
+			id.Domain = override[:i]
+			override = override[i+1:]
+		}
+		id.Username = override
+		id.Source = source
+		if u, err := user.Lookup(override); err == nil {
+			id.FullName = u.Name
+		}
+	} else if u, err := user.Current(); err == nil {
 		name := u.Username
 		if i := strings.LastIndexAny(name, `\/`); i >= 0 {
 			id.Domain = name[:i]
@@ -119,7 +131,34 @@ func currentIdentity() Identity {
 		id.Domain = os.Getenv("USERDOMAIN")
 	}
 	id.Host, _ = os.Hostname()
+	id.ProfileDir = profileDir(id.Username)
 	return id
+}
+
+// profileDir liefert C:\Users\<Benutzer> (bzw. das Home-Verzeichnis) für den
+// angegebenen Benutzer – auch wenn das Programm unter einem anderen Konto läuft.
+func profileDir(username string) string {
+	var cands []string
+	cur := firstNonEmpty(os.Getenv("USERPROFILE"), os.Getenv("HOME"))
+	if cur != "" && strings.EqualFold(filepath.Base(cur), username) {
+		return cur
+	}
+	if cur != "" {
+		cands = append(cands, filepath.Join(filepath.Dir(cur), username))
+	}
+	if sd := os.Getenv("SystemDrive"); sd != "" {
+		cands = append(cands, filepath.Join(sd+`\`, "Users", username))
+	}
+	cands = append(cands, filepath.Join(`C:\Users`, username), filepath.Join("/home", username))
+	for _, c := range cands {
+		if st, err := os.Stat(c); err == nil && st.IsDir() {
+			return c
+		}
+	}
+	if len(cands) > 0 {
+		return cands[0]
+	}
+	return ""
 }
 
 func firstNonEmpty(v ...string) string {
@@ -260,7 +299,7 @@ func (a *App) runSync() {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	id := a.identityWithProfile()
-	path, source, searched := findOptiTimePath(a.explicit, a.cfg.OptiTimePath)
+	path, source, searched := findOptiTimePath(a.explicit, a.cfg.OptiTimePath, id.ProfileDir)
 	if path == "" {
 		a.sync = SyncResult{At: time.Now(), Searched: searched, Identity: id, Files: []FileResult{}, Persons: []string{}, Errors: []string{"Kein OptiTime-Ordner gefunden. Pfad in den Einstellungen angeben."}}
 		log.Printf("OptiTime: kein Ordner gefunden (%d Orte geprüft)", len(searched))
@@ -404,6 +443,7 @@ func (a *App) routes() http.Handler {
 // ---------- Start ----------
 
 func main() {
+	userFlag := flag.String("user", "", "Benutzer, dessen Daten gelesen werden (Standard: angemeldeter Windows-Benutzer; auch STEMPELUHR_USER)")
 	optiFlag := flag.String("optitime", "", "Pfad zum OptiTime-Ordner (überschreibt Suche und Konfiguration)")
 	dataFlag := flag.String("data", "", "Ordner für die Benutzerdaten (Standard: %APPDATA%\\Stempeluhr)")
 	portFlag := flag.Int("port", 0, "fester Port (Standard: freier Port)")
@@ -412,7 +452,11 @@ func main() {
 	flag.Parse()
 
 	a := &App{explicit: *optiFlag, quit: make(chan struct{}), startedAt: time.Now(), lastPing: time.Now()}
-	a.id = currentIdentity()
+	userOverride, userSource := *userFlag, "parameter"
+	if userOverride == "" {
+		userOverride, userSource = os.Getenv("STEMPELUHR_USER"), "umgebung"
+	}
+	a.id = currentIdentity(userOverride, userSource)
 	dir := baseDir()
 	a.cfgPath = filepath.Join(dir, "config.json")
 	a.loadConfig()
@@ -430,7 +474,7 @@ func main() {
 			log.SetOutput(f)
 		}
 	}
-	log.Printf("Stempeluhr %s startet für %s\\%s (%s) auf %s", version, a.id.Domain, a.id.Username, a.id.FullName, a.id.Host)
+	log.Printf("Stempeluhr %s startet für %s\\%s (%s, Quelle: %s, Profil: %s) auf %s", version, a.id.Domain, a.id.Username, a.id.FullName, a.id.Source, a.id.ProfileDir, a.id.Host)
 	a.loadState()
 	a.runSync()
 

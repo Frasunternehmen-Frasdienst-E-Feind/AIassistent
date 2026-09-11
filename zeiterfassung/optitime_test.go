@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -114,9 +115,51 @@ func TestFileWithoutPersonColumn(t *testing.T) {
 	csv := "Datum;von;bis;Auftrag;Tätigkeit\n17.08.2026;08:00;15:30;000999;Kommen\n"
 	write(t, dir, "buchungen_d.halko.csv", []byte(csv)) // Dateiname nennt den Benutzer -> übernehmen
 	write(t, dir, "alle.csv", []byte(csv))              // kein Bezug -> nicht zuordnen
+	write(t, dir, "daten.db", []byte("binär"))          // unbekannter Typ -> nur zählen
 	bookings, res := importOptiTime(dir, ident())
-	if len(bookings) != 1 || res.Unassigned != 1 {
-		t.Fatalf("bookings=%d unassigned=%d files=%+v", len(bookings), res.Unassigned, res.Files)
+	if len(bookings) != 1 || res.Unassigned != 1 || res.OtherFiles[".db"] != 1 {
+		t.Fatalf("bookings=%d unassigned=%d other=%v files=%+v", len(bookings), res.Unassigned, res.OtherFiles, res.Files)
+	}
+	// Liegt der Ordner im Profil des Benutzers, gelten Dateien ohne Personenspalte als seine
+	id := ident()
+	id.ProfileDir = dir
+	bookings2, res2 := importOptiTime(dir, id)
+	if len(bookings2) != 2 || res2.Unassigned != 0 {
+		t.Fatalf("profil: bookings=%d unassigned=%d", len(bookings2), res2.Unassigned)
+	}
+}
+
+func TestXMLImport(t *testing.T) {
+	dir := t.TempDir()
+	x := `<?xml version="1.0" encoding="UTF-8"?><Export><Buchung Mitarbeiter="Halko, David"><Datum>17.08.2026</Datum><Von>08:00</Von><Bis>15:30</Bis></Buchung>` +
+		`<Buchung Mitarbeiter="Muster, Erika"><Datum>17.08.2026</Datum><Von>08:00</Von><Bis>15:30</Bis></Buchung>` +
+		`<Stempel><Zeitstempel>18.08.2026 07:00:12</Zeitstempel><Buchungsart>Kommen</Buchungsart><Benutzer>d.halko</Benutzer></Stempel>` +
+		`<Stempel><Zeitstempel>18.08.2026 15:30:00</Zeitstempel><Buchungsart>Gehen</Buchungsart><Benutzer>d.halko</Benutzer></Stempel></Export>`
+	write(t, dir, "export.xml", []byte(x))
+	bookings, res := importOptiTime(dir, ident())
+	if res.Files[0].Format != "xml" || res.Files[0].Rows != 4 {
+		t.Fatalf("xml: %+v", res.Files[0])
+	}
+	if len(bookings) != 2 {
+		t.Fatalf("erwartet 2 eigene Buchungen (Intervall + gepaarte Stempel), got %d: %+v", len(bookings), bookings)
+	}
+}
+
+func TestProfileDir(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("USERPROFILE", filepath.Join(dir, "Users", "admin"))
+	t.Setenv("HOME", "")
+	t.Setenv("SystemDrive", "")
+	write(t, dir, filepath.Join("Users", "d.halko", "x.txt"), []byte("x"))
+	if got := profileDir("d.halko"); got != filepath.Join(dir, "Users", "d.halko") {
+		t.Fatalf("profileDir=%q", got)
+	}
+	if got := profileDir("admin"); got != filepath.Join(dir, "Users", "admin") {
+		t.Fatalf("profileDir(admin)=%q", got)
+	}
+	id := currentIdentity("FEIND\\d.halko", "parameter")
+	if id.Username != "d.halko" || id.Domain != "FEIND" || id.Source != "parameter" || id.ProfileDir == "" {
+		t.Fatalf("identity: %+v", id)
 	}
 }
 
@@ -154,13 +197,20 @@ func TestFindOptiTimePath(t *testing.T) {
 	t.Setenv("ProgramFiles", "")
 	t.Setenv("ProgramFiles(x86)", "")
 	t.Setenv("PUBLIC", "")
-	p, src, _ := findOptiTimePath("", "")
+	p, src, _ := findOptiTimePath("", "", "")
 	if src != "gefunden" || filepath.Base(p) != "Opti-Time" {
 		t.Fatalf("p=%q src=%q", p, src)
 	}
-	p2, src2, _ := findOptiTimePath(filepath.Join(dir, "Programme", "Opti-Time"), "")
+	p2, src2, _ := findOptiTimePath(filepath.Join(dir, "Programme", "Opti-Time"), "", "")
 	if src2 != "parameter" || p2 == "" {
 		t.Fatalf("explicit: %q %q", p2, src2)
+	}
+	// Benutzerprofil C:\Users\<user>\AppData\Local\OptiTime hat Vorrang vor der allgemeinen Suche
+	prof := filepath.Join(dir, "Users", "d.halko")
+	write(t, prof, filepath.Join("AppData", "Local", "OptiTime", "stempel.csv"), []byte("Datum;von;bis\n"))
+	p3, src3, _ := findOptiTimePath("", "", prof)
+	if src3 != "benutzerprofil" || !strings.HasSuffix(p3, filepath.Join("AppData", "Local", "OptiTime")) {
+		t.Fatalf("profil: %q %q", p3, src3)
 	}
 }
 

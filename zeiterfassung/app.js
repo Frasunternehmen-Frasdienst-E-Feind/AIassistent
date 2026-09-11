@@ -221,13 +221,18 @@
     const files = o.files || [];
     const searched = o.searched || [];
     const kv = [
-      ['Angemeldeter Benutzer', esc((u.domain ? u.domain + '\\' : '') + u.username) + (u.fullName ? ' · ' + esc(u.fullName) : '') + ' · ' + esc(u.host)],
-      ['OptiTime-Ordner', o.path ? '<span class="mono">' + esc(o.path) + '</span> <span class="chip ok">' + esc(o.pathSource) + '</span>'
+      ['Benutzer', esc((u.domain ? u.domain + '\\' : '') + u.username) + (u.fullName ? ' · ' + esc(u.fullName) : '') + ' · ' + esc(u.host)
+        + ' <span class="chip ' + (u.source === 'windows' ? 'ok' : 'src') + '">' + ({ windows: 'Windows-Anmeldung', parameter: 'Startparameter --user', umgebung: 'STEMPELUHR_USER' }[u.source] || esc(u.source || '')) + '</span>'],
+      ['Benutzerprofil', '<span class="mono">' + esc(u.profileDir || '–') + '</span>'],
+      ['OptiTime-Ordner', o.path ? '<span class="mono">' + esc(o.path) + '</span> <span class="chip ok">' + ({ parameter: 'Startparameter', umgebung: 'OPTITIME_PATH', konfiguration: 'gespeichert', benutzerprofil: 'AppData\\Local des Benutzers', gefunden: 'automatisch gefunden' }[o.pathSource] || esc(o.pathSource)) + '</span>'
         : '<span class="chip crit">nicht gefunden</span> <span class="muted">' + searched.length + ' Orte geprüft</span>'],
       ['Zuordnung', id.matchedPerson
         ? '<b>' + esc(id.matchedPerson) + '</b> ' + (id.autoMatched ? '<span class="chip open">automatisch erkannt – bitte bestätigen</span>' : '<span class="chip ok">bestätigt</span>')
         : (persons.length ? '<span class="chip crit">keine Person passt zu ' + esc(u.username) + '</span>' : '<span class="muted">keine Personenspalte in den Dateien</span>')],
       ['Letzter Abgleich', o.at ? new Date(o.at).toLocaleString('de-DE') + ' · ' + (o.imported || 0) + ' Buchungen übernommen' : '–'],
+      ['Weitere Dateien', (o.otherFiles && Object.keys(o.otherFiles).length)
+        ? Object.entries(o.otherFiles).map(([ext, n]) => esc(ext) + ' ×' + n).join(', ') + ' <span class="muted">(Typ nicht lesbar – bitte melden)</span>'
+        : '<span class="muted">keine</span>'],
       ['Datenablage', '<span class="mono">' + esc(server.dataFile) + '</span>'],
     ];
     const errs = (o.errors || []).map(e => '<div class="error">' + esc(e) + '</div>').join('');

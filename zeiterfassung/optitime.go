@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/csv"
 	"encoding/json"
+	"encoding/xml"
 	"errors"
 	"fmt"
 	"io"
@@ -27,6 +28,8 @@ type Identity struct {
 	Domain        string   `json:"domain"`        // Domäne/Rechner
 	FullName      string   `json:"fullName"`      // Anzeigename aus dem Konto
 	Host          string   `json:"host"`          // Rechnername
+	Source        string   `json:"source"`        // "windows", "parameter" (--user) oder "umgebung" (STEMPELUHR_USER)
+	ProfileDir    string   `json:"profileDir"`    // C:\Users\<Benutzer>
 	Keys          []string `json:"keys"`          // alle Kennungen, die als "ich" gelten
 	ConfirmedKeys []string `json:"confirmedKeys"` // vom Benutzer bestätigte Kennungen (Profil)
 	MatchedPerson string   `json:"matchedPerson"` // in den Dateien gefundene Person, die als "ich" gilt
@@ -43,16 +46,17 @@ type FileResult struct {
 }
 
 type SyncResult struct {
-	At         time.Time    `json:"at"`
-	Path       string       `json:"path"`
-	PathSource string       `json:"pathSource"` // "parameter", "umgebung", "konfiguration", "gefunden", ""
-	Searched   []string     `json:"searched"`
-	Files      []FileResult `json:"files"`
-	Persons    []string     `json:"persons"` // in den Dateien gefundene Personen
-	Identity   Identity     `json:"identity"`
-	Imported   int          `json:"imported"`
-	Unassigned int          `json:"unassigned"` // Dateien ohne Personenspalte, die nicht zugeordnet werden konnten
-	Errors     []string     `json:"errors"`
+	At         time.Time      `json:"at"`
+	Path       string         `json:"path"`
+	PathSource string         `json:"pathSource"` // "parameter", "umgebung", "konfiguration", "gefunden", ""
+	Searched   []string       `json:"searched"`
+	Files      []FileResult   `json:"files"`
+	Persons    []string       `json:"persons"` // in den Dateien gefundene Personen
+	Identity   Identity       `json:"identity"`
+	Imported   int            `json:"imported"`
+	Unassigned int            `json:"unassigned"` // Dateien ohne Personenspalte, die nicht zugeordnet werden konnten
+	OtherFiles map[string]int `json:"otherFiles"` // im Ordner gefundene, nicht gelesene Dateitypen (Endung -> Anzahl)
+	Errors     []string       `json:"errors"`
 }
 
 // ---------- Pfadsuche ----------
@@ -60,8 +64,9 @@ type SyncResult struct {
 var optiNameRe = regexp.MustCompile(`(?i)opti[\s_-]*time`)
 
 // findOptiTimePath sucht den OptiTime-Ordner. Reihenfolge: expliziter Pfad,
-// Umgebungsvariable OPTITIME_PATH, Konfiguration, dann bekannte Orte.
-func findOptiTimePath(explicit, configured string) (path, source string, searched []string) {
+// Umgebungsvariable OPTITIME_PATH, Konfiguration, dann das Profil des Benutzers
+// (C:\Users\<Benutzer>\AppData\Local\OptiTime), zuletzt bekannte Orte.
+func findOptiTimePath(explicit, configured, profile string) (path, source string, searched []string) {
 	try := func(p, src string) bool {
 		if p == "" {
 			return false
@@ -81,6 +86,20 @@ func findOptiTimePath(explicit, configured string) (path, source string, searche
 	}
 	if try(configured, "konfiguration") {
 		return
+	}
+	if profile != "" {
+		for _, rel := range []string{`AppData\Local\OptiTime`, `AppData\Local\Optitime`, `AppData\Roaming\OptiTime`, `AppData\LocalLow\OptiTime`, `.local/share/OptiTime`} {
+			if try(filepath.Join(profile, filepath.FromSlash(strings.ReplaceAll(rel, `\`, "/"))), "benutzerprofil") {
+				return
+			}
+		}
+		// Ordnername abweichend geschrieben (z. B. "Opti-Time"): unter AppData\Local suchen
+		local := filepath.Join(profile, "AppData", "Local")
+		searched = append(searched, local)
+		if p := scanForOptiDir(local, 2); p != "" {
+			path, source = p, "benutzerprofil"
+			return
+		}
 	}
 	for _, base := range candidateBases() {
 		searched = append(searched, base)
@@ -161,31 +180,45 @@ func scanForOptiDir(base string, depth int) string {
 	return hits[0]
 }
 
-var dataExt = map[string]bool{".csv": true, ".txt": true, ".json": true, ".tsv": true}
+var dataExt = map[string]bool{".csv": true, ".txt": true, ".json": true, ".tsv": true, ".xml": true, ".log": true, ".dat": true, ".asc": true}
 
-// listDataFiles liefert alle Datendateien unterhalb eines OptiTime-Ordners (max. Tiefe 4).
+// listDataFiles liefert alle Datendateien unterhalb eines OptiTime-Ordners (max. Tiefe 6).
 func listDataFiles(root string) []string {
-	var files []string
+	files, _ := listFiles(root)
+	return files
+}
+
+// listFiles liefert lesbare Datendateien und zählt die übrigen Dateitypen.
+func listFiles(root string) (files []string, other map[string]int) {
+	other = map[string]int{}
 	_ = filepath.WalkDir(root, func(p string, d os.DirEntry, err error) error {
 		if err != nil {
 			return nil
 		}
 		if d.IsDir() {
 			rel, _ := filepath.Rel(root, p)
-			if rel != "." && strings.Count(rel, string(filepath.Separator)) >= 4 {
+			if rel != "." && strings.Count(rel, string(filepath.Separator)) >= 6 {
 				return filepath.SkipDir
 			}
 			return nil
 		}
-		if dataExt[strings.ToLower(filepath.Ext(p))] {
-			if info, err := d.Info(); err == nil && info.Size() > 0 && info.Size() < 50<<20 {
-				files = append(files, p)
+		ext := strings.ToLower(filepath.Ext(p))
+		info, err := d.Info()
+		if err != nil || info.Size() == 0 {
+			return nil
+		}
+		if dataExt[ext] && info.Size() < 50<<20 {
+			files = append(files, p)
+		} else {
+			if ext == "" {
+				ext = "(ohne Endung)"
 			}
+			other[ext]++
 		}
 		return nil
 	})
 	sort.Strings(files)
-	return files
+	return files, other
 }
 
 // ---------- Zeichensatz ----------
@@ -437,8 +470,11 @@ func parseFile(path string) (entries []rawEntry, format string, err error) {
 		return nil, "unbekannt", err
 	}
 	text := decodeText(b)
-	if strings.EqualFold(filepath.Ext(path), ".json") {
+	if strings.EqualFold(filepath.Ext(path), ".json") || strings.HasPrefix(strings.TrimSpace(text), "{") || strings.HasPrefix(strings.TrimSpace(text), "[") {
 		return parseJSON(text)
+	}
+	if strings.EqualFold(filepath.Ext(path), ".xml") || strings.HasPrefix(strings.TrimSpace(text), "<") {
+		return parseXML(text)
 	}
 	rows, rerr := readRows(text)
 	if len(rows) == 0 {
@@ -502,6 +538,113 @@ func parseFile(path string) (entries []rawEntry, format string, err error) {
 	return entries, format, nil
 }
 
+// entryFromMap baut aus Feldname->Wert (Spaltenaliase) einen Rohdatensatz.
+func entryFromMap(m map[string]string) (rawEntry, bool) {
+	get := func(key string) string {
+		for k, v := range m {
+			n := normHeader(k)
+			for _, a := range columnAliases[key] {
+				if n == a {
+					return strings.TrimSpace(v)
+				}
+			}
+		}
+		return ""
+	}
+	e := rawEntry{order: get("order"), activity: get("activity"), kind: get("kind"), note: get("note"), event: get("event")}
+	for k, v := range m {
+		n := normHeader(k)
+		for _, a := range columnAliases["person"] {
+			if n == a {
+				if sv := strings.TrimSpace(v); sv != "" {
+					e.persons = append(e.persons, sv)
+				}
+			}
+		}
+	}
+	sort.Strings(e.persons)
+	e.person = personDisplay(e.persons)
+	if dt := get("datetime"); dt != "" {
+		e.date, e.start = parseDate(dt), parseTime(dt)
+	}
+	if d := parseDate(get("date")); d != "" {
+		e.date = d
+	}
+	if t := parseTime(get("from")); t != "" {
+		e.start = t
+	} else if t := parseTime(get("time")); t != "" {
+		e.start = t
+	}
+	e.end = parseTime(get("to"))
+	return e, e.date != "" && e.start != ""
+}
+
+// xmlNode: generischer XML-Baum, damit beliebige Exportstrukturen gelesen werden können.
+type xmlNode struct {
+	name     string
+	attrs    map[string]string
+	text     string
+	children []*xmlNode
+}
+
+func parseXML(text string) ([]rawEntry, string, error) {
+	dec := xml.NewDecoder(strings.NewReader(text))
+	dec.Strict = false
+	dec.CharsetReader = func(_ string, r io.Reader) (io.Reader, error) { return r, nil }
+	root := &xmlNode{name: "root", attrs: map[string]string{}}
+	stack := []*xmlNode{root}
+	for {
+		tok, err := dec.Token()
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		if err != nil {
+			return nil, "xml", err
+		}
+		switch t := tok.(type) {
+		case xml.StartElement:
+			n := &xmlNode{name: t.Name.Local, attrs: map[string]string{}}
+			for _, a := range t.Attr {
+				n.attrs[a.Name.Local] = a.Value
+			}
+			parent := stack[len(stack)-1]
+			parent.children = append(parent.children, n)
+			stack = append(stack, n)
+		case xml.CharData:
+			stack[len(stack)-1].text += string(t)
+		case xml.EndElement:
+			if len(stack) > 1 {
+				stack = stack[:len(stack)-1]
+			}
+		}
+	}
+	var entries []rawEntry
+	var walk func(n *xmlNode)
+	walk = func(n *xmlNode) {
+		m := map[string]string{}
+		for k, v := range n.attrs {
+			m[k] = v
+		}
+		for _, c := range n.children {
+			if len(c.children) == 0 {
+				m[c.name] = strings.TrimSpace(c.text)
+			}
+		}
+		if e, ok := entryFromMap(m); ok && len(m) >= 2 {
+			entries = append(entries, e)
+			return
+		}
+		for _, c := range n.children {
+			walk(c)
+		}
+	}
+	walk(root)
+	if len(entries) == 0 {
+		return nil, "xml", errors.New("keine Datensätze mit Datum und Uhrzeit gefunden")
+	}
+	return entries, "xml", nil
+}
+
 func parseJSON(text string) ([]rawEntry, string, error) {
 	var any interface{}
 	if err := json.Unmarshal([]byte(text), &any); err != nil {
@@ -520,39 +663,16 @@ func parseJSON(text string) ([]rawEntry, string, error) {
 		}
 	}
 	var entries []rawEntry
-	get := func(m map[string]interface{}, key string) string {
-		for k, v := range m {
-			n := normHeader(k)
-			for _, a := range columnAliases[key] {
-				if n == a {
-					return strings.TrimSpace(fmt.Sprint(v))
-				}
-			}
-		}
-		return ""
-	}
 	for _, it := range list {
 		m, ok := it.(map[string]interface{})
 		if !ok {
 			continue
 		}
-		e := rawEntry{order: get(m, "order"), activity: get(m, "activity"), kind: get(m, "kind"), note: get(m, "note"), event: get(m, "event")}
+		sm := map[string]string{}
 		for k, v := range m {
-			n := normHeader(k)
-			for _, a := range columnAliases["person"] {
-				if n == a {
-					if sv := strings.TrimSpace(fmt.Sprint(v)); sv != "" {
-						e.persons = append(e.persons, sv)
-					}
-				}
-			}
+			sm[k] = fmt.Sprint(v)
 		}
-		sort.Strings(e.persons)
-		e.person = personDisplay(e.persons)
-		e.date = parseDate(get(m, "date"))
-		e.start = parseTime(get(m, "from"))
-		e.end = parseTime(get(m, "to"))
-		if e.date != "" && e.start != "" {
+		if e, ok := entryFromMap(sm); ok {
 			entries = append(entries, e)
 		}
 	}
@@ -662,13 +782,11 @@ func autoMatch(persons []string, id Identity) string {
 	return ""
 }
 
-// inUserProfile: liegt die Datei im Profil des angemeldeten Benutzers?
-func inUserProfile(path string) bool {
-	for _, env := range []string{"USERPROFILE", "APPDATA", "LOCALAPPDATA", "OneDrive", "HOME"} {
-		if v := os.Getenv(env); v != "" {
-			if rel, err := filepath.Rel(v, path); err == nil && !strings.HasPrefix(rel, "..") {
-				return true
-			}
+// inUserProfile: liegt die Datei im Profil des Benutzers (C:\Users\<Benutzer>\…)?
+func inUserProfile(path, profile string) bool {
+	if profile != "" {
+		if rel, err := filepath.Rel(profile, path); err == nil && !strings.HasPrefix(rel, "..") {
+			return true
 		}
 	}
 	return false
@@ -782,7 +900,8 @@ func intervalBookings(entries []rawEntry, file string) []Booking {
 // importOptiTime liest alle Datendateien unter path und liefert die Buchungen des Benutzers.
 func importOptiTime(path string, id Identity) ([]Booking, SyncResult) {
 	res := SyncResult{At: time.Now(), Path: path, Identity: id, Files: []FileResult{}, Persons: []string{}, Errors: []string{}}
-	files := listDataFiles(path)
+	files, other := listFiles(path)
+	res.OtherFiles = other
 	type parsed struct {
 		file    string
 		format  string
@@ -872,7 +991,7 @@ func importOptiTime(path string, id Identity) ([]Booking, SyncResult) {
 					}
 				}
 			}
-			if nameMatch || inUserProfile(p.file) {
+			if nameMatch || inUserProfile(p.file, id.ProfileDir) {
 				mine = p.entries
 			} else {
 				fr.Reason = "keine Personenspalte und kein Benutzerbezug im Dateinamen – nicht zugeordnet"
@@ -880,12 +999,18 @@ func importOptiTime(path string, id Identity) ([]Booking, SyncResult) {
 				continue
 			}
 		}
-		var bs []Booking
-		if p.format == "ereignisse" {
-			bs = pairEvents(mine, p.file)
-		} else {
-			bs = intervalBookings(mine, p.file)
+		// Je Datensatz: Stempelereignis (Buchungsart, keine Endzeit) wird gepaart,
+		// Intervall (von/bis) direkt übernommen – auch gemischt in einer Datei.
+		var events, intervals []rawEntry
+		for _, e := range mine {
+			if e.end == "" && classifyEvent(e.event) != "" {
+				events = append(events, e)
+			} else {
+				intervals = append(intervals, e)
+			}
 		}
+		bs := intervalBookings(intervals, p.file)
+		bs = append(bs, pairEvents(events, p.file)...)
 		fr.Taken = len(bs)
 		bookings = append(bookings, bs...)
 	}
