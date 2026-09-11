@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- App-Icon: Firmenblau, weiße Transporter-Silhouette. Motiv liegt in den inneren 80 % (maskable-sicher). -->
+  <rect width="512" height="512" rx="112" fill="#0f5c8c"/>
+  <g fill="#ffffff">
+    <!-- Aufbau -->
+    <path d="M96 208c0-13 11-24 24-24h176l64 64h56c13 0 24 11 24 24v72c0 9-7 16-16 16H112c-9 0-16-7-16-16z"/>
+    <!-- Fenster (ausgespart) -->
+    <rect x="128" y="212" width="64" height="44" rx="6" fill="#0f5c8c"/>
+    <rect x="212" y="212" width="64" height="44" rx="6" fill="#0f5c8c"/>
+    <!-- Räder -->
+    <circle cx="168" cy="360" r="34"/>
+    <circle cx="344" cy="360" r="34"/>
+    <circle cx="168" cy="360" r="14" fill="#0f5c8c"/>
+    <circle cx="344" cy="360" r="14" fill="#0f5c8c"/>
+  </g>
+</svg>

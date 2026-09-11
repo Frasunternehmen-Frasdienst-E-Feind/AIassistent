@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import io
+import os
 import sqlite3
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -11,7 +12,7 @@ from typing import Optional
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import db
@@ -45,7 +46,7 @@ async def lifespan(_: FastAPI):
 app = FastAPI(
     title="Fahrzeugmanagement",
     description="Fuhrparkverwaltung: Fahrzeuge, Fahrer, Buchungen, Wartung, Fälligkeiten.",
-    version="0.1.0",
+    version="0.2.0",
     lifespan=lifespan,
 )
 
@@ -501,6 +502,41 @@ def export_fahrtenbuch(von: Optional[date] = None, bis: Optional[date] = None):
 @app.get("/", include_in_schema=False)
 def index():
     return FileResponse(STATIC_DIR / "index.html")
+
+
+# PWA: Manifest und Service Worker müssen auf Root-Ebene liegen (Scope "/").
+@app.get("/manifest.webmanifest", include_in_schema=False)
+def manifest():
+    return FileResponse(STATIC_DIR / "manifest.webmanifest", media_type="application/manifest+json")
+
+
+@app.get("/sw.js", include_in_schema=False)
+def service_worker():
+    return FileResponse(
+        STATIC_DIR / "sw.js",
+        media_type="application/javascript",
+        headers={"Service-Worker-Allowed": "/", "Cache-Control": "no-cache"},
+    )
+
+
+# Digital Asset Links für die Android-App (Trusted Web Activity), siehe docs/ANDROID-APK.md.
+@app.get("/.well-known/assetlinks.json", include_in_schema=False)
+def assetlinks():
+    fingerprints = [
+        f.strip()
+        for f in os.environ.get("TWA_SHA256_FINGERPRINT", "PLATZHALTER-BITTE-SETZEN").split(",")
+        if f.strip()
+    ]
+    return JSONResponse([
+        {
+            "relation": ["delegate_permission/common.handle_all_urls"],
+            "target": {
+                "namespace": "android_app",
+                "package_name": os.environ.get("TWA_PACKAGE_NAME", "de.feind.fuhrpark"),
+                "sha256_cert_fingerprints": fingerprints,
+            },
+        }
+    ])
 
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

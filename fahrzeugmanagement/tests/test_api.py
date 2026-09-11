@@ -36,7 +36,7 @@ def _driver(client, **overrides):
 def test_index_served(client):
     r = client.get("/")
     assert r.status_code == 200
-    assert "Fahrzeugmanagement" in r.text
+    assert "Fuhrpark" in r.text and 'id="mainnav"' in r.text
 
 
 def test_vehicle_crud_and_plate_normalization(client):
@@ -81,6 +81,21 @@ def test_booking_overlap_and_km_update(client):
     assert r.status_code == 200, r.text
     veh = client.get(f"/api/vehicles/{v['id']}").json()
     assert veh["kilometerstand"] == 45230 and veh["status"] == "verfuegbar"
+
+
+def test_active_trip_lookup(client):
+    """Fahrer-Startseite: laufende Fahrt per status=aktiv&driver_id finden, nach Abschluss leer."""
+    v = _vehicle(client)
+    d = _driver(client)
+    other = _driver(client, name="Andere Person")
+    r = client.post("/api/bookings", json={"vehicle_id": v["id"], "driver_id": d["id"], "von": "2026-09-14T08:00",
+                                           "bis": "2026-09-14T12:00", "km_start": 45000, "status": "aktiv"})
+    trip = r.json()
+    assert [b["id"] for b in client.get(f"/api/bookings?status=aktiv&driver_id={d['id']}").json()] == [trip["id"]]
+    assert client.get(f"/api/bookings?status=aktiv&driver_id={other['id']}").json() == []
+
+    client.put(f"/api/bookings/{trip['id']}", json={**trip, "status": "abgeschlossen", "km_ende": 45080})
+    assert client.get(f"/api/bookings?status=aktiv&driver_id={d['id']}").json() == []
 
 
 def test_inactive_driver_cannot_book_and_cannot_be_deleted_with_bookings(client):

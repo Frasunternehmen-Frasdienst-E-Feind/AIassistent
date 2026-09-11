@@ -2,58 +2,161 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Fahrzeugmanagement – Fräsdienst-Service E. Feind GmbH</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚐</text></svg>">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f5c8c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Fuhrpark">
+  <title>Fuhrpark – Fräsdienst-Service E. Feind GmbH</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/static/icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
   <header class="topbar">
     <div class="brand">
-      <span class="logo">🚐</span>
+      <img class="logo" src="/static/icons/icon-192.png" alt="" width="36" height="36">
       <div>
-        <strong>Fahrzeugmanagement</strong>
+        <strong id="page-title">Fuhrpark</strong>
         <small>Fräsdienst-Service E. Feind GmbH</small>
       </div>
     </div>
-    <nav class="tabs" role="tablist">
-      <button data-tab="dashboard" class="active">Dashboard</button>
-      <button data-tab="vehicles">Fahrzeuge</button>
-      <button data-tab="bookings">Buchungen</button>
-      <button data-tab="maintenance">Wartung</button>
-      <button data-tab="drivers">Fahrer</button>
+    <button type="button" class="driver-chip" id="driver-chip" title="Fahrer wechseln">
+      <span class="avatar" id="driver-avatar">?</span>
+      <span id="driver-name">Wer bist du?</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <nav id="mainnav" aria-label="Hauptnavigation">
+      <a href="#start" data-view="start">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+        <span>Start</span>
+      </a>
+      <a href="#fahrten" data-view="fahrten">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h6a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h6"/></svg>
+        <span>Fahrten</span>
+      </a>
+      <a href="#faellig" data-view="faellig">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M10 21h4"/></svg>
+        <span>Fälligkeiten</span>
+        <b class="nav-badge" id="nav-due-badge" hidden></b>
+      </a>
+      <a href="#verwaltung" data-view="verwaltung">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <span>Verwaltung</span>
+      </a>
     </nav>
   </header>
 
   <main>
-    <!-- Dashboard -->
-    <section id="tab-dashboard" class="tab active">
-      <div class="kpis" id="kpis"></div>
-      <div class="grid-2">
-        <div class="card">
-          <h2>Fälligkeiten</h2>
-          <p class="muted">HU/AU, Wartung nach Datum/km und Führerscheinkontrollen (halbjährlich).</p>
-          <table class="table" id="due-table">
-            <thead><tr><th>Art</th><th>Bezug</th><th>Fällig</th><th>Hinweis</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <div class="card">
-          <h2>Aktuelle Buchungen</h2>
-          <p class="muted">Aktive und geplante Buchungen ab heute.</p>
-          <table class="table" id="upcoming-table">
-            <thead><tr><th>Fahrzeug</th><th>Fahrer</th><th>Von</th><th>Bis</th><th>Status</th></tr></thead>
-            <tbody></tbody>
-          </table>
+    <!-- Start (Fahrer) -->
+    <section id="view-start" class="view">
+      <div class="card" id="driver-pick" hidden>
+        <h2>Wer bist du?</h2>
+        <p class="muted">Deine Auswahl wird auf diesem Gerät gemerkt. Das ist keine Anmeldung.</p>
+        <div class="row-inline">
+          <select id="driver-select" class="input"></select>
+          <button type="button" class="btn" id="btn-driver-ok">Weiter</button>
         </div>
       </div>
+      <div class="card primary-card" id="trip-card"></div>
+      <div id="planned-card"></div>
+      <section class="block">
+        <div class="block-head"><h2>Fälligkeiten</h2><a href="#faellig" id="start-due-all">Alle</a></div>
+        <div class="card list" id="start-due"></div>
+      </section>
+      <section class="block">
+        <div class="block-head"><h2>Fahrzeuge jetzt</h2></div>
+        <div class="card list" id="start-vehicles"></div>
+      </section>
     </section>
 
-    <!-- Fahrzeuge -->
-    <section id="tab-vehicles" class="tab">
+    <!-- Fahrten -->
+    <section id="view-fahrten" class="view">
       <div class="toolbar">
-        <input type="search" id="vehicle-search" placeholder="Suche Kennzeichen, Hersteller, Modell …">
-        <select id="vehicle-status-filter">
+        <div class="chips" id="trip-filter">
+          <button type="button" data-status="" class="chip active">Alle</button>
+          <button type="button" data-status="aktiv" class="chip">Aktiv</button>
+          <button type="button" data-status="geplant" class="chip">Geplant</button>
+          <button type="button" data-status="abgeschlossen" class="chip">Abgeschlossen</button>
+        </div>
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="btn-new-trip">+ Fahrt</button>
+      </div>
+      <div class="cards" id="trips-list"></div>
+    </section>
+
+    <!-- Fälligkeiten -->
+    <section id="view-faellig" class="view">
+      <div class="kpis kpis-3" id="due-kpis"></div>
+      <section class="block">
+        <div class="block-head"><h2>Überfällig</h2><span class="badge overdue" id="due-overdue-count">0</span></div>
+        <div class="cards" id="due-overdue"></div>
+      </section>
+      <section class="block">
+        <div class="block-head"><h2>Bald fällig</h2><span class="badge soon" id="due-soon-count">0</span></div>
+        <div class="cards" id="due-soon"></div>
+      </section>
+    </section>
+
+    <!-- Verwaltung (Menü) -->
+    <section id="view-verwaltung" class="view">
+      <section class="block">
+        <div class="block-head"><h2>Fuhrpark</h2></div>
+        <div class="card list menu">
+          <a href="#verwaltung/fahrzeuge">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16V8a2 2 0 0 1 2-2h9l4 4h2a2 2 0 0 1 2 2v4"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M9 17h6"/></svg>
+            <span>Fahrzeuge</span><small id="menu-vehicle-count"></small>
+          </a>
+          <a href="#verwaltung/fahrer">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+            <span>Fahrer</span><small id="menu-driver-count"></small>
+          </a>
+          <a href="#verwaltung/buchungen">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+            <span>Buchungen</span><small></small>
+          </a>
+          <a href="#verwaltung/wartung">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.4 2.4-2.1-2.1z"/></svg>
+            <span>Wartung / Service</span><small></small>
+          </a>
+        </div>
+      </section>
+      <section class="block">
+        <div class="block-head"><h2>Exporte</h2></div>
+        <div class="card list menu">
+          <a href="/api/export/fahrtenbuch.csv" data-external>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/></svg>
+            <span>Fahrtenbuch (CSV)</span><small></small>
+          </a>
+          <a href="/api/export/vehicles.csv" data-external>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/></svg>
+            <span>Fahrzeugliste (CSV)</span><small></small>
+          </a>
+        </div>
+      </section>
+      <section class="block">
+        <div class="block-head"><h2>App</h2></div>
+        <div class="card list menu">
+          <a href="#" id="btn-install" hidden>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M12 7v7M9 11l3 3 3-3"/><path d="M11 18h2"/></svg>
+            <span>Auf dem Handy installieren<br><small class="sub">Als App auf den Startbildschirm</small></span><small></small>
+          </a>
+          <div class="static">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+            <span>Version 0.2.0</span><small id="app-status">Server verbunden</small>
+          </div>
+        </div>
+        <p class="muted small">Datenschutz: Es werden nur dienstlich notwendige Fahrerdaten erfasst. Die Fahrerwahl auf der Startseite ist keine Anmeldung.</p>
+      </section>
+    </section>
+
+    <!-- Verwaltung: Fahrzeuge -->
+    <section id="tab-vehicles" class="view sub">
+      <div class="subhead"><a href="#verwaltung" class="back">‹ Verwaltung</a><h2>Fahrzeuge</h2></div>
+      <div class="toolbar">
+        <input type="search" id="vehicle-search" class="input" placeholder="Suche Kennzeichen, Hersteller, Modell …">
+        <select id="vehicle-status-filter" class="input">
           <option value="">Alle Status</option>
           <option value="verfuegbar">Verfügbar</option>
           <option value="unterwegs">Unterwegs</option>
@@ -62,10 +165,10 @@
         </select>
         <span class="spacer"></span>
         <a class="btn secondary" href="/api/export/vehicles.csv">CSV-Export</a>
-        <button class="btn" id="btn-new-vehicle">+ Fahrzeug</button>
+        <button type="button" class="btn" id="btn-new-vehicle">+ Fahrzeug</button>
       </div>
-      <div class="card">
-        <table class="table" id="vehicles-table">
+      <div class="card table-card">
+        <table class="table responsive" id="vehicles-table">
           <thead><tr>
             <th>Kennzeichen</th><th>Fahrzeug</th><th>Typ</th><th>km-Stand</th><th>HU/AU</th><th>Nächste Wartung</th><th>Status</th><th></th>
           </tr></thead>
@@ -74,10 +177,11 @@
       </div>
     </section>
 
-    <!-- Buchungen -->
-    <section id="tab-bookings" class="tab">
+    <!-- Verwaltung: Buchungen -->
+    <section id="tab-bookings" class="view sub">
+      <div class="subhead"><a href="#verwaltung" class="back">‹ Verwaltung</a><h2>Buchungen</h2></div>
       <div class="toolbar">
-        <select id="booking-status-filter">
+        <select id="booking-status-filter" class="input">
           <option value="">Alle Status</option>
           <option value="geplant">Geplant</option>
           <option value="aktiv">Aktiv</option>
@@ -86,10 +190,10 @@
         </select>
         <span class="spacer"></span>
         <a class="btn secondary" href="/api/export/fahrtenbuch.csv">Fahrtenbuch (CSV)</a>
-        <button class="btn" id="btn-new-booking">+ Buchung</button>
+        <button type="button" class="btn" id="btn-new-booking">+ Buchung</button>
       </div>
-      <div class="card">
-        <table class="table" id="bookings-table">
+      <div class="card table-card">
+        <table class="table responsive" id="bookings-table">
           <thead><tr>
             <th>Fahrzeug</th><th>Fahrer</th><th>Von</th><th>Bis</th><th>Zweck / Ziel</th><th>km</th><th>Status</th><th></th>
           </tr></thead>
@@ -98,15 +202,16 @@
       </div>
     </section>
 
-    <!-- Wartung -->
-    <section id="tab-maintenance" class="tab">
+    <!-- Verwaltung: Wartung -->
+    <section id="tab-maintenance" class="view sub">
+      <div class="subhead"><a href="#verwaltung" class="back">‹ Verwaltung</a><h2>Wartung / Service</h2></div>
       <div class="toolbar">
-        <select id="maintenance-vehicle-filter"><option value="">Alle Fahrzeuge</option></select>
+        <select id="maintenance-vehicle-filter" class="input"><option value="">Alle Fahrzeuge</option></select>
         <span class="spacer"></span>
-        <button class="btn" id="btn-new-maintenance">+ Wartung / Service</button>
+        <button type="button" class="btn" id="btn-new-maintenance">+ Wartung / Service</button>
       </div>
-      <div class="card">
-        <table class="table" id="maintenance-table">
+      <div class="card table-card">
+        <table class="table responsive" id="maintenance-table">
           <thead><tr>
             <th>Datum</th><th>Fahrzeug</th><th>Typ</th><th>km-Stand</th><th>Kosten</th><th>Werkstatt</th><th>Beschreibung</th><th></th>
           </tr></thead>
@@ -115,16 +220,17 @@
       </div>
     </section>
 
-    <!-- Fahrer -->
-    <section id="tab-drivers" class="tab">
+    <!-- Verwaltung: Fahrer -->
+    <section id="tab-drivers" class="view sub">
+      <div class="subhead"><a href="#verwaltung" class="back">‹ Verwaltung</a><h2>Fahrer</h2></div>
       <div class="toolbar">
         <label class="check"><input type="checkbox" id="drivers-active-only" checked> nur aktive</label>
         <span class="spacer"></span>
-        <button class="btn" id="btn-new-driver">+ Fahrer</button>
+        <button type="button" class="btn" id="btn-new-driver">+ Fahrer</button>
       </div>
-      <div class="card">
+      <div class="card table-card">
         <p class="muted">Datenschutz: Nur dienstlich notwendige Angaben erfassen. Führerscheinkontrolle mindestens halbjährlich dokumentieren.</p>
-        <table class="table" id="drivers-table">
+        <table class="table responsive" id="drivers-table">
           <thead><tr>
             <th>Name</th><th>Abteilung</th><th>Klasse</th><th>Letzte FS-Kontrolle</th><th>Kontakt</th><th>Aktiv</th><th></th>
           </tr></thead>
@@ -134,9 +240,30 @@
     </section>
   </main>
 
+  <!-- Dialog: Fahrt starten (Fahrer-Flow) -->
+  <dialog id="dlg-trip">
+    <form method="dialog" class="form" id="form-trip">
+      <div class="sheet-handle"></div>
+      <div class="form-head"><h3>Fahrt starten</h3><button type="button" class="icon-btn" data-close aria-label="Schließen">✕</button></div>
+      <div class="field-label">Fahrzeug</div>
+      <div class="vehicle-choice" id="trip-vehicles"></div>
+      <label>km-Stand jetzt<input type="number" name="km_start" min="0" inputmode="numeric" required></label>
+      <label>Zweck<input name="zweck" placeholder="z. B. Kundenbesuch, Auslieferung"></label>
+      <label>Ziel<input name="ziel" placeholder="Ort oder Kunde"></label>
+      <details class="more">
+        <summary>Rückgabe geplant <span id="trip-bis-preview"></span></summary>
+        <label>Bis<input type="datetime-local" name="bis" required></label>
+      </details>
+      <div class="actions sticky">
+        <button type="submit" class="btn big" id="btn-trip-submit">Fahrt starten</button>
+      </div>
+    </form>
+  </dialog>
+
   <!-- Dialog: Fahrzeug -->
   <dialog id="dlg-vehicle">
     <form method="dialog" class="form" id="form-vehicle">
+      <div class="sheet-handle"></div>
       <h3 id="dlg-vehicle-title">Fahrzeug</h3>
       <input type="hidden" name="id">
       <div class="row">
@@ -151,7 +278,7 @@
       </div>
       <div class="row">
         <label>Erstzulassung<input type="date" name="erstzulassung"></label>
-        <label>Kilometerstand<input type="number" name="kilometerstand" min="0" value="0"></label>
+        <label>Kilometerstand<input type="number" name="kilometerstand" min="0" value="0" inputmode="numeric"></label>
       </div>
       <div class="row">
         <label>HU/AU-Termin<input type="date" name="hu_termin"></label>
@@ -162,7 +289,7 @@
       </div>
       <div class="row">
         <label>Nächste Wartung (Datum)<input type="date" name="naechste_wartung_datum"></label>
-        <label>Nächste Wartung (km)<input type="number" name="naechste_wartung_km" min="0"></label>
+        <label>Nächste Wartung (km)<input type="number" name="naechste_wartung_km" min="0" inputmode="numeric"></label>
       </div>
       <label>Notizen<textarea name="notizen" rows="2"></textarea></label>
       <div class="actions">
@@ -175,6 +302,7 @@
   <!-- Dialog: Fahrer -->
   <dialog id="dlg-driver">
     <form method="dialog" class="form" id="form-driver">
+      <div class="sheet-handle"></div>
       <h3 id="dlg-driver-title">Fahrer</h3>
       <input type="hidden" name="id">
       <div class="row">
@@ -186,7 +314,7 @@
         <label>Letzte Führerscheinkontrolle<input type="date" name="fuehrerschein_kontrolle_am"></label>
       </div>
       <div class="row">
-        <label>Telefon<input name="telefon"></label>
+        <label>Telefon<input name="telefon" inputmode="tel"></label>
         <label>E-Mail<input type="email" name="email"></label>
       </div>
       <label class="check"><input type="checkbox" name="aktiv" checked> Aktiv</label>
@@ -197,9 +325,10 @@
     </form>
   </dialog>
 
-  <!-- Dialog: Buchung -->
+  <!-- Dialog: Buchung (Verwaltung) -->
   <dialog id="dlg-booking">
     <form method="dialog" class="form" id="form-booking">
+      <div class="sheet-handle"></div>
       <h3 id="dlg-booking-title">Buchung</h3>
       <input type="hidden" name="id">
       <div class="row">
@@ -215,8 +344,8 @@
         <label>Ziel<input name="ziel"></label>
       </div>
       <div class="row">
-        <label>km Start<input type="number" name="km_start" min="0"></label>
-        <label>km Ende<input type="number" name="km_ende" min="0"></label>
+        <label>km Start<input type="number" name="km_start" min="0" inputmode="numeric"></label>
+        <label>km Ende<input type="number" name="km_ende" min="0" inputmode="numeric"></label>
       </div>
       <label>Status<select name="status">
         <option value="geplant">Geplant</option><option value="aktiv">Aktiv</option>
@@ -233,6 +362,7 @@
   <!-- Dialog: Wartung -->
   <dialog id="dlg-maintenance">
     <form method="dialog" class="form" id="form-maintenance">
+      <div class="sheet-handle"></div>
       <h3>Wartung / Service erfassen</h3>
       <div class="row">
         <label>Fahrzeug*<select name="vehicle_id" required></select></label>
@@ -243,10 +373,10 @@
           <option>Inspektion</option><option>HU/AU</option><option>Reifenwechsel</option>
           <option>Reparatur</option><option>Oelwechsel</option><option>Sonstiges</option>
         </select></label>
-        <label>km-Stand<input type="number" name="kilometerstand" min="0"></label>
+        <label>km-Stand<input type="number" name="kilometerstand" min="0" inputmode="numeric"></label>
       </div>
       <div class="row">
-        <label>Kosten (€)<input type="number" name="kosten" min="0" step="0.01" value="0"></label>
+        <label>Kosten (€)<input type="number" name="kosten" min="0" step="0.01" value="0" inputmode="decimal"></label>
         <label>Werkstatt<input name="werkstatt"></label>
       </div>
       <label>Beschreibung<textarea name="beschreibung" rows="2"></textarea></label>
@@ -254,7 +384,7 @@
         <legend>Folgetermine am Fahrzeug fortschreiben (optional)</legend>
         <div class="row">
           <label>Nächste Wartung (Datum)<input type="date" name="naechste_wartung_datum"></label>
-          <label>Nächste Wartung (km)<input type="number" name="naechste_wartung_km" min="0"></label>
+          <label>Nächste Wartung (km)<input type="number" name="naechste_wartung_km" min="0" inputmode="numeric"></label>
         </div>
         <label>Neuer HU/AU-Termin<input type="date" name="hu_termin_neu"></label>
       </fieldset>
