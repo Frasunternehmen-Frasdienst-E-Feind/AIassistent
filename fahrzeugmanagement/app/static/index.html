@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fahrzeugmanagement – Fräsdienst-Service E. Feind GmbH</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚐</text></svg>">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🚐</span>
+      <div>
+        <strong>Fahrzeugmanagement</strong>
+        <small>Fräsdienst-Service E. Feind GmbH</small>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button data-tab="dashboard" class="active">Dashboard</button>
+      <button data-tab="vehicles">Fahrzeuge</button>
+      <button data-tab="bookings">Buchungen</button>
+      <button data-tab="maintenance">Wartung</button>
+      <button data-tab="drivers">Fahrer</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Dashboard -->
+    <section id="tab-dashboard" class="tab active">
+      <div class="kpis" id="kpis"></div>
+      <div class="grid-2">
+        <div class="card">
+          <h2>Fälligkeiten</h2>
+          <p class="muted">HU/AU, Wartung nach Datum/km und Führerscheinkontrollen (halbjährlich).</p>
+          <table class="table" id="due-table">
+            <thead><tr><th>Art</th><th>Bezug</th><th>Fällig</th><th>Hinweis</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h2>Aktuelle Buchungen</h2>
+          <p class="muted">Aktive und geplante Buchungen ab heute.</p>
+          <table class="table" id="upcoming-table">
+            <thead><tr><th>Fahrzeug</th><th>Fahrer</th><th>Von</th><th>Bis</th><th>Status</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Fahrzeuge -->
+    <section id="tab-vehicles" class="tab">
+      <div class="toolbar">
+        <input type="search" id="vehicle-search" placeholder="Suche Kennzeichen, Hersteller, Modell …">
+        <select id="vehicle-status-filter">
+          <option value="">Alle Status</option>
+          <option value="verfuegbar">Verfügbar</option>
+          <option value="unterwegs">Unterwegs</option>
+          <option value="werkstatt">Werkstatt</option>
+          <option value="ausser_betrieb">Außer Betrieb</option>
+        </select>
+        <span class="spacer"></span>
+        <a class="btn secondary" href="/api/export/vehicles.csv">CSV-Export</a>
+        <button class="btn" id="btn-new-vehicle">+ Fahrzeug</button>
+      </div>
+      <div class="card">
+        <table class="table" id="vehicles-table">
+          <thead><tr>
+            <th>Kennzeichen</th><th>Fahrzeug</th><th>Typ</th><th>km-Stand</th><th>HU/AU</th><th>Nächste Wartung</th><th>Status</th><th></th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Buchungen -->
+    <section id="tab-bookings" class="tab">
+      <div class="toolbar">
+        <select id="booking-status-filter">
+          <option value="">Alle Status</option>
+          <option value="geplant">Geplant</option>
+          <option value="aktiv">Aktiv</option>
+          <option value="abgeschlossen">Abgeschlossen</option>
+          <option value="storniert">Storniert</option>
+        </select>
+        <span class="spacer"></span>
+        <a class="btn secondary" href="/api/export/fahrtenbuch.csv">Fahrtenbuch (CSV)</a>
+        <button class="btn" id="btn-new-booking">+ Buchung</button>
+      </div>
+      <div class="card">
+        <table class="table" id="bookings-table">
+          <thead><tr>
+            <th>Fahrzeug</th><th>Fahrer</th><th>Von</th><th>Bis</th><th>Zweck / Ziel</th><th>km</th><th>Status</th><th></th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Wartung -->
+    <section id="tab-maintenance" class="tab">
+      <div class="toolbar">
+        <select id="maintenance-vehicle-filter"><option value="">Alle Fahrzeuge</option></select>
+        <span class="spacer"></span>
+        <button class="btn" id="btn-new-maintenance">+ Wartung / Service</button>
+      </div>
+      <div class="card">
+        <table class="table" id="maintenance-table">
+          <thead><tr>
+            <th>Datum</th><th>Fahrzeug</th><th>Typ</th><th>km-Stand</th><th>Kosten</th><th>Werkstatt</th><th>Beschreibung</th><th></th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Fahrer -->
+    <section id="tab-drivers" class="tab">
+      <div class="toolbar">
+        <label class="check"><input type="checkbox" id="drivers-active-only" checked> nur aktive</label>
+        <span class="spacer"></span>
+        <button class="btn" id="btn-new-driver">+ Fahrer</button>
+      </div>
+      <div class="card">
+        <p class="muted">Datenschutz: Nur dienstlich notwendige Angaben erfassen. Führerscheinkontrolle mindestens halbjährlich dokumentieren.</p>
+        <table class="table" id="drivers-table">
+          <thead><tr>
+            <th>Name</th><th>Abteilung</th><th>Klasse</th><th>Letzte FS-Kontrolle</th><th>Kontakt</th><th>Aktiv</th><th></th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Dialog: Fahrzeug -->
+  <dialog id="dlg-vehicle">
+    <form method="dialog" class="form" id="form-vehicle">
+      <h3 id="dlg-vehicle-title">Fahrzeug</h3>
+      <input type="hidden" name="id">
+      <div class="row">
+        <label>Kennzeichen*<input name="kennzeichen" required placeholder="EF-FD 123"></label>
+        <label>Typ<select name="typ">
+          <option>PKW</option><option>Transporter</option><option>LKW</option><option>Stapler</option><option>Anhaenger</option><option>Sonstiges</option>
+        </select></label>
+      </div>
+      <div class="row">
+        <label>Hersteller*<input name="hersteller" required></label>
+        <label>Modell*<input name="modell" required></label>
+      </div>
+      <div class="row">
+        <label>Erstzulassung<input type="date" name="erstzulassung"></label>
+        <label>Kilometerstand<input type="number" name="kilometerstand" min="0" value="0"></label>
+      </div>
+      <div class="row">
+        <label>HU/AU-Termin<input type="date" name="hu_termin"></label>
+        <label>Status<select name="status">
+          <option value="verfuegbar">Verfügbar</option><option value="unterwegs">Unterwegs</option>
+          <option value="werkstatt">Werkstatt</option><option value="ausser_betrieb">Außer Betrieb</option>
+        </select></label>
+      </div>
+      <div class="row">
+        <label>Nächste Wartung (Datum)<input type="date" name="naechste_wartung_datum"></label>
+        <label>Nächste Wartung (km)<input type="number" name="naechste_wartung_km" min="0"></label>
+      </div>
+      <label>Notizen<textarea name="notizen" rows="2"></textarea></label>
+      <div class="actions">
+        <button type="button" class="btn secondary" data-close>Abbrechen</button>
+        <button type="submit" class="btn">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog: Fahrer -->
+  <dialog id="dlg-driver">
+    <form method="dialog" class="form" id="form-driver">
+      <h3 id="dlg-driver-title">Fahrer</h3>
+      <input type="hidden" name="id">
+      <div class="row">
+        <label>Name*<input name="name" required></label>
+        <label>Abteilung<input name="abteilung" placeholder="z. B. Fertigung, Vertrieb"></label>
+      </div>
+      <div class="row">
+        <label>Führerscheinklasse<input name="fuehrerscheinklasse" value="B"></label>
+        <label>Letzte Führerscheinkontrolle<input type="date" name="fuehrerschein_kontrolle_am"></label>
+      </div>
+      <div class="row">
+        <label>Telefon<input name="telefon"></label>
+        <label>E-Mail<input type="email" name="email"></label>
+      </div>
+      <label class="check"><input type="checkbox" name="aktiv" checked> Aktiv</label>
+      <div class="actions">
+        <button type="button" class="btn secondary" data-close>Abbrechen</button>
+        <button type="submit" class="btn">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog: Buchung -->
+  <dialog id="dlg-booking">
+    <form method="dialog" class="form" id="form-booking">
+      <h3 id="dlg-booking-title">Buchung</h3>
+      <input type="hidden" name="id">
+      <div class="row">
+        <label>Fahrzeug*<select name="vehicle_id" required></select></label>
+        <label>Fahrer*<select name="driver_id" required></select></label>
+      </div>
+      <div class="row">
+        <label>Von*<input type="datetime-local" name="von" required></label>
+        <label>Bis*<input type="datetime-local" name="bis" required></label>
+      </div>
+      <div class="row">
+        <label>Zweck<input name="zweck" placeholder="z. B. Kundenbesuch, Messe"></label>
+        <label>Ziel<input name="ziel"></label>
+      </div>
+      <div class="row">
+        <label>km Start<input type="number" name="km_start" min="0"></label>
+        <label>km Ende<input type="number" name="km_ende" min="0"></label>
+      </div>
+      <label>Status<select name="status">
+        <option value="geplant">Geplant</option><option value="aktiv">Aktiv</option>
+        <option value="abgeschlossen">Abgeschlossen</option><option value="storniert">Storniert</option>
+      </select></label>
+      <label>Notizen<textarea name="notizen" rows="2"></textarea></label>
+      <div class="actions">
+        <button type="button" class="btn secondary" data-close>Abbrechen</button>
+        <button type="submit" class="btn">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog: Wartung -->
+  <dialog id="dlg-maintenance">
+    <form method="dialog" class="form" id="form-maintenance">
+      <h3>Wartung / Service erfassen</h3>
+      <div class="row">
+        <label>Fahrzeug*<select name="vehicle_id" required></select></label>
+        <label>Datum*<input type="date" name="datum" required></label>
+      </div>
+      <div class="row">
+        <label>Typ<select name="typ">
+          <option>Inspektion</option><option>HU/AU</option><option>Reifenwechsel</option>
+          <option>Reparatur</option><option>Oelwechsel</option><option>Sonstiges</option>
+        </select></label>
+        <label>km-Stand<input type="number" name="kilometerstand" min="0"></label>
+      </div>
+      <div class="row">
+        <label>Kosten (€)<input type="number" name="kosten" min="0" step="0.01" value="0"></label>
+        <label>Werkstatt<input name="werkstatt"></label>
+      </div>
+      <label>Beschreibung<textarea name="beschreibung" rows="2"></textarea></label>
+      <fieldset>
+        <legend>Folgetermine am Fahrzeug fortschreiben (optional)</legend>
+        <div class="row">
+          <label>Nächste Wartung (Datum)<input type="date" name="naechste_wartung_datum"></label>
+          <label>Nächste Wartung (km)<input type="number" name="naechste_wartung_km" min="0"></label>
+        </div>
+        <label>Neuer HU/AU-Termin<input type="date" name="hu_termin_neu"></label>
+      </fieldset>
+      <div class="actions">
+        <button type="button" class="btn secondary" data-close>Abbrechen</button>
+        <button type="submit" class="btn">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
