@@ -22,20 +22,30 @@ Zeiterfassung. Zwei Betriebsarten:
    `AppData\LocalLow\OptiTime` und abweichend geschriebene Ordner wie „Opti-Time" unter
    `AppData\Local`), zuletzt eine allgemeine Suche unter OneDrive, Benutzerprofil, `%ProgramData%`,
    `%ProgramFiles%`, `%ProgramFiles(x86)%`, `%PUBLIC%` und allen lokalen Festplatten.
-3. **Zeitstempeldaten einlesen**: alle `.csv`, `.txt`, `.tsv`, `.json`, `.xml`, `.log`, `.dat`,
-   `.asc` sowie **SQLite-Datenbanken** (`.db`, `.sqlite` oder beliebige Endung, erkannt am Dateikopf)
-   bis sechs Ebenen unter dem Ordner. Zeichensätze UTF-8 (mit/ohne BOM), UTF-16 und
-   Windows-1252 werden erkannt. Verstanden werden:
+3. **Zeitstempeldaten einlesen.** Vorrang hat das Terminal-Protokoll des OptiTime-Clients:
+
+   | Datei | Inhalt | Verwendung |
+   | --- | --- | --- |
+   | `logger.txt` | Protokoll mit allen Stempelvorgängen | Quelle der Buchungen |
+   | `Offliste*.txt` | Stammdaten, µ-getrennt | Namen, Tätigkeiten, Aufträge |
+   | `config.ini` | Terminal-Einstellungen | Tätigkeitsnummer für Pause und Kommen |
+
+   Eine Buchung steht im Protokoll als `VerarbeiteBuchung: PNR=1626 KST=000007`, maßgeblich ist
+   der Zeitstempel der Protokollzeile (`BEG_STD`/`BEG_MIN` enthalten beide die Stunde und sind
+   als Uhrzeit unbrauchbar). Übernommen wird nur, was das Terminal bestätigt hat
+   („hat an-/um-/ausgestempelt"); abgewiesene Versuche („ist noch gar nicht da") werden übersprungen.
+   Die Tätigkeitsnummer bestimmt den Typ: `000999` Kommen, `000007` Pause, `000000` Arbeitsende.
+   Namen und Bezeichnungen kommen aus `OfflisteMa.txt`, `OfflisteTaet.txt` und `OfflisteAuf.txt`;
+   fehlen sie, gelten die Standardnummern.
+
+   Daneben werden weiterhin gelesen: `.csv`, `.txt`, `.tsv`, `.json`, `.xml`, `.log`, `.dat`,
+   `.asc`, `.ini` und SQLite-Datenbanken (Endung beliebig, erkannt am Dateikopf), bis sechs Ebenen
+   tief. Zeichensätze UTF-8 (mit/ohne BOM), UTF-16 und Windows-1252. Verstanden werden dort:
    - **Intervalle**: `Datum`, `von`, `bis` (+ optional `Auftrag`, `Tätigkeit`, `Zeitart`, `Bemerkung`).
-   - **Stempelereignisse**: `Datum`, `Uhrzeit` (oder `Zeitstempel`) und `Buchung`/`Buchungsart`
-     mit Werten wie „Kommen", „Pause", „Pause Ende", „Gehen"; sie werden zu Buchungen gepaart.
+   - **Stempelereignisse**: `Datum`, `Uhrzeit` (oder `Zeitstempel`) und `Buchung`/`Buchungsart`.
    - Beides gemischt, als CSV-Spalten, JSON-Felder, XML-Attribute/-Elemente oder Tabellenspalten
      einer SQLite-Datenbank. Zahlen-Zeitstempel (Unix-Sekunden/-Millisekunden, .NET-Ticks,
-     OLE-Datum) werden umgerechnet; Mitarbeiter-IDs werden über eine Stammdatentabelle
-     (ID + Name) zum Namen aufgelöst.
-   Spaltennamen werden tolerant erkannt (z. B. `Beginn`/`Start`, `Ende`, `Mitarbeiter`,
-   `Personalnummer`, `PersNr`, `Benutzer`, `Login`). Andere Dateitypen (z. B. `.db`) werden im
-   OptiTime-Bereich der Oberfläche gezählt und angezeigt, aber nicht gelesen.
+     OLE-Datum) werden umgerechnet; Mitarbeiter-IDs über eine Stammdatentabelle zum Namen aufgelöst.
 4. **Nur eigene Daten übernehmen**:
    - Hat die Datei eine Personenspalte, werden nur Zeilen übernommen, die zum Benutzer
      (Anmeldename, Anzeigename), zur Personalnummer oder zum in den Einstellungen bestätigten
@@ -52,13 +62,23 @@ Zeiterfassung. Zwei Betriebsarten:
 OptiTime ist führend: Bei jedem Abgleich ersetzt eine OptiTime-Buchung eine vorhandene Buchung
 mit gleichem Datum und gleicher Startzeit. Manuelle Buchungen bleiben sonst erhalten.
 
+### Grenzen des Protokolls
+
+Das Protokoll enthält nur, was an **diesem** Rechner gestempelt wurde. Schließt der OptiTime-Server
+einen Tag automatisch ab („Arbeitsende vom System"), ohne dass am Terminal gestempelt wurde, fehlt
+dieses Ereignis lokal: Die letzte Buchung des Tages bleibt offen und wird als „nicht ausgestempelt"
+angezeigt. Die Endzeit lässt sich im Reiter „Buchungen" nachtragen. Die maßgebliche Abrechnung
+liegt weiterhin auf dem Server (`\\S21\OptiControl` laut `config.ini`).
+
 ### Diagnose
 
 Wenn nichts oder das Falsche eingelesen wird: In der OptiTime-Karte auf **Diagnose** klicken
 (oder `Stempeluhr.exe --user d.halko --diagnose` starten). Der Bericht listet alle Dateien im
 OptiTime-Ordner mit Größe, Datum und erkanntem Typ, zeigt die ersten Zeilen der Textdateien bzw.
 Tabellen, Spalten und Beispielzeilen der Datenbanken und die Erkennung je Datei. Er liegt unter
-`%APPDATA%\Stempeluhr\diagnose.txt` und enthält Auszüge der eigenen Zeitdaten.
+`%APPDATA%\Stempeluhr\diagnose.txt` und enthält Auszüge der eigenen Zeitdaten. Zugangsdaten werden
+entfernt: Konfigurationsschlüssel mit `PW`, `PASSWORT`, `KENNWORT`, `PIN`, `SECRET`, `TOKEN` oder
+`USER` im Namen sowie die Kennwortspalte der Mitarbeiterliste erscheinen als `<entfernt>`.
 
 ### Startparameter
 
@@ -126,6 +146,7 @@ In der HTML-Betriebsart sind die Buchungen vom 17.08. bis 07.09.2026 aus der Goo
 | --- | --- |
 | `main.go` | Windows-Programm: Benutzer, lokaler Server, Datenablage |
 | `optitime.go` | OptiTime-Pfadsuche, Dateiformate, Zuordnung zum Benutzer |
+| `optilog.go` | Terminal-Protokoll, Offlisten und config.ini |
 | `sqlite.go` | Lesender SQLite-Zugriff ohne externe Module |
 | `diagnose.go` | Diagnosebericht über den OptiTime-Ordner |
 | `sys_windows.go` / `sys_other.go` | Plattformteile (Laufwerke, Browser, Meldungsfenster) |
@@ -139,8 +160,10 @@ In der HTML-Betriebsart sind die Buchungen vom 17.08. bis 07.09.2026 aus der Goo
 - Tages-Soll = Wochenstunden ÷ Anzahl Arbeitstage (Standard 40 h / 5 Tage = 8:00 h), nur für Tage mit Buchungen.
 - Urlaub, Krankheit und Feiertage werden nicht erfasst.
 - Offene Buchungen zählen nur am heutigen Tag (bis jetzt) in die Arbeitszeit.
-- Das OptiTime-Datenformat wurde tolerant angenommen (siehe oben). Excel-Dateien (`.xlsx`), Access-Datenbanken
-  und verschlüsselte Datenbanken werden nicht gelesen; sie erscheinen im Diagnosebericht.
+- Das Protokollformat wurde aus dem Protokoll des Terminals NB-EFEIND-0021 (Stand 11.09.2026) abgeleitet.
+  Ändert ein OptiTime-Update die Meldungstexte, meldet die Diagnose „keine Buchungen im Protokoll gefunden".
+- Excel-Dateien (`.xlsx`), Access-Datenbanken und verschlüsselte Datenbanken werden nicht gelesen;
+  sie erscheinen im Diagnosebericht.
 
 Die ArbZG-Hinweise sind Orientierung, keine Rechtsberatung. Bei Fragen zur betrieblichen Arbeitszeitregelung
 bitte Rechtsabteilung prüfen.

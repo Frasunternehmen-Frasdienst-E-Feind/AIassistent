@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -85,6 +86,9 @@ func (a *App) diagnose() string {
 	}
 
 	w("")
+	w("Stammdaten: %d Mitarbeiter, %d Tätigkeiten, %d Aufträge (Pause=%q, Kommen=%q)",
+		sync.Master.Persons, sync.Master.Activities, sync.Master.Orders, sync.Master.PauseActivity, sync.Master.WorkActivity)
+	w("")
 	w("== Inhalt der Datendateien ==")
 	files, other := listFiles(path)
 	if len(other) > 0 {
@@ -95,6 +99,7 @@ func (a *App) diagnose() string {
 		sort.Strings(parts)
 		w("Nicht gelesene Typen: %s", strings.Join(parts, ", "))
 	}
+	master := loadMasterFrom(files)
 	for _, f := range files {
 		rel, _ := filepath.Rel(path, f)
 		w("")
@@ -108,22 +113,43 @@ func (a *App) diagnose() string {
 			a.diagnoseSQLite(&b, f)
 			continue
 		}
-		enc := "utf-8"
-		switch {
-		case len(raw) >= 3 && raw[0] == 0xEF && raw[1] == 0xBB && raw[2] == 0xBF:
-			enc = "utf-8 (BOM)"
-		case len(raw) >= 2 && ((raw[0] == 0xFF && raw[1] == 0xFE) || (raw[0] == 0xFE && raw[1] == 0xFF)):
-			enc = "utf-16"
-		case !isValidUTF8(raw):
-			enc = "windows-1252 (angenommen)"
-		}
 		text := decodeText(raw)
 		lines := strings.Split(text, "\n")
-		w("  Zeichensatz: %s, Zeilen: %d, Trennzeichen: %q", enc, len(lines), string(detectDelimiter(lines[0])))
-		for i := 0; i < len(lines) && i < diagMaxLines; i++ {
-			w("  %2d| %s", i+1, trunc(lines[i], 200))
+		w("  Zeichensatz: %s, Zeilen: %d", encodingName(raw), len(lines))
+		kind := classifyOptiFile(f, text)
+		if label, ok := master.files[f]; ok {
+			w("  Art: %s, %d Einträge übernommen", label, master.rows[f])
+			for i := 0; i < len(lines) && i < diagMaxLines; i++ {
+				w("  %2d| %s", i+1, trunc(redactOffliste(redactLine(lines[i]), kind), 200))
+			}
+			continue
 		}
-		entries, format, perr := parseFile(f)
+		if kind == "log" {
+			w("  Art: OptiTime-Protokoll")
+			entries, _, perr := parseFile(f, master)
+			if perr != nil {
+				w("  Erkennung: %v", perr)
+			} else {
+				w("  %d Stempelereignisse erkannt", len(entries))
+				for i := 0; i < len(entries) && i < 3; i++ {
+					e := entries[i]
+					w("  -> %s %s Tätigkeit=%s (%s) Typ=%d Person=%q", e.date, e.start, e.order, e.activity, e.optiKind, e.person)
+				}
+				if len(entries) > 0 {
+					last := entries[len(entries)-1]
+					w("  -> … letztes: %s %s Tätigkeit=%s (%s)", last.date, last.start, last.order, last.activity)
+				}
+			}
+			for i := 0; i < len(lines) && i < 3; i++ {
+				w("  %2d| %s", i+1, trunc(lines[i], 200))
+			}
+			continue
+		}
+		w("  Trennzeichen: %q", string(detectDelimiter(lines[0])))
+		for i := 0; i < len(lines) && i < diagMaxLines; i++ {
+			w("  %2d| %s", i+1, trunc(redactLine(lines[i]), 200))
+		}
+		entries, format, perr := parseFile(f, master)
 		if perr != nil {
 			w("  Erkennung: %s – %v", format, perr)
 		} else {
@@ -135,6 +161,19 @@ func (a *App) diagnose() string {
 		}
 	}
 	return b.String()
+}
+
+// encodingName benennt den erkannten Zeichensatz einer Textdatei.
+func encodingName(raw []byte) string {
+	switch {
+	case len(raw) >= 3 && raw[0] == 0xEF && raw[1] == 0xBB && raw[2] == 0xBF:
+		return "utf-8 (BOM)"
+	case len(raw) >= 2 && ((raw[0] == 0xFF && raw[1] == 0xFE) || (raw[0] == 0xFE && raw[1] == 0xFF)):
+		return "utf-16"
+	case !isValidUTF8(raw):
+		return "windows-1252 (angenommen)"
+	}
+	return "utf-8"
 }
 
 func (a *App) diagnoseSQLite(b *strings.Builder, path string) {
@@ -176,6 +215,20 @@ func (a *App) diagnoseSQLite(b *strings.Builder, path string) {
 			w("    … letzte: %s", strings.Join(parts, " | "))
 		}
 	}
+}
+
+var secretKeyRe = regexp.MustCompile(`(?i)^([A-Za-z_][A-Za-z0-9_()]*(pw|passwor|kennwort|pin|secret|token|user)[A-Za-z0-9_()]*) *=(.*)$`)
+
+// redactLine entfernt Zugangsdaten aus Diagnosezeilen: Schlüssel wie SMTPPW
+// oder SUPERPIN in config.ini und die Kennwortspalte der Mitarbeiterliste.
+func redactLine(line string) string {
+	if m := secretKeyRe.FindStringSubmatch(line); m != nil {
+		if strings.TrimSpace(m[3]) == "" {
+			return line
+		}
+		return m[1] + "=<entfernt>"
+	}
+	return line
 }
 
 func isValidUTF8(b []byte) bool {

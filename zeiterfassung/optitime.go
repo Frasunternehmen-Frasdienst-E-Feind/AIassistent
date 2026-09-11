@@ -46,6 +46,15 @@ type FileResult struct {
 	Reason  string `json:"reason,omitempty"`
 }
 
+// MasterInfo fasst die eingelesenen Stammdaten zusammen.
+type MasterInfo struct {
+	Persons       int    `json:"persons"`
+	Activities    int    `json:"activities"`
+	Orders        int    `json:"orders"`
+	PauseActivity string `json:"pauseActivity"`
+	WorkActivity  string `json:"workActivity"`
+}
+
 type SyncResult struct {
 	At         time.Time      `json:"at"`
 	Path       string         `json:"path"`
@@ -57,6 +66,7 @@ type SyncResult struct {
 	Imported   int            `json:"imported"`
 	Unassigned int            `json:"unassigned"` // Dateien ohne Personenspalte, die nicht zugeordnet werden konnten
 	OtherFiles map[string]int `json:"otherFiles"` // im Ordner gefundene, nicht gelesene Dateitypen (Endung -> Anzahl)
+	Master     MasterInfo     `json:"master"`     // eingelesene Stammdaten des Terminals
 	Errors     []string       `json:"errors"`
 }
 
@@ -181,7 +191,8 @@ func scanForOptiDir(base string, depth int) string {
 	return hits[0]
 }
 
-var dataExt = map[string]bool{".csv": true, ".txt": true, ".json": true, ".tsv": true, ".xml": true, ".log": true, ".dat": true, ".asc": true}
+var dataExt = map[string]bool{".csv": true, ".txt": true, ".json": true, ".tsv": true, ".xml": true, ".log": true, ".dat": true, ".asc": true,
+	".ini": true, ".cfg": true, ".conf": true}
 
 // fileMagic erkennt den Dateityp an den ersten Bytes.
 func fileMagic(path string) string {
@@ -459,6 +470,7 @@ func parseTime(s string) string {
 type rawEntry struct {
 	persons                                                      []string // alle Personenwerte der Zeile
 	person, date, start, end, order, activity, kind, note, event string
+	optiKind                                                     int // Ereignistyp aus dem OptiTime-Protokoll
 }
 
 func detectDelimiter(line string) rune {
@@ -494,7 +506,7 @@ func readRows(text string) ([][]string, error) {
 }
 
 // parseFile liest eine Datei und liefert Rohzeilen samt erkanntem Format.
-func parseFile(path string) (entries []rawEntry, format string, err error) {
+func parseFile(path string, master *optiMaster) (entries []rawEntry, format string, err error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, "unbekannt", err
@@ -503,6 +515,10 @@ func parseFile(path string) (entries []rawEntry, format string, err error) {
 		return parseSQLiteFile(path)
 	}
 	text := decodeText(b)
+	if classifyOptiFile(path, text) == "log" {
+		e, lerr := parseOptiLog(text, master)
+		return e, "optitime-protokoll", lerr
+	}
 	if strings.EqualFold(filepath.Ext(path), ".json") || strings.HasPrefix(strings.TrimSpace(text), "{") || strings.HasPrefix(strings.TrimSpace(text), "[") {
 		return parseJSON(text)
 	}
@@ -1053,6 +1069,12 @@ func importOptiTime(path string, id Identity) ([]Booking, SyncResult) {
 	res := SyncResult{At: time.Now(), Path: path, Identity: id, Files: []FileResult{}, Persons: []string{}, Errors: []string{}}
 	files, other := listFiles(path)
 	res.OtherFiles = other
+
+	// Vorlauf: Stammdaten und Konfiguration des Terminals einlesen, damit
+	// Tätigkeitsnummern und Personalnummern aufgelöst werden können.
+	master := loadMasterFrom(files)
+	res.Master = MasterInfo{Persons: len(master.persons), Activities: len(master.activities),
+		Orders: len(master.orders), PauseActivity: master.pauseKst, WorkActivity: master.workKst}
 	type parsed struct {
 		file    string
 		format  string
@@ -1061,7 +1083,11 @@ func importOptiTime(path string, id Identity) ([]Booking, SyncResult) {
 	var all []parsed
 	personSet := map[string]string{}
 	for _, f := range files {
-		entries, format, err := parseFile(f)
+		if label, ok := master.files[f]; ok {
+			res.Files = append(res.Files, FileResult{Path: f, Format: label, Rows: master.rows[f]})
+			continue
+		}
+		entries, format, err := parseFile(f, master)
 		fr := FileResult{Path: f, Format: format, Rows: len(entries)}
 		if err != nil {
 			fr.Reason = err.Error()
@@ -1149,6 +1175,12 @@ func importOptiTime(path string, id Identity) ([]Booking, SyncResult) {
 				res.Unassigned++
 				continue
 			}
+		}
+		if p.format == "optitime-protokoll" {
+			bs := pairOptiEvents(mine, p.file)
+			fr.Taken = len(bs)
+			bookings = append(bookings, bs...)
+			continue
 		}
 		// Je Datensatz: Stempelereignis (Buchungsart, keine Endzeit) wird gepaart,
 		// Intervall (von/bis) direkt übernommen – auch gemischt in einer Datei.

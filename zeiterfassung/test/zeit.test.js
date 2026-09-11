@@ -58,6 +58,19 @@ test('offene Buchung heute läuft bis jetzt', () => {
   assert.equal(d.running.id, b[0].id);
 });
 
+test('laufende Buchung mit Start nach der aktuellen Uhrzeit zählt 0 statt 24 h', () => {
+  // Kommt vor, wenn die Uhr des Stempelterminals der Rechneruhr voraus ist.
+  const b = [Z.makeBooking('work', '2026-09-11', '15:25')];
+  const ctx = { today: '2026-09-11', nowMinutes: 14 * 60 + 19 };
+  assert.equal(Z.bookingMinutes(b[0], ctx), 0);
+  const d = Z.computeDay('2026-09-11', b, {}, ctx);
+  assert.equal(d.workMin, 0);
+  assert.deepEqual(d.hints, []);
+  // Abgeschlossene Buchung über Mitternacht bleibt unberührt
+  const nacht = Z.makeBooking('work', '2026-09-11', '22:00', '02:00');
+  assert.equal(Z.bookingMinutes(nacht, ctx), 240);
+});
+
 test('Wochen- und Gesamtauswertung', () => {
   const days = Z.computeDays(Seed.bookings(), {}, { today: '2026-09-11' });
   assert.equal(days.length, 16);

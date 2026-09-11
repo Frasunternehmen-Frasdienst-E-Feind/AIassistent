@@ -153,8 +153,10 @@
     if (s == null) return null;
     let e = parseHM(b.end);
     if (e == null) {
-      if (today && b.date === today && nowMinutes != null) e = nowMinutes;
-      else return null;
+      // Laufende Buchung: bis jetzt. Liegt der Start nach der aktuellen Uhrzeit
+      // (Uhr des Terminals weicht ab), ist noch keine Zeit vergangen.
+      if (today && b.date === today && nowMinutes != null) return Math.max(0, nowMinutes - s);
+      return null;
     }
     if (e < s) e += 24 * 60; // über Mitternacht
     return e - s;
