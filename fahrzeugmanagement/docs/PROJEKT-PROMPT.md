@@ -20,7 +20,7 @@ Danach keine Rückfragen – triff dokumentierte Annahmen.
 Ziel: Fuhrpark digital verwalten – Fahrzeuge, Fahrer, Buchungen, Wartung, Fälligkeiten.
 Nutzen: Keine verpassten HU-/Wartungstermine, keine Doppelbuchungen, Fahrtenbuch
 und Führerscheinkontrolle nachweisbar, weniger Zettelwirtschaft.
-Definition of Done: App läuft im Firmennetz, alle Fahrzeuge und Fahrer erfasst,
+Definition of Done: App läuft im eigenen Netz, alle Fahrzeuge und Fahrer erfasst,
 Dashboard zeigt Fälligkeiten korrekt, Tests grün, README für Betrieb vorhanden.
 KPIs: 0 überfällige HU-Termine, 0 Doppelbuchungen, Fahrtenbuch-Export < 1 Minute,
 Nutzung durch alle Fahrer nach 4 Wochen.
@@ -34,7 +34,7 @@ Sprache Deutsch, keine Build-Tools im Frontend.
 Daten/Quellen: Fahrzeugscheine, Werkstattrechnungen, Fahrerliste (HR).
 Compliance: DSGVO (Fahrerdaten minimal, Verarbeitungsverzeichnis), Halterhaftung
 (Führerscheinkontrolle halbjährlich dokumentieren), Fahrtenbuch-Anforderungen bei
-steuerlicher Nutzung – Bitte Rechtsabteilung prüfen.
+steuerlicher Nutzung – rechtlich prüfen lassen.
 
 ## 4. Scope
 In Scope: Stammdaten Fahrzeuge/Fahrer, Buchungen mit Überschneidungsprüfung,
@@ -79,7 +79,7 @@ Sonst: max. 5 klickbare Multiple-Choice-Fragen.
 
 1. **Fuhrparkgröße 5–10 Fahrzeuge** (PKW, Transporter, Stapler) – bei deutlich mehr
    Fahrzeugen sind Rollen/Rechte und eine Kalenderansicht früher nötig.
-2. **Kein Budget für Cloud/SaaS**, Betrieb auf eigener Hardware im Firmennetz.
+2. **Kein Budget für Cloud/SaaS**, Betrieb auf eigener Hardware, strikt getrennt vom Arbeitsumfeld.
 3. **Keine Benutzeranmeldung im MVP** – Zugriff wird über das interne Netz begrenzt.
 4. **Führerscheinkontrolle halbjährlich**, Vorwarnung 14 Tage; HU/Wartung Vorwarnung
    30 Tage bzw. 1.000 km (alles über Dashboard-Parameter änderbar).
