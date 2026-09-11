@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 	"unicode/utf16"
@@ -182,6 +183,31 @@ func scanForOptiDir(base string, depth int) string {
 
 var dataExt = map[string]bool{".csv": true, ".txt": true, ".json": true, ".tsv": true, ".xml": true, ".log": true, ".dat": true, ".asc": true}
 
+// fileMagic erkennt den Dateityp an den ersten Bytes.
+func fileMagic(path string) string {
+	f, err := os.Open(path)
+	if err != nil {
+		return ""
+	}
+	defer f.Close()
+	head := make([]byte, 16)
+	n, _ := io.ReadFull(f, head)
+	head = head[:n]
+	switch {
+	case isSQLite(head):
+		return "sqlite"
+	case bytes.HasPrefix(head, []byte("PK\x03\x04")):
+		return "zip"
+	case bytes.HasPrefix(head, []byte{0xD0, 0xCF, 0x11, 0xE0}):
+		return "ole"
+	case bytes.HasPrefix(head, []byte("\x00\x01\x00\x00Standard Jet")), bytes.HasPrefix(head, []byte("\x00\x01\x00\x00Standard ACE")):
+		return "access"
+	case bytes.HasPrefix(head, []byte("%PDF")):
+		return "pdf"
+	}
+	return ""
+}
+
 // listDataFiles liefert alle Datendateien unterhalb eines OptiTime-Ordners (max. Tiefe 6).
 func listDataFiles(root string) []string {
 	files, _ := listFiles(root)
@@ -207,11 +233,15 @@ func listFiles(root string) (files []string, other map[string]int) {
 		if err != nil || info.Size() == 0 {
 			return nil
 		}
-		if dataExt[ext] && info.Size() < 50<<20 {
+		magic := fileMagic(p)
+		if (dataExt[ext] || magic == "sqlite") && info.Size() < 200<<20 {
 			files = append(files, p)
 		} else {
 			if ext == "" {
 				ext = "(ohne Endung)"
+			}
+			if magic != "" {
+				ext += " [" + magic + "]"
 			}
 			other[ext]++
 		}
@@ -292,14 +322,14 @@ var columnAliases = map[string][]string{
 	"date":     {"datum", "tag", "date", "buchungsdatum", "arbeitstag"},
 	"from":     {"von", "beginn", "start", "anfang", "kommen", "startzeit", "beginnzeit", "vonzeit"},
 	"to":       {"bis", "ende", "end", "gehen", "endezeit", "endzeit", "biszeit"},
-	"time":     {"uhrzeit", "zeit", "time", "buchungszeit", "stempelzeit"},
+	"time":     {"uhrzeit", "zeit", "time", "buchungszeit"},
 	"event":    {"buchung", "buchungsart", "buchungstyp", "ereignis", "typ", "art", "aktion", "stempelart", "buchungstext", "buchungskennzeichen"},
 	"order":    {"auftrag", "auftragsnr", "auftragsnummer", "kostenstelle", "projekt"},
 	"activity": {"taetigkeit", "aktivitaet", "taetigkeitsbezeichnung", "beschreibung"},
 	"kind":     {"zeitart", "zeittyp", "kategorie"},
 	"note":     {"bemerkung", "kommentar", "notiz", "hinweis", "info"},
-	"person":   {"mitarbeiter", "mitarbeiterin", "person", "name", "personalnummer", "persnr", "personalnr", "mitarbeiternr", "mitarbeiternummer", "manr", "benutzer", "user", "login", "kennung", "anmeldename", "mitarbeitername", "nachname", "employee", "userid", "kartennr", "ausweisnr"},
-	"datetime": {"zeitstempel", "timestamp", "datumuhrzeit", "datumzeit"},
+	"person":   {"mitarbeiter", "mitarbeiterin", "person", "name", "personalnummer", "persnr", "personalnr", "mitarbeiternr", "mitarbeiternummer", "manr", "benutzer", "user", "login", "kennung", "anmeldename", "mitarbeitername", "nachname", "employee", "userid", "kartennr", "ausweisnr", "mitarbeiterid", "personid", "employeeid", "username", "benutzername", "persid"},
+	"datetime": {"zeitstempel", "timestamp", "datumuhrzeit", "datumzeit", "stempelzeit", "buchungszeitpunkt", "zeitpunkt", "datetime", "erfasstam", "erfassung"},
 }
 
 type columns struct {
@@ -469,6 +499,9 @@ func parseFile(path string) (entries []rawEntry, format string, err error) {
 	if err != nil {
 		return nil, "unbekannt", err
 	}
+	if isSQLite(b) {
+		return parseSQLiteFile(path)
+	}
 	text := decodeText(b)
 	if strings.EqualFold(filepath.Ext(path), ".json") || strings.HasPrefix(strings.TrimSpace(text), "{") || strings.HasPrefix(strings.TrimSpace(text), "[") {
 		return parseJSON(text)
@@ -538,6 +571,46 @@ func parseFile(path string) (entries []rawEntry, format string, err error) {
 	return entries, format, nil
 }
 
+var digitsRe = regexp.MustCompile(`^-?\d+$`)
+
+// normalizeValue macht Zahlen-Zeitstempel lesbar: Unix-Sekunden/-Millisekunden,
+// .NET-Ticks (100 ns seit 0001) und OLE-Datum (Tage seit 1899-12-30).
+func normalizeValue(v string) string {
+	v = strings.TrimSpace(v)
+	if !digitsRe.MatchString(v) {
+		if f, ok := parseFloatDE(v); ok && f > 20000 && f < 80000 { // OLE Automation Date
+			t := time.Date(1899, 12, 30, 0, 0, 0, 0, time.UTC).Add(time.Duration(f * float64(24*time.Hour)))
+			return t.Format("2006-01-02 15:04")
+		}
+		return v
+	}
+	n, err := strconv.ParseInt(v, 10, 64)
+	if err != nil {
+		return v
+	}
+	var t time.Time
+	switch {
+	case n > 1_000_000_000 && n < 4_000_000_000: // Unix-Sekunden
+		t = time.Unix(n, 0).In(time.Local)
+	case n > 1_000_000_000_000 && n < 4_000_000_000_000: // Unix-Millisekunden
+		t = time.UnixMilli(n).In(time.Local)
+	case n > 600_000_000_000_000_000 && n < 700_000_000_000_000_000: // .NET-Ticks
+		t = time.Date(1, 1, 1, 0, 0, 0, 0, time.UTC).Add(time.Duration(n/10) * time.Microsecond)
+	default:
+		return v
+	}
+	return t.Format("2006-01-02 15:04")
+}
+
+func parseFloatDE(s string) (float64, bool) {
+	s = strings.Replace(strings.TrimSpace(s), ",", ".", 1)
+	if !regexp.MustCompile(`^\d+\.\d+$`).MatchString(s) {
+		return 0, false
+	}
+	f, err := strconv.ParseFloat(s, 64)
+	return f, err == nil
+}
+
 // entryFromMap baut aus Feldname->Wert (Spaltenaliase) einen Rohdatensatz.
 func entryFromMap(m map[string]string) (rawEntry, bool) {
 	get := func(key string) string {
@@ -545,6 +618,9 @@ func entryFromMap(m map[string]string) (rawEntry, bool) {
 			n := normHeader(k)
 			for _, a := range columnAliases[key] {
 				if n == a {
+					if key == "date" || key == "datetime" || key == "from" || key == "to" || key == "time" {
+						return normalizeValue(v)
+					}
 					return strings.TrimSpace(v)
 				}
 			}
@@ -643,6 +719,81 @@ func parseXML(text string) ([]rawEntry, string, error) {
 		return nil, "xml", errors.New("keine Datensätze mit Datum und Uhrzeit gefunden")
 	}
 	return entries, "xml", nil
+}
+
+// parseSQLiteFile liest alle Tabellen einer SQLite-Datei; Tabellen, deren Spalten
+// Datum und Uhrzeit hergeben, liefern Datensätze. Personen werden über eine
+// Stammdatentabelle (Nr/Name) aufgelöst, damit Namen zuordenbar sind.
+func parseSQLiteFile(path string) ([]rawEntry, string, error) {
+	db, err := openSQLite(path)
+	if err != nil {
+		return nil, "sqlite", err
+	}
+	tables, err := db.tables()
+	if err != nil {
+		return nil, "sqlite", err
+	}
+	// Stammdaten: Tabellen mit genau einer Kennung + Name -> Nr => Name
+	names := map[string]string{}
+	for _, t := range tables {
+		var idCol, nameCol string
+		for _, c := range t.Columns {
+			n := normHeader(c)
+			switch {
+			case nameCol == "" && (n == "name" || n == "mitarbeitername" || n == "nachname" || n == "bezeichnung"):
+				nameCol = c
+			case idCol == "" && (n == "nr" || n == "id" || n == "personalnummer" || n == "persnr" || n == "manr" || n == "mitarbeiternr" || n == "mitarbeiterid" || n == "personid"):
+				idCol = c
+			}
+		}
+		if idCol == "" || nameCol == "" || len(t.Columns) > 12 {
+			continue
+		}
+		rows, err := db.rows(t, 5000)
+		if err != nil {
+			continue
+		}
+		for _, r := range rows {
+			if r[idCol] != "" && r[nameCol] != "" {
+				names[r[idCol]] = r[nameCol]
+			}
+		}
+	}
+	var entries []rawEntry
+	var used []string
+	for _, t := range tables {
+		rows, err := db.rows(t, 0)
+		if err != nil {
+			continue
+		}
+		cnt := 0
+		for _, r := range rows {
+			e, ok := entryFromMap(r)
+			if !ok {
+				continue
+			}
+			// Kennungen (z. B. MitarbeiterID) um den Namen aus den Stammdaten ergänzen
+			for _, p := range append([]string(nil), e.persons...) {
+				if n, ok := names[p]; ok {
+					e.persons = append(e.persons, n)
+				}
+			}
+			e.person = personDisplay(e.persons)
+			entries = append(entries, e)
+			cnt++
+		}
+		if cnt > 0 {
+			used = append(used, t.Name)
+		}
+	}
+	if len(entries) == 0 {
+		var tn []string
+		for _, t := range tables {
+			tn = append(tn, t.Name)
+		}
+		return nil, "sqlite", fmt.Errorf("keine Tabelle mit Datum/Uhrzeit-Spalten (Tabellen: %s)", strings.Join(tn, ", "))
+	}
+	return entries, "sqlite (" + strings.Join(used, ", ") + ")", nil
 }
 
 func parseJSON(text string) ([]rawEntry, string, error) {

@@ -430,6 +430,19 @@
       toast((r.info.optitime.imported || 0) + ' Buchungen aus OptiTime übernommen');
     } catch (err) { toast('Abgleich fehlgeschlagen: ' + err.message); }
   });
+  $('btn-diagnose').addEventListener('click', async () => {
+    const box = $('diagnose-box'); box.hidden = false;
+    $('diagnose-area').value = 'Diagnose läuft …';
+    try {
+      const r = await fetch('/api/optitime/diagnose', { cache: 'no-store' });
+      $('diagnose-area').value = await r.text();
+    } catch (e) { $('diagnose-area').value = 'Diagnose fehlgeschlagen: ' + e.message; }
+  });
+  $('btn-diagnose-copy').addEventListener('click', async () => {
+    const v = $('diagnose-area').value;
+    try { await navigator.clipboard.writeText(v); toast('Bericht kopiert'); }
+    catch (e) { $('diagnose-area').select(); toast('Bitte mit Strg+C kopieren'); }
+  });
   $('btn-quit').addEventListener('click', async () => {
     if (!confirm('Stempeluhr beenden? Die Daten sind gespeichert.')) return;
     try { await api('/api/quit', { method: 'POST' }); } catch (e) { /* Server schon weg */ }

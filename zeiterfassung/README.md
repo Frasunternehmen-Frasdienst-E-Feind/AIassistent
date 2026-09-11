@@ -23,12 +23,16 @@ Zeiterfassung. Zwei Betriebsarten:
    `AppData\Local`), zuletzt eine allgemeine Suche unter OneDrive, Benutzerprofil, `%ProgramData%`,
    `%ProgramFiles%`, `%ProgramFiles(x86)%`, `%PUBLIC%` und allen lokalen Festplatten.
 3. **Zeitstempeldaten einlesen**: alle `.csv`, `.txt`, `.tsv`, `.json`, `.xml`, `.log`, `.dat`,
-   `.asc` bis sechs Ebenen unter dem Ordner. Zeichensätze UTF-8 (mit/ohne BOM), UTF-16 und
+   `.asc` sowie **SQLite-Datenbanken** (`.db`, `.sqlite` oder beliebige Endung, erkannt am Dateikopf)
+   bis sechs Ebenen unter dem Ordner. Zeichensätze UTF-8 (mit/ohne BOM), UTF-16 und
    Windows-1252 werden erkannt. Verstanden werden:
    - **Intervalle**: `Datum`, `von`, `bis` (+ optional `Auftrag`, `Tätigkeit`, `Zeitart`, `Bemerkung`).
    - **Stempelereignisse**: `Datum`, `Uhrzeit` (oder `Zeitstempel`) und `Buchung`/`Buchungsart`
      mit Werten wie „Kommen", „Pause", „Pause Ende", „Gehen"; sie werden zu Buchungen gepaart.
-   - Beides gemischt, als CSV-Spalten, JSON-Felder oder XML-Attribute/-Elemente.
+   - Beides gemischt, als CSV-Spalten, JSON-Felder, XML-Attribute/-Elemente oder Tabellenspalten
+     einer SQLite-Datenbank. Zahlen-Zeitstempel (Unix-Sekunden/-Millisekunden, .NET-Ticks,
+     OLE-Datum) werden umgerechnet; Mitarbeiter-IDs werden über eine Stammdatentabelle
+     (ID + Name) zum Namen aufgelöst.
    Spaltennamen werden tolerant erkannt (z. B. `Beginn`/`Start`, `Ende`, `Mitarbeiter`,
    `Personalnummer`, `PersNr`, `Benutzer`, `Login`). Andere Dateitypen (z. B. `.db`) werden im
    OptiTime-Bereich der Oberfläche gezählt und angezeigt, aber nicht gelesen.
@@ -48,6 +52,14 @@ Zeiterfassung. Zwei Betriebsarten:
 OptiTime ist führend: Bei jedem Abgleich ersetzt eine OptiTime-Buchung eine vorhandene Buchung
 mit gleichem Datum und gleicher Startzeit. Manuelle Buchungen bleiben sonst erhalten.
 
+### Diagnose
+
+Wenn nichts oder das Falsche eingelesen wird: In der OptiTime-Karte auf **Diagnose** klicken
+(oder `Stempeluhr.exe --user d.halko --diagnose` starten). Der Bericht listet alle Dateien im
+OptiTime-Ordner mit Größe, Datum und erkanntem Typ, zeigt die ersten Zeilen der Textdateien bzw.
+Tabellen, Spalten und Beispielzeilen der Datenbanken und die Erkennung je Datei. Er liegt unter
+`%APPDATA%\Stempeluhr\diagnose.txt` und enthält Auszüge der eigenen Zeitdaten.
+
 ### Startparameter
 
 ```
@@ -56,6 +68,7 @@ Stempeluhr.exe --optitime "\\server\OptiTime\Export"   OptiTime-Ordner fest vorg
 Stempeluhr.exe --data "C:\Users\...\OneDrive\Stempeluhr"  Datenordner (z. B. OneDrive für mehrere Geräte)
 Stempeluhr.exe --port 8123 --no-browser                  fester Port, Browser nicht öffnen
 Stempeluhr.exe --idle 0                                  nie automatisch beenden
+Stempeluhr.exe --diagnose                                Diagnosebericht schreiben und beenden
 ```
 
 Protokoll: `%APPDATA%\Stempeluhr\stempeluhr.log`. Einstellungen: `%APPDATA%\Stempeluhr\config.json`.
@@ -95,6 +108,8 @@ In der HTML-Betriebsart sind die Buchungen vom 17.08. bis 07.09.2026 aus der Goo
 | --- | --- |
 | `main.go` | Windows-Programm: Benutzer, lokaler Server, Datenablage |
 | `optitime.go` | OptiTime-Pfadsuche, Dateiformate, Zuordnung zum Benutzer |
+| `sqlite.go` | Lesender SQLite-Zugriff ohne externe Module |
+| `diagnose.go` | Diagnosebericht über den OptiTime-Ordner |
 | `sys_windows.go` / `sys_other.go` | Plattformteile (Laufwerke, Browser, Meldungsfenster) |
 | `index.html`, `app.js` | Oberfläche (wird in die EXE eingebettet) |
 | `zeit.js` | Reine Berechnungslogik (Browser und Node) |
@@ -106,8 +121,8 @@ In der HTML-Betriebsart sind die Buchungen vom 17.08. bis 07.09.2026 aus der Goo
 - Tages-Soll = Wochenstunden ÷ Anzahl Arbeitstage (Standard 40 h / 5 Tage = 8:00 h), nur für Tage mit Buchungen.
 - Urlaub, Krankheit und Feiertage werden nicht erfasst.
 - Offene Buchungen zählen nur am heutigen Tag (bis jetzt) in die Arbeitszeit.
-- Das OptiTime-Exportformat wurde tolerant angenommen (siehe oben). Excel-Dateien (`.xlsx`) werden nicht gelesen;
-  in OptiTime als CSV exportieren.
+- Das OptiTime-Datenformat wurde tolerant angenommen (siehe oben). Excel-Dateien (`.xlsx`), Access-Datenbanken
+  und verschlüsselte Datenbanken werden nicht gelesen; sie erscheinen im Diagnosebericht.
 
 Die ArbZG-Hinweise sind Orientierung, keine Rechtsberatung. Bei Fragen zur betrieblichen Arbeitszeitregelung
 bitte Rechtsabteilung prüfen.

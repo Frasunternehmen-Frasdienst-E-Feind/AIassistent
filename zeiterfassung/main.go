@@ -29,7 +29,7 @@ import (
 //go:embed index.html app.js zeit.js seed-data.js
 var webFS embed.FS
 
-const version = "1.2.0"
+const version = "1.3.0"
 
 const (
 	kindWork  = "Arbeitszeit"
@@ -415,6 +415,14 @@ func (a *App) handleConfig(w http.ResponseWriter, r *http.Request) {
 	a.writeJSON(w, map[string]interface{}{"info": a.info(), "state": a.state})
 }
 
+func (a *App) handleDiagnose(w http.ResponseWriter, r *http.Request) {
+	report := a.diagnose()
+	_ = os.WriteFile(filepath.Join(filepath.Dir(a.logFile), "diagnose.txt"), []byte(report), 0o644)
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+	_, _ = w.Write([]byte(report))
+}
+
 func (a *App) handlePing(w http.ResponseWriter, r *http.Request) {
 	a.mu.Lock()
 	a.lastPing = time.Now()
@@ -433,6 +441,7 @@ func (a *App) routes() http.Handler {
 	mux.HandleFunc("/api/state", a.handleState)
 	mux.HandleFunc("/api/optitime/sync", a.handleSync)
 	mux.HandleFunc("/api/config", a.handleConfig)
+	mux.HandleFunc("/api/optitime/diagnose", a.handleDiagnose)
 	mux.HandleFunc("/api/ping", a.handlePing)
 	mux.HandleFunc("/api/quit", a.handleQuit)
 	sub, _ := fs.Sub(webFS, ".")
@@ -449,6 +458,7 @@ func main() {
 	portFlag := flag.Int("port", 0, "fester Port (Standard: freier Port)")
 	noBrowser := flag.Bool("no-browser", false, "Browser nicht automatisch öffnen")
 	idle := flag.Duration("idle", 2*time.Minute, "Beenden, wenn so lange kein Browserfenster mehr offen ist (0 = nie)")
+	diag := flag.Bool("diagnose", false, "Diagnosebericht schreiben (%APPDATA%\\Stempeluhr\\diagnose.txt) und beenden")
 	flag.Parse()
 
 	a := &App{explicit: *optiFlag, quit: make(chan struct{}), startedAt: time.Now(), lastPing: time.Now()}
@@ -477,6 +487,16 @@ func main() {
 	log.Printf("Stempeluhr %s startet für %s\\%s (%s, Quelle: %s, Profil: %s) auf %s", version, a.id.Domain, a.id.Username, a.id.FullName, a.id.Source, a.id.ProfileDir, a.id.Host)
 	a.loadState()
 	a.runSync()
+	if *diag {
+		report := a.diagnose()
+		out := filepath.Join(dir, "diagnose.txt")
+		if err := os.WriteFile(out, []byte(report), 0o644); err != nil {
+			fatal("Diagnose konnte nicht geschrieben werden: " + err.Error())
+		}
+		fmt.Println(report)
+		showMessage("Stempeluhr – Diagnose", "Bericht gespeichert unter:\n"+out+"\n\nBitte diese Datei weitergeben.")
+		return
+	}
 
 	ln, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", *portFlag))
 	if err != nil {

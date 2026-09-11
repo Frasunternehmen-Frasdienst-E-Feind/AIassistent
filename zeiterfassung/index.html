@@ -262,8 +262,13 @@ dialog h3 { font-size: 20px; margin-bottom: 12px; }
   <section class="panel" id="panel-data" role="tabpanel" hidden>
     <div class="grid-2">
       <div class="card" id="card-optitime" hidden style="grid-column: 1 / -1">
-        <div class="panel-head"><h3>OptiTime</h3><div class="tools"><button class="btn sm primary" id="btn-optitime-sync">Neu einlesen</button><button class="btn sm" id="btn-quit">Stempeluhr beenden</button></div></div>
+        <div class="panel-head"><h3>OptiTime</h3><div class="tools"><button class="btn sm primary" id="btn-optitime-sync">Neu einlesen</button><button class="btn sm" id="btn-diagnose">Diagnose</button><button class="btn sm" id="btn-quit">Stempeluhr beenden</button></div></div>
         <div id="optitime-body"></div>
+        <div id="diagnose-box" hidden class="stack">
+          <p>Der Bericht zeigt, welche Dateien im OptiTime-Ordner liegen und wie sie erkannt wurden. Er enthält Auszüge Ihrer eigenen Zeitdaten. Zum Weitergeben kopieren; er liegt auch unter %APPDATA%\Stempeluhr\diagnose.txt.</p>
+          <textarea id="diagnose-area" readonly aria-label="Diagnosebericht" style="min-height:260px"></textarea>
+          <div><button class="btn sm" id="btn-diagnose-copy">In Zwischenablage</button></div>
+        </div>
       </div>
       <div class="card">
         <h3>Arbeitszeit-Soll</h3>

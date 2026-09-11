@@ -118,6 +118,7 @@ func TestFileWithoutPersonColumn(t *testing.T) {
 	write(t, dir, "daten.db", []byte("binär"))          // unbekannter Typ -> nur zählen
 	bookings, res := importOptiTime(dir, ident())
 	if len(bookings) != 1 || res.Unassigned != 1 || res.OtherFiles[".db"] != 1 {
+		t.Logf("other=%v", res.OtherFiles)
 		t.Fatalf("bookings=%d unassigned=%d other=%v files=%+v", len(bookings), res.Unassigned, res.OtherFiles, res.Files)
 	}
 	// Liegt der Ordner im Profil des Benutzers, gelten Dateien ohne Personenspalte als seine
