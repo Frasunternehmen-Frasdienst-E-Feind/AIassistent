@@ -181,6 +181,11 @@ dialog h3 { font-size: 20px; margin-bottom: 12px; }
 .toast.show { opacity: 1; }
 .foot { color: var(--muted); font-size: 12px; max-width: 70ch; }
 .empty { padding: 28px; text-align: center; color: var(--muted); }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; font-size: 13px; }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; }
+.chip.src { background: var(--accent-soft); color: var(--accent); }
+.files td { font-size: 13px; }
+.stack { display: grid; gap: 12px; }
 
 @media (max-width: 640px) {
   .punch { grid-template-columns: 1fr; }
@@ -256,6 +261,10 @@ dialog h3 { font-size: 20px; margin-bottom: 12px; }
 
   <section class="panel" id="panel-data" role="tabpanel" hidden>
     <div class="grid-2">
+      <div class="card" id="card-optitime" hidden style="grid-column: 1 / -1">
+        <div class="panel-head"><h3>OptiTime</h3><div class="tools"><button class="btn sm primary" id="btn-optitime-sync">Neu einlesen</button><button class="btn sm" id="btn-quit">Stempeluhr beenden</button></div></div>
+        <div id="optitime-body"></div>
+      </div>
       <div class="card">
         <h3>Arbeitszeit-Soll</h3>
         <p>Das Tages-Soll ergibt sich aus Wochenstunden ÷ Arbeitstage. Es wird nur für Tage mit Buchungen angesetzt; Urlaub und Krankheit werden nicht erfasst.</p>
@@ -300,7 +309,7 @@ dialog h3 { font-size: 20px; margin-bottom: 12px; }
         </div>
       </div>
     </div>
-    <p class="foot">Die Daten liegen ausschließlich im Browser (localStorage) dieses Geräts. Hinweise zu Pausen und Höchstarbeitszeit orientieren sich an § 3 und § 4 ArbZG und ersetzen keine Rechtsberatung – bei Fragen zur Arbeitszeitregelung bitte Rechtsabteilung prüfen.</p>
+    <p class="foot"><span id="foot-storage">Die Daten liegen ausschließlich im Browser (localStorage) dieses Geräts.</span> Hinweise zu Pausen und Höchstarbeitszeit orientieren sich an § 3 und § 4 ArbZG und ersetzen keine Rechtsberatung – bei Fragen zur Arbeitszeitregelung bitte Rechtsabteilung prüfen.</p>
   </section>
 </div>
 

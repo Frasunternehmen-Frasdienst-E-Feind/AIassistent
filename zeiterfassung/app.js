@@ -5,22 +5,38 @@
   const STORAGE_KEY = 'zeiterfassung.v1';
 
   // ---------- Zustand ----------
-  let state = load();
+  // Zwei Betriebsarten: als EXE (lokaler Server, Daten je Windows-Benutzer unter
+  // %APPDATA%\Stempeluhr, OptiTime-Import) oder als reine HTML-Seite (localStorage).
+  let server = null; // /api/info, wenn die Seite von der Stempeluhr-EXE ausgeliefert wird
+  let state = { bookings: [], settings: { ...Z.DEFAULT_SETTINGS } };
   let activeTab = 'days';
   let filterMonth = 'all';
 
-  function load() {
+  function normalizeState(s) {
+    return { ...s, bookings: s.bookings || [], settings: { ...Z.DEFAULT_SETTINGS, ...(s.settings || {}) }, profile: s.profile || {} };
+  }
+  function loadLocal() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const s = JSON.parse(raw);
-        return { bookings: s.bookings || [], settings: { ...Z.DEFAULT_SETTINGS, ...(s.settings || {}) } };
-      }
+      if (raw) return normalizeState(JSON.parse(raw));
     } catch (e) { /* localStorage nicht verfügbar */ }
-    return { bookings: window.ZeitSeed ? window.ZeitSeed.bookings() : [], settings: { ...Z.DEFAULT_SETTINGS } };
+    return normalizeState({ bookings: window.ZeitSeed ? window.ZeitSeed.bookings() : [] });
   }
+  async function api(path, opts) {
+    const r = await fetch(path, { cache: 'no-store', headers: { 'Content-Type': 'application/json' }, ...opts });
+    if (!r.ok) throw new Error(await r.text() || r.statusText);
+    return r.json();
+  }
+  let saveTimer;
   function save() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { toast('Speichern im Browser nicht möglich.'); }
+    if (!server) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { toast('Speichern im Browser nicht möglich.'); }
+      return;
+    }
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      api('/api/state', { method: 'PUT', body: JSON.stringify(state) }).catch(e => toast('Speichern fehlgeschlagen: ' + e.message));
+    }, 250);
   }
 
   function ctx() {
@@ -52,6 +68,7 @@
     renderBookings(c);
     renderWeeks(weeks);
     renderSettings();
+    renderOptiTime();
     $('data-info').textContent = state.bookings.length + ' Buchungen an ' + days.length + ' Tagen'
       + (days.length ? ' (' + Z.toGermanDate(days[days.length - 1].date) + ' bis ' + Z.toGermanDate(days[0].date) + ')' : '') + '.';
   }
@@ -99,6 +116,14 @@
       { k: 'Offene Buchungen', v: String(totals.open), s: '', m: openPast ? openPast + ' nicht ausgestempelt' : (hintDays ? hintDays + ' Tage mit Pausenhinweis' : 'alles ausgestempelt'),
         cls: openPast ? 'crit' : (hintDays ? 'warn' : 'good') },
     ];
+    if (server) {
+      const o = server.optitime || {};
+      const found = !!o.path;
+      const who = o.identity && o.identity.matchedPerson;
+      tiles.push({ k: 'OptiTime', v: found ? String(o.imported || 0) : '–', s: found ? 'Buchungen' : '',
+        m: !found ? 'Ordner nicht gefunden' : (who ? 'für ' + who : 'Benutzer nicht zugeordnet'),
+        cls: !found || !who ? 'crit' : 'good' });
+    }
     $('kpis').innerHTML = tiles.map(t =>
       '<div class="kpi ' + t.cls + '"><div class="k">' + esc(t.k) + '</div><div class="v">' + esc(t.v) + (t.s ? ' <small>' + esc(t.s) + '</small>' : '') + '</div><div class="m">' + esc(t.m) + '</div></div>').join('');
   }
@@ -154,7 +179,7 @@
         + '<td class="num">' + esc(b.start) + '</td><td class="num">' + (b.end ? esc(b.end) : '–') + '</td>'
         + '<td class="mono muted">' + esc(b.order) + '</td><td>' + esc(b.activity) + '</td>'
         + '<td><span class="chip ' + (b.kind === Z.KIND_BREAK ? 'break' : 'work') + '">' + esc(b.kind) + '</span></td>'
-        + '<td class="num">' + (min == null ? '–' : dur(min)) + '</td><td>' + status + '</td>'
+        + '<td class="num">' + (min == null ? '–' : dur(min)) + '</td><td>' + status + (b.source === 'optitime' ? ' <span class="chip src" title="' + esc(b.sourceFile || '') + '">OptiTime</span>' : '') + '</td>'
         + '<td class="muted">' + esc(b.note) + '</td>'
         + '<td><button class="btn sm" data-edit="' + esc(b.id) + '">Bearbeiten</button></td></tr>';
     }
@@ -182,6 +207,56 @@
         + (w.hints ? '<span class="hint">' + w.hints + ' Hinweis' + (w.hints > 1 ? 'e' : '') + '</span>' : '') + '</div>'
         + '<div class="bars">' + bars + '</div></div>';
     }).join('');
+  }
+
+  function renderOptiTime() {
+    const card = $('card-optitime');
+    card.hidden = !server;
+    if (!server) return;
+    const o = server.optitime || {};
+    const u = server.user || {};
+    const id = o.identity || {};
+    const prof = state.profile || {};
+    const persons = o.persons || [];
+    const files = o.files || [];
+    const searched = o.searched || [];
+    const kv = [
+      ['Angemeldeter Benutzer', esc((u.domain ? u.domain + '\\' : '') + u.username) + (u.fullName ? ' · ' + esc(u.fullName) : '') + ' · ' + esc(u.host)],
+      ['OptiTime-Ordner', o.path ? '<span class="mono">' + esc(o.path) + '</span> <span class="chip ok">' + esc(o.pathSource) + '</span>'
+        : '<span class="chip crit">nicht gefunden</span> <span class="muted">' + searched.length + ' Orte geprüft</span>'],
+      ['Zuordnung', id.matchedPerson
+        ? '<b>' + esc(id.matchedPerson) + '</b> ' + (id.autoMatched ? '<span class="chip open">automatisch erkannt – bitte bestätigen</span>' : '<span class="chip ok">bestätigt</span>')
+        : (persons.length ? '<span class="chip crit">keine Person passt zu ' + esc(u.username) + '</span>' : '<span class="muted">keine Personenspalte in den Dateien</span>')],
+      ['Letzter Abgleich', o.at ? new Date(o.at).toLocaleString('de-DE') + ' · ' + (o.imported || 0) + ' Buchungen übernommen' : '–'],
+      ['Datenablage', '<span class="mono">' + esc(server.dataFile) + '</span>'],
+    ];
+    const errs = (o.errors || []).map(e => '<div class="error">' + esc(e) + '</div>').join('');
+    const fileRows = files.map(f => '<tr><td class="mono">' + esc(f.path.replace(o.path || '', '').replace(/^[\\/]/, '')) + '</td><td>' + esc(f.format) + '</td>'
+      + '<td class="num">' + f.rows + '</td><td class="num">' + f.taken + '</td><td class="num">' + f.skipped + '</td><td class="muted">' + esc(f.reason || '') + '</td></tr>').join('');
+    const personOpts = '<option value="">– Person wählen –</option>' + persons.map(p =>
+      '<option value="' + esc(p) + '"' + (p === id.matchedPerson ? ' selected' : '') + '>' + esc(p) + '</option>').join('');
+    card.querySelector('#optitime-body').innerHTML = '<div class="stack">'
+      + '<dl class="kv">' + kv.map(([k, v]) => '<dt>' + k + '</dt><dd>' + v + '</dd>').join('') + '</dl>' + errs
+      + (files.length ? '<div class="table-wrap files"><table><thead><tr><th>Datei</th><th>Format</th><th class="num">Zeilen</th><th class="num">Übernommen</th><th class="num">Andere</th><th>Hinweis</th></tr></thead><tbody>' + fileRows + '</tbody></table></div>' : '')
+      + '<form class="form" id="optitime-form"><div class="row">'
+      + '<div class="field"><label for="ot-path">OptiTime-Ordner (leer = automatisch suchen)</label><input type="text" id="ot-path" value="' + esc(o.pathSource === 'konfiguration' ? o.path : '') + '" placeholder="z. B. \\\\server\\OptiTime\\Export"></div>'
+      + '<div class="field"><label for="ot-person">Das bin ich (aus den Dateien)</label><select id="ot-person">' + personOpts + '</select></div>'
+      + '</div><div class="row">'
+      + '<div class="field"><label for="ot-persnr">Personalnummer</label><input type="text" id="ot-persnr" value="' + esc(prof.personalnummer || '') + '"></div>'
+      + '<div class="field"><label for="ot-name">Name wie in OptiTime</label><input type="text" id="ot-name" value="' + esc(prof.name || '') + '" placeholder="Nachname, Vorname"></div>'
+      + '</div><div><button class="btn sm primary" type="submit">Speichern &amp; neu einlesen</button></div></form>'
+      + '<p class="foot">Es werden nur Zeilen übernommen, deren Personenspalte zu Ihrem Windows-Konto, der Personalnummer oder dem Namen passt. Dateien ohne Personenspalte werden nur übernommen, wenn Dateiname oder Ordner Ihren Namen enthalten oder sie in Ihrem Benutzerprofil liegen.</p>'
+      + '</div>';
+    card.querySelector('#optitime-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const person = $('ot-person').value;
+      const keys = person ? [person] : [];
+      try {
+        const r = await api('/api/config', { method: 'POST', body: JSON.stringify({ optitimePath: $('ot-path').value, personalnummer: $('ot-persnr').value, name: $('ot-name').value, keys }) });
+        server = r.info; state = normalizeState(r.state); render();
+        toast((r.info.optitime.imported || 0) + ' Buchungen aus OptiTime übernommen');
+      } catch (err) { toast('Fehler: ' + err.message); }
+    });
   }
 
   const DAY_NAMES = ['', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
@@ -343,7 +418,39 @@
     if (e.key === 'Escape' && $('dlg').open) $('dlg').close();
   });
 
-  render();
-  setInterval(() => { renderClock(ctx()); }, 1000 * 15);
-  setInterval(render, 1000 * 60);
+  $('btn-optitime-sync').addEventListener('click', async () => {
+    try {
+      const r = await api('/api/optitime/sync', { method: 'POST' });
+      server = r.info; state = normalizeState(r.state); render();
+      toast((r.info.optitime.imported || 0) + ' Buchungen aus OptiTime übernommen');
+    } catch (err) { toast('Abgleich fehlgeschlagen: ' + err.message); }
+  });
+  $('btn-quit').addEventListener('click', async () => {
+    if (!confirm('Stempeluhr beenden? Die Daten sind gespeichert.')) return;
+    try { await api('/api/quit', { method: 'POST' }); } catch (e) { /* Server schon weg */ }
+    document.body.innerHTML = '<div class="empty" style="padding:60px">Stempeluhr beendet. Dieses Fenster kann geschlossen werden.</div>';
+  });
+
+  async function boot() {
+    try {
+      const info = await api('/api/info');
+      if (info && info.mode === 'server') {
+        server = info;
+        state = normalizeState(await api('/api/state'));
+      }
+    } catch (e) { server = null; }
+    if (!server) state = loadLocal();
+    if (server) {
+      const u = server.user || {};
+      document.querySelector('.brand .sub').textContent = 'Zeiterfassung · ' + (u.fullName || u.username) + ' · Fräsdienst-Service E. Feind GmbH';
+      $('foot-storage').textContent = 'Die Daten liegen je Windows-Benutzer unter ' + server.dataFile + '. OptiTime wird bei jedem Start neu eingelesen.';
+      setInterval(() => { fetch('/api/ping', { method: 'POST' }).catch(() => {}); }, 10000);
+    }
+    const wantTab = new URLSearchParams(location.search).get('tab');
+    if (wantTab && $('panel-' + wantTab)) showTab(wantTab);
+    render();
+    setInterval(() => { renderClock(ctx()); }, 1000 * 15);
+    setInterval(render, 1000 * 60);
+  }
+  boot();
 })();
