@@ -1,0 +1,71 @@
+# Konfiguration seo_reporting – nach config.yaml kopieren und anpassen.
+# Geheimnisse (Service-Account, SMTP-Passwort) NICHT hier, sondern per ENV/Datei.
+
+# Search Console Property: Domain-Property "sc-domain:..." oder URL-Präfix "https://www.fraesdienst-feind.de/"
+site_url: "sc-domain:fraesdienst-feind.de"
+
+# GA4 Property-ID (nur Zahl; GA4 Admin → Property-Einstellungen). ENV: GA4_PROPERTY_ID
+ga4_property_id: ""
+
+# Service-Account-JSON (ENV GOOGLE_APPLICATION_CREDENTIALS oder GOOGLE_SERVICE_ACCOUNT_JSON überschreibt)
+credentials_file: "credentials/service-account.json"
+
+# Markenbegriffe (Groß-/Kleinschreibung und Umlaute werden normalisiert)
+brand_terms:
+  - "fräsdienst feind"
+  - "feind fräsdienst"
+  - "e. feind gmbh"
+  - "e feind gmbh"
+  - "e. feind"
+  - "feind gmbh"
+  - "fraesdienst-feind"
+
+# Keyword-Cluster: Reihenfolge = Priorität (erste Übereinstimmung gewinnt).
+# TODO David: durch die im Chat abgestimmte Cluster-Liste ersetzen.
+clusters:
+  - name: "CNC-Fräsen"
+    patterns: ["cnc fräsen", "cnc-fräsen", "cnc frästeile", "cnc fräser", "cnc bearbeitung"]
+  - name: "Lohnfertigung"
+    patterns: ["lohnfertigung", "lohnfräsen", "lohnfertiger", "auftragsfertigung"]
+  - name: "Werkstoffe"
+    patterns: ["aluminium fräsen", "alu fräsen", "kunststoff fräsen", "edelstahl fräsen", "pom fräsen", "messing fräsen", "titan fräsen"]
+  - name: "Prototypen & Kleinserien"
+    patterns: ["prototyp", "kleinserie", "einzelteil", "musterteil"]
+  - name: "Regional"
+    patterns: ["nrw", "in der nähe", "deutschland", "region", "umgebung"]
+  - name: "Fräsdienst allgemein"
+    patterns: ["fräsdienst", "fräsen lassen", "frästeile", "fräsarbeiten", "frässervice"]
+
+# CRM-Export: CSV oder XLSX, nur Datum/Quelle/Status/Wert (keine personenbezogenen Daten). ENV: CRM_EXPORT_PATH
+crm:
+  export_path: "data/crm/leads.csv"
+  date_column: "created_at"
+  source_column: "source"
+  status_column: "status"
+  value_column: "value"
+  won_statuses: ["gewonnen", "won", "auftrag"]
+  date_format: null   # z. B. "%d.%m.%Y"; null = automatisch (Tag zuerst)
+
+# Schwellen für Cluster-Bewegungen
+thresholds:
+  cluster_click_change_pct: 15     # Monat: |Δ Klicks| ≥ 15 %
+  weekly_click_change_pct: 20      # Woche: |Δ Klicks| ≥ 20 %
+  cluster_position_change: 1.0     # |Δ Ø Position| ≥ 1,0
+  min_clicks: 10                   # Cluster/Query unter 10 Klicks werden ignoriert
+  top_n: 15
+
+# Wochen-Check zusätzlich mit YoY-Vergleich (default aus)
+weekly_yoy: false
+
+output_dir: "output"
+timezone: "Europe/Berlin"
+
+# E-Mail-Versand (--email). Passwort nur über ENV SMTP_PASSWORD.
+email:
+  enabled: false
+  smtp_host: ""
+  smtp_port: 587
+  smtp_user: ""
+  sender: ""
+  recipients: []
+  subject_prefix: "[SEO-Report fraesdienst-feind.de]"

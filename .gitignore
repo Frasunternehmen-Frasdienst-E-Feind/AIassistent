@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# Lokale Konfiguration & Geheimnisse (nie committen)
+config.yaml
+credentials/
+*.json
+!config.schema.json
+.env
+
+# Rohdaten mit möglichen personenbezogenen Daten (DSGVO)
+data/crm/*
+!data/crm/.gitkeep
+!data/crm/leads.example.csv
+
+# Generierte Reports
+output/*
+!output/.gitkeep
