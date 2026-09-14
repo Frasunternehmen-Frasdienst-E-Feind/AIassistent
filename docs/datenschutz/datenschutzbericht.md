@@ -5,7 +5,8 @@
 **Zielgruppe:** Geschäftsführung, Datenschutzbeauftragte(r) (intern/extern), IT-Verantwortliche, ggf. Aufsichtsbehörde (LDI NRW)
 **Erstellt von:** David Halko (Marketing & Eventmanagement) mit KI-Unterstützung
 **Berichtsdatum:** 14.09.2026
-**Version:** 1.1 (Entwurf)
+**Version:** 1.2 (Entwurf)
+**Änderungsvermerk v1.2:** Aufgewertete Ausgabe (klickbares Inhaltsverzeichnis mit Anker-Links, verbesserte Tabellen-Darstellung, **Fußnoten** zu Rechtsquellen) sowie zusätzliche browserfreundliche HTML-Ansicht mit Navigations-Seitenleiste.
 **Änderungsvermerk v1.1:** Durchgängige `Annahme:`/`Offene Frage:`-Kennzeichnung, `{{PLATZHALTER}}`-Mechanismus in allen Vorlagen, neuer Abschnitt zur `.env`-Ableitungslogik, 4-spaltige Offene-Fragen-Tabelle, ergänzte kostengünstige/Open-Source-Optionen.
 **Vertraulichkeit:** Streng vertraulich — nur zur internen Verwendung
 
@@ -163,7 +164,7 @@ mit möglichem Personenbezug (Referenzen, Event-Fotos).
 | **Art. 33 / 34 / 35 DSGVO** | Datenpannen-Meldung (72 h), Benachrichtigung, DPIA. |
 | **§ 26 BDSG** | Beschäftigtendatenschutz. |
 | **§ 38 BDSG** | DSB-Benennungspflicht (ab 20 Personen mit automatisierter Verarbeitung oder bei DPIA-Pflicht). |
-| **§ 25 TDDDG** (vormals TTDSG) | Einwilligung für Zugriff auf Endgeräte-Informationen (Cookies/Tracking) — Opt-in. |
+| **§ 25 TDDDG**[^tdddg] (vormals TTDSG) | Einwilligung für Zugriff auf Endgeräte-Informationen (Cookies/Tracking) — Opt-in. |
 | **ePrivacy-Richtlinie** | Grundlage der Cookie-/Tracking-Regeln (national: TDDDG). |
 | **§ 147 AO, § 257 HGB** | Aufbewahrungspflichten (Löschkonzept). |
 
@@ -250,7 +251,7 @@ produktiven CRM-Rohdaten — durch `.gitignore` ausgeschlossen).
 ### 5.3 Grenzüberschreitende Übermittlungen (Drittstaaten)
 
 - **Google (GA4, Search Console, Google Cloud):** Übermittlung in die **USA** möglich.
-  Rechtsgrundlage: **EU-US Data Privacy Framework** (Angemessenheitsbeschluss vom 10.07.2023);
+  Rechtsgrundlage: **EU-US Data Privacy Framework** (Angemessenheitsbeschluss vom 10.07.2023)[^dpf];
   Google LLC ist DPF-zertifiziert; SCC als Auffanglösung. **→ Dokumentieren.**
 - **GitHub (Microsoft):** USA möglich; enthält nur Code/Konfiguration, keine produktiven
   personenbezogenen Rohdaten.
@@ -399,7 +400,7 @@ registriert; Website-Kontaktformular vorhanden.
 1. **Tracking (GA4):** lädt erst **nach Opt-in**? IP-Anonymisierung/Retention konfiguriert?
    Google-Signals ohne Einwilligung deaktiviert? — **Annahme:** aktuell ohne Opt-in.
 2. **Google Tag Manager:** vorhanden? consent-gesteuert? — **Offene Frage.**
-3. **Google Fonts:** **lokal gehostet** (nicht dynamisch nachladen — vgl. LG München 2022)? —
+3. **Google Fonts:** **lokal gehostet** (nicht dynamisch nachladen — vgl. LG München 2022[^fonts])? —
    **Annahme:** häufiges KMU-Risiko, oft extern.
 4. **Google Maps / reCAPTCHA / YouTube:** nur nach Consent (2-Klick)? — **Offene Frage.**
 5. **Social-Media-Plugins:** kein Einbetten ohne Consent? — **Offene Frage.**
@@ -967,7 +968,11 @@ KMU-/Branchenpraxis. Es wurde **keine** externe Live-Recherche durchgeführt (Ne
 **Aktualisierung:** siehe Anhang Q. Bei Nachlieferung realer Werte (`.env`/Config) kann der
 Bericht automatisiert neu erzeugt und Annahmen in Fakten überführt werden.
 
+[^dpf]: EU-US Data Privacy Framework — Angemessenheitsbeschluss der EU-Kommission vom 10.07.2023; nach Art. 45 DSGVO gelten zertifizierte US-Unternehmen (u. a. Google LLC) als sicheres Drittland. SCC (Art. 46) als Auffanglösung.
+[^fonts]: LG München I, Urteil vom 20.01.2022 (Az. 3 O 17493/20): das dynamische Nachladen von Google Fonts von Google-Servern ohne Einwilligung verletzt das allgemeine Persönlichkeitsrecht (IP-Übermittlung). Empfehlung: Schriften lokal einbinden.
+[^tdddg]: § 25 TDDDG (Telekommunikation-Digitale-Dienste-Datenschutz-Gesetz, in Kraft seit 14.05.2024; zuvor § 25 TTDSG) verlangt eine Einwilligung für das Speichern/Auslesen von Informationen auf Endgeräten (Cookies, Tracking), sofern nicht unbedingt erforderlich.
+
 ---
 
-*Ende des Berichts — Version 1.1 (Entwurf), 14.09.2026. Streng vertraulich. Vor rechtsverbindlichem
+*Ende des Berichts — Version 1.2 (Entwurf), 14.09.2026. Streng vertraulich. Vor rechtsverbindlichem
 Einsatz der Vorlagen: Prüfung durch Rechtsabteilung / Fachanwalt für IT-Recht.*
