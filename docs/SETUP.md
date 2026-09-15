@@ -32,12 +32,26 @@ OAuth-Consent-Flow. Service-Account = Passwort-lose, unbeaufsichtigte Ausführun
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install -e .                            # installiert Abhängigkeiten + Befehl seo-report
 cp config.example.yaml config.yaml          # ga4_property_id + Cluster eintragen
-python -m seo_reporting check-auth          # prüft Credentials + Zugriff beider APIs
-python -m seo_reporting monthly --demo      # Beispielreport mit synthetischen Daten
-python -m seo_reporting monthly --as-of 2026-09-01   # echter Report für August 2026
+seo-report check-auth                       # prüft Credentials + Zugriff beider APIs
+seo-report monthly --demo                   # Beispielreport mit synthetischen Daten
+seo-report monthly --as-of 2026-09-01       # echter Report für August 2026
 ```
+
+Windows (PowerShell):
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+pip install -e .
+copy config.example.yaml config.yaml
+seo-report monthly --demo
+```
+
+Der Befehl `seo-report` funktioniert nach der Installation aus jedem Ordner. Die
+Konfiguration findet er über `--config`, die Umgebungsvariable `SEO_REPORTING_CONFIG`
+oder eine `config.yaml` im aktuellen Ordner.
 
 Ergebnis liegt in `output/monthly_2026-08-01_2026-08-31.md` (+ `.json`).
 
@@ -77,7 +91,7 @@ das unter "Datenhinweise". Winterzeit: Läufe verschieben sich um eine Stunde na
 per `SMTP_PASSWORD`-Umgebungsvariable. Test:
 
 ```bash
-SMTP_PASSWORD=... python -m seo_reporting monthly --demo --email
+SMTP_PASSWORD=... seo-report monthly --demo --email
 ```
 
 ## 7. Bekannte Einschränkungen

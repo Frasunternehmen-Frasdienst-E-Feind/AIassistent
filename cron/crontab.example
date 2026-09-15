@@ -1,6 +1,6 @@
 # Crontab für den Reporting-Dienst (Server/NAS/Mac, lokale Zeit Europe/Berlin)
 # Installation:  crontab -e  → Zeilen einfügen, Pfade anpassen.
-# Voraussetzung: python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+# Voraussetzung: python3 -m venv .venv && .venv/bin/pip install -e .
 #                config.yaml + credentials/service-account.json vorhanden.
 #
 # Hinweis: Search Console liefert Daten mit 2–3 Tagen Verzögerung. Der Lauf am 1.
@@ -11,10 +11,10 @@ CRON_TZ=Europe/Berlin
 REPO=/pfad/zu/AIassistent
 
 # Workflow 1 – Monatsreport, jeden 1. um 08:00
-0 8 1 * *   cd $REPO && .venv/bin/python -m seo_reporting monthly --email >> output/cron.log 2>&1
+0 8 1 * *   cd $REPO && .venv/bin/seo-report monthly --email >> output/cron.log 2>&1
 
 # Optional: Nachlauf mit vollständigen GSC-Daten am 4. um 08:00
-# 0 8 4 * *   cd $REPO && .venv/bin/python -m seo_reporting monthly --email >> output/cron.log 2>&1
+# 0 8 4 * *   cd $REPO && .venv/bin/seo-report monthly --email >> output/cron.log 2>&1
 
 # Workflow 3 – Wochen-Check, jeden Montag 09:00
-0 9 * * 1   cd $REPO && .venv/bin/python -m seo_reporting weekly --email >> output/cron.log 2>&1
+0 9 * * 1   cd $REPO && .venv/bin/seo-report weekly --email >> output/cron.log 2>&1
