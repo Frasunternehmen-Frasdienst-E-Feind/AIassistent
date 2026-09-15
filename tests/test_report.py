@@ -43,3 +43,28 @@ def test_cli_writes_files(tmp_path, monkeypatch):
     assert files == ["monthly_2026-08-01_2026-08-31_demo.json", "monthly_2026-08-01_2026-08-31_demo.md"]
     data = json.loads((tmp_path / files[0]).read_text(encoding="utf-8"))
     assert data["meta"]["workflow"] == "monthly"
+
+
+def test_config_resolution_env_and_missing(tmp_path, monkeypatch):
+    from seo_reporting.cli import _resolve_config_path
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("SEO_REPORTING_CONFIG", raising=False)
+    assert _resolve_config_path(None) is None  # nichts im Ordner → Standardwerte
+    monkeypatch.setenv("SEO_REPORTING_CONFIG", str(ROOT / "config.example.yaml"))
+    assert _resolve_config_path(None) == str(ROOT / "config.example.yaml")
+    assert _resolve_config_path("explizit.yaml") == "explizit.yaml"  # --config gewinnt
+
+
+def test_missing_config_file_raises():
+    import pytest
+
+    with pytest.raises(FileNotFoundError):
+        load_config("/gibt/es/nicht.yaml")
+
+
+def test_console_script_entry_point_defined():
+    import tomllib
+
+    data = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    assert data["project"]["scripts"]["seo-report"] == "seo_reporting.cli:main"

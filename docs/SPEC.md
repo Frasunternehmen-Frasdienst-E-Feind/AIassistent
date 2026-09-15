@@ -108,6 +108,8 @@ mitgeben (enthält Top-Queries je Cluster und alle Deltas).
 
 ## 6. Konfiguration (config.yaml) und ENV-Überschreibungen
 
+Pfad zur Konfigurationsdatei: `--config` → ENV `SEO_REPORTING_CONFIG` → `./config.yaml` → `./config.example.yaml`.
+
 | Schlüssel | ENV | Zweck |
 |---|---|---|
 | `site_url` | `GSC_SITE_URL` | GSC-Property |

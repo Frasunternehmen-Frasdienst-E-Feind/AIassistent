@@ -1,13 +1,18 @@
 """Kommandozeile.
 
-  python -m seo_reporting monthly [--as-of YYYY-MM-DD] [--demo] [--email]
-  python -m seo_reporting weekly  [--as-of YYYY-MM-DD] [--demo] [--email]
-  python -m seo_reporting check-auth
+  seo-report monthly [--as-of YYYY-MM-DD] [--demo] [--email]
+  seo-report weekly  [--as-of YYYY-MM-DD] [--demo] [--email]
+  seo-report check-auth
+
+(`python -m seo_reporting ...` funktioniert weiterhin.)
+
+Konfigurationssuche: --config → ENV SEO_REPORTING_CONFIG → ./config.yaml → ./config.example.yaml → eingebaute Standardwerte.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from datetime import date
 from pathlib import Path
@@ -20,7 +25,7 @@ from seo_reporting.report.markdown import render
 
 def _parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="seo_reporting", description="SEO-/Lead-Reporting fraesdienst-feind.de")
-    p.add_argument("--config", default=None, help="Pfad zur config.yaml (Standard: ./config.yaml, sonst config.example.yaml)")
+    p.add_argument("--config", default=None, help="Pfad zur config.yaml (Standard: ENV SEO_REPORTING_CONFIG, ./config.yaml, ./config.example.yaml)")
     sub = p.add_subparsers(dest="command", required=True)
 
     for name, help_text in (("monthly", "Workflow 1: Monatsreport (Vormonat, MoM + YoY)"),
@@ -38,11 +43,19 @@ def _parser() -> argparse.ArgumentParser:
 def _resolve_config_path(arg: str | None) -> str | None:
     if arg:
         return arg
+    env_path = os.environ.get("SEO_REPORTING_CONFIG")
+    if env_path:
+        return env_path
     for candidate in ("config.yaml", "config.example.yaml"):
         if Path(candidate).exists():
             if candidate.endswith("example.yaml"):
                 print("Hinweis: config.yaml fehlt, verwende config.example.yaml.", file=sys.stderr)
             return candidate
+    print(
+        "Hinweis: keine config.yaml im aktuellen Ordner gefunden, verwende eingebaute Standardwerte "
+        "(keine Cluster). Pfad per --config oder ENV SEO_REPORTING_CONFIG angeben.",
+        file=sys.stderr,
+    )
     return None
 
 

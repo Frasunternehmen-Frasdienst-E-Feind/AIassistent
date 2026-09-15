@@ -21,3 +21,7 @@ data/crm/*
 # Generierte Reports
 output/*
 !output/.gitkeep
+
+# Build-Artefakte
+build/
+dist/
