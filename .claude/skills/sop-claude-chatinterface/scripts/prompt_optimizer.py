@@ -14,12 +14,13 @@ Nutzung:
 import re
 import sys
 
-# Pflichtfelder gemäß SOP (siehe SKILL.md, Abschnitt "Pflichtfelder einer Anfrage")
-REQUIRED_FIELDS = ["format", "länge", "zielgruppe", "cta"]
-
 
 def validate_prompt(prompt: str) -> dict:
-    """Prüft heuristisch, ob die Pflichtfelder im Prompt genannt sind."""
+    """Prüft heuristisch, ob die vier SOP-Pflichtfelder im Prompt genannt sind.
+
+    Geprüft werden: Format, Länge, Zielgruppe, CTA
+    (siehe SKILL.md, Abschnitt "Pflichtfelder einer Anfrage").
+    """
     prompt_lower = prompt.lower()
     results = {}
 
