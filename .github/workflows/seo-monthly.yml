@@ -1,0 +1,49 @@
+name: SEO Monatsreport (Workflow 1)
+
+on:
+  schedule:
+    # 1. des Monats, 06:00 UTC = 08:00 MESZ / 07:00 MEZ
+    - cron: "0 6 1 * *"
+  workflow_dispatch:
+    inputs:
+      as_of:
+        description: "Stichtag YYYY-MM-DD (leer = heute)"
+        required: false
+        default: ""
+      demo:
+        description: "Demo-Daten statt echter APIs"
+        type: boolean
+        default: false
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+      GSC_SITE_URL: ${{ vars.GSC_SITE_URL || 'sc-domain:fraesdienst-feind.de' }}
+      SMTP_HOST: ${{ secrets.SMTP_HOST }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      REPORT_EMAIL_FROM: ${{ secrets.REPORT_EMAIL_FROM }}
+      REPORT_EMAIL_TO: ${{ secrets.REPORT_EMAIL_TO }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install .
+      - name: Report erzeugen
+        run: |
+          ARGS=""
+          if [ -n "${{ inputs.as_of }}" ]; then ARGS="$ARGS --as-of ${{ inputs.as_of }}"; fi
+          if [ "${{ inputs.demo }}" = "true" ]; then ARGS="$ARGS --demo"; fi
+          if [ -n "$SMTP_HOST" ] && [ -n "$REPORT_EMAIL_TO" ]; then ARGS="$ARGS --email"; fi
+          seo-report --config config.example.yaml monthly --stdout $ARGS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: seo-monatsreport
+          path: output/*
+          retention-days: 400

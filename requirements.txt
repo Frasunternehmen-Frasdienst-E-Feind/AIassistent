@@ -1,0 +1,2 @@
+# Abhängigkeiten stehen in pyproject.toml. Installation: pip install -e .
+-e .
