@@ -4,8 +4,9 @@
 **Berichtstyp:** Zusammenfassender Datenschutz-/DSGVO-Statusbericht mit Maßnahmen, Vorlagen und Roadmap
 **Zielgruppe:** Geschäftsführung, Datenschutzbeauftragte(r) (intern/extern), IT-Verantwortliche, ggf. Aufsichtsbehörde (LDI NRW)
 **Erstellt von:** David Halko (Marketing & Eventmanagement) mit KI-Unterstützung
-**Berichtsdatum:** 14.09.2026
-**Version:** 1.2 (Entwurf)
+**Berichtsdatum:** 17.09.2026
+**Version:** 1.3 (Entwurf)
+**Änderungsvermerk v1.3:** Mitgelieferte **`.env`-Vorlage** (`.env.example` im Repository-Wurzelverzeichnis): Alle im Bericht referenzierten Umgebungsvariablen (Abschnitt 0, Anhang R) sind dort als ausfüllbare Vorlage hinterlegt. Abschnitt 0 und der Faktenlage-Hinweis verweisen jetzt auf diese Datei; das Platzhalter-Verzeichnis (Anhang R) nennt die zugehörigen `.env`-Schlüssel.
 **Änderungsvermerk v1.2:** Aufgewertete Ausgabe (klickbares Inhaltsverzeichnis mit Anker-Links, verbesserte Tabellen-Darstellung, **Fußnoten** zu Rechtsquellen) sowie zusätzliche browserfreundliche HTML-Ansicht mit Navigations-Seitenleiste.
 **Änderungsvermerk v1.1:** Durchgängige `Annahme:`/`Offene Frage:`-Kennzeichnung, `{{PLATZHALTER}}`-Mechanismus in allen Vorlagen, neuer Abschnitt zur `.env`-Ableitungslogik, 4-spaltige Offene-Fragen-Tabelle, ergänzte kostengünstige/Open-Source-Optionen.
 **Vertraulichkeit:** Streng vertraulich — nur zur internen Verwendung
@@ -30,6 +31,11 @@
 > **`Annahme:`** gekennzeichnet und über `{{PLATZHALTER}}` sowie den Fragenkatalog (Kap. 16/17)
 > als offene Punkte geführt. Verifizierte Fakten stammen aus der internen SEO-/Lead-Reporting-
 > Codebasis (`config.example.yaml`, `docs/SPEC.md`, `docs/SETUP.md`, `data/crm/leads.example.csv`).
+>
+> **Seit v1.3** liegt im Repository-Wurzelverzeichnis eine **`.env`-Vorlage (`.env.example`)** bereit,
+> in der alle hier genannten Variablen aufgeführt sind. Sobald David/IT diese Vorlage nach `.env`
+> kopiert und mit echten Werten füllt (`cp .env.example .env`), lassen sich die Annahmen in
+> **Fakten** überführen und der Bericht kann darauf gestützt aktualisiert werden (Anhang Q).
 
 > **Platzhalter-Mechanismus:** Alle Vorlagen und mehrere Textstellen enthalten Platzhalter in
 > doppelten geschweiften Klammern, z. B. `{{COMPANY_NAME}}`, `{{ADRESSE}}`, `{{GESCHAEFTSFUEHRER}}`,
@@ -66,8 +72,13 @@
 ## 0. `.env`-Ableitungslogik (Datenquelle des Berichts)
 
 Der Bericht ist so konstruiert, dass er aus einer `.env`/Konfiguration automatisch mit realen
-Werten befüllt werden kann. Da aktuell **keine** solchen Werte vorliegen, dokumentiert dieser
+Werten befüllt werden kann. Da aktuell **keine** solchen Werte gesetzt sind, dokumentiert dieser
 Abschnitt die **Ableitungsregeln** und den jeweils gesetzten Platzhalter/Annahmestatus.
+
+> **`.env`-Vorlage (seit v1.3):** Die Datei `.env.example` im Repository-Wurzelverzeichnis enthält
+> alle unten aufgeführten Variablen als leere, kommentierte Vorlage. Zum Befüllen:
+> `cp .env.example .env` und echte Werte eintragen. Die echte `.env` ist per `.gitignore`
+> ausgeschlossen und wird **nie** committet (nur die Vorlage `.env.example` ist versioniert).
 
 | `.env`-Variable | Ableitung / datenschutzrechtliche Konsequenz | Aktueller Status |
 |---|---|---|
@@ -930,6 +941,9 @@ Rechtlicher Hinweis: Muster vor Einsatz durch Rechtsabteilung/Fachanwalt pruefen
 
 ### Anhang R — Platzhalter-Verzeichnis
 
+> Die Spalte „Quelle" nennt den zugehörigen Schlüssel in der `.env`-Vorlage (`.env.example`,
+> Repository-Wurzel) bzw. „manuell", wenn der Wert direkt einzutragen ist.
+
 | Platzhalter | Bedeutung | Quelle (`.env`/manuell) |
 |---|---|---|
 | `{{COMPANY_NAME}}` | Firmierung des Verantwortlichen | manuell / Handelsregister |
@@ -974,5 +988,5 @@ Bericht automatisiert neu erzeugt und Annahmen in Fakten überführt werden.
 
 ---
 
-*Ende des Berichts — Version 1.2 (Entwurf), 14.09.2026. Streng vertraulich. Vor rechtsverbindlichem
+*Ende des Berichts — Version 1.3 (Entwurf), 17.09.2026. Streng vertraulich. Vor rechtsverbindlichem
 Einsatz der Vorlagen: Prüfung durch Rechtsabteilung / Fachanwalt für IT-Recht.*
