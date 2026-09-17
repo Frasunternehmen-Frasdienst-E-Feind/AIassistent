@@ -11,6 +11,7 @@ config.yaml
 credentials/
 *.json
 !config.schema.json
+!.mcp.json
 # Hook-Registrierung für Claude Code; enthält nur einen Dateipfad,
 # keine Zugangsdaten.
 !.claude/settings.json
