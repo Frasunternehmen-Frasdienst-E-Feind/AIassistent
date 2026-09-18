@@ -30,6 +30,8 @@ aber Strecke, Marker und **alle Auswertungen, Kennzahlen und Listen funktioniere
 - **Tageszeitleiste:** eine Zeile je Tag, Fahrten als Balken, Auffälligkeiten als Marker
 - **Listen:** Fahrten / Stopps / Auffälligkeiten; Klick springt auf der Karte an die Stelle;
   privat/beruflich je Fahrt setzbar
+- **Ortsnamen:** Enthält der Export eine Adress-/`Position`-Spalte, werden die Adressen
+  automatisch als Ort in Popups und Listen angezeigt (benannte Orte haben Vorrang).
 - **Filter:** Zeitraum, Tag, Kategorie, Ereignistyp
 - **Export:** CSV der Fahrtenliste, Druck-/PDF-Ansicht
 
@@ -38,7 +40,9 @@ aber Strecke, Marker und **alle Auswertungen, Kennzahlen und Listen funktioniere
 Standardwerte gemäß Spec §4, alle im **Zahnrad-Menü (⚙️)** änderbar. Entfernungen nach der
 Haversine-Formel; Positionssprünge (> 250 km/h) werden als GPS-Fehler markiert und bei km
 und Tempo nicht mitgezählt. Fehlt eine Geschwindigkeitsspalte, wird das Tempo aus Strecke
-und Zeit berechnet.
+und Zeit berechnet. Beginnt oder endet eine Fahrt mit einer längeren Datenlücke vor einem
+stehenden Punkt (z. B. eine veraltete Parkposition), wird dieser Punkt aus der Fahrt
+herausgetrimmt – Start-/Zielzeit bleiben realistisch.
 
 ## Zeitzone
 

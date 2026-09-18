@@ -333,6 +333,13 @@ GPS.util = (function(){
   function pad(n){ return String(n).padStart(2,'0'); }
   function fmtDate(p){ return pad(p.d)+'.'+pad(p.mo)+'.'+p.y; }
   function fmtTime(p){ return pad(p.h)+':'+pad(p.mi); }
+  // Adresse kürzen: erste 1–2 Bestandteile (Straße + Ort), lange Behördenketten weglassen
+  function shortAddr(a){
+    if(!a) return null;
+    const parts=String(a).split(',').map(s=>s.trim()).filter(Boolean);
+    if(!parts.length) return null;
+    return parts.slice(0,2).join(', ');
+  }
   function fmtDur(min){
     min=Math.round(min);
     if(min<60) return min+' min';
@@ -395,7 +402,7 @@ GPS.util = (function(){
     if(v<100) return '#f59f00';
     return '#e03131';
   }
-  return {haversine,berlinParts,berlinWallToMs,parseNum,parseAcc,parseTime,fmtDate,fmtTime,fmtDur,pad,speedColor};
+  return {haversine,berlinParts,berlinWallToMs,parseNum,parseAcc,parseTime,fmtDate,fmtTime,fmtDur,shortAddr,pad,speedColor};
 })();
 
 /* -------------------------- store (localStorage, §6) ------------------- */
@@ -431,7 +438,9 @@ GPS.normalizer = (function(){
       if(mapping.speed){ const sp=U.parseNum(r[mapping.speed]); speed=isNaN(sp)?null:sp; }
       let acc=null;
       if(mapping.acc){ acc=U.parseAcc(r[mapping.acc]); }
-      pts.push({t,lat,lon,speed,acc});
+      let addr=null;
+      if(mapping.addr){ const a=r[mapping.addr]; addr=(a==null||a==='')?null:String(a).trim(); }
+      pts.push({t,lat,lon,speed,acc,addr});
     }
     pts.sort((a,b)=>a.t-b.t);
     // Dubletten (gleiche Zeit + Position) entfernen
@@ -455,7 +464,7 @@ GPS.detector = (function(){
     const s=Object.assign({}, GPS.defaults, settings||{});
     places=places||[];
     const n=points.length;
-    const P=points.map(p=>({t:p.t,lat:p.lat,lon:p.lon,speed:p.speed,acc:(p.acc===undefined?null:p.acc)}));
+    const P=points.map(p=>({t:p.t,lat:p.lat,lon:p.lon,speed:p.speed,acc:(p.acc===undefined?null:p.acc),addr:(p.addr==null?null:p.addr)}));
 
     // 1) Segment-Kennwerte + Positionssprünge
     const segJump=new Array(n).fill(false);
@@ -500,7 +509,8 @@ GPS.detector = (function(){
         if(durMin>=s.stopMinMin || ign) type='stop';
         else if(durMin>=s.shortStopMinMin) type='short';
         else type='micro';
-        clusters.push({i,j,startT:P[i].t,endT:P[j].t,durMin,lat:cLat,lon:cLon,ignitionOff:ign,type});
+        let cAddr=null; for(let k=i;k<=j;k++){ if(P[k].addr){ cAddr=P[k].addr; break; } }
+        clusters.push({i,j,startT:P[i].t,endT:P[j].t,durMin,lat:cLat,lon:cLon,ignitionOff:ign,type,addr:cAddr});
         i=j+1;
       } else i++;
     }
@@ -524,7 +534,12 @@ GPS.detector = (function(){
     if(cursor<=n-1) spans.push([cursor,n-1]);
 
     const inNight = h => (h>=s.nightStart || h<s.nightEnd);
-    for(const [a,b] of spans){
+    for(const [a0,b0] of spans){
+      let a=a0, b=b0;
+      // Führende/abschließende Datenlücken heraustrimmen: ein stehender Punkt, der durch
+      // eine große Lücke von der eigentlichen Fahrt getrennt ist, gehört nicht zur Fahrt.
+      while(a<b && P[a]._v<=s.tripSpeed && P[a+1] && P[a+1]._dt>s.dataGapMin*60) a++;
+      while(b>a && P[b]._v<=s.tripSpeed && P[b]._dt>s.dataGapMin*60) b--;
       if(b<=a) continue;
       let maxV=0; for(let k=a;k<=b;k++) if(!P[k]._jump) maxV=Math.max(maxV,P[k]._v);
       if(maxV<=s.tripSpeed) continue; // keine echte Bewegung
@@ -540,7 +555,8 @@ GPS.detector = (function(){
         a,b, startT:P[a].t, endT:P[b].t, km, durMin, maxSpeed:maxV, avgSpeed:avg,
         night, shortStops:inner.length,
         startLat:P[a].lat,startLon:P[a].lon,endLat:P[b].lat,endLon:P[b].lon,
-        startPlace:sPlace?sPlace.name:null, endPlace:ePlace?ePlace.name:null
+        startPlace:sPlace?sPlace.name:null, endPlace:ePlace?ePlace.name:null,
+        startAddr:P[a].addr||null, endAddr:P[b].addr||null
       });
     }
 
@@ -626,17 +642,26 @@ GPS.importer = (function(){
   // Auto-Zuordnung anhand üblicher Bezeichner
   function autoMap(headers){
     const norm=h=>String(h).toLowerCase().replace(/[^a-zäöü0-9]/g,'');
+    const used=new Set();
+    // Teilstring-Treffer; bereits belegte Spalten werden übersprungen
     const find=(...cands)=>{
-      for(const h of headers){ const nh=norm(h); if(cands.some(c=>nh===c||nh.includes(c))) return h; }
+      for(const h of headers){ if(used.has(h)) continue; const nh=norm(h); if(cands.some(c=>nh===c||nh.includes(c))){ used.add(h); return h; } }
       return null;
     };
-    return {
-      time: find('zeit','time','timestamp','datum','date','datetime','fixtime','gpszeit'),
-      lat:  find('lat','latitude','breite','breitengrad','ycoord','y'),
-      lon:  find('lon','lng','long','longitude','länge','laenge','langengrad','xcoord','x'),
-      speed:find('speed','geschwindigkeit','tempo','kmh','velocity','geschw'),
-      acc:  find('acc','zündung','zuendung','ignition','ign','engine','motor')
+    // exakter Treffer (verhindert z. B. dass "Positionierungszeit" als Adresse gilt)
+    const findExact=(...cands)=>{
+      for(const h of headers){ if(used.has(h)) continue; const nh=norm(h); if(cands.some(c=>nh===c)){ used.add(h); return h; } }
+      return null;
     };
+    const m={};
+    m.time = find('zeit','time','timestamp','datum','date','datetime','fixtime','gpszeit');
+    m.lat  = find('lat','latitude','breite','breitengrad','ycoord');
+    m.lon  = find('lon','lng','long','longitude','länge','laenge','langengrad','xcoord');
+    m.speed= find('speed','geschwindigkeit','tempo','kmh','velocity','geschw');
+    m.acc  = findExact('acc','ign','ignition','zündung','zuendung') || find('zündung','zuendung','ignition','engine','motor');
+    // Adresse: erst exakt (Position/Adresse/Standort/Location), sonst per Teilstring 'adress'/'standort'
+    m.addr = findExact('position','adresse','address','standort','location') || find('adresse','address','standort');
+    return m;
   }
   function sig(headers){ return headers.slice().sort().join('|'); }
   return {readFile,autoMap,sig};
@@ -706,7 +731,7 @@ GPS.importer = (function(){
   /* ---------- Zuordnungsdialog ---------- */
   function openMappingDialog(headers, guess, sig, rows){
     const wrap=$('map-fields'); wrap.innerHTML='';
-    const fields=[['time','Zeitstempel *'],['lat','Breite (lat) *'],['lon','Länge (lon) *'],['speed','Geschwindigkeit'],['acc','Zündung (ACC)']];
+    const fields=[['time','Zeitstempel *'],['lat','Breite (lat) *'],['lon','Länge (lon) *'],['speed','Geschwindigkeit'],['acc','Zündung (ACC)'],['addr','Adresse / Position']];
     for(const [key,label] of fields){
       const f=document.createElement('div'); f.className='field';
       const opts=['<option value="">– keine –</option>'].concat(headers.map(h=>`<option value="${escAttr(h)}" ${guess[key]===h?'selected':''}>${escHtml(h)}</option>`));
@@ -824,7 +849,8 @@ GPS.importer = (function(){
         const rad = Math.max(5, Math.min(22, 5+Math.log10(Math.max(2,c.durMin))*7));
         const p=U.berlinParts(c.startT);
         const m=L.circleMarker([c.lat,c.lon],{radius:rad,color:'#fff',weight:1.5,fillColor:color,fillOpacity:.85});
-        m.bindPopup(`<b>${isLong?'Stopp':'Kurzer Stopp'}</b><br>${U.fmtDate(p)} ${U.fmtTime(p)}<br>Dauer: ${U.fmtDur(c.durMin)}<br>Ort: ${c.place?escHtml(c.place):'—'}<br><button class="btn" style="margin-top:6px;padding:4px 8px" onclick="window.__namePlace(${c.lat},${c.lon})">Als Ort benennen</button>`);
+        const ort=c.place||U.shortAddr(c.addr);
+        m.bindPopup(`<b>${isLong?'Stopp':'Kurzer Stopp'}</b><br>${U.fmtDate(p)} ${U.fmtTime(p)}<br>Dauer: ${U.fmtDur(c.durMin)}<br>Ort: ${ort?escHtml(ort):'—'}<br><button class="btn" style="margin-top:6px;padding:4px 8px" onclick="window.__namePlace(${c.lat},${c.lon})">Als Ort benennen</button>`);
         m.addTo(stops); bounds.push([c.lat,c.lon]);
       }
     }
@@ -911,8 +937,8 @@ GPS.importer = (function(){
       const cat=catOf(tr.startT);
       h+=`<tr data-lat="${tr.startLat}" data-lon="${tr.startLon}">
         <td>${U.fmtDate(ps)}${tr.night?' <span class="tag night">Nacht</span>':''}</td>
-        <td>${U.fmtTime(ps)} ${tr.startPlace?'· '+escHtml(tr.startPlace):''}</td>
-        <td>${U.fmtTime(pe)} ${tr.endPlace?'· '+escHtml(tr.endPlace):''}</td>
+        <td>${U.fmtTime(ps)} ${(tr.startPlace||U.shortAddr(tr.startAddr))?'· '+escHtml(tr.startPlace||U.shortAddr(tr.startAddr)):''}</td>
+        <td>${U.fmtTime(pe)} ${(tr.endPlace||U.shortAddr(tr.endAddr))?'· '+escHtml(tr.endPlace||U.shortAddr(tr.endAddr)):''}</td>
         <td class="num">${tr.km.toFixed(1)}</td>
         <td class="num">${U.fmtDur(tr.durMin)}</td>
         <td class="num">${Math.round(tr.avgSpeed)} / ${Math.round(tr.maxSpeed)}</td>
@@ -939,7 +965,7 @@ GPS.importer = (function(){
       hs+=`<tr data-lat="${c.lat}" data-lon="${c.lon}">
         <td>${U.fmtDate(p)}</td><td>${U.fmtTime(p)}</td>
         <td class="num">${U.fmtDur(c.durMin)}</td>
-        <td>${c.place?escHtml(c.place):'<span class="muted">—</span>'}</td>
+        <td>${(c.place||U.shortAddr(c.addr))?escHtml(c.place||U.shortAddr(c.addr)):'<span class="muted">—</span>'}</td>
         <td>${c.type==='stop'?'<span class="tag">Stopp</span>':'<span class="tag yellow">kurz</span>'}${longStand?' <span class="tag red">lange Standzeit</span>':''}${c.ignitionOff?' <span class="tag">Zündung aus</span>':''}</td>
       </tr>`;
     }
@@ -961,7 +987,7 @@ GPS.importer = (function(){
     const rows=[['Datum','Start','Ziel','Start-Ort','Ziel-Ort','km','Dauer_min','Ø_kmh','Max_kmh','Nacht','Kategorie']];
     for(const tr of trips){
       const ps=U.berlinParts(tr.startT), pe=U.berlinParts(tr.endT);
-      rows.push([U.fmtDate(ps),U.fmtTime(ps),U.fmtTime(pe),tr.startPlace||'',tr.endPlace||'',tr.km.toFixed(2).replace('.',','),Math.round(tr.durMin),Math.round(tr.avgSpeed),Math.round(tr.maxSpeed),tr.night?'ja':'nein',catOf(tr.startT)]);
+      rows.push([U.fmtDate(ps),U.fmtTime(ps),U.fmtTime(pe),tr.startPlace||U.shortAddr(tr.startAddr)||'',tr.endPlace||U.shortAddr(tr.endAddr)||'',tr.km.toFixed(2).replace('.',','),Math.round(tr.durMin),Math.round(tr.avgSpeed),Math.round(tr.maxSpeed),tr.night?'ja':'nein',catOf(tr.startT)]);
     }
     const csv='﻿'+rows.map(r=>r.map(c=>{const s=String(c); return /[";\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(';')).join('\r\n');
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
