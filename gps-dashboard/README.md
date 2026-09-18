@@ -14,9 +14,13 @@ Umsetzung der Design-Spezifikation vom 18.09.2026.
 3. Beim ersten Import werden die Spalten automatisch erkannt; falls nicht, erscheint
    einmalig ein Zuordnungsdialog (wird gespeichert).
 
-Es wird **kein Server** benötigt. **Positionsdaten verlassen den Browser nicht** – lediglich
-die Kartenkacheln kommen von OpenStreetMap und die Bibliotheken (Leaflet, PapaParse, SheetJS)
-von cdnjs. Dafür ist beim Öffnen eine Internetverbindung nötig.
+Es wird **kein Server** benötigt und **Positionsdaten verlassen den Browser nicht**.
+
+**Offline nutzbar:** Die Bibliotheken (Leaflet, PapaParse, SheetJS) sind direkt in
+`gps-dashboard.html` eingebettet – die Datei läuft ohne Internet. Einzige Ausnahme ist der
+**Kartenhintergrund** (OpenStreetMap-Kacheln): Ohne Internet bleibt die Kartenfläche leer,
+aber Strecke, Marker und **alle Auswertungen, Kennzahlen und Listen funktionieren weiter**
+(ein Hinweis erscheint automatisch).
 
 ## Funktionen (laut Spec)
 
@@ -59,9 +63,28 @@ nicht vorhanden, Tempo).
 - **Fahrtenbuch:** liefert nur eine Arbeitsgrundlage. Für ein steuerlich anerkanntes
   Fahrtenbuch gelten eigene Anforderungen – **bitte Steuerberater prüfen.**
 
+## Offline-Build (für Entwickler)
+
+Die verteilte `gps-dashboard.html` wird aus einer wartbaren Quelle erzeugt, damit die
+Bibliotheks-Blobs die eigene Logik nicht überlagern:
+
+- `gps-dashboard.src.html` – editierbare Quelle; lädt die Bibliotheken über relative
+  `vendor/`-Pfade (funktioniert lokal ebenfalls offline, wenn der `vendor/`-Ordner daneben liegt).
+- `vendor/` – die Bibliotheken (per `npm pack` bezogen, exakte Versionen).
+- `build.mjs` – ersetzt die `<!-- BUILD:… -->`-markierten Tags durch inline-Blöcke.
+
+Neu bauen nach Änderungen an Quelle oder Bibliotheken:
+
+```bash
+node build.mjs        # erzeugt gps-dashboard.html mit eingebetteten Bibliotheken
+```
+
 ## Dateien
 
 | Datei | Zweck |
 |---|---|
-| `gps-dashboard.html` | Das komplette Dashboard (self-contained, inkl. Detector + Selbsttest) |
+| `gps-dashboard.html` | Verteilte Einzeldatei, Bibliotheken eingebettet, **offline nutzbar** |
+| `gps-dashboard.src.html` | Wartbare Quelle (Bibliotheken über `vendor/`) |
+| `build.mjs` | Build: bettet `vendor/`-Bibliotheken in die Einzeldatei ein |
+| `vendor/` | Leaflet 1.9.4 (BSD-2), PapaParse 5.4.1 (MIT), SheetJS 0.18.5 (Apache-2.0) |
 | `beispiel-fahrten.csv` | Synthetische Demo-Daten (2 Tage, alle Ereignistypen) |
