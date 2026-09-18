@@ -33,7 +33,7 @@ OAuth-Consent-Flow. Service-Account = Passwort-lose, unbeaufsichtigte Ausführun
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e .                            # installiert Abhängigkeiten + Befehl seo-report
-cp config.example.yaml config.yaml          # ga4_property_id + Cluster eintragen
+cp config.example.yaml config.yaml          # ga4_property_id eintragen (Cluster sind vorbelegt)
 seo-report check-auth                       # prüft Credentials + Zugriff beider APIs
 seo-report monthly --demo                   # Beispielreport mit synthetischen Daten
 seo-report monthly --as-of 2026-09-01       # echter Report für August 2026

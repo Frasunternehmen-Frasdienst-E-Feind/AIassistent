@@ -46,6 +46,7 @@ Stand: 2026-09-11 · Paket `seo_reporting` · Python 3.11
 2. **Marke vs. Nicht-Marke** (`analysis/brand.py`): Normalisierung (Kleinschreibung, ä→ae, Sonderzeichen raus),
    Substring-Match gegen `brand_terms`, auch ohne Leerzeichen (`fraesdienstfeind`)
 3. **Cluster** (`analysis/clusters.py`): Reihenfolge Marke → konfigurierte Cluster (erste Übereinstimmung) → „Sonstige“.
+   Konfigurierte Cluster (Stand 09/2026): Regional, Zielgruppen, Problembezogen, Spezialverfahren, Flächengröße, Service, Hauptleistungen.
    Pro Cluster: Klicks, Impressionen, CTR, impressions-gewichtete Ø Position, Anzahl Queries, Top-Queries
 4. **Deltas** (`analysis/metrics.py`): `{current, previous, abs, pct}`; `pct = null` bei Vorwert 0
 5. **Bewegungs-Erkennung** (`detect_movements`), nur Cluster mit ≥ `min_clicks` (10) in einem der Zeiträume:
@@ -121,7 +122,7 @@ Pfad zur Konfigurationsdatei: `--config` → ENV `SEO_REPORTING_CONFIG` → `./c
 
 ## 7. Offene Punkte / Erweiterungen
 
-- Cluster-Liste aus dem Chat in `config.yaml` übernehmen (aktuell Platzhalter-Cluster).
+- Cluster-Liste nach echten Search-Console-Daten nachschärfen (Quelle aktuell: Notion Marketing-Scan/-Audit 08/2026).
 - CRM-Anbindung per API statt Datei-Export, sobald das CRM feststeht.
 - Optional: Mehrere GA4-Key-Events getrennt ausweisen (`keyEvents:<event_name>`).
 - Optional: Historie der JSON-Reports für Trendlinien über > 2 Zeiträume.
