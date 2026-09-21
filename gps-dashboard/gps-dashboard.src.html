@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPS-Fahrten-Dashboard</title>
+<meta name="description" content="Lokales Dashboard zur Auswertung von xoGPS-Exporten (Fahrten, Stopps, Auffälligkeiten). Läuft komplett im Browser, Positionsdaten verlassen den Rechner nicht.">
+
+<!-- Bibliotheken lokal aus vendor/ (Leaflet 1.9.4, PapaParse 5.4.1, SheetJS 0.18.5).
+     Beim Build (build.mjs) werden diese Tags durch inline-Blöcke ersetzt -> gps-dashboard.html
+     ist dann komplett offline nutzbar (nur die OSM-Kartenkacheln brauchen Internet). -->
+<!-- BUILD:CSS vendor/leaflet.min.css --><link rel="stylesheet" href="vendor/leaflet.min.css">
+<!-- BUILD:JS vendor/leaflet.min.js --><script src="vendor/leaflet.min.js"></script>
+<!-- BUILD:JS vendor/papaparse.min.js --><script src="vendor/papaparse.min.js"></script>
+<!-- BUILD:JS vendor/xlsx.full.min.js --><script src="vendor/xlsx.full.min.js"></script>
+
+<style>
+  :root{
+    --bg:#f4f6f8; --panel:#ffffff; --ink:#1f2933; --muted:#647084; --line:#e2e8f0;
+    --accent:#1a73e8; --grey:#9aa0a6; --yellow:#f59f00; --red:#e03131; --green:#12b886;
+    --shadow:0 1px 3px rgba(15,23,42,.08),0 1px 2px rgba(15,23,42,.06);
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--ink); font-size:15px; line-height:1.45;
+  }
+  header.app{
+    position:sticky; top:0; z-index:1200; background:var(--panel);
+    border-bottom:1px solid var(--line); box-shadow:var(--shadow);
+  }
+  .bar{
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    max-width:1400px; margin:0 auto; padding:10px 16px;
+  }
+  .bar h1{font-size:18px; margin:0; display:flex; align-items:center; gap:8px}
+  .bar h1 .dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
+  .spacer{flex:1}
+  .btn{
+    border:1px solid var(--line); background:#fff; color:var(--ink); cursor:pointer;
+    padding:7px 12px; border-radius:8px; font-size:14px; display:inline-flex; align-items:center; gap:6px;
+  }
+  .btn:hover{background:#f0f4f9}
+  .btn.primary{background:var(--accent); color:#fff; border-color:var(--accent)}
+  .btn.primary:hover{filter:brightness(.95)}
+  .btn[disabled]{opacity:.5; cursor:not-allowed}
+  select,input[type=date],input[type=number],input[type=text]{
+    border:1px solid var(--line); border-radius:8px; padding:6px 8px; font-size:14px; background:#fff; color:var(--ink);
+  }
+  main{max-width:1400px; margin:0 auto; padding:16px; display:grid; gap:16px}
+
+  /* Drop-Zone / leerer Zustand */
+  #drop{
+    border:2px dashed #cbd5e1; border-radius:var(--radius); background:var(--panel);
+    padding:44px 20px; text-align:center; color:var(--muted); cursor:pointer;
+  }
+  #drop.drag{border-color:var(--accent); background:#eef4ff; color:var(--accent)}
+  #drop strong{color:var(--ink)}
+
+  .kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px}
+  .kpi{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; box-shadow:var(--shadow)}
+  .kpi .label{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em}
+  .kpi .value{font-size:26px; font-weight:700; margin-top:4px}
+  .kpi.alert .value{color:var(--red)}
+
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+  .panel h2{font-size:14px; margin:0; padding:12px 16px; border-bottom:1px solid var(--line); color:var(--muted); text-transform:uppercase; letter-spacing:.04em}
+  .panel .body{padding:0}
+
+  #map{height:460px; width:100%}
+  .leaflet-popup-content{font-size:13px}
+
+  /* Filterleiste */
+  .filters{display:flex; gap:10px; flex-wrap:wrap; align-items:end; padding:12px 16px}
+  .filters .f{display:flex; flex-direction:column; gap:3px}
+  .filters .f label{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em}
+  .chips{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  .chip{display:inline-flex; align-items:center; gap:5px; font-size:13px; color:var(--muted)}
+  .legend{display:flex; gap:14px; flex-wrap:wrap; padding:8px 16px; font-size:12px; color:var(--muted); border-top:1px solid var(--line)}
+  .legend i{display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:5px; vertical-align:-1px}
+
+  /* Zeitleiste */
+  #timeline{padding:10px 16px 16px}
+  .tl-scale{display:flex; margin-left:78px; color:var(--muted); font-size:10px; user-select:none}
+  .tl-scale span{flex:1; text-align:left}
+  .tl-row{display:flex; align-items:center; gap:8px; margin-top:6px}
+  .tl-day{width:70px; font-size:12px; color:var(--muted); text-align:right; flex:none}
+  .tl-track{position:relative; flex:1; height:22px; background:#f1f5f9; border-radius:5px; overflow:hidden}
+  .tl-trip{position:absolute; top:3px; height:16px; border-radius:4px; background:var(--accent); opacity:.85; cursor:pointer}
+  .tl-trip.night{background:#5f3dc4}
+  .tl-anom{position:absolute; top:0; width:2px; height:22px; background:var(--red)}
+
+  /* Tabs & Tabellen */
+  .tabs{display:flex; gap:2px; padding:10px 16px 0; flex-wrap:wrap}
+  .tab{border:1px solid var(--line); border-bottom:none; background:#f8fafc; padding:7px 14px; border-radius:8px 8px 0 0; cursor:pointer; font-size:14px; color:var(--muted)}
+  .tab.active{background:#fff; color:var(--ink); font-weight:600}
+  .tabwrap{border-top:1px solid var(--line)}
+  table{width:100%; border-collapse:collapse; font-size:13px}
+  th,td{text-align:left; padding:8px 12px; border-bottom:1px solid var(--line); white-space:nowrap}
+  th{color:var(--muted); font-weight:600; position:sticky; top:0; background:#fff; cursor:pointer; user-select:none}
+  tbody tr{cursor:pointer}
+  tbody tr:hover{background:#f5f9ff}
+  .tblwrap{max-height:420px; overflow:auto}
+  .tag{display:inline-block; font-size:11px; padding:1px 7px; border-radius:999px; background:#eef2f7; color:var(--muted)}
+  .tag.night{background:#efe7ff; color:#5f3dc4}
+  .tag.red{background:#fde8e8; color:var(--red)}
+  .tag.yellow{background:#fff4e0; color:#a15c00}
+  td.num{text-align:right; font-variant-numeric:tabular-nums}
+  .muted{color:var(--muted)}
+  .cat-sel{font-size:12px; padding:3px 6px}
+
+  /* Modal */
+  .modal-bg{position:fixed; inset:0; background:rgba(15,23,42,.45); display:none; align-items:center; justify-content:center; z-index:2000; padding:16px}
+  .modal-bg.open{display:flex}
+  .modal{background:#fff; border-radius:var(--radius); max-width:640px; width:100%; max-height:88vh; overflow:auto; box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .modal h3{margin:0; padding:16px 18px; border-bottom:1px solid var(--line); font-size:16px; display:flex; align-items:center; gap:8px}
+  .modal .mbody{padding:16px 18px; display:grid; gap:14px}
+  .modal .mfoot{padding:14px 18px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:8px}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .field{display:flex; flex-direction:column; gap:4px}
+  .field label{font-size:12px; color:var(--muted)}
+  .maprow{display:grid; grid-template-columns:1fr 90px 90px 70px 32px; gap:6px; align-items:center}
+  .note{font-size:12px; color:var(--muted); background:#f8fafc; border:1px solid var(--line); border-radius:8px; padding:10px 12px}
+  .banner{padding:10px 16px; font-size:13px; border-radius:8px; margin:0}
+  .banner.warn{background:#fff8e6; border:1px solid #ffe3a3; color:#8a5a00}
+  .banner.err{background:#fdecec; border:1px solid #f7c2c2; color:#a12020}
+  .banner.ok{background:#e9f8f0; border:1px solid #b7e6cd; color:#146c43}
+  #selftest-out{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; white-space:pre-wrap}
+  .hidden{display:none !important}
+
+  @media (max-width:640px){
+    #map{height:320px}
+    .tl-day{width:52px}
+    .tl-scale{margin-left:60px}
+    th,td{padding:7px 8px}
+  }
+  @media print{
+    header.app,#drop,.filters,.tabs,.btn,.leaflet-control-container{display:none !important}
+    body{background:#fff}
+    .panel{box-shadow:none; border-color:#ccc; break-inside:avoid}
+    #map{height:300px}
+    .tblwrap{max-height:none; overflow:visible}
+  }
+</style>
+</head>
+<body>
+
+<header class="app">
+  <div class="bar">
+    <h1><span class="dot"></span> GPS-Fahrten-Dashboard</h1>
+    <span class="spacer"></span>
+    <button class="btn" id="btn-import">📂 Datei laden</button>
+    <label class="chip" title="Zeitzone, in der die Zeitstempel interpretiert werden">
+      TZ:
+      <select id="tz">
+        <option value="Berlin">Europe/Berlin</option>
+        <option value="UTC">UTC</option>
+      </select>
+    </label>
+    <button class="btn" id="btn-csv" disabled>⬇️ CSV</button>
+    <button class="btn" id="btn-print" disabled>🖨️ Druck/PDF</button>
+    <button class="btn" id="btn-settings" title="Einstellungen">⚙️</button>
+    <input type="file" id="file" accept=".csv,.xlsx,.xls,.txt" class="hidden">
+  </div>
+</header>
+
+<main>
+  <div id="banner-area"></div>
+
+  <div id="drop">
+    <p style="font-size:17px;margin:0 0 6px"><strong>xoGPS-Export hierher ziehen</strong> oder klicken zum Auswählen</p>
+    <p style="margin:0">CSV oder XLSX · Die Daten bleiben ausschließlich in diesem Browser.</p>
+  </div>
+
+  <section id="dash" class="hidden" style="display:grid; gap:16px">
+    <div class="kpis" id="kpis"></div>
+
+    <div class="panel">
+      <h2>Karte</h2>
+      <div class="body">
+        <div id="map"></div>
+        <div class="legend">
+          <span><i style="background:var(--accent)"></i>&lt;30</span>
+          <span><i style="background:var(--green)"></i>30–60</span>
+          <span><i style="background:var(--yellow)"></i>60–100</span>
+          <span><i style="background:var(--red)"></i>&gt;100 km/h</span>
+          <span style="margin-left:12px"><i style="background:var(--grey);border-radius:50%"></i>Stopp</span>
+          <span><i style="background:var(--yellow);border-radius:50%"></i>kurzer Stopp</span>
+          <span><i style="background:var(--red);border-radius:50%"></i>auffällig</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Filter</h2>
+      <div class="filters">
+        <div class="f"><label>Von</label><input type="date" id="f-from"></div>
+        <div class="f"><label>Bis</label><input type="date" id="f-to"></div>
+        <div class="f"><label>Tag</label><select id="f-day"><option value="">alle</option></select></div>
+        <div class="f"><label>Kategorie</label>
+          <select id="f-cat"><option value="">alle</option><option value="beruflich">beruflich</option><option value="privat">privat</option><option value="">–</option></select>
+        </div>
+        <div class="f" style="min-width:220px">
+          <label>Ereignistypen (Karte/Listen)</label>
+          <div class="chips">
+            <label class="chip"><input type="checkbox" id="e-trips" checked> Fahrten</label>
+            <label class="chip"><input type="checkbox" id="e-stops" checked> Stopps</label>
+            <label class="chip"><input type="checkbox" id="e-anom" checked> Auffälligkeiten</label>
+          </div>
+        </div>
+        <button class="btn" id="f-reset">Zurücksetzen</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Tageszeitleiste</h2>
+      <div class="body"><div id="timeline"></div></div>
+    </div>
+
+    <div class="panel">
+      <div class="tabs">
+        <div class="tab active" data-tab="trips">Fahrten</div>
+        <div class="tab" data-tab="stops">Stopps</div>
+        <div class="tab" data-tab="anoms">Auffälligkeiten</div>
+      </div>
+      <div class="tabwrap">
+        <div class="tblwrap" id="tab-trips"></div>
+        <div class="tblwrap hidden" id="tab-stops"></div>
+        <div class="tblwrap hidden" id="tab-anoms"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Spalten-Zuordnungsdialog (§6) -->
+<div class="modal-bg" id="map-modal">
+  <div class="modal">
+    <h3>🧩 Spalten zuordnen</h3>
+    <div class="mbody">
+      <div class="note">Die Spalten der Datei konnten nicht automatisch erkannt werden. Bitte einmalig zuordnen – die Zuordnung wird für diese Spaltenstruktur gespeichert.</div>
+      <div class="grid2" id="map-fields"></div>
+    </div>
+    <div class="mfoot">
+      <button class="btn" id="map-cancel">Abbrechen</button>
+      <button class="btn primary" id="map-ok">Übernehmen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Einstellungen (Zahnrad, §4) -->
+<div class="modal-bg" id="set-modal">
+  <div class="modal">
+    <h3>⚙️ Einstellungen</h3>
+    <div class="mbody">
+      <div class="grid2">
+        <div class="field"><label>Fahrt ab Tempo (km/h)</label><input type="number" id="s-tripSpeed" step="1"></div>
+        <div class="field"><label>Stopp unter Tempo (km/h)</label><input type="number" id="s-stopSpeed" step="1"></div>
+        <div class="field"><label>Stopp-Radius (m)</label><input type="number" id="s-stopRadius" step="10"></div>
+        <div class="field"><label>Stopp ab Dauer (min)</label><input type="number" id="s-stopMinMin" step="1"></div>
+        <div class="field"><label>Kurzer Stopp ab (min)</label><input type="number" id="s-shortStopMinMin" step="1"></div>
+        <div class="field"><label>Tempolimit-Markierung (km/h)</label><input type="number" id="s-speedLimit" step="5"></div>
+        <div class="field"><label>Datenlücke ab (min)</label><input type="number" id="s-dataGapMin" step="1"></div>
+        <div class="field"><label>Positionssprung ab (km/h)</label><input type="number" id="s-jumpSpeed" step="10"></div>
+        <div class="field"><label>Lange Standzeit ab (h)</label><input type="number" id="s-longStandH" step="1"></div>
+        <div class="field"><label>Nachtfahrt von (Std.)</label><input type="number" id="s-nightStart" min="0" max="23"></div>
+        <div class="field"><label>Nachtfahrt bis (Std.)</label><input type="number" id="s-nightEnd" min="0" max="23"></div>
+      </div>
+
+      <h3 style="border:none;padding:6px 0 0;font-size:14px">📍 Benannte Orte</h3>
+      <div class="note">Benannte Orte (z. B. „Zuhause", „Arbeit") verhindern die Markierung „Lange Standzeit" und liefern Ortsnamen in Karte & Listen.</div>
+      <div id="places-list" style="display:grid;gap:6px"></div>
+      <div class="maprow" style="margin-top:4px">
+        <input type="text" id="np-name" placeholder="Name">
+        <input type="number" id="np-lat" placeholder="Breite" step="0.00001">
+        <input type="number" id="np-lon" placeholder="Länge" step="0.00001">
+        <input type="number" id="np-rad" placeholder="Radius m" value="120">
+        <button class="btn" id="np-add">＋</button>
+      </div>
+
+      <h3 style="border:none;padding:6px 0 0;font-size:14px">🧪 Selbsttest</h3>
+      <div class="note">Führt die Unit-Tests der Erkennungslogik aus (Spec §7). Auch über <code>#selftest</code> in der URL aufrufbar.</div>
+      <button class="btn" id="run-selftest">Selbsttest ausführen</button>
+      <pre id="selftest-out"></pre>
+    </div>
+    <div class="mfoot">
+      <button class="btn" id="set-defaults">Standardwerte</button>
+      <button class="btn" id="set-cancel">Schließen</button>
+      <button class="btn primary" id="set-ok">Speichern &amp; neu berechnen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =========================================================================
+   GPS-Fahrten-Dashboard – eine self-contained Datei (Spec §3).
+   Aufbau: util → store → normalizer → detector (reine Funktionen) →
+           places → importer → views → app-glue → selftest.
+   Positionsdaten verlassen den Browser nicht.
+   ========================================================================= */
+const GPS = {};
+
+/* -------------------------- util --------------------------------------- */
+GPS.util = (function(){
+  const R = 6371000; // Erdradius m
+  function toRad(d){ return d*Math.PI/180; }
+  // Entfernung nach Haversine (Meter)
+  function haversine(lat1,lon1,lat2,lon2){
+    const dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1);
+    const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+    return 2*R*Math.asin(Math.min(1,Math.sqrt(a)));
+  }
+  const _bf = new Intl.DateTimeFormat('en-GB',{
+    timeZone:'Europe/Berlin', year:'numeric', month:'2-digit', day:'2-digit',
+    hour:'2-digit', minute:'2-digit', second:'2-digit', hourCycle:'h23'
+  });
+  // Berlin-Wanduhr-Bestandteile aus absolutem ms
+  function berlinParts(ms){
+    const p={}; for(const t of _bf.formatToParts(ms)) p[t.type]=t.value;
+    return {y:+p.year, mo:+p.month, d:+p.day, h:+p.hour, mi:+p.minute, s:+p.second};
+  }
+  // Berlin-Wanduhr -> absolutes ms (DST-sicher über Offset-Probe)
+  function berlinWallToMs(y,mo,d,h,mi,s){
+    const base=Date.UTC(y,mo-1,d,h,mi,s||0);
+    for(const off of [60,120]){
+      const cand=base-off*60000, p=berlinParts(cand);
+      if(p.y===y&&p.mo===mo&&p.d===d&&p.h===h&&p.mi===mi) return cand;
+    }
+    return base-60*60000;
+  }
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function fmtDate(p){ return pad(p.d)+'.'+pad(p.mo)+'.'+p.y; }
+  function fmtTime(p){ return pad(p.h)+':'+pad(p.mi); }
+  // Adresse kürzen: erste 1–2 Bestandteile (Straße + Ort), lange Behördenketten weglassen
+  function shortAddr(a){
+    if(!a) return null;
+    const parts=String(a).split(',').map(s=>s.trim()).filter(Boolean);
+    if(!parts.length) return null;
+    return parts.slice(0,2).join(', ');
+  }
+  function fmtDur(min){
+    min=Math.round(min);
+    if(min<60) return min+' min';
+    const h=Math.floor(min/60), m=min%60;
+    return h+' h'+(m?' '+m+' min':'');
+  }
+  function parseNum(v){
+    if(v==null) return NaN;
+    if(typeof v==='number') return v;
+    let s=String(v).trim().replace(/\s/g,'');
+    // deutsches Dezimalkomma nur, wenn kein Punkt vorhanden ist
+    if(s.indexOf(',')>-1 && s.indexOf('.')===-1) s=s.replace(',', '.');
+    s=s.replace(/[^0-9.\-+eE]/g,'');
+    const n=parseFloat(s);
+    return isNaN(n)?NaN:n;
+  }
+  function parseAcc(v){
+    if(v==null||v==='') return null;
+    const s=String(v).trim().toLowerCase();
+    if(['1','on','an','ein','true','yes','ja','zündung an','zuendung an','running','ignition on'].includes(s)) return true;
+    if(['0','off','aus','false','no','nein','zündung aus','zuendung aus','stopped','ignition off'].includes(s)) return false;
+    const n=parseNum(s);
+    if(!isNaN(n)) return n>0;
+    return null;
+  }
+  // flexibler Zeitstempel-Parser -> absolutes ms  (sourceTZ: 'Berlin' | 'UTC')
+  function parseTime(raw, sourceTZ){
+    if(raw==null||raw==='') return NaN;
+    if(raw instanceof Date) return raw.getTime();
+    if(typeof raw==='number' || /^\d{9,13}(\.\d+)?$/.test(String(raw).trim())){
+      const n=Number(raw);
+      if(!isNaN(n)) return n>1e12 ? n : n*1000; // ms oder s
+    }
+    // Excel-Seriennummer (SheetJS liefert i. d. R. schon Date-Objekte; Fallback)
+    const s=String(raw).trim();
+    // explizite Zeitzone -> Date.parse ist absolut korrekt
+    if(/[zZ]|[+\-]\d{2}:?\d{2}$/.test(s) && /\d{4}-\d{2}-\d{2}/.test(s)){
+      const t=Date.parse(s); if(!isNaN(t)) return t;
+    }
+    let m;
+    // ISO-ähnlich: 2026-09-18[ T]14:30[:00]
+    m=s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?/);
+    if(m){ return build(+m[1],+m[2],+m[3],+m[4],+m[5],+(m[6]||0)); }
+    // nur Datum ISO
+    m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if(m){ return build(+m[1],+m[2],+m[3],0,0,0); }
+    // deutsch: 18.09.2026 14:30[:00]
+    m=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+    if(m){ return build(+m[3],+m[2],+m[1],+(m[4]||0),+(m[5]||0),+(m[6]||0)); }
+    const t=Date.parse(s); // letzter Versuch
+    return isNaN(t)?NaN:t;
+    function build(y,mo,d,h,mi,se){
+      return sourceTZ==='UTC' ? Date.UTC(y,mo-1,d,h,mi,se) : berlinWallToMs(y,mo,d,h,mi,se);
+    }
+  }
+  function speedColor(v){
+    if(v<5) return '#9aa0a6';
+    if(v<30) return '#1a73e8';
+    if(v<60) return '#12b886';
+    if(v<100) return '#f59f00';
+    return '#e03131';
+  }
+  return {haversine,berlinParts,berlinWallToMs,parseNum,parseAcc,parseTime,fmtDate,fmtTime,fmtDur,shortAddr,pad,speedColor};
+})();
+
+/* -------------------------- store (localStorage, §6) ------------------- */
+GPS.store = (function(){
+  let ok=true;
+  try{ localStorage.setItem('gpsdash.__t','1'); localStorage.removeItem('gpsdash.__t'); }
+  catch(e){ ok=false; }
+  function get(k,def){ if(!ok) return def; try{ const v=localStorage.getItem(k); return v==null?def:JSON.parse(v);}catch(e){return def;} }
+  function set(k,v){ if(!ok) return; try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+  function del(k){ if(!ok) return; try{ localStorage.removeItem(k); }catch(e){} }
+  return {available:ok,get,set,del};
+})();
+
+/* -------------------------- Standard-Einstellungen (§4) ---------------- */
+GPS.defaults = {
+  tripSpeed:5, stopSpeed:3, stopRadius:100, stopMinMin:10, shortStopMinMin:2,
+  speedLimit:130, dataGapMin:15, jumpSpeed:250, longStandMin:12*60,
+  nightStart:23, nightEnd:5
+};
+
+/* -------------------------- normalizer --------------------------------- */
+GPS.normalizer = (function(){
+  const U=GPS.util;
+  // rows: Array<Object>, mapping: {time,lat,lon,speed?,acc?}
+  function normalize(rows, mapping, sourceTZ){
+    const pts=[]; let ignored=0;
+    for(const r of rows){
+      const t=U.parseTime(r[mapping.time], sourceTZ);
+      const lat=U.parseNum(r[mapping.lat]);
+      const lon=U.parseNum(r[mapping.lon]);
+      if(isNaN(t)||isNaN(lat)||isNaN(lon)||lat<-90||lat>90||lon<-180||lon>180){ ignored++; continue; }
+      let speed=null;
+      if(mapping.speed){ const sp=U.parseNum(r[mapping.speed]); speed=isNaN(sp)?null:sp; }
+      let acc=null;
+      if(mapping.acc){ acc=U.parseAcc(r[mapping.acc]); }
+      let addr=null;
+      if(mapping.addr){ const a=r[mapping.addr]; addr=(a==null||a==='')?null:String(a).trim(); }
+      pts.push({t,lat,lon,speed,acc,addr});
+    }
+    pts.sort((a,b)=>a.t-b.t);
+    // Dubletten (gleiche Zeit + Position) entfernen
+    const out=[];
+    for(const p of pts){
+      const last=out[out.length-1];
+      if(last && last.t===p.t && last.lat===p.lat && last.lon===p.lon) continue;
+      out.push(p);
+    }
+    return {points:out, ignored};
+  }
+  return {normalize};
+})();
+
+/* -------------------------- detector (reine Funktionen, §4) ------------ */
+GPS.detector = (function(){
+  const U=GPS.util;
+
+  // Hauptanalyse. places: Array<{name,lat,lon,radius}> (optional)
+  function analyze(points, settings, places){
+    const s=Object.assign({}, GPS.defaults, settings||{});
+    places=places||[];
+    const n=points.length;
+    const P=points.map(p=>({t:p.t,lat:p.lat,lon:p.lon,speed:p.speed,acc:(p.acc===undefined?null:p.acc),addr:(p.addr==null?null:p.addr)}));
+
+    // 1) Segment-Kennwerte + Positionssprünge
+    const segJump=new Array(n).fill(false);
+    for(let i=1;i<n;i++){
+      const dt=(P[i].t-P[i-1].t)/1000;
+      const dist=U.haversine(P[i-1].lat,P[i-1].lon,P[i].lat,P[i].lon);
+      const v=dt>0 ? (dist/dt)*3.6 : 0;
+      if(v>s.jumpSpeed) segJump[i]=true;
+      P[i]._dist=dist; P[i]._dt=dt; P[i]._vseg=v;
+    }
+    // 2) effektives Tempo je Punkt (Spalte bevorzugt, sonst aus Strecke/Zeit)
+    for(let i=0;i<n;i++){
+      let sp=P[i].speed;
+      if(sp==null||isNaN(sp)){
+        let v=null;
+        if(i>0 && !segJump[i]) v=P[i]._vseg;
+        else if(i<n-1 && !segJump[i+1]) v=P[i+1]._vseg;
+        sp=(v==null)?0:v;
+      }
+      P[i]._v=sp;
+      P[i]._jump = segJump[i] || (i+1<n && segJump[i+1]);
+    }
+    // 3) Gesamt-km ohne Sprünge
+    let totalKm=0;
+    for(let i=1;i<n;i++) if(!segJump[i]) totalKm+=P[i]._dist/1000;
+
+    // 4) Stopp-Cluster
+    const isStat = i => (P[i].acc===false) || (P[i]._v < s.stopSpeed);
+    const clusters=[];
+    let i=0;
+    while(i<n){
+      if(isStat(i)){
+        let j=i; const aLat=P[i].lat, aLon=P[i].lon; let ign=(P[i].acc===false);
+        while(j+1<n && isStat(j+1) && U.haversine(aLat,aLon,P[j+1].lat,P[j+1].lon)<=s.stopRadius){
+          j++; if(P[j].acc===false) ign=true;
+        }
+        const durMin=(P[j].t-P[i].t)/60000;
+        // Center (Mittelwert)
+        let cLat=0,cLon=0; for(let k=i;k<=j;k++){ cLat+=P[k].lat; cLon+=P[k].lon; }
+        cLat/=(j-i+1); cLon/=(j-i+1);
+        let type;
+        if(durMin>=s.stopMinMin || ign) type='stop';
+        else if(durMin>=s.shortStopMinMin) type='short';
+        else type='micro';
+        let cAddr=null; for(let k=i;k<=j;k++){ if(P[k].addr){ cAddr=P[k].addr; break; } }
+        clusters.push({i,j,startT:P[i].t,endT:P[j].t,durMin,lat:cLat,lon:cLon,ignitionOff:ign,type,addr:cAddr});
+        i=j+1;
+      } else i++;
+    }
+    const nearestPlace=(lat,lon)=>{
+      let best=null,bd=Infinity;
+      for(const pl of places){ const d=U.haversine(lat,lon,pl.lat,pl.lon); if(d<=(pl.radius||120) && d<bd){bd=d;best=pl;} }
+      return best;
+    };
+    for(const c of clusters){ const pl=nearestPlace(c.lat,c.lon); c.place=pl?pl.name:null; }
+
+    const longStops=clusters.filter(c=>c.type==='stop');
+    const shortStops=clusters.filter(c=>c.type==='short');
+
+    // 5) Fahrten = Fahr-Spannen zwischen langen Stopps
+    const trips=[];
+    const bounds=longStops.map(c=>({a:c.i,b:c.j}));
+    // Kandidaten-Spannen (Punktindizes) zwischen den Stopps
+    const spans=[];
+    let cursor=0;
+    for(const b of bounds){ if(b.a-1>=cursor) spans.push([cursor,b.a-1]); cursor=b.b+1; }
+    if(cursor<=n-1) spans.push([cursor,n-1]);
+
+    const inNight = h => (h>=s.nightStart || h<s.nightEnd);
+    for(const [a0,b0] of spans){
+      let a=a0, b=b0;
+      // Führende/abschließende Datenlücken heraustrimmen: ein stehender Punkt, der durch
+      // eine große Lücke von der eigentlichen Fahrt getrennt ist, gehört nicht zur Fahrt.
+      while(a<b && P[a]._v<=s.tripSpeed && P[a+1] && P[a+1]._dt>s.dataGapMin*60) a++;
+      while(b>a && P[b]._v<=s.tripSpeed && P[b]._dt>s.dataGapMin*60) b--;
+      if(b<=a) continue;
+      let maxV=0; for(let k=a;k<=b;k++) if(!P[k]._jump) maxV=Math.max(maxV,P[k]._v);
+      if(maxV<=s.tripSpeed) continue; // keine echte Bewegung
+      let km=0; for(let k=a+1;k<=b;k++) if(!segJump[k]) km+=P[k]._dist/1000;
+      if(km<0.05) continue;
+      const durMin=(P[b].t-P[a].t)/60000;
+      let night=false;
+      for(let k=a;k<=b;k++){ if(P[k]._v>s.tripSpeed && !P[k]._jump){ if(inNight(U.berlinParts(P[k].t).h)){ night=true; break; } } }
+      const sPlace=nearestPlace(P[a].lat,P[a].lon), ePlace=nearestPlace(P[b].lat,P[b].lon);
+      const inner=shortStops.filter(c=>c.startT>=P[a].t && c.endT<=P[b].t);
+      const avg = durMin>0 ? km/(durMin/60) : 0;
+      trips.push({
+        a,b, startT:P[a].t, endT:P[b].t, km, durMin, maxSpeed:maxV, avgSpeed:avg,
+        night, shortStops:inner.length,
+        startLat:P[a].lat,startLon:P[a].lon,endLat:P[b].lat,endLon:P[b].lon,
+        startPlace:sPlace?sPlace.name:null, endPlace:ePlace?ePlace.name:null,
+        startAddr:P[a].addr||null, endAddr:P[b].addr||null
+      });
+    }
+
+    // 6) Auffälligkeiten
+    const anomalies=[];
+    // Positionssprünge
+    for(let k=1;k<n;k++) if(segJump[k]) anomalies.push({type:'Positionssprung',t:P[k].t,lat:P[k].lat,lon:P[k].lon,detail:'≈'+Math.round(P[k]._vseg)+' km/h zwischen zwei Punkten (als GPS-Fehler nicht gezählt)'});
+    // Nachtfahrten (eine Meldung je Fahrt)
+    for(const tr of trips) if(tr.night) anomalies.push({type:'Nachtfahrt',t:tr.startT,lat:tr.startLat,lon:tr.startLon,detail:U.fmtDur(tr.durMin)+', '+tr.km.toFixed(1)+' km'});
+    // Tempo (zusammenhängende Läufe über Limit)
+    let run=null;
+    for(let k=0;k<n;k++){
+      const over = (!P[k]._jump && P[k]._v>s.speedLimit);
+      if(over){ if(!run) run={start:k,max:P[k]._v,tmax:P[k].t,lat:P[k].lat,lon:P[k].lon}; else if(P[k]._v>run.max){run.max=P[k]._v;run.tmax=P[k].t;run.lat=P[k].lat;run.lon=P[k].lon;} }
+      else if(run){ anomalies.push({type:'Tempo',t:run.tmax,lat:run.lat,lon:run.lon,detail:'max '+Math.round(run.max)+' km/h (Limit '+s.speedLimit+')'}); run=null; }
+    }
+    if(run) anomalies.push({type:'Tempo',t:run.tmax,lat:run.lat,lon:run.lon,detail:'max '+Math.round(run.max)+' km/h (Limit '+s.speedLimit+')'});
+    // Datenlücken innerhalb von Fahrten
+    for(const tr of trips){
+      for(let k=tr.a+1;k<=tr.b;k++){
+        if(P[k]._dt>s.dataGapMin*60) anomalies.push({type:'Datenlücke',t:P[k-1].t,lat:P[k-1].lat,lon:P[k-1].lon,detail:U.fmtDur(P[k]._dt/60)+' ohne Punkt'});
+      }
+    }
+    // Lange Standzeit an nicht benanntem Ort
+    for(const c of longStops){
+      if(c.durMin>=s.longStandMin && !c.place) anomalies.push({type:'Lange Standzeit',t:c.startT,lat:c.lat,lon:c.lon,detail:U.fmtDur(c.durMin)+' an unbenanntem Ort'});
+    }
+    anomalies.sort((x,y)=>x.t-y.t);
+
+    const stats={
+      km:totalKm,
+      driveMin:trips.reduce((a,t)=>a+t.durMin,0),
+      stops:longStops.length,
+      shortStops:shortStops.length,
+      anomalies:anomalies.length,
+      points:n, jumps:segJump.filter(Boolean).length
+    };
+    return {points:P, trips, stops:longStops, shortStops, anomalies, clusters, segJump, stats, settings:s};
+  }
+  return {analyze};
+})();
+
+/* -------------------------- places ------------------------------------- */
+GPS.places = (function(){
+  const KEY='gpsdash.places';
+  function load(){ return GPS.store.get(KEY, []); }
+  function save(list){ GPS.store.set(KEY, list); }
+  return {load,save};
+})();
+
+/* -------------------------- importer ----------------------------------- */
+GPS.importer = (function(){
+  // liefert {headers, rows}
+  function readFile(file){
+    return new Promise((resolve,reject)=>{
+      const name=(file.name||'').toLowerCase();
+      const reader=new FileReader();
+      if(name.endsWith('.xlsx')||name.endsWith('.xls')){
+        reader.onload=e=>{
+          try{
+            if(typeof XLSX==='undefined') return reject(new Error('XLSX-Bibliothek nicht geladen (Internet nötig).'));
+            const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
+            const ws=wb.Sheets[wb.SheetNames[0]];
+            const rows=XLSX.utils.sheet_to_json(ws,{defval:'',raw:true});
+            resolve({headers:rows.length?Object.keys(rows[0]):[], rows});
+          }catch(err){ reject(err); }
+        };
+        reader.onerror=()=>reject(new Error('Datei konnte nicht gelesen werden.'));
+        reader.readAsArrayBuffer(file);
+      } else {
+        reader.onload=e=>{
+          try{
+            if(typeof Papa==='undefined') return reject(new Error('CSV-Bibliothek nicht geladen (Internet nötig).'));
+            const res=Papa.parse(e.target.result,{header:true,skipEmptyLines:true,dynamicTyping:false});
+            resolve({headers:res.meta.fields||[], rows:res.data});
+          }catch(err){ reject(err); }
+        };
+        reader.onerror=()=>reject(new Error('Datei konnte nicht gelesen werden.'));
+        reader.readAsText(file);
+      }
+    });
+  }
+  // Auto-Zuordnung anhand üblicher Bezeichner
+  function autoMap(headers){
+    const norm=h=>String(h).toLowerCase().replace(/[^a-zäöü0-9]/g,'');
+    const used=new Set();
+    // Teilstring-Treffer; bereits belegte Spalten werden übersprungen
+    const find=(...cands)=>{
+      for(const h of headers){ if(used.has(h)) continue; const nh=norm(h); if(cands.some(c=>nh===c||nh.includes(c))){ used.add(h); return h; } }
+      return null;
+    };
+    // exakter Treffer (verhindert z. B. dass "Positionierungszeit" als Adresse gilt)
+    const findExact=(...cands)=>{
+      for(const h of headers){ if(used.has(h)) continue; const nh=norm(h); if(cands.some(c=>nh===c)){ used.add(h); return h; } }
+      return null;
+    };
+    const m={};
+    m.time = find('zeit','time','timestamp','datum','date','datetime','fixtime','gpszeit');
+    m.lat  = find('lat','latitude','breite','breitengrad','ycoord');
+    m.lon  = find('lon','lng','long','longitude','länge','laenge','langengrad','xcoord');
+    m.speed= find('speed','geschwindigkeit','tempo','kmh','velocity','geschw');
+    m.acc  = findExact('acc','ign','ignition','zündung','zuendung') || find('zündung','zuendung','ignition','engine','motor');
+    // Adresse: erst exakt (Position/Adresse/Standort/Location), sonst per Teilstring 'adress'/'standort'
+    m.addr = findExact('position','adresse','address','standort','location') || find('adresse','address','standort');
+    return m;
+  }
+  function sig(headers){ return headers.slice().sort().join('|'); }
+  return {readFile,autoMap,sig};
+})();
+
+/* -------------------------- views + app -------------------------------- */
+(function(){
+  const U=GPS.util, $=id=>document.getElementById(id);
+  const state={ raw:null, result:null, map:null, layers:null, mapping:null, sourceTZ:'Berlin', catFilter:null };
+
+  // Einstellungen laden
+  let settings=Object.assign({}, GPS.defaults, GPS.store.get('gpsdash.settings',{}));
+  state.sourceTZ=GPS.store.get('gpsdash.tz','Berlin');
+
+  function banner(kind,msg,keep){
+    const area=$('banner-area');
+    if(!keep) area.innerHTML='';
+    const div=document.createElement('div');
+    div.className='banner '+kind; div.textContent=msg; area.appendChild(div);
+  }
+
+  /* ---------- Import-Flow ---------- */
+  async function handleFile(file){
+    $('banner-area').innerHTML='';
+    if(!file) return;
+    if(file.size===0){ banner('err','Die Datei ist leer.'); return; }
+    if(file.size>60*1024*1024){ banner('warn','Sehr große Datei (>60 MB) – der Import kann dauern.',true); }
+    let parsed;
+    try{ parsed=await GPS.importer.readFile(file); }
+    catch(e){ banner('err','Import fehlgeschlagen: '+e.message); return; }
+    if(!parsed.rows.length){ banner('err','Keine Datenzeilen gefunden.'); return; }
+
+    const headers=parsed.headers;
+    const sig=GPS.importer.sig(headers);
+    let mapping=GPS.store.get('gpsdash.mapping.'+sig, null) || GPS.importer.autoMap(headers);
+    if(!mapping.time||!mapping.lat||!mapping.lon){
+      openMappingDialog(headers, mapping, sig, parsed.rows);
+    } else {
+      applyImport(parsed.rows, mapping, sig, false);
+    }
+  }
+
+  function applyImport(rows, mapping, sig, fromDialog){
+    state.mapping=mapping;
+    GPS.store.set('gpsdash.mapping.'+sig, mapping);
+    const {points,ignored}=GPS.normalizer.normalize(rows, mapping, state.sourceTZ);
+    if(!points.length){ banner('err','Keine gültigen Punkte (Zeit/Koordinaten nicht lesbar). Bitte Zuordnung/Zeitzone prüfen.'); return; }
+    state.raw=points;
+    recompute();
+    $('drop').classList.add('hidden');
+    $('dash').classList.remove('hidden');
+    $('btn-csv').disabled=false; $('btn-print').disabled=false;
+    let msg='Import erfolgreich: '+points.length.toLocaleString('de-DE')+' Punkte';
+    if(ignored) msg+=' · '+ignored.toLocaleString('de-DE')+' Zeilen ignoriert';
+    if(!GPS.store.available) msg+=' · Hinweis: localStorage nicht verfügbar – Orte/Einstellungen werden nicht gespeichert';
+    banner(ignored?'warn':'ok', msg);
+  }
+
+  function recompute(){
+    if(!state.raw) return;
+    const places=GPS.places.load();
+    state.result=GPS.detector.analyze(state.raw, settings, places);
+    setupFilterBounds();
+    render();
+  }
+
+  /* ---------- Zuordnungsdialog ---------- */
+  function openMappingDialog(headers, guess, sig, rows){
+    const wrap=$('map-fields'); wrap.innerHTML='';
+    const fields=[['time','Zeitstempel *'],['lat','Breite (lat) *'],['lon','Länge (lon) *'],['speed','Geschwindigkeit'],['acc','Zündung (ACC)'],['addr','Adresse / Position']];
+    for(const [key,label] of fields){
+      const f=document.createElement('div'); f.className='field';
+      const opts=['<option value="">– keine –</option>'].concat(headers.map(h=>`<option value="${escAttr(h)}" ${guess[key]===h?'selected':''}>${escHtml(h)}</option>`));
+      f.innerHTML=`<label>${label}</label><select data-k="${key}">${opts.join('')}</select>`;
+      wrap.appendChild(f);
+    }
+    $('map-modal').classList.add('open');
+    $('map-ok').onclick=()=>{
+      const m={};
+      wrap.querySelectorAll('select').forEach(sel=>{ m[sel.dataset.k]=sel.value||null; });
+      if(!m.time||!m.lat||!m.lon){ alert('Zeit, Breite und Länge müssen zugeordnet sein.'); return; }
+      $('map-modal').classList.remove('open');
+      applyImport(rows, m, sig, true);
+    };
+    $('map-cancel').onclick=()=>$('map-modal').classList.remove('open');
+  }
+
+  /* ---------- Filter ---------- */
+  function dayKey(ms){ const p=U.berlinParts(ms); return p.y+'-'+U.pad(p.mo)+'-'+U.pad(p.d); }
+  function setupFilterBounds(){
+    const trips=state.result.trips;
+    const days=[...new Set(trips.map(t=>dayKey(t.startT)))].sort();
+    const sel=$('f-day'); const cur=sel.value;
+    sel.innerHTML='<option value="">alle</option>'+days.map(d=>`<option value="${d}">${d.split('-').reverse().join('.')}</option>`).join('');
+    if(days.includes(cur)) sel.value=cur;
+    if(days.length && !$('f-from').value){ $('f-from').value=days[0]; $('f-to').value=days[days.length-1]; }
+  }
+  function catOf(ms){ return GPS.store.get('gpsdash.cat.'+ms, ''); }
+  function setCat(ms,v){ if(v) GPS.store.set('gpsdash.cat.'+ms,v); else GPS.store.del('gpsdash.cat.'+ms); }
+  function passFilter(t){
+    const from=$('f-from').value, to=$('f-to').value, day=$('f-day').value, cat=$('f-cat').value;
+    const dk=dayKey(t.startT);
+    if(from && dk<from) return false;
+    if(to && dk>to) return false;
+    if(day && dk!==day) return false;
+    if(cat && catOf(t.startT)!==cat) return false;
+    return true;
+  }
+  function filteredTrips(){ return state.result.trips.filter(passFilter); }
+  function inRangeTs(ts){
+    const from=$('f-from').value, to=$('f-to').value, day=$('f-day').value;
+    const dk=dayKey(ts);
+    if(from && dk<from) return false;
+    if(to && dk>to) return false;
+    if(day && dk!==day) return false;
+    return true;
+  }
+
+  /* ---------- Rendering ---------- */
+  function render(){ renderKpis(); renderMap(); renderTimeline(); renderTables(); }
+
+  function renderKpis(){
+    const trips=filteredTrips();
+    const stops=state.result.stops.filter(c=>inRangeTs(c.startT));
+    const shorts=state.result.shortStops.filter(c=>inRangeTs(c.startT));
+    const anoms=state.result.anomalies.filter(a=>inRangeTs(a.t));
+    const km=trips.reduce((a,t)=>a+t.km,0);
+    const drive=trips.reduce((a,t)=>a+t.durMin,0);
+    const data=[
+      ['Kilometer', km.toLocaleString('de-DE',{maximumFractionDigits:1})+' km'],
+      ['Fahrzeit', U.fmtDur(drive)],
+      ['Fahrten', trips.length],
+      ['Stopps', stops.length],
+      ['kurze Stopps', shorts.length],
+      ['Auffälligkeiten', anoms.length, anoms.length>0]
+    ];
+    $('kpis').innerHTML=data.map(d=>`<div class="kpi ${d[2]?'alert':''}"><div class="label">${d[0]}</div><div class="value">${d[1]}</div></div>`).join('');
+  }
+
+  function ensureMap(){
+    if(state.map) return;
+    if(typeof L==='undefined'){ banner('warn','Kartenbibliothek (Leaflet) nicht geladen – Internet nötig. Kennzahlen und Listen funktionieren trotzdem.',true); return; }
+    state.map=L.map('map',{preferCanvas:true}).setView([51.1,10.4],6);
+    const tiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      maxZoom:19, attribution:'&copy; OpenStreetMap-Mitwirkende'
+    }).addTo(state.map);
+    // Offline/Sperre: Kartenkacheln nicht erreichbar -> einmaliger Hinweis, Auswertung läuft weiter
+    let tileWarned=false;
+    tiles.on('tileerror',()=>{ if(tileWarned) return; tileWarned=true;
+      banner('warn','Kartenhintergrund (OpenStreetMap) nicht erreichbar – Strecke, Marker und alle Auswertungen funktionieren trotzdem. Für den Kartenhintergrund ist eine Internetverbindung nötig.',true);
+    });
+    state.layers={track:L.layerGroup().addTo(state.map), stops:L.layerGroup().addTo(state.map), anoms:L.layerGroup().addTo(state.map)};
+  }
+
+  function renderMap(){
+    ensureMap(); if(!state.map) return;
+    const {track,stops,anoms}=state.layers;
+    track.clearLayers(); stops.clearLayers(); anoms.clearLayers();
+    const trips=filteredTrips();
+    const P=state.result.points, segJump=state.result.segJump;
+    const showTrips=$('e-trips').checked, showStops=$('e-stops').checked, showAnom=$('e-anom').checked;
+    const bounds=[];
+
+    // Ausdünnung nur für die Kartendarstellung (>500k Punkte, §6)
+    const total=P.length;
+    const stepGlobal = total>500000 ? Math.ceil(total/300000) : 1;
+
+    if(showTrips){
+      for(const tr of trips){
+        for(let k=tr.a+1;k<=tr.b;k+=1){
+          if(segJump[k]) continue;
+          if(stepGlobal>1 && (k%stepGlobal)!==0 && k!==tr.b) continue;
+          const p0=P[k-1], p1=P[k];
+          L.polyline([[p0.lat,p0.lon],[p1.lat,p1.lon]],{color:U.speedColor(p1._v),weight:4,opacity:.85}).addTo(track);
+        }
+        bounds.push([tr.startLat,tr.startLon]); bounds.push([tr.endLat,tr.endLon]);
+      }
+    }
+    if(showStops){
+      for(const c of state.result.clusters){
+        if(c.type==='micro' || !inRangeTs(c.startT)) continue;
+        const isLong=c.type==='stop';
+        const longStand = isLong && c.durMin>=settings.longStandMin && !c.place;
+        const color = longStand ? '#e03131' : (isLong ? '#9aa0a6' : '#f59f00');
+        const rad = Math.max(5, Math.min(22, 5+Math.log10(Math.max(2,c.durMin))*7));
+        const p=U.berlinParts(c.startT);
+        const m=L.circleMarker([c.lat,c.lon],{radius:rad,color:'#fff',weight:1.5,fillColor:color,fillOpacity:.85});
+        const ort=c.place||U.shortAddr(c.addr);
+        m.bindPopup(`<b>${isLong?'Stopp':'Kurzer Stopp'}</b><br>${U.fmtDate(p)} ${U.fmtTime(p)}<br>Dauer: ${U.fmtDur(c.durMin)}<br>Ort: ${ort?escHtml(ort):'—'}<br><button class="btn" style="margin-top:6px;padding:4px 8px" onclick="window.__namePlace(${c.lat},${c.lon})">Als Ort benennen</button>`);
+        m.addTo(stops); bounds.push([c.lat,c.lon]);
+      }
+    }
+    if(showAnom){
+      for(const a of state.result.anomalies){
+        if(!inRangeTs(a.t)) continue;
+        const p=U.berlinParts(a.t);
+        const m=L.circleMarker([a.lat,a.lon],{radius:6,color:'#fff',weight:1.5,fillColor:'#e03131',fillOpacity:.9});
+        m.bindPopup(`<b>${a.type}</b><br>${U.fmtDate(p)} ${U.fmtTime(p)}<br>${escHtml(a.detail||'')}`);
+        m.addTo(anoms); bounds.push([a.lat,a.lon]);
+      }
+    }
+    if(bounds.length){ try{ state.map.fitBounds(bounds,{padding:[30,30],maxZoom:15}); }catch(e){} }
+    setTimeout(()=>state.map.invalidateSize(),100);
+  }
+
+  window.__namePlace=function(lat,lon){
+    const name=prompt('Name für diesen Ort (z. B. Zuhause, Arbeit):');
+    if(!name) return;
+    const list=GPS.places.load();
+    list.push({name:name.trim(),lat,lon,radius:120});
+    GPS.places.save(list);
+    banner('ok','Ort „'+name.trim()+'" gespeichert.');
+    recompute();
+  };
+
+  function renderTimeline(){
+    const el=$('timeline'); el.innerHTML='';
+    const trips=filteredTrips();
+    if(!trips.length){ el.innerHTML='<div class="muted">Keine Fahrten im Filter.</div>'; return; }
+    // Skala
+    const scale=document.createElement('div'); scale.className='tl-scale';
+    for(let h=0;h<24;h+=3){ const s=document.createElement('span'); s.textContent=U.pad(h); scale.appendChild(s); }
+    el.appendChild(scale);
+    // je Tag eine Zeile; Fahrten am Mitternacht splitten
+    const byDay={};
+    const dayMs=86400000;
+    function add(dayk,left,width,tr){ (byDay[dayk]=byDay[dayk]||[]).push({left,width,tr}); }
+    for(const tr of trips){
+      let s=tr.startT, e=tr.endT;
+      // Tagesgrenzen in Berlin-Zeit annähern über lokale Mitternacht
+      let cur=s;
+      while(cur<e){
+        const p=U.berlinParts(cur);
+        const midnightNext=U.berlinWallToMs(p.y,p.mo,p.d,0,0,0)+dayMs;
+        const segEnd=Math.min(e,midnightNext);
+        const startFrac=((cur-U.berlinWallToMs(p.y,p.mo,p.d,0,0,0))/dayMs)*100;
+        const wFrac=((segEnd-cur)/dayMs)*100;
+        add(p.y+'-'+U.pad(p.mo)+'-'+U.pad(p.d), startFrac, Math.max(0.6,wFrac), tr);
+        cur=segEnd;
+      }
+    }
+    const anoms=state.result.anomalies.filter(a=>inRangeTs(a.t));
+    const days=Object.keys(byDay).sort();
+    for(const d of days){
+      const row=document.createElement('div'); row.className='tl-row';
+      const lbl=document.createElement('div'); lbl.className='tl-day'; lbl.textContent=d.split('-').reverse().join('.').slice(0,6);
+      const track=document.createElement('div'); track.className='tl-track';
+      for(const b of byDay[d]){
+        const bar=document.createElement('div'); bar.className='tl-trip'+(b.tr.night?' night':'');
+        bar.style.left=b.left+'%'; bar.style.width=b.width+'%';
+        bar.title=U.fmtTime(U.berlinParts(b.tr.startT))+'–'+U.fmtTime(U.berlinParts(b.tr.endT))+' · '+b.tr.km.toFixed(1)+' km';
+        bar.onclick=()=>focusTrip(b.tr);
+        track.appendChild(bar);
+      }
+      for(const a of anoms){ if(dayKey(a.t)===d){ const p=U.berlinParts(a.t); const tick=document.createElement('div'); tick.className='tl-anom'; tick.style.left=((p.h*3600+p.mi*60)/86400*100)+'%'; tick.title=a.type; track.appendChild(tick); } }
+      row.appendChild(lbl); row.appendChild(track); el.appendChild(row);
+    }
+  }
+
+  function focusTrip(tr){
+    if(state.map){ try{ state.map.fitBounds([[tr.startLat,tr.startLon],[tr.endLat,tr.endLon]],{padding:[40,40],maxZoom:15}); }catch(e){} }
+    document.querySelector('#map').scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  function focusPoint(lat,lon){ if(state.map){ state.map.setView([lat,lon],15); document.querySelector('#map').scrollIntoView({behavior:'smooth',block:'center'}); } }
+
+  function renderTables(){
+    // Fahrten
+    const trips=filteredTrips();
+    let h='<table><thead><tr><th>Datum</th><th>Start</th><th>Ziel</th><th class="num">km</th><th class="num">Dauer</th><th class="num">Ø / max</th><th>Kat.</th></tr></thead><tbody>';
+    if(!trips.length) h+='<tr><td colspan="7" class="muted">Keine Fahrten im Filter.</td></tr>';
+    for(const tr of trips){
+      const ps=U.berlinParts(tr.startT), pe=U.berlinParts(tr.endT);
+      const cat=catOf(tr.startT);
+      h+=`<tr data-lat="${tr.startLat}" data-lon="${tr.startLon}">
+        <td>${U.fmtDate(ps)}${tr.night?' <span class="tag night">Nacht</span>':''}</td>
+        <td>${U.fmtTime(ps)} ${(tr.startPlace||U.shortAddr(tr.startAddr))?'· '+escHtml(tr.startPlace||U.shortAddr(tr.startAddr)):''}</td>
+        <td>${U.fmtTime(pe)} ${(tr.endPlace||U.shortAddr(tr.endAddr))?'· '+escHtml(tr.endPlace||U.shortAddr(tr.endAddr)):''}</td>
+        <td class="num">${tr.km.toFixed(1)}</td>
+        <td class="num">${U.fmtDur(tr.durMin)}</td>
+        <td class="num">${Math.round(tr.avgSpeed)} / ${Math.round(tr.maxSpeed)}</td>
+        <td><select class="cat-sel" data-ms="${tr.startT}"><option value="" ${cat===''?'selected':''}>–</option><option value="beruflich" ${cat==='beruflich'?'selected':''}>beruflich</option><option value="privat" ${cat==='privat'?'selected':''}>privat</option></select></td>
+      </tr>`;
+    }
+    h+='</tbody></table>';
+    $('tab-trips').innerHTML=h;
+    $('tab-trips').querySelectorAll('tbody tr').forEach(tr=>{
+      tr.addEventListener('click',e=>{ if(e.target.classList.contains('cat-sel')) return; const lat=+tr.dataset.lat,lon=+tr.dataset.lon; if(!isNaN(lat)) focusPoint(lat,lon); });
+    });
+    $('tab-trips').querySelectorAll('.cat-sel').forEach(sel=>{
+      sel.addEventListener('change',()=>{ setCat(+sel.dataset.ms, sel.value); renderKpis(); });
+      sel.addEventListener('click',e=>e.stopPropagation());
+    });
+
+    // Stopps
+    const stops=state.result.clusters.filter(c=>c.type!=='micro' && inRangeTs(c.startT));
+    let hs='<table><thead><tr><th>Datum</th><th>Beginn</th><th class="num">Dauer</th><th>Ort</th><th>Typ</th></tr></thead><tbody>';
+    if(!stops.length) hs+='<tr><td colspan="5" class="muted">Keine Stopps im Filter.</td></tr>';
+    for(const c of stops){
+      const p=U.berlinParts(c.startT);
+      const longStand=c.type==='stop'&&c.durMin>=settings.longStandMin&&!c.place;
+      hs+=`<tr data-lat="${c.lat}" data-lon="${c.lon}">
+        <td>${U.fmtDate(p)}</td><td>${U.fmtTime(p)}</td>
+        <td class="num">${U.fmtDur(c.durMin)}</td>
+        <td>${(c.place||U.shortAddr(c.addr))?escHtml(c.place||U.shortAddr(c.addr)):'<span class="muted">—</span>'}</td>
+        <td>${c.type==='stop'?'<span class="tag">Stopp</span>':'<span class="tag yellow">kurz</span>'}${longStand?' <span class="tag red">lange Standzeit</span>':''}${c.ignitionOff?' <span class="tag">Zündung aus</span>':''}</td>
+      </tr>`;
+    }
+    hs+='</tbody></table>'; $('tab-stops').innerHTML=hs;
+    $('tab-stops').querySelectorAll('tbody tr').forEach(tr=>tr.addEventListener('click',()=>{const lat=+tr.dataset.lat,lon=+tr.dataset.lon; if(!isNaN(lat))focusPoint(lat,lon);}));
+
+    // Auffälligkeiten
+    const anoms=state.result.anomalies.filter(a=>inRangeTs(a.t));
+    let ha='<table><thead><tr><th>Typ</th><th>Zeitpunkt</th><th>Detail</th></tr></thead><tbody>';
+    if(!anoms.length) ha+='<tr><td colspan="3" class="muted">Keine Auffälligkeiten im Filter.</td></tr>';
+    for(const a of anoms){ const p=U.berlinParts(a.t); ha+=`<tr data-lat="${a.lat}" data-lon="${a.lon}"><td><span class="tag red">${a.type}</span></td><td>${U.fmtDate(p)} ${U.fmtTime(p)}</td><td>${escHtml(a.detail||'')}</td></tr>`; }
+    ha+='</tbody></table>'; $('tab-anoms').innerHTML=ha;
+    $('tab-anoms').querySelectorAll('tbody tr').forEach(tr=>tr.addEventListener('click',()=>{const lat=+tr.dataset.lat,lon=+tr.dataset.lon; if(!isNaN(lat))focusPoint(lat,lon);}));
+  }
+
+  /* ---------- Export ---------- */
+  function exportCsv(){
+    const trips=filteredTrips();
+    const rows=[['Datum','Start','Ziel','Start-Ort','Ziel-Ort','km','Dauer_min','Ø_kmh','Max_kmh','Nacht','Kategorie']];
+    for(const tr of trips){
+      const ps=U.berlinParts(tr.startT), pe=U.berlinParts(tr.endT);
+      rows.push([U.fmtDate(ps),U.fmtTime(ps),U.fmtTime(pe),tr.startPlace||U.shortAddr(tr.startAddr)||'',tr.endPlace||U.shortAddr(tr.endAddr)||'',tr.km.toFixed(2).replace('.',','),Math.round(tr.durMin),Math.round(tr.avgSpeed),Math.round(tr.maxSpeed),tr.night?'ja':'nein',catOf(tr.startT)]);
+    }
+    const csv='﻿'+rows.map(r=>r.map(c=>{const s=String(c); return /[";\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(';')).join('\r\n');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='fahrten.csv'; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  }
+
+  /* ---------- Einstellungen-UI ---------- */
+  function openSettings(){
+    for(const k of ['tripSpeed','stopSpeed','stopRadius','stopMinMin','shortStopMinMin','speedLimit','dataGapMin','jumpSpeed','nightStart','nightEnd']){ $('s-'+k).value=settings[k]; }
+    $('s-longStandH').value=settings.longStandMin/60;
+    renderPlacesList();
+    $('selftest-out').textContent='';
+    $('set-modal').classList.add('open');
+  }
+  function saveSettings(){
+    for(const k of ['tripSpeed','stopSpeed','stopRadius','stopMinMin','shortStopMinMin','speedLimit','dataGapMin','jumpSpeed','nightStart','nightEnd']){ const v=parseFloat($('s-'+k).value); if(!isNaN(v)) settings[k]=v; }
+    const lh=parseFloat($('s-longStandH').value); if(!isNaN(lh)) settings.longStandMin=lh*60;
+    GPS.store.set('gpsdash.settings', settings);
+    $('set-modal').classList.remove('open');
+    recompute();
+  }
+  function renderPlacesList(){
+    const list=GPS.places.load(); const el=$('places-list'); el.innerHTML='';
+    if(!list.length){ el.innerHTML='<div class="muted" style="font-size:13px">Noch keine Orte.</div>'; }
+    list.forEach((pl,idx)=>{
+      const row=document.createElement('div'); row.className='maprow';
+      row.innerHTML=`<span>${escHtml(pl.name)}</span><span class="muted">${pl.lat.toFixed(4)}</span><span class="muted">${pl.lon.toFixed(4)}</span><span class="muted">${pl.radius} m</span><button class="btn" data-i="${idx}">✕</button>`;
+      row.querySelector('button').onclick=()=>{ const l=GPS.places.load(); l.splice(idx,1); GPS.places.save(l); renderPlacesList(); };
+      el.appendChild(row);
+    });
+  }
+
+  /* ---------- Helpers ---------- */
+  function escHtml(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function escAttr(s){ return escHtml(s).replace(/'/g,'&#39;'); }
+  window.escHtml=escHtml;
+
+  /* ---------- Event-Verkabelung ---------- */
+  function wire(){
+    const drop=$('drop'), fileInput=$('file');
+    drop.addEventListener('click',()=>fileInput.click());
+    $('btn-import').addEventListener('click',()=>fileInput.click());
+    fileInput.addEventListener('change',e=>{ if(e.target.files[0]) handleFile(e.target.files[0]); e.target.value=''; });
+    ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag');}));
+    ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag');}));
+    drop.addEventListener('drop',e=>{ const f=e.dataTransfer.files[0]; if(f) handleFile(f); });
+
+    $('tz').value=state.sourceTZ;
+    $('tz').addEventListener('change',e=>{ state.sourceTZ=e.target.value; GPS.store.set('gpsdash.tz',state.sourceTZ); if(state.mapping && state.raw){ banner('warn','Zeitzone geändert – bitte Datei erneut laden, damit die Zeitstempel neu interpretiert werden.',false); } });
+
+    $('btn-csv').addEventListener('click',exportCsv);
+    $('btn-print').addEventListener('click',()=>window.print());
+    $('btn-settings').addEventListener('click',openSettings);
+
+    ['f-from','f-to','f-day','f-cat','e-trips','e-stops','e-anom'].forEach(id=>$(id).addEventListener('change',()=>{ if(state.result) render(); }));
+    $('f-reset').addEventListener('click',()=>{ $('f-day').value=''; $('f-cat').value=''; setupFilterBounds(); if(state.result) render(); });
+
+    document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); t.classList.add('active');
+      ['trips','stops','anoms'].forEach(n=>$('tab-'+n).classList.toggle('hidden', n!==t.dataset.tab));
+    }));
+
+    $('set-cancel').addEventListener('click',()=>$('set-modal').classList.remove('open'));
+    $('set-ok').addEventListener('click',saveSettings);
+    $('set-defaults').addEventListener('click',()=>{ settings=Object.assign({},GPS.defaults); openSettings(); });
+    $('np-add').addEventListener('click',()=>{
+      const name=$('np-name').value.trim(), lat=parseFloat($('np-lat').value), lon=parseFloat($('np-lon').value), rad=parseFloat($('np-rad').value)||120;
+      if(!name||isNaN(lat)||isNaN(lon)){ alert('Name, Breite und Länge nötig.'); return; }
+      const l=GPS.places.load(); l.push({name,lat,lon,radius:rad}); GPS.places.save(l);
+      $('np-name').value='';$('np-lat').value='';$('np-lon').value='';
+      renderPlacesList();
+    });
+    $('run-selftest').addEventListener('click',()=>{ $('selftest-out').textContent=GPS.selftest.run(true); });
+
+    if(location.hash.toLowerCase().includes('selftest')){ openSettings(); $('selftest-out').textContent=GPS.selftest.run(true); }
+  }
+
+  document.addEventListener('DOMContentLoaded',wire);
+})();
+
+/* -------------------------- selftest (Detector-Unit-Tests, §7) --------- */
+GPS.selftest = (function(){
+  const U=GPS.util;
+  // Hilfsgenerator: erzeugt Punktfolge ab Startzeit (Berlin), Schritt sekundenweise
+  function P(msStart, arr){ // arr: [{dtSec,lat,lon,speed?,acc?}]
+    let t=msStart; const out=[];
+    for(const a of arr){ t+=(a.dtSec||0)*1000; out.push({t,lat:a.lat,lon:a.lon,speed:('speed'in a?a.speed:null),acc:('acc'in a?a.acc:null)}); }
+    return out;
+  }
+  // grobe Verschiebung: 0.001° lat ≈ 111 m
+  function line(msStart, n, stepSec, lat0, lon0, dLat, speed){
+    const arr=[]; for(let k=0;k<n;k++) arr.push({dtSec:stepSec,lat:lat0+dLat*k,lon:lon0,speed});
+    return P(msStart,arr);
+  }
+  function run(verbose){
+    const cases=[]; let pass=0,fail=0;
+    const T=(name,fn)=>{ try{ fn(); cases.push('✓ '+name); pass++; }catch(e){ cases.push('✗ '+name+' — '+e.message); fail++; } };
+    const eq=(a,b,m)=>{ if(a!==b) throw new Error((m||'')+' erwartet '+b+', war '+a); };
+    const ge=(a,b,m)=>{ if(!(a>=b)) throw new Error((m||'')+' '+a+' < '+b); };
+    const base=U.berlinWallToMs(2026,6,1,10,0,0); // Tag, CEST
+
+    // Ampelhalt: 1 min Stillstand innerhalb Fahrt -> KEIN Stopp, KEIN kurzer Stopp
+    T('Ampelhalt (1 min) zählt nicht als Stopp', ()=>{
+      const seq=buildAmpel();
+      const r=GPS.detector.analyze(seq, {});
+      eq(r.shortStops.length,0,'kurze Stopps');
+      eq(r.stops.length,0,'Stopps');
+      ge(r.trips.length,1,'Fahrten');
+    });
+
+    // Tankstopp: 5 min Stillstand innerhalb Fahrt -> kurzer Stopp
+    T('Tankstopp (5 min) ist kurzer Stopp', ()=>{
+      const r=GPS.detector.analyze(buildTank(), {});
+      eq(r.shortStops.length,1,'kurze Stopps');
+      eq(r.stops.length,0,'lange Stopps');
+    });
+
+    // Parken: 2 h Stillstand -> Stopp (trennt zwei Fahrten)
+    T('Parken (2 h) ist Stopp und trennt Fahrten', ()=>{
+      const r=GPS.detector.analyze(buildPark(), {});
+      eq(r.stops.length,1,'Stopps');
+      ge(r.trips.length,2,'Fahrten');
+    });
+
+    // Nachtfahrt
+    T('Nachtfahrt wird erkannt', ()=>{
+      const night=U.berlinWallToMs(2026,6,1,23,30,0);
+      const seq=line(night,30,4,52.0,13.0,0.0006,60);
+      const r=GPS.detector.analyze(seq, {});
+      ge(r.trips.length,1,'Fahrten');
+      eq(r.trips.some(t=>t.night),true,'night-Flag');
+      eq(r.anomalies.some(a=>a.type==='Nachtfahrt'),true,'Nachtfahrt-Anomalie');
+    });
+
+    // Positionssprung: > 250 km/h -> markiert, km reduziert
+    T('Positionssprung wird markiert und nicht mitgezählt', ()=>{
+      const seq=[
+        {t:base, lat:52.0,lon:13.0,speed:50,acc:null},
+        {t:base+2000, lat:52.0006,lon:13.0,speed:50,acc:null},
+        {t:base+3000, lat:53.5,lon:13.0,speed:50,acc:null}, // Sprung ~166 km in 1s
+        {t:base+5000, lat:53.5006,lon:13.0,speed:50,acc:null}
+      ];
+      const r=GPS.detector.analyze(seq, {});
+      eq(r.anomalies.some(a=>a.type==='Positionssprung'),true,'Sprung-Anomalie');
+      ge(1,r.stats.km,'km klein (Sprung raus)'); // km deutlich < 166
+    });
+
+    // Datenlücke: > 15 min ohne Punkt in Fahrt
+    T('Datenlücke (>15 min) wird erkannt', ()=>{
+      const seq=[
+        {t:base,lat:52.0,lon:13.0,speed:60,acc:null},
+        {t:base+60000,lat:52.006,lon:13.0,speed:60,acc:null},
+        {t:base+60000+20*60000,lat:52.02,lon:13.0,speed:60,acc:null}, // 20 min Lücke
+        {t:base+60000+20*60000+60000,lat:52.026,lon:13.0,speed:60,acc:null}
+      ];
+      const r=GPS.detector.analyze(seq, {});
+      eq(r.anomalies.some(a=>a.type==='Datenlücke'),true,'Datenlücke-Anomalie');
+    });
+
+    // Zündung aus vorhanden: kurzer Stillstand mit acc=false -> Stopp
+    T('Zündung aus erzwingt Stopp', ()=>{
+      const r=GPS.detector.analyze(buildIgnitionOff(), {});
+      eq(r.stops.length>=1,true,'Stopp durch acc=false');
+    });
+
+    // Zündung nicht vorhanden: gleiche Sequenz ohne acc -> kein erzwungener Stopp (nur kurz)
+    T('Ohne Zündungsspalte kein erzwungener Stopp', ()=>{
+      const r=GPS.detector.analyze(buildIgnitionOff(true), {});
+      eq(r.stops.length,0,'keine langen Stopps');
+    });
+
+    // Tempo über Limit
+    T('Tempo über 130 km/h wird markiert', ()=>{
+      const seq=line(base,10,5,52.0,13.0,0.002,145);
+      const r=GPS.detector.analyze(seq, {});
+      eq(r.anomalies.some(a=>a.type==='Tempo'),true,'Tempo-Anomalie');
+    });
+
+    const head=`Selbsttest: ${pass} bestanden, ${fail} fehlgeschlagen  (${new Date().toLocaleTimeString('de-DE')})`;
+    const out=head+'\n'+cases.join('\n');
+    if(typeof console!=='undefined'){ (fail?console.warn:console.log)(out); }
+    return out;
+
+    // ---- Szenario-Builder ----
+    function buildAmpel(){
+      const seq=[]; let t=base;
+      for(let k=0;k<20;k++){ seq.push({t,lat:52.0+0.0006*k,lon:13.0,speed:50,acc:null}); t+=3000; } // ~1min Fahrt
+      const lat=seq[seq.length-1].lat;
+      for(let k=0;k<7;k++){ seq.push({t,lat,lon:13.0,speed:0,acc:null}); t+=10000; } // ~1min Stillstand
+      for(let k=1;k<=20;k++){ seq.push({t,lat:lat+0.0006*k,lon:13.0,speed:50,acc:null}); t+=3000; }
+      return seq;
+    }
+    function buildTank(){
+      const seq=[]; let t=base;
+      for(let k=0;k<20;k++){ seq.push({t,lat:52.0+0.0006*k,lon:13.0,speed:50,acc:null}); t+=3000; }
+      const lat=seq[seq.length-1].lat;
+      for(let k=0;k<=30;k++){ seq.push({t,lat,lon:13.0,speed:0,acc:null}); t+=10000; } // ~5min
+      for(let k=1;k<=20;k++){ seq.push({t,lat:lat+0.0006*k,lon:13.0,speed:50,acc:null}); t+=3000; }
+      return seq;
+    }
+    function buildPark(){
+      const seq=[]; let t=base;
+      for(let k=0;k<30;k++){ seq.push({t,lat:52.0+0.0008*k,lon:13.0,speed:55,acc:null}); t+=4000; }
+      const lat=seq[seq.length-1].lat;
+      for(let k=0;k<=24;k++){ seq.push({t,lat,lon:13.0,speed:0,acc:null}); t+=5*60000; } // 2h
+      for(let k=1;k<=30;k++){ seq.push({t,lat:lat+0.0008*k,lon:13.0,speed:55,acc:null}); t+=4000; }
+      return seq;
+    }
+    function buildIgnitionOff(noAcc){
+      const seq=[]; let t=base;
+      for(let k=0;k<20;k++){ seq.push({t,lat:52.0+0.0006*k,lon:13.0,speed:50,acc:noAcc?null:true}); t+=3000; }
+      const lat=seq[seq.length-1].lat;
+      for(let k=0;k<7;k++){ seq.push({t,lat,lon:13.0,speed:0,acc:noAcc?null:false}); t+=10000; } // ~1min, aber acc=false
+      for(let k=1;k<=20;k++){ seq.push({t,lat:lat+0.0006*k,lon:13.0,speed:50,acc:noAcc?null:true}); t+=3000; }
+      return seq;
+    }
+  }
+  return {run};
+})();
+</script>
+</body>
+</html>

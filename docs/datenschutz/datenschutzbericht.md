@@ -2,11 +2,12 @@
 
 **Domain:** fraesdienst-feind.de
 **Berichtstyp:** Zusammenfassender Datenschutz-/DSGVO-Statusbericht mit Maßnahmen, Vorlagen und Roadmap
-**Zielgruppe:** Geschäftsführung, Datenschutzbeauftragte(r) (intern/extern), IT-Verantwortliche, ggf. Aufsichtsbehörde (LDI NRW)
+**Zielgruppe:** Geschäftsführung, Datenschutzbeauftragte(r) (intern/extern), IT-Verantwortliche, ggf. Aufsichtsbehörde (LDA Brandenburg)
 **Erstellt von:** David Halko (Marketing & Eventmanagement) mit KI-Unterstützung
-**Berichtsdatum:** 17.09.2026
-**Version:** 1.3 (Entwurf)
-**Änderungsvermerk v1.3:** Mitgelieferte **`.env`-Vorlage** (`.env.example` im Repository-Wurzelverzeichnis): Alle im Bericht referenzierten Umgebungsvariablen (Abschnitt 0, Anhang R) sind dort als ausfüllbare Vorlage hinterlegt. Abschnitt 0 und der Faktenlage-Hinweis verweisen jetzt auf diese Datei; das Platzhalter-Verzeichnis (Anhang R) nennt die zugehörigen `.env`-Schlüssel.
+**Berichtsdatum:** 21.09.2026
+**Version:** 1.4 (Entwurf)
+**Änderungsvermerk v1.4:** Mitgelieferte **`.env`-Vorlage** (`.env.example` im Repository-Wurzelverzeichnis): Alle im Bericht referenzierten Umgebungsvariablen (Abschnitt 0, Anhang R) sind dort als ausfüllbare Vorlage hinterlegt. Abschnitt 0 und der Faktenlage-Hinweis verweisen jetzt auf diese Datei; das Platzhalter-Verzeichnis (Anhang R) nennt die zugehörigen `.env`-Schlüssel.
+**Änderungsvermerk v1.3 (21.09.2026):** Unternehmensprofil korrigiert (Kaltfräsarbeiten im Straßen-/Tiefbau statt CNC-Fertigung), Standorte Lübben (Brandenburg) und Wittenburg (Mecklenburg-Vorpommern) sowie zuständige Aufsichtsbehörde (LDA Brandenburg statt LDI NRW), Datenkategorien und Empfänger an das Baugeschäft angepasst.
 **Änderungsvermerk v1.2:** Aufgewertete Ausgabe (klickbares Inhaltsverzeichnis mit Anker-Links, verbesserte Tabellen-Darstellung, **Fußnoten** zu Rechtsquellen) sowie zusätzliche browserfreundliche HTML-Ansicht mit Navigations-Seitenleiste.
 **Änderungsvermerk v1.1:** Durchgängige `Annahme:`/`Offene Frage:`-Kennzeichnung, `{{PLATZHALTER}}`-Mechanismus in allen Vorlagen, neuer Abschnitt zur `.env`-Ableitungslogik, 4-spaltige Offene-Fragen-Tabelle, ergänzte kostengünstige/Open-Source-Optionen.
 **Vertraulichkeit:** Streng vertraulich — nur zur internen Verwendung
@@ -29,10 +30,9 @@
 > Die im Auftrag beispielhaft genannten Werte („Hetzner", „WordPress") sind daher **Beispiele,
 > keine bestätigten Daten**. Alle aus diesen Variablen ableitbaren Angaben sind deshalb als
 > **`Annahme:`** gekennzeichnet und über `{{PLATZHALTER}}` sowie den Fragenkatalog (Kap. 16/17)
-> als offene Punkte geführt. Verifizierte Fakten stammen aus der internen SEO-/Lead-Reporting-
-> Codebasis (`config.example.yaml`, `docs/SPEC.md`, `docs/SETUP.md`, `data/crm/leads.example.csv`).
+> als offene Punkte geführt. Verifizierte Fakten zum Unternehmensprofil stammen von der Website fraesdienst-feind.de und dem Notion Marketing-Scan (09/2026); technische Fakten aus der internen SEO-/Lead-Reporting-Codebasis (`config.example.yaml`, `docs/SPEC.md`, `docs/SETUP.md`, `data/crm/leads.example.csv`).
 >
-> **Seit v1.3** liegt im Repository-Wurzelverzeichnis eine **`.env`-Vorlage (`.env.example`)** bereit,
+> **Seit v1.4** liegt im Repository-Wurzelverzeichnis eine **`.env`-Vorlage (`.env.example`)** bereit,
 > in der alle hier genannten Variablen aufgeführt sind. Sobald David/IT diese Vorlage nach `.env`
 > kopiert und mit echten Werten füllt (`cp .env.example .env`), lassen sich die Annahmen in
 > **Fakten** überführen und der Bericht kann darauf gestützt aktualisiert werden (Anhang Q).
@@ -75,7 +75,7 @@ Der Bericht ist so konstruiert, dass er aus einer `.env`/Konfiguration automatis
 Werten befüllt werden kann. Da aktuell **keine** solchen Werte gesetzt sind, dokumentiert dieser
 Abschnitt die **Ableitungsregeln** und den jeweils gesetzten Platzhalter/Annahmestatus.
 
-> **`.env`-Vorlage (seit v1.3):** Die Datei `.env.example` im Repository-Wurzelverzeichnis enthält
+> **`.env`-Vorlage (seit v1.4):** Die Datei `.env.example` im Repository-Wurzelverzeichnis enthält
 > alle unten aufgeführten Variablen als leere, kommentierte Vorlage. Zum Befüllen:
 > `cp .env.example .env` und echte Werte eintragen. Die echte `.env` ist per `.gitignore`
 > ausgeschlossen und wird **nie** committet (nur die Vorlage `.env.example` ist versioniert).
@@ -100,7 +100,7 @@ AVV nach Art. 28 verfügbar (Hetzner stellt AVV bereit), TOM-Nachweis über ISO 
 
 ## 1. Executive Summary
 
-{{COMPANY_NAME}} verarbeitet als B2B-Fertigungsbetrieb (CNC-Fräsen / Lohnfertigung) überwiegend
+{{COMPANY_NAME}} verarbeitet als B2B-Dienstleister für Kaltfräsarbeiten im Straßen- und Tiefbau (Asphalt-/Betonfräsen, Grinding & Grooving) überwiegend
 Kunden-, Auftrags-, Lieferanten- und Beschäftigtendaten sowie Website-Besucherdaten. Das
 Datenschutzniveau ist in Teilbereichen solide (DSGVO-bewusste Trennung von Rohdaten und Code,
 kein Datenverkauf, überschaubare Verarbeitungslandschaft), es fehlen jedoch **zentrale
@@ -134,15 +134,12 @@ ist innerhalb von 12 Monaten ein belastbares Konformitätsniveau erreichbar. Ums
 
 ### 2.1 Kurzprofil (Fakten + Annahmen)
 
-**Verifiziert (aus interner Codebasis):** Auftritt als „E. Feind GmbH" / „Fräsdienst Feind",
-Domain `fraesdienst-feind.de`. Geschäftsfelder: **CNC-Fräsen, Lohnfertigung**, Werkstoffe
-(Aluminium, Kunststoff, Edelstahl, POM, Messing, Titan), **Prototypen & Kleinserien**, Fokus
-**NRW / Deutschland**. Lead-Quellen: Website-Kontaktformular, Telefon, Messe, E-Mail, Empfehlung.
+**Verifiziert (Website fraesdienst-feind.de, Notion Marketing-Scan 09/2026):** Auftritt als „E. Feind GmbH" / „Fräsdienst Feind",
+Domain `fraesdienst-feind.de`. Geschäftsfelder: **Kaltfräsen von Asphalt und Beton** (Straßen, Autobahnen, Gewerbe-/Industrieflächen, Flughäfen), **Grinding & Grooving**, Pflasterschleifen, Sonderlösungen und Rundum-Service (Fräsgutaufnahme, Kehrsauger). Über 30 Wirtgen-Fräsmaschinen. **Hauptsitz Lübben (Brandenburg), Niederlassung Wittenburg (Mecklenburg-Vorpommern)**, Einsatz deutschlandweit. Auftraggeber: Straßen-/Tiefbauunternehmen, Kommunen, Flughäfen, Industrie. Lead-Quellen: Website-Kontaktformular, Telefon, E-Mail, Ausschreibungen, Empfehlung, Messe.
 
 - **Annahme:** KMU mit **< 20 Personen**, die ständig automatisiert personenbezogene Daten
   verarbeiten → keine gesetzliche DSB-Pflicht nach § 38 BDSG (bestätigen, siehe Kap. 3).
-- **Annahme:** Sitz/Verarbeitung in **NRW** → Aufsichtsbehörde **LDI NRW** (bei Meldung Bundesland
-  verifizieren).
+- **Annahme:** Hauptsitz und Verarbeitung in **Lübben (Brandenburg)** → Aufsichtsbehörde **LDA Brandenburg** (Landesbeauftragte für den Datenschutz und für das Recht auf Akteneinsicht Brandenburg); für die Niederlassung Wittenburg ggf. **LfDI Mecklenburg-Vorpommern** (Zuständigkeit bei Meldung verifizieren).
 - **Annahme:** Keine **besonderen Kategorien** (Art. 9) zu Kunden; im Beschäftigtenkontext nur
   begrenzt Gesundheitsdaten (AU-Bescheinigungen).
 - **Annahme:** Kein **Profiling / keine automatisierte Einzelentscheidung** (Art. 22).
@@ -211,7 +208,7 @@ Legende: 🟢 erfüllt · 🟡 teilweise · 🔴 nicht erfüllt / unbekannt
 
 | Betroffenengruppe | Typische Datenkategorien |
 |---|---|
-| **Kunden / Ansprechpartner** | Name, Firma, Funktion, Anschrift, E-Mail, Telefon, Auftrags-, Rechnungs-/Zahlungsdaten, techn. Zeichnungen/CAD (i. d. R. kein Personenbezug, aber vertraulich). |
+| **Kunden / Ansprechpartner** | Name, Firma, Funktion, Anschrift, E-Mail, Telefon, Auftrags-, Rechnungs-/Zahlungsdaten, Ausschreibungsunterlagen, Leistungsverzeichnisse, Lagepläne, Baustellenfotos (i. d. R. kein Personenbezug, aber vertraulich). |
 | **Interessenten / Leads** | Name, Firma, E-Mail, Telefon, Anfrageinhalt. |
 | **Lieferanten / Dienstleister** | Ansprechpartner, Kontakt-, Vertrags-, Zahlungsdaten. |
 | **Beschäftigte** | Stammdaten, Vertrag, Lohn-/SV-Daten, Bankverbindung, Arbeitszeit, **Gesundheitsdaten (AU)** — Art. 9. |
@@ -224,7 +221,7 @@ Legende: 🟢 erfüllt · 🟡 teilweise · 🔴 nicht erfüllt / unbekannt
 
 | Verarbeitung | Zweck | Rechtsgrundlage | Datenkategorien | Speicherort | Aufbewahrung | Zugriff | Empfänger/Dritte | TOM (Kurz) |
 |---|---|---|---|---|---|---|---|---|
-| **Kundenverwaltung / Auftragsabwicklung** | Angebot, Vertrag, Fertigung, Rechnung | Art. 6 I b, c | Stamm-, Auftrags-, Rechnungsdaten | ERP/Ablage, Buchhaltung, Cloud | Rechnungen 8–10 J. (§ 147 AO); sonst 3 J. (§ 195 BGB) | GF, Vertrieb, Buchhaltung, Fertigung | Steuerberater, Versand, Zahlungsdienstl. | Rollenrechte, Backup, Verschlüsselung |
+| **Kundenverwaltung / Auftragsabwicklung** | Angebot, Vertrag, Ausführung auf der Baustelle, Rechnung | Art. 6 I b, c | Stamm-, Auftrags-, Rechnungsdaten | ERP/Ablage, Buchhaltung, Cloud | Rechnungen 8–10 J. (§ 147 AO); sonst 3 J. (§ 195 BGB) | GF, Vertrieb, Buchhaltung, Bauleitung/Disposition | Steuerberater, Subunternehmer/Entsorger, Zahlungsdienstl. | Rollenrechte, Backup, Verschlüsselung |
 | **Interessenten/Kontaktformular** | Anfragebearbeitung | Art. 6 I b, f | Name, Firma, Kontakt, Anliegen | Website→E-Mail/CRM(CSV) | Löschung n. Erledigung, spät. 6–12 Mon. | Vertrieb, Marketing | Hoster, Formular-Dienst | TLS, Zugriffsschutz |
 | **Website-Analyse (GA4)** | Reichweiten-/Nutzungsanalyse | **Art. 6 I a (Einwilligung)** | IP, Geräte-/Nutzungsdaten, Cookie-IDs | Google (EU/USA) | GA4-Standard, konfigurierbar (2–14 Mon.) | Marketing | Google (Auftragsverarb., DPF) | Consent-Banner, IP-Kürzung, DPF |
 | **Suchperformance (Search Console)** | SEO-Analyse | Art. 6 I f | aggregierte Suchdaten (i. d. R. kein Personenbezug) | Google | Google-seitig | Marketing | Google | Zugriff via Service-Account |
@@ -239,11 +236,9 @@ Legende: 🟢 erfüllt · 🟡 teilweise · 🔴 nicht erfüllt / unbekannt
 
 ### 5.1 Ein- und Ausgangspunkte
 
-**Eingang:** Website-Kontaktformular · E-Mail · Telefon · Messe/persönlich · Papierdokumente
-(Zeichnungen, Lieferscheine) · Bewerbungen · Maschinen-/Fertigungsdaten (CAD — i. d. R. kein
-Personenbezug).
+**Eingang:** Website-Kontaktformular · E-Mail · Telefon · Messe/persönlich · Papierdokumente (Leistungsverzeichnisse, Lieferscheine, Aufmaße) · Bewerbungen · Ausschreibungs-/Planunterlagen (Lagepläne — i. d. R. kein Personenbezug) · Maschinen-/Telematikdaten der Fräsmaschinen und Fahrzeuge (Offene Frage: Fahrer-/Standortbezug → ggf. Beschäftigtendaten, Betriebsvereinbarung prüfen).
 
-**Ausgang:** Steuerberater/Lohnbüro · Finanzamt/SV-Träger (gesetzlich) · Versand/Logistik ·
+**Ausgang:** Steuerberater/Lohnbüro · Finanzamt/SV-Träger (gesetzlich) · Subunternehmer/Entsorgung/Logistik ·
 Zahlungsdienstleister/Bank · Google (Analytics/Search Console) · Hosting-Provider ·
 IT-Support/Fernwartung · ggf. Newsletter-Tools · GitHub (nur Code/Konfiguration, **keine**
 produktiven CRM-Rohdaten — durch `.gitignore` ausgeschlossen).
@@ -252,7 +247,7 @@ produktiven CRM-Rohdaten — durch `.gitignore` ausgeschlossen).
 
 | Datenfluss | 1. Erfassung | 2. Speicherung | 3. Verarbeitung | 4. Weitergabe | 5. Löschung | Drittland? |
 |---|---|---|---|---|---|---|
-| Kundenauftrag | Formular/E-Mail/Tel. | ERP/Ablage/Cloud | Angebot→Fertigung→Rechnung | Steuerberater, Versand | Fristablauf (8–10 J.) | **Offene Frage:** Cloud-Standort |
+| Kundenauftrag | Formular/E-Mail/Tel. | ERP/Ablage/Cloud | Angebot→Ausführung→Rechnung | Steuerberater, Subunternehmer | Fristablauf (8–10 J.) | **Offene Frage:** Cloud-Standort |
 | Website-Analyse | Browser (Cookie) | Google GA4 | Aggregation, Reporting | Google | GA4-Retention | **Ja — USA (DPF)** |
 | Lead/Interessent | Formular/Messe | E-Mail/CRM-CSV | Nachfassen, Angebot | intern | nach Erledigung | **Offene Frage:** Hoster-Standort |
 | Beschäftigte/Lohn | Personalbogen | Personalakte/Lohnsystem | Abrechnung | Lohnbüro, FA, SV | Fristablauf | **Annahme:** EU |
@@ -307,7 +302,7 @@ Open-Source-Option (neutral, keine Kaufempfehlung).
 | **{{PAYROLL_PROVIDER}}** (Lohn) | Gehaltsabrechnung | AVV oder Berufsträger | EU | klären |
 | **{{IT_SUPPORT}}** / Fernwartung | Wartung, Support | Ja | **Offene Frage** | AVV einholen |
 | **{{NEWSLETTER_TOOL}}** *(falls genutzt)* | E-Mail-Marketing | Ja | **Offene Frage** | AVV einholen |
-| **Versand/Logistik** | Warenversand | meist eigenständig Verantwortlicher | EU | klären |
+| **Subunternehmer/Entsorger/Logistik** | Baustellenlogistik, Fräsgut-Entsorgung | meist eigenständig Verantwortlicher | EU | klären |
 | **GitHub (Microsoft)** | Code-/Config-Hosting | Ja (soweit personenbezogen) | USA (DPF) | prüfen; keine Rohdaten (verifiziert) |
 
 ### 7.2 AVV-Prüfliste
@@ -344,7 +339,7 @@ auf der Muss-Liste der Aufsichtsbehörden.
 4. Bewertung (Eintritt × Schwere) → 5. Abhilfemaßnahmen → 6. Restrisiko & Freigabe →
 7. Monitoring/Review.
 
-> Vollständige **DPIA-Vorlage mit Beispielen** (Kundenverwaltung, CAD-Dateien, Fernwartung) siehe
+> Vollständige **DPIA-Vorlage mit Beispielen** (Kundenverwaltung, Ausschreibungs-/Planunterlagen, Fernwartung) siehe
 > **Anhang B**.
 
 ---
@@ -355,7 +350,7 @@ auf der Muss-Liste der Aufsichtsbehörden.
 2. **Sofortmaßnahmen & forensische Sicherung:** System isolieren, Logs/Beweise sichern, Umfang
    eingrenzen.
 3. **Bewertung (Risiko für Betroffene):** Art, Umfang, Sensibilität, Anzahl, Folgen.
-4. **Meldung an Aufsichtsbehörde (Art. 33):** bei Risiko **innerhalb 72 Stunden** (LDI NRW);
+4. **Meldung an Aufsichtsbehörde (Art. 33):** bei Risiko **innerhalb 72 Stunden** (LDA Brandenburg);
    Verzögerung begründen.
 5. **Benachrichtigung Betroffener (Art. 34):** bei **hohem** Risiko unverzüglich, klare Sprache.
 6. **Dokumentation:** jeder Vorfall im **Datenpannen-Register** (Nachweispflicht Art. 33 Abs. 5).
@@ -569,7 +564,7 @@ Recht (DSGVO/BDSG/TDDDG) + Branchenpraxis.
 
 ```
 Nr;Verarbeitungstaetigkeit;Zweck;Rechtsgrundlage;Betroffenengruppe;Datenkategorien;Empfaenger;Drittland;Loeschfrist;TOM;Verantwortlich
-1;Kundenverwaltung/Auftragsabwicklung;Vertragserfuellung;Art.6 I b/c;Kunden;Stamm-,Auftrags-,Rechnungsdaten;Steuerberater,Versand;{{CLOUD_STANDORT}};8-10 J. (AO/HGB) bzw. 3 J. (BGB);Rollenrechte,Backup,Verschluesselung;GF/Vertrieb
+1;Kundenverwaltung/Auftragsabwicklung;Vertragserfuellung;Art.6 I b/c;Kunden;Stamm-,Auftrags-,Rechnungsdaten;Steuerberater,Subunternehmer;{{CLOUD_STANDORT}};8-10 J. (AO/HGB) bzw. 3 J. (BGB);Rollenrechte,Backup,Verschluesselung;GF/Vertrieb
 2;Kontaktformular/Interessenten;Anfragebearbeitung;Art.6 I b/f;Interessenten;Name,Firma,Kontakt,Anliegen;-;{{HOSTING_PROVIDER}};nach Erledigung, max 6-12 Mon.;TLS,Zugriffsschutz;Marketing
 3;Website-Analyse GA4;Reichweitenanalyse;Art.6 I a (Einwilligung);Website-Besucher;IP,Geraete-/Nutzungsdaten,Cookie-IDs;Google;USA (DPF);GA4-Retention (konfigurierbar);Consent,IP-Kuerzung;Marketing
 4;Suchperformance Search Console;SEO;Art.6 I f;Website-Besucher;aggregierte Suchdaten;Google;USA (DPF);Google-seitig;Service-Account;Marketing
@@ -603,7 +598,7 @@ DATENSCHUTZ-FOLGENABSCHAETZUNG (Art. 35 DSGVO) - {{COMPANY_NAME}}
 
 BEISPIEL 1 - Kundenverwaltung: Risiko mittel; Score 4; Massnahmen: Rollenrechte, MFA, Backup,
 Verschluesselung; Restrisiko akzeptabel.
-BEISPIEL 2 - CAD-/Fertigungsdaten (Kunden-Know-how): i.d.R. kein Personenbezug, aber hohe
+BEISPIEL 2 - Ausschreibungs-/Planunterlagen (Auftraggeber-Know-how): i.d.R. kein Personenbezug, aber hohe
 Vertraulichkeit; Massnahmen: strenge Zugriffskontrolle, Verschluesselung, NDA; Restrisiko
 akzeptabel bei Umsetzung.
 BEISPIEL 3 - Fernwartung: Risiko mittel-hoch; Massnahmen: AVV, Zugriff nur nach Freigabe,
@@ -690,7 +685,7 @@ ist freiwillig und jederzeit fuer die Zukunft widerrufbar (Kontakt: {{KONTAKT_EM
 
 2. Ihre Rechte
 Auskunft, Berichtigung, Loeschung, Einschraenkung, Datenuebertragbarkeit, Widerspruch;
-Beschwerderecht bei der Aufsichtsbehoerde (LDI NRW).
+Beschwerderecht bei der Aufsichtsbehoerde (LDA Brandenburg).
 
 3. Server-Logfiles (Art. 6 I f)
 Beim Aufruf werden IP-Adresse, Datum/Uhrzeit, abgerufene Datei etc. verarbeitet; Speicherung
@@ -861,7 +856,7 @@ Fall erfolgt die Loeschung nach Fristablauf. Mit freundlichen Gruessen, {{COMPAN
 | ID | Annahme (`Annahme:`) | Zu bestätigen durch |
 |---|---|---|
 | A1 | KMU < 20 Personen mit automatisierter Verarbeitung → keine DSB-Pflicht | GF/Personal (F-12) |
-| A2 | Sitz/Verarbeitung in NRW → Aufsichtsbehörde LDI NRW | GF |
+| A2 | Hauptsitz Lübben (Brandenburg) → Aufsichtsbehörde LDA Brandenburg; Niederlassung Wittenburg (MV) → ggf. LfDI M-V | GF |
 | A3 | Keine besonderen Kategorien bei Kunden; nur Beschäftigten-AU | Personal |
 | A4 | Kein Profiling / keine automatisierte Einzelentscheidung | Marketing/IT |
 | A5 | Datenschutzerklärung & Impressum vorhanden, Aktualität unklar | Marketing (F-01) |
@@ -988,5 +983,5 @@ Bericht automatisiert neu erzeugt und Annahmen in Fakten überführt werden.
 
 ---
 
-*Ende des Berichts — Version 1.3 (Entwurf), 17.09.2026. Streng vertraulich. Vor rechtsverbindlichem
+*Ende des Berichts — Version 1.4 (Entwurf), 21.09.2026. Streng vertraulich. Vor rechtsverbindlichem
 Einsatz der Vorlagen: Prüfung durch Rechtsabteilung / Fachanwalt für IT-Recht.*

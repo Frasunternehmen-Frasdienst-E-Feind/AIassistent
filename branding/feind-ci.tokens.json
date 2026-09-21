@@ -1,0 +1,57 @@
+{
+  "name": "Fräsdienst-Service E. Feind GmbH – Corporate Design",
+  "source": "Design-System-Artefakt (project/tokens.json), Stand 2026-09",
+  "palette": {
+    "feind-gruen": "#84bb20",
+    "anthrazit": "#424e4e",
+    "rot": "#e3000b",
+    "fliesstext-grau": "#3c5457",
+    "neutral-grau": "#999999",
+    "weiss": "#ffffff"
+  },
+  "tokens": {
+    "light": {
+      "accent": "#84bb20",
+      "accent-text": "#5e8a14",
+      "on-accent": "#424e4e",
+      "signal": "#e3000b",
+      "signal-text": "#b8000a",
+      "surface": "#ffffff",
+      "surface-muted": "#f2f4f4",
+      "surface-inverse": "#424e4e",
+      "ink": "#3c5457",
+      "ink-strong": "#424e4e",
+      "ink-muted": "#6b7575",
+      "ink-inverse": "#ffffff",
+      "line": "#d5dada",
+      "focus": "#424e4e"
+    },
+    "dark": {
+      "accent": "#84bb20",
+      "accent-text": "#84bb20",
+      "on-accent": "#424e4e",
+      "signal": "#e3000b",
+      "signal-text": "#ff9a9f",
+      "surface": "#2e3737",
+      "surface-muted": "#384242",
+      "surface-inverse": "#1f2525",
+      "ink": "#e7ecec",
+      "ink-strong": "#ffffff",
+      "ink-muted": "#b8bfbf",
+      "ink-inverse": "#ffffff",
+      "line": "#4d5858",
+      "focus": "#84bb20"
+    }
+  },
+  "typography": {
+    "display": "Exo, \"Arial Black\", Arial, sans-serif",
+    "sans": "\"Helvetica Neue\", Helvetica, Arial, sans-serif"
+  },
+  "radius": { "default": "0px", "input": "2px", "button": "4px" },
+  "spacing": ["4px", "8px", "16px", "24px", "40px", "64px"],
+  "kontrastregeln": [
+    "Feind-Grün auf Weiß erreicht nur 2,3:1 – niemals als Textfarbe auf hellem Grund; dafür accent-text verwenden.",
+    "Feind-Rot auf dunklem Grund erreicht nur 2,5:1 – dort signal-text verwenden, Rot nur als Fläche oder Linie.",
+    "Auf Grün steht Anthrazit (on-accent), nie Weiß."
+  ]
+}

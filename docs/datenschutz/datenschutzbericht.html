@@ -68,18 +68,19 @@ sup[id^="fnref"] a { text-decoration:none; }
 <body>
 <aside id="nav">
   <div class="brand">🔒 Datenschutzbericht</div>
-  <div class="sub">Fräsdienst-Service E. Feind GmbH · v1.3 · 17.09.2026</div>
+  <div class="sub">Fräsdienst-Service E. Feind GmbH · v1.4 · 21.09.2026</div>
   <nav id="navlinks"></nav>
 </aside>
 <main>
 <h1 id="datenschutzbericht-company_name-frasdienst-service-e-feind-gmbh">Datenschutzbericht — {{COMPANY_NAME}} (Fräsdienst-Service E. Feind GmbH)<a class="headerlink" href="#datenschutzbericht-company_name-frasdienst-service-e-feind-gmbh" title="Permanent link">¶</a></h1>
 <p><strong>Domain:</strong> fraesdienst-feind.de
 <strong>Berichtstyp:</strong> Zusammenfassender Datenschutz-/DSGVO-Statusbericht mit Maßnahmen, Vorlagen und Roadmap
-<strong>Zielgruppe:</strong> Geschäftsführung, Datenschutzbeauftragte&reg; (intern/extern), IT-Verantwortliche, ggf. Aufsichtsbehörde (LDI NRW)
+<strong>Zielgruppe:</strong> Geschäftsführung, Datenschutzbeauftragte&reg; (intern/extern), IT-Verantwortliche, ggf. Aufsichtsbehörde (LDA Brandenburg)
 <strong>Erstellt von:</strong> David Halko (Marketing &amp; Eventmanagement) mit KI-Unterstützung
-<strong>Berichtsdatum:</strong> 17.09.2026
-<strong>Version:</strong> 1.3 (Entwurf)
-<strong>Änderungsvermerk v1.3:</strong> Mitgelieferte <strong><code>.env</code>-Vorlage</strong> (<code>.env.example</code> im Repository-Wurzelverzeichnis): Alle im Bericht referenzierten Umgebungsvariablen (Abschnitt 0, Anhang R) sind dort als ausfüllbare Vorlage hinterlegt. Abschnitt 0 und der Faktenlage-Hinweis verweisen jetzt auf diese Datei; das Platzhalter-Verzeichnis (Anhang R) nennt die zugehörigen <code>.env</code>-Schlüssel.
+<strong>Berichtsdatum:</strong> 21.09.2026
+<strong>Version:</strong> 1.4 (Entwurf)
+<strong>Änderungsvermerk v1.4:</strong> Mitgelieferte <strong><code>.env</code>-Vorlage</strong> (<code>.env.example</code> im Repository-Wurzelverzeichnis): Alle im Bericht referenzierten Umgebungsvariablen (Abschnitt 0, Anhang R) sind dort als ausfüllbare Vorlage hinterlegt. Abschnitt 0 und der Faktenlage-Hinweis verweisen jetzt auf diese Datei; das Platzhalter-Verzeichnis (Anhang R) nennt die zugehörigen <code>.env</code>-Schlüssel.
+<strong>Änderungsvermerk v1.3 (21.09.2026):</strong> Unternehmensprofil korrigiert (Kaltfräsarbeiten im Straßen-/Tiefbau statt CNC-Fertigung), Standorte Lübben (Brandenburg) und Wittenburg (Mecklenburg-Vorpommern) sowie zuständige Aufsichtsbehörde (LDA Brandenburg statt LDI NRW), Datenkategorien und Empfänger an das Baugeschäft angepasst.
 <strong>Änderungsvermerk v1.2:</strong> Aufgewertete Ausgabe (klickbares Inhaltsverzeichnis mit Anker-Links, verbesserte Tabellen-Darstellung, <strong>Fußnoten</strong> zu Rechtsquellen) sowie zusätzliche browserfreundliche HTML-Ansicht mit Navigations-Seitenleiste.
 <strong>Änderungsvermerk v1.1:</strong> Durchgängige <code>Annahme:</code>/<code>Offene Frage:</code>-Kennzeichnung, <code>{{PLATZHALTER}}</code>-Mechanismus in allen Vorlagen, neuer Abschnitt zur <code>.env</code>-Ableitungslogik, 4-spaltige Offene-Fragen-Tabelle, ergänzte kostengünstige/Open-Source-Optionen.
 <strong>Vertraulichkeit:</strong> Streng vertraulich — nur zur internen Verwendung</p>
@@ -100,9 +101,8 @@ Umgebungsvariablen (<code>.env</code>: z. B. <code>HOSTING_PROVIDER</code>, <cod
 Die im Auftrag beispielhaft genannten Werte („Hetzner", „WordPress") sind daher <strong>Beispiele,
 keine bestätigten Daten</strong>. Alle aus diesen Variablen ableitbaren Angaben sind deshalb als
 <strong><code>Annahme:</code></strong> gekennzeichnet und über <code>{{PLATZHALTER}}</code> sowie den Fragenkatalog (Kap. 16/17)
-als offene Punkte geführt. Verifizierte Fakten stammen aus der internen SEO-/Lead-Reporting-
-Codebasis (<code>config.example.yaml</code>, <code>docs/SPEC.md</code>, <code>docs/SETUP.md</code>, <code>data/crm/leads.example.csv</code>).</p>
-<p><strong>Seit v1.3</strong> liegt im Repository-Wurzelverzeichnis eine <strong><code>.env</code>-Vorlage (<code>.env.example</code>)</strong> bereit,
+als offene Punkte geführt. Verifizierte Fakten zum Unternehmensprofil stammen von der Website fraesdienst-feind.de und dem Notion Marketing-Scan (09/2026); technische Fakten aus der internen SEO-/Lead-Reporting-Codebasis (<code>config.example.yaml</code>, <code>docs/SPEC.md</code>, <code>docs/SETUP.md</code>, <code>data/crm/leads.example.csv</code>).</p>
+<p><strong>Seit v1.4</strong> liegt im Repository-Wurzelverzeichnis eine <strong><code>.env</code>-Vorlage (<code>.env.example</code>)</strong> bereit,
 in der alle hier genannten Variablen aufgeführt sind. Sobald David/IT diese Vorlage nach <code>.env</code>
 kopiert und mit echten Werten füllt (<code>cp .env.example .env</code>), lassen sich die Annahmen in
 <strong>Fakten</strong> überführen und der Bericht kann darauf gestützt aktualisiert werden (Anhang Q).</p>
@@ -141,7 +141,7 @@ per Suchen-&amp;-Ersetzen mit echten Werten füllen. Eine vollständige Platzhal
 Werten befüllt werden kann. Da aktuell <strong>keine</strong> solchen Werte gesetzt sind, dokumentiert dieser
 Abschnitt die <strong>Ableitungsregeln</strong> und den jeweils gesetzten Platzhalter/Annahmestatus.</p>
 <blockquote>
-<p><strong><code>.env</code>-Vorlage (seit v1.3):</strong> Die Datei <code>.env.example</code> im Repository-Wurzelverzeichnis enthält
+<p><strong><code>.env</code>-Vorlage (seit v1.4):</strong> Die Datei <code>.env.example</code> im Repository-Wurzelverzeichnis enthält
 alle unten aufgeführten Variablen als leere, kommentierte Vorlage. Zum Befüllen:
 <code>cp .env.example .env</code> und echte Werte eintragen. Die echte <code>.env</code> ist per <code>.gitignore</code>
 ausgeschlossen und wird <strong>nie</strong> committet (nur die Vorlage <code>.env.example</code> ist versioniert).</p>
@@ -203,7 +203,7 @@ AVV nach Art. 28 verfügbar (Hetzner stellt AVV bereit), TOM-Nachweis über ISO 
 <em>Da nicht gesetzt, bleibt dies eine Annahme mit Platzhalter <code>{{HOSTING_PROVIDER}}</code>.</em></p>
 <hr>
 <h2 id="1-executive-summary">1. Executive Summary<a class="headerlink" href="#1-executive-summary" title="Permanent link">¶</a></h2>
-<p>{{COMPANY_NAME}} verarbeitet als B2B-Fertigungsbetrieb (CNC-Fräsen / Lohnfertigung) überwiegend
+<p>{{COMPANY_NAME}} verarbeitet als B2B-Dienstleister für Kaltfräsarbeiten im Straßen- und Tiefbau (Asphalt-/Betonfräsen, Grinding &amp; Grooving) überwiegend
 Kunden-, Auftrags-, Lieferanten- und Beschäftigtendaten sowie Website-Besucherdaten. Das
 Datenschutzniveau ist in Teilbereichen solide (DSGVO-bewusste Trennung von Rohdaten und Code,
 kein Datenverkauf, überschaubare Verarbeitungslandschaft), es fehlen jedoch <strong>zentrale
@@ -230,15 +230,12 @@ ist innerhalb von 12 Monaten ein belastbares Konformitätsniveau erreichbar. Ums
 <hr>
 <h2 id="2-unternehmens-und-tatigkeitsbeschreibung">2. Unternehmens- und Tätigkeitsbeschreibung<a class="headerlink" href="#2-unternehmens-und-tatigkeitsbeschreibung" title="Permanent link">¶</a></h2>
 <h3 id="21-kurzprofil-fakten-annahmen">2.1 Kurzprofil (Fakten + Annahmen)<a class="headerlink" href="#21-kurzprofil-fakten-annahmen" title="Permanent link">¶</a></h3>
-<p><strong>Verifiziert (aus interner Codebasis):</strong> Auftritt als „E. Feind GmbH" / „Fräsdienst Feind",
-Domain <code>fraesdienst-feind.de</code>. Geschäftsfelder: <strong>CNC-Fräsen, Lohnfertigung</strong>, Werkstoffe
-(Aluminium, Kunststoff, Edelstahl, POM, Messing, Titan), <strong>Prototypen &amp; Kleinserien</strong>, Fokus
-<strong>NRW / Deutschland</strong>. Lead-Quellen: Website-Kontaktformular, Telefon, Messe, E-Mail, Empfehlung.</p>
+<p><strong>Verifiziert (Website fraesdienst-feind.de, Notion Marketing-Scan 09/2026):</strong> Auftritt als „E. Feind GmbH" / „Fräsdienst Feind",
+Domain <code>fraesdienst-feind.de</code>. Geschäftsfelder: Kaltfräsen von Asphalt und Beton (Straßen, Autobahnen, Gewerbe-/Industrieflächen, Flughäfen), Grinding &amp; Grooving, Pflasterschleifen, Sonderlösungen und Rundum-Service (Fräsgutaufnahme, Kehrsauger). Über 30 Wirtgen-Fräsmaschinen. Hauptsitz Lübben (Brandenburg), Niederlassung Wittenburg (Mecklenburg-Vorpommern), Einsatz deutschlandweit. Auftraggeber: Straßen-/Tiefbauunternehmen, Kommunen, Flughäfen, Industrie. Lead-Quellen: Website-Kontaktformular, Telefon, E-Mail, Ausschreibungen, Empfehlung, Messe.</p>
 <ul>
 <li><strong>Annahme:</strong> KMU mit <strong>&lt; 20 Personen</strong>, die ständig automatisiert personenbezogene Daten
   verarbeiten → keine gesetzliche DSB-Pflicht nach § 38 BDSG (bestätigen, siehe Kap. 3).</li>
-<li><strong>Annahme:</strong> Sitz/Verarbeitung in <strong>NRW</strong> → Aufsichtsbehörde <strong>LDI NRW</strong> (bei Meldung Bundesland
-  verifizieren).</li>
+<li><strong>Annahme:</strong> Hauptsitz und Verarbeitung in Lübben (Brandenburg) → Aufsichtsbehörde LDA Brandenburg (Landesbeauftragte für den Datenschutz und für das Recht auf Akteneinsicht Brandenburg); für die Niederlassung Wittenburg ggf. LfDI Mecklenburg-Vorpommern (Zuständigkeit bei Meldung verifizieren).</li>
 <li><strong>Annahme:</strong> Keine <strong>besonderen Kategorien</strong> (Art. 9) zu Kunden; im Beschäftigtenkontext nur
   begrenzt Gesundheitsdaten (AU-Bescheinigungen).</li>
 <li><strong>Annahme:</strong> Kein <strong>Profiling / keine automatisierte Einzelentscheidung</strong> (Art. 22).</li>
@@ -444,7 +441,7 @@ mit möglichem Personenbezug (Referenzen, Event-Fotos).</p>
 <tbody>
 <tr>
 <td><strong>Kunden / Ansprechpartner</strong></td>
-<td>Name, Firma, Funktion, Anschrift, E-Mail, Telefon, Auftrags-, Rechnungs-/Zahlungsdaten, techn. Zeichnungen/CAD (i. d. R. kein Personenbezug, aber vertraulich).</td>
+<td>Name, Firma, Funktion, Anschrift, E-Mail, Telefon, Auftrags-, Rechnungs-/Zahlungsdaten, Ausschreibungsunterlagen, Leistungsverzeichnisse, Lagepläne, Baustellenfotos (i. d. R. kein Personenbezug, aber vertraulich).</td>
 </tr>
 <tr>
 <td><strong>Interessenten / Leads</strong></td>
@@ -489,13 +486,13 @@ mit möglichem Personenbezug (Referenzen, Event-Fotos).</p>
 <tbody>
 <tr>
 <td><strong>Kundenverwaltung / Auftragsabwicklung</strong></td>
-<td>Angebot, Vertrag, Fertigung, Rechnung</td>
+<td>Angebot, Vertrag, Ausführung auf der Baustelle, Rechnung</td>
 <td>Art. 6 I b, c</td>
 <td>Stamm-, Auftrags-, Rechnungsdaten</td>
 <td>ERP/Ablage, Buchhaltung, Cloud</td>
 <td>Rechnungen 8–10 J. (§ 147 AO); sonst 3 J. (§ 195 BGB)</td>
-<td>GF, Vertrieb, Buchhaltung, Fertigung</td>
-<td>Steuerberater, Versand, Zahlungsdienstl.</td>
+<td>GF, Vertrieb, Buchhaltung, Bauleitung/Disposition</td>
+<td>Steuerberater, Subunternehmer/Entsorger, Zahlungsdienstl.</td>
 <td>Rollenrechte, Backup, Verschlüsselung</td>
 </tr>
 <tr>
@@ -580,10 +577,8 @@ mit möglichem Personenbezug (Referenzen, Event-Fotos).</p>
 <hr>
 <h2 id="5-datenflussanalyse-data-flow-mapping">5. Datenflussanalyse (Data Flow Mapping)<a class="headerlink" href="#5-datenflussanalyse-data-flow-mapping" title="Permanent link">¶</a></h2>
 <h3 id="51-ein-und-ausgangspunkte">5.1 Ein- und Ausgangspunkte<a class="headerlink" href="#51-ein-und-ausgangspunkte" title="Permanent link">¶</a></h3>
-<p><strong>Eingang:</strong> Website-Kontaktformular · E-Mail · Telefon · Messe/persönlich · Papierdokumente
-(Zeichnungen, Lieferscheine) · Bewerbungen · Maschinen-/Fertigungsdaten (CAD — i. d. R. kein
-Personenbezug).</p>
-<p><strong>Ausgang:</strong> Steuerberater/Lohnbüro · Finanzamt/SV-Träger (gesetzlich) · Versand/Logistik ·
+<p><strong>Eingang:</strong> Website-Kontaktformular · E-Mail · Telefon · Messe/persönlich · Papierdokumente (Leistungsverzeichnisse, Lieferscheine, Aufmaße) · Bewerbungen · Ausschreibungs-/Planunterlagen (Lagepläne — i. d. R. kein Personenbezug) · Maschinen-/Telematikdaten der Fräsmaschinen und Fahrzeuge (Offene Frage: Fahrer-/Standortbezug → ggf. Beschäftigtendaten, Betriebsvereinbarung prüfen).</p>
+<p><strong>Ausgang:</strong> Steuerberater/Lohnbüro · Finanzamt/SV-Träger (gesetzlich) · Subunternehmer/Entsorgung/Logistik ·
 Zahlungsdienstleister/Bank · Google (Analytics/Search Console) · Hosting-Provider ·
 IT-Support/Fernwartung · ggf. Newsletter-Tools · GitHub (nur Code/Konfiguration, <strong>keine</strong>
 produktiven CRM-Rohdaten — durch <code>.gitignore</code> ausgeschlossen).</p>
@@ -605,8 +600,8 @@ produktiven CRM-Rohdaten — durch <code>.gitignore</code> ausgeschlossen).</p>
 <td>Kundenauftrag</td>
 <td>Formular/E-Mail/Tel.</td>
 <td>ERP/Ablage/Cloud</td>
-<td>Angebot→Fertigung→Rechnung</td>
-<td>Steuerberater, Versand</td>
+<td>Angebot→Ausführung→Rechnung</td>
+<td>Steuerberater, Subunternehmer</td>
 <td>Fristablauf (8–10 J.)</td>
 <td><strong>Offene Frage:</strong> Cloud-Standort</td>
 </tr>
@@ -839,8 +834,8 @@ Open-Source-Option (neutral, keine Kaufempfehlung).</p>
 <td>AVV einholen</td>
 </tr>
 <tr>
-<td><strong>Versand/Logistik</strong></td>
-<td>Warenversand</td>
+<td><strong>Subunternehmer/Entsorger/Logistik</strong></td>
+<td>Baustellenlogistik, Fräsgut-Entsorgung</td>
 <td>meist eigenständig Verantwortlicher</td>
 <td>EU</td>
 <td>klären</td>
@@ -887,7 +882,7 @@ auf der Muss-Liste der Aufsichtsbehörden.</p>
 <li>Monitoring/Review.</li>
 </ol>
 <blockquote>
-<p>Vollständige <strong>DPIA-Vorlage mit Beispielen</strong> (Kundenverwaltung, CAD-Dateien, Fernwartung) siehe
+<p>Vollständige <strong>DPIA-Vorlage mit Beispielen</strong> (Kundenverwaltung, Ausschreibungs-/Planunterlagen, Fernwartung) siehe
 <strong>Anhang B</strong>.</p>
 </blockquote>
 <hr>
@@ -897,7 +892,7 @@ auf der Muss-Liste der Aufsichtsbehörden.</p>
 <li><strong>Sofortmaßnahmen &amp; forensische Sicherung:</strong> System isolieren, Logs/Beweise sichern, Umfang
    eingrenzen.</li>
 <li><strong>Bewertung (Risiko für Betroffene):</strong> Art, Umfang, Sensibilität, Anzahl, Folgen.</li>
-<li><strong>Meldung an Aufsichtsbehörde (Art. 33):</strong> bei Risiko <strong>innerhalb 72 Stunden</strong> (LDI NRW);
+<li><strong>Meldung an Aufsichtsbehörde (Art. 33):</strong> bei Risiko <strong>innerhalb 72 Stunden</strong> (LDA Brandenburg);
    Verzögerung begründen.</li>
 <li><strong>Benachrichtigung Betroffener (Art. 34):</strong> bei <strong>hohem</strong> Risiko unverzüglich, klare Sprache.</li>
 <li><strong>Dokumentation:</strong> jeder Vorfall im <strong>Datenpannen-Register</strong> (Nachweispflicht Art. 33 Abs. 5).</li>
@@ -1395,7 +1390,7 @@ Recht (DSGVO/BDSG/TDDDG) + Branchenpraxis.</p>
 <h3 id="anhang-a-verzeichnis-der-verarbeitungstatigkeiten-vvt">Anhang A — Verzeichnis der Verarbeitungstätigkeiten (VVT)<a class="headerlink" href="#anhang-a-verzeichnis-der-verarbeitungstatigkeiten-vvt" title="Permanent link">¶</a></h3>
 <p><strong>CSV-Vorlage (kopierfähig; Trennzeichen <code>;</code>; Platzhalter mit echten Werten füllen):</strong></p>
 <pre class="highlight"><code>Nr;Verarbeitungstaetigkeit;Zweck;Rechtsgrundlage;Betroffenengruppe;Datenkategorien;Empfaenger;Drittland;Loeschfrist;TOM;Verantwortlich
-1;Kundenverwaltung/Auftragsabwicklung;Vertragserfuellung;Art.6 I b/c;Kunden;Stamm-,Auftrags-,Rechnungsdaten;Steuerberater,Versand;{{CLOUD_STANDORT}};8-10 J. (AO/HGB) bzw. 3 J. (BGB);Rollenrechte,Backup,Verschluesselung;GF/Vertrieb
+1;Kundenverwaltung/Auftragsabwicklung;Vertragserfuellung;Art.6 I b/c;Kunden;Stamm-,Auftrags-,Rechnungsdaten;Steuerberater,Subunternehmer;{{CLOUD_STANDORT}};8-10 J. (AO/HGB) bzw. 3 J. (BGB);Rollenrechte,Backup,Verschluesselung;GF/Vertrieb
 2;Kontaktformular/Interessenten;Anfragebearbeitung;Art.6 I b/f;Interessenten;Name,Firma,Kontakt,Anliegen;-;{{HOSTING_PROVIDER}};nach Erledigung, max 6-12 Mon.;TLS,Zugriffsschutz;Marketing
 3;Website-Analyse GA4;Reichweitenanalyse;Art.6 I a (Einwilligung);Website-Besucher;IP,Geraete-/Nutzungsdaten,Cookie-IDs;Google;USA (DPF);GA4-Retention (konfigurierbar);Consent,IP-Kuerzung;Marketing
 4;Suchperformance Search Console;SEO;Art.6 I f;Website-Besucher;aggregierte Suchdaten;Google;USA (DPF);Google-seitig;Service-Account;Marketing
@@ -1424,7 +1419,7 @@ Recht (DSGVO/BDSG/TDDDG) + Branchenpraxis.</p>
 
 BEISPIEL 1 - Kundenverwaltung: Risiko mittel; Score 4; Massnahmen: Rollenrechte, MFA, Backup,
 Verschluesselung; Restrisiko akzeptabel.
-BEISPIEL 2 - CAD-/Fertigungsdaten (Kunden-Know-how): i.d.R. kein Personenbezug, aber hohe
+BEISPIEL 2 - Ausschreibungs-/Planunterlagen (Auftraggeber-Know-how): i.d.R. kein Personenbezug, aber hohe
 Vertraulichkeit; Massnahmen: strenge Zugriffskontrolle, Verschluesselung, NDA; Restrisiko
 akzeptabel bei Umsetzung.
 BEISPIEL 3 - Fernwartung: Risiko mittel-hoch; Massnahmen: AVV, Zugriff nur nach Freigabe,
@@ -1493,7 +1488,7 @@ ist freiwillig und jederzeit fuer die Zukunft widerrufbar (Kontakt: {{KONTAKT_EM
 
 2. Ihre Rechte
 Auskunft, Berichtigung, Loeschung, Einschraenkung, Datenuebertragbarkeit, Widerspruch;
-Beschwerderecht bei der Aufsichtsbehoerde (LDI NRW).
+Beschwerderecht bei der Aufsichtsbehoerde (LDA Brandenburg).
 
 3. Server-Logfiles (Art. 6 I f)
 Beim Aufruf werden IP-Adresse, Datum/Uhrzeit, abgerufene Datei etc. verarbeitet; Speicherung
@@ -1737,7 +1732,7 @@ Fall erfolgt die Loeschung nach Fristablauf. Mit freundlichen Gruessen, {{COMPAN
 </tr>
 <tr>
 <td>A2</td>
-<td>Sitz/Verarbeitung in NRW → Aufsichtsbehörde LDI NRW</td>
+<td>Hauptsitz Lübben (Brandenburg) → Aufsichtsbehörde LDA Brandenburg; Niederlassung Wittenburg (MV) → ggf. LfDI M-V</td>
 <td>GF</td>
 </tr>
 <tr>
@@ -2076,7 +2071,7 @@ KMU-/Branchenpraxis. Es wurde <strong>keine</strong> externe Live-Recherche durc
 <p><strong>Aktualisierung:</strong> siehe Anhang Q. Bei Nachlieferung realer Werte (<code>.env</code>/Config) kann der
 Bericht automatisiert neu erzeugt und Annahmen in Fakten überführt werden.</p>
 <hr>
-<p><em>Ende des Berichts — Version 1.3 (Entwurf), 17.09.2026. Streng vertraulich. Vor rechtsverbindlichem
+<p><em>Ende des Berichts — Version 1.4 (Entwurf), 21.09.2026. Streng vertraulich. Vor rechtsverbindlichem
 Einsatz der Vorlagen: Prüfung durch Rechtsabteilung / Fachanwalt für IT-Recht.</em></p>
 <div class="footnote">
 <hr>
