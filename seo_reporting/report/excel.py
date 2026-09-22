@@ -18,6 +18,18 @@ _HEADER_FONT = Font(name="Arial", bold=True, color="FFFFFF")
 _TITLE_FONT = Font(name="Arial", bold=True, size=13)
 _BODY_FONT = Font(name="Arial")
 
+# Excel/Google Sheets werten Strings mit führendem =,+,-,@ als Formel aus.
+# Nicht vertrauenswürdige Werte (z. B. Suchanfragen, URLs) werden daher mit
+# einem vorangestellten ' neutralisiert (Schutz vor Formula-/CSV-Injection).
+_FORMULA_LEAD = ("=", "+", "-", "@")
+
+
+def _safe(value):
+    """Neutralisiert formelartige Strings vor dem Schreiben in eine Zelle."""
+    if isinstance(value, str) and value[:1] in _FORMULA_LEAD:
+        return "'" + value
+    return value
+
 
 def _autosize(ws: Worksheet, widths: dict[int, int]) -> None:
     for col, width in widths.items():
@@ -98,17 +110,17 @@ def write_xlsx(report: dict, path: Path) -> Path:
     row = _table(
         ws, row,
         ["Cluster", "Klicks", "Impressionen", "CTR", "Ø Position"],
-        [[c["name"], c["clicks"], c["impressions"], c["ctr"], c["position"]] for c in clusters],
+        [[_safe(c["name"]), c["clicks"], c["impressions"], c["ctr"], c["position"]] for c in clusters],
     )
     row = _table(
         ws, row,
         ["Top-Query", "Klicks", "Impressionen", "CTR", "Ø Position"],
-        [[q["key"], q["clicks"], q["impressions"], q["ctr"], q["position"]] for q in report["gsc"]["top_queries"]],
+        [[_safe(q["key"]), q["clicks"], q["impressions"], q["ctr"], q["position"]] for q in report["gsc"]["top_queries"]],
     )
     row = _table(
         ws, row,
         ["Top-Seite", "Klicks", "Impressionen", "CTR", "Ø Position"],
-        [[p["key"], p["clicks"], p["impressions"], p["ctr"], p["position"]] for p in report["gsc"]["top_pages"]],
+        [[_safe(p["key"]), p["clicks"], p["impressions"], p["ctr"], p["position"]] for p in report["gsc"]["top_pages"]],
     )
     _autosize(ws, {1: 46, 2: 12, 3: 16, 4: 10, 5: 12, 6: 12})
 
@@ -128,13 +140,13 @@ def write_xlsx(report: dict, path: Path) -> Path:
     for c in report["ga4"]["channels"]:
         cur = c["current"]
         d = c.get(prev_label) or {}
-        ch_rows.append([c["channel"], cur["sessions"], cur["engaged_sessions"], cur["total_users"],
+        ch_rows.append([_safe(c["channel"]), cur["sessions"], cur["engaged_sessions"], cur["total_users"],
                         cur["key_events"], d.get("sessions", {}).get("pct")])
     row = _table(ws, row, ["Kanal", "Sitzungen", "Engagiert", "Nutzer", "Schlüsselereignisse", f"Δ % Sitzungen ({prev_label})"], ch_rows)
     row = _table(
         ws, row,
         ["Landingpage", "Sitzungen", "Engagiert", "Nutzer", "Schlüsselereignisse"],
-        [[lp["key"], lp["sessions"], lp["engaged_sessions"], lp["total_users"], lp["key_events"]]
+        [[_safe(lp["key"]), lp["sessions"], lp["engaged_sessions"], lp["total_users"], lp["key_events"]]
          for lp in report["ga4"]["landing_pages"]],
     )
     _autosize(ws, {1: 40, 2: 12, 3: 12, 4: 10, 5: 18, 6: 22})
@@ -157,7 +169,7 @@ def write_xlsx(report: dict, path: Path) -> Path:
         row = _table(
             ws, row,
             ["Quelle", "Leads", "Gewonnen", "Wert (EUR)"],
-            [[s["source"], s["leads"], s["won"], s["value"]] for s in crm.get("by_source", [])],
+            [[_safe(s["source"]), s["leads"], s["won"], s["value"]] for s in crm.get("by_source", [])],
         )
     _autosize(ws, {1: 22, 2: 14, 3: 16, 4: 14})
 
@@ -169,7 +181,7 @@ def write_xlsx(report: dict, path: Path) -> Path:
     for m in report["movements"]:
         change = m.get("delta_pct")
         change = f"{change:+g} %" if change is not None else (f"{m['delta_abs']:+g}" if m.get("delta_abs") is not None else "–")
-        mv_rows.append([m.get("direction"), m.get("cluster"), m.get("basis"), m.get("severity"),
+        mv_rows.append([m.get("direction"), _safe(m.get("cluster")), m.get("basis"), m.get("severity"),
                         m.get("metric"), m.get("previous"), m.get("current"), change])
     row = _table(ws, row, ["Richtung", "Cluster", "Basis", "Schwere", "Metrik", "Vorher", "Nachher", "Δ"],
                  mv_rows or [["–", "keine Bewegung über Schwellenwerten", "", "", "", None, None, ""]])
