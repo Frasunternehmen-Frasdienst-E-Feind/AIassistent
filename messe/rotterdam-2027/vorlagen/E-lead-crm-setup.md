@@ -1,5 +1,7 @@
 # E · Lead- & CRM-Setup (InfraTech 2027)
 
+![Realitätsnahe Visualisierung des Stands mit Gesprächs-/Lead-Zone (Übersichtsbild, KI-generiert).](img/C_overview.png)
+
 ## 0. Kurz-Zusammenfassung
 2026 wurden Gesprächsnotizen kaum erfasst und die Nachfassmail kam erst am 26.01. (Lektion E3/E4).
 Ziel 2027: strukturierte, **DSGVO-konforme** Leaderfassung mit verbindlichem Follow-up

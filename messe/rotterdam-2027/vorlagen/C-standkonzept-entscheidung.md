@@ -1,5 +1,7 @@
 # C · Standkonzept – Entscheidungsvorlage (InfraTech 2027)
 
+![Realitätsnahe Visualisierung: offener Eckstand (~40 m²) im Feind-Design mit Grinding-Demofläche, Kaffee-Bar und Gesprächszone (KI-generiert).](img/C_overview.png)
+
 ## 0. Kurz-Zusammenfassung
 2026 war der Reihenstand mit 25 m² für das Verfahren (zwei Pflasterflächen vorher/nachher + Sitzbereich)
 zu eng (Lektion E1). Zu entscheiden ist die Standvariante 2027. **Empfehlung: Variante B (offener

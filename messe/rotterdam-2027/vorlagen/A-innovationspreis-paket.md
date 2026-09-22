@@ -1,5 +1,7 @@
 # A · Innovationspreis-Einreichungspaket (InfraTech 2027)
 
+![Realitätsnahe Visualisierung: Fein-/Kaltfräsen mit Absaugung – Vorher/Nachher am Messestand (KI-generiert).](img/A_grinding.png)
+
 > **DRINGEND – Frist prüfen:** Faktencheck nennt Einsendeschluss **25.09.2026**. Vor Verwendung
 > mit dem Veranstalter bestätigen (siehe Vorlage B). Bei 25.09. sofort einreichen.
 >

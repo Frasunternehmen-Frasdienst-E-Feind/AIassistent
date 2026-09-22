@@ -1,5 +1,7 @@
 # D · Giveaway- & Print-Beschaffung (InfraTech 2027)
 
+![Realitätsnahe Visualisierung: Giveaway-Theke mit Zollstöcken, Bechern, Warnweste und Stiften im Feind-Design (KI-generiert).](img/D_giveaways.png)
+
 ## 0. Kurz-Zusammenfassung
 Beschaffung der Messe-Werbemittel priorisiert nach Wirkung 2026 (Renner behalten, Ballast streichen).
 Ziel: rechtzeitige Produktion (Deadline **T-4 Wochen ≈ 15.12.2026**), Budget Werbemittel/Print
