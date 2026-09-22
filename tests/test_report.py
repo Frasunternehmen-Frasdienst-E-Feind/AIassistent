@@ -68,3 +68,29 @@ def test_console_script_entry_point_defined():
 
     data = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     assert data["project"]["scripts"]["seo-report"] == "seo_reporting.cli:main"
+
+
+def test_write_xlsx_demo(tmp_path):
+    from openpyxl import load_workbook
+
+    from seo_reporting.report.excel import write_xlsx
+
+    cfg = load_config(ROOT / "config.example.yaml")
+    report = build_report(cfg, periods_for("monthly", date(2026, 9, 1)), DemoSources(cfg))
+    out = write_xlsx(report, tmp_path / "report.xlsx")
+    assert out.exists()
+    wb = load_workbook(out)
+    assert wb.sheetnames == ["Übersicht", "GSC", "GA4", "CRM", "Bewegungen"]
+    assert wb["Übersicht"]["A1"].value == "SEO-/Lead-Report – Übersicht"
+    # Website-Zeile spiegelt die Meta-Angabe
+    first_col = [row[0] for row in wb["Übersicht"].iter_rows(values_only=True)]
+    assert "Website" in first_col
+
+
+def test_cli_xlsx_flag(tmp_path, monkeypatch):
+    monkeypatch.setenv("REPORT_OUTPUT_DIR", str(tmp_path))
+    rc = main(["--config", str(ROOT / "config.example.yaml"), "weekly", "--demo", "--as-of", "2026-09-07", "--xlsx"])
+    assert rc == 0
+    names = sorted(p.name for p in tmp_path.iterdir())
+    assert any(n.endswith(".xlsx") for n in names)
+    assert any(n.endswith(".md") for n in names) and any(n.endswith(".json") for n in names)
