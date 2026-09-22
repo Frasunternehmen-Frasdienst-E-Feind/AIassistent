@@ -160,6 +160,7 @@
       </select>
     </label>
     <button class="btn" id="btn-csv" disabled>⬇️ CSV</button>
+    <button class="btn" id="btn-logbook" disabled title="Fahrtenbuch als CSV (mit km-Stand-Spalten)">📒 Fahrtenbuch</button>
     <button class="btn" id="btn-print" disabled>🖨️ Druck/PDF</button>
     <button class="btn" id="btn-settings" title="Einstellungen">⚙️</button>
     <input type="file" id="file" accept=".csv,.xlsx,.xls,.txt" class="hidden">
@@ -224,11 +225,13 @@
         <div class="tab active" data-tab="trips">Fahrten</div>
         <div class="tab" data-tab="stops">Stopps</div>
         <div class="tab" data-tab="anoms">Auffälligkeiten</div>
+        <div class="tab" data-tab="report">Auswertung</div>
       </div>
       <div class="tabwrap">
         <div class="tblwrap" id="tab-trips"></div>
         <div class="tblwrap hidden" id="tab-stops"></div>
         <div class="tblwrap hidden" id="tab-anoms"></div>
+        <div class="hidden" id="tab-report"></div>
       </div>
     </div>
   </section>
@@ -266,7 +269,16 @@
         <div class="field"><label>Lange Standzeit ab (h)</label><input type="number" id="s-longStandH" step="1"></div>
         <div class="field"><label>Nachtfahrt von (Std.)</label><input type="number" id="s-nightStart" min="0" max="23"></div>
         <div class="field"><label>Nachtfahrt bis (Std.)</label><input type="number" id="s-nightEnd" min="0" max="23"></div>
+        <div class="field"><label>Kurzhalt von (s)</label><input type="number" id="s-microStopMinSec" step="1"></div>
+        <div class="field"><label>Kurzhalt bis (s)</label><input type="number" id="s-microStopMaxSec" step="1"></div>
       </div>
+      <div class="note">Kurzhalt = sehr kurzer Stillstand (Standard 15–50 s). Ob an Kreuzung/Ampel, lässt sich ohne Straßendaten nicht automatisch feststellen – die Liste dient der manuellen Prüfung.</div>
+
+      <h3 style="border:none;padding:6px 0 0;font-size:14px">📒 Fahrtenbuch</h3>
+      <div class="grid2">
+        <div class="field"><label>km-Stand Startwert (optional)</label><input type="number" id="s-odoStart" step="1" placeholder="z. B. 84250"></div>
+      </div>
+      <div class="note">Ist ein Startwert gesetzt, füllt der Fahrtenbuch-Export die km-Stände fortlaufend (Ende = Start + gefahrene km). Ohne Startwert bleiben die km-Stand-Spalten leer zum manuellen Nachtragen. <b>Hinweis:</b> GPS liefert keinen echten Tacho-Kilometerstand – für ein steuerlich anerkanntes Fahrtenbuch bitte Steuerberater prüfen.</div>
 
       <h3 style="border:none;padding:6px 0 0;font-size:14px">📍 Benannte Orte</h3>
       <div class="note">Benannte Orte (z. B. „Zuhause", „Arbeit") verhindern die Markierung „Lange Standzeit" und liefern Ortsnamen in Karte & Listen.</div>
@@ -420,7 +432,11 @@ GPS.store = (function(){
 GPS.defaults = {
   tripSpeed:5, stopSpeed:3, stopRadius:100, stopMinMin:10, shortStopMinMin:2,
   speedLimit:130, dataGapMin:15, jumpSpeed:250, longStandMin:12*60,
-  nightStart:23, nightEnd:5
+  nightStart:23, nightEnd:5,
+  // Kurzhalt: sehr kurzer Stillstand (Sekunden). Achtung: ob an Kreuzung/Ampel,
+  // lässt sich offline ohne Straßendaten nicht bestimmen – daher werden ALLE
+  // Kurzhalte in diesem Fenster gelistet, zur manuellen Beurteilung.
+  microStopMinSec:15, microStopMaxSec:50
 };
 
 /* -------------------------- normalizer --------------------------------- */
@@ -505,12 +521,15 @@ GPS.detector = (function(){
         // Center (Mittelwert)
         let cLat=0,cLon=0; for(let k=i;k<=j;k++){ cLat+=P[k].lat; cLon+=P[k].lon; }
         cLat/=(j-i+1); cLon/=(j-i+1);
+        const durSec=durMin*60;
         let type;
         if(durMin>=s.stopMinMin || ign) type='stop';
         else if(durMin>=s.shortStopMinMin) type='short';
         else type='micro';
+        // Kurzhalt-Kennzeichen: sehr kurzer Stillstand im konfigurierten Sekundenfenster
+        const kurzhalt = (type==='micro' && durSec>=s.microStopMinSec && durSec<=s.microStopMaxSec);
         let cAddr=null; for(let k=i;k<=j;k++){ if(P[k].addr){ cAddr=P[k].addr; break; } }
-        clusters.push({i,j,startT:P[i].t,endT:P[j].t,durMin,lat:cLat,lon:cLon,ignitionOff:ign,type,addr:cAddr});
+        clusters.push({i,j,startT:P[i].t,endT:P[j].t,durMin,durSec,lat:cLat,lon:cLon,ignitionOff:ign,type,kurzhalt,addr:cAddr});
         i=j+1;
       } else i++;
     }
@@ -523,6 +542,7 @@ GPS.detector = (function(){
 
     const longStops=clusters.filter(c=>c.type==='stop');
     const shortStops=clusters.filter(c=>c.type==='short');
+    const microStops=clusters.filter(c=>c.kurzhalt);
 
     // 5) Fahrten = Fahr-Spannen zwischen langen Stopps
     const trips=[];
@@ -584,6 +604,11 @@ GPS.detector = (function(){
     for(const c of longStops){
       if(c.durMin>=s.longStandMin && !c.place) anomalies.push({type:'Lange Standzeit',t:c.startT,lat:c.lat,lon:c.lon,detail:U.fmtDur(c.durMin)+' an unbenanntem Ort'});
     }
+    // Kurzhalte (15–50 s): als Auffälligkeit gelistet. Ob an Kreuzung/Ampel,
+    // ist offline ohne Straßendaten nicht bestimmbar -> zur manuellen Prüfung.
+    for(const c of microStops){
+      anomalies.push({type:'Kurzhalt',t:c.startT,lat:c.lat,lon:c.lon,detail:Math.round(c.durSec)+' s'+(c.addr?' · '+(U.shortAddr(c.addr)||''):'')+' (Kreuzung/Ampel bitte prüfen)'});
+    }
     anomalies.sort((x,y)=>x.t-y.t);
 
     const stats={
@@ -591,10 +616,11 @@ GPS.detector = (function(){
       driveMin:trips.reduce((a,t)=>a+t.durMin,0),
       stops:longStops.length,
       shortStops:shortStops.length,
+      microStops:microStops.length,
       anomalies:anomalies.length,
       points:n, jumps:segJump.filter(Boolean).length
     };
-    return {points:P, trips, stops:longStops, shortStops, anomalies, clusters, segJump, stats, settings:s};
+    return {points:P, trips, stops:longStops, shortStops, microStops, anomalies, clusters, segJump, stats, settings:s};
   }
   return {analyze};
 })();
@@ -713,7 +739,7 @@ GPS.importer = (function(){
     recompute();
     $('drop').classList.add('hidden');
     $('dash').classList.remove('hidden');
-    $('btn-csv').disabled=false; $('btn-print').disabled=false;
+    $('btn-csv').disabled=false; $('btn-logbook').disabled=false; $('btn-print').disabled=false;
     let msg='Import erfolgreich: '+points.length.toLocaleString('de-DE')+' Punkte';
     if(ignored) msg+=' · '+ignored.toLocaleString('de-DE')+' Zeilen ignoriert';
     if(!GPS.store.available) msg+=' · Hinweis: localStorage nicht verfügbar – Orte/Einstellungen werden nicht gespeichert';
@@ -781,7 +807,7 @@ GPS.importer = (function(){
   }
 
   /* ---------- Rendering ---------- */
-  function render(){ renderKpis(); renderMap(); renderTimeline(); renderTables(); }
+  function render(){ renderKpis(); renderMap(); renderTimeline(); renderTables(); renderReport(); }
 
   function renderKpis(){
     const trips=filteredTrips();
@@ -976,12 +1002,117 @@ GPS.importer = (function(){
     const anoms=state.result.anomalies.filter(a=>inRangeTs(a.t));
     let ha='<table><thead><tr><th>Typ</th><th>Zeitpunkt</th><th>Detail</th></tr></thead><tbody>';
     if(!anoms.length) ha+='<tr><td colspan="3" class="muted">Keine Auffälligkeiten im Filter.</td></tr>';
-    for(const a of anoms){ const p=U.berlinParts(a.t); ha+=`<tr data-lat="${a.lat}" data-lon="${a.lon}"><td><span class="tag red">${a.type}</span></td><td>${U.fmtDate(p)} ${U.fmtTime(p)}</td><td>${escHtml(a.detail||'')}</td></tr>`; }
+    for(const a of anoms){ const p=U.berlinParts(a.t); const cls=a.type==='Kurzhalt'?'yellow':'red'; ha+=`<tr data-lat="${a.lat}" data-lon="${a.lon}"><td><span class="tag ${cls}">${a.type}</span></td><td>${U.fmtDate(p)} ${U.fmtTime(p)}</td><td>${escHtml(a.detail||'')}</td></tr>`; }
     ha+='</tbody></table>'; $('tab-anoms').innerHTML=ha;
     $('tab-anoms').querySelectorAll('tbody tr').forEach(tr=>tr.addEventListener('click',()=>{const lat=+tr.dataset.lat,lon=+tr.dataset.lon; if(!isNaN(lat))focusPoint(lat,lon);}));
   }
 
+  /* ---------- Auswertung (Report) ---------- */
+  function isoWeek(ms){
+    const p=U.berlinParts(ms);
+    const d=new Date(Date.UTC(p.y,p.mo-1,p.d));
+    const day=(d.getUTCDay()+6)%7;              // Mo=0
+    d.setUTCDate(d.getUTCDate()-day+3);          // Donnerstag der Woche
+    const isoYear=d.getUTCFullYear();
+    const firstThu=new Date(Date.UTC(isoYear,0,4));
+    const firstDay=(firstThu.getUTCDay()+6)%7;
+    firstThu.setUTCDate(firstThu.getUTCDate()-firstDay+3);
+    const week=1+Math.round((d-firstThu)/(7*86400000));
+    return {isoYear, week};
+  }
+  const MON=['','Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+  function renderReport(){
+    const el=$('tab-report');
+    const trips=filteredTrips();
+    if(!trips.length){ el.innerHTML='<div style="padding:16px" class="muted">Keine Fahrten im Filter.</div>'; return; }
+    const num=(v,dec=1)=>v.toLocaleString('de-DE',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+
+    // --- Fahrten-Statistik ---
+    const totKm=trips.reduce((a,t)=>a+t.km,0);
+    const totMin=trips.reduce((a,t)=>a+t.durMin,0);
+    const longestKm=trips.reduce((a,t)=>t.km>a.km?t:a,trips[0]);
+    const longestDur=trips.reduce((a,t)=>t.durMin>a.durMin?t:a,trips[0]);
+    const avgV = totMin>0 ? totKm/(totMin/60) : 0;
+    const anoms=state.result.anomalies.filter(a=>inRangeTs(a.t));
+    const cnt=type=>anoms.filter(a=>a.type===type).length;
+    const nightN=trips.filter(t=>t.night).length;
+
+    // --- km privat/beruflich ---
+    const byCat={beruflich:0,privat:0,'(ohne)':0};
+    for(const t of trips){ const c=catOf(t.startT)||'(ohne)'; byCat[c]=(byCat[c]||0)+t.km; }
+    const catPct=c=> totKm>0 ? (byCat[c]/totKm*100) : 0;
+
+    // --- Monats-/Wochenübersicht ---
+    const agg=(keyFn)=>{
+      const m={};
+      for(const t of trips){ const k=keyFn(t.startT); (m[k]=m[k]||{km:0,min:0,n:0,ber:0,pri:0}); const o=m[k]; o.km+=t.km;o.min+=t.durMin;o.n++; const c=catOf(t.startT); if(c==='beruflich')o.ber+=t.km; else if(c==='privat')o.pri+=t.km; }
+      return m;
+    };
+    const months=agg(ms=>{const p=U.berlinParts(ms); return p.y+'-'+U.pad(p.mo);});
+    const weeks=agg(ms=>{const w=isoWeek(ms); return w.isoYear+'-KW'+U.pad(w.week);});
+    const aggRows=(m,label)=>{
+      const keys=Object.keys(m).sort();
+      let h=`<table><thead><tr><th>${label}</th><th class="num">Fahrten</th><th class="num">km</th><th class="num">Fahrzeit</th><th class="num">berufl. km</th><th class="num">priv. km</th></tr></thead><tbody>`;
+      for(const k of keys){ const o=m[k]; let disp=k; const mm=k.match(/^(\d{4})-(\d{2})$/); if(mm) disp=MON[+mm[2]]+' '+mm[1]; else disp=k.replace('-',' '); h+=`<tr><td>${disp}</td><td class="num">${o.n}</td><td class="num">${num(o.km)}</td><td class="num">${U.fmtDur(o.min)}</td><td class="num">${num(o.ber)}</td><td class="num">${num(o.pri)}</td></tr>`; }
+      h+='</tbody></table>'; return h;
+    };
+
+    // --- Häufigste Ziele/Orte (aus Stopps: benannter Ort oder Adresse) ---
+    const placeMap={};
+    for(const c of state.result.clusters){
+      if(c.type==='micro' || !inRangeTs(c.startT)) continue;
+      const name=c.place||U.shortAddr(c.addr); if(!name) continue;
+      (placeMap[name]=placeMap[name]||{n:0,min:0}); placeMap[name].n++; placeMap[name].min+=c.durMin;
+    }
+    const topPlaces=Object.entries(placeMap).sort((a,b)=>b[1].n-a[1].n||b[1].min-a[1].min).slice(0,10);
+
+    const stat=(l,v)=>`<div class="kpi" style="box-shadow:none"><div class="label">${l}</div><div class="value" style="font-size:20px">${v}</div></div>`;
+    el.innerHTML = `
+      <div style="padding:14px 16px; display:grid; gap:18px">
+        <div>
+          <h3 style="margin:0 0 8px; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em">Fahrten-Statistik</h3>
+          <div class="kpis" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+            ${stat('Fahrten', trips.length)}
+            ${stat('Gesamt-km', num(totKm)+' km')}
+            ${stat('Ø je Fahrt', num(totKm/trips.length)+' km')}
+            ${stat('Ø-Tempo', Math.round(avgV)+' km/h')}
+            ${stat('Längste (km)', num(longestKm.km)+' km')}
+            ${stat('Längste (Zeit)', U.fmtDur(longestDur.durMin))}
+            ${stat('Nachtfahrten', nightN)}
+            ${stat('Tempo &gt; Limit', cnt('Tempo'))}
+            ${stat('Kurzhalte', cnt('Kurzhalt'))}
+          </div>
+        </div>
+        <div>
+          <h3 style="margin:0 0 8px; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em">km-Aufteilung privat / beruflich</h3>
+          <table><thead><tr><th>Kategorie</th><th class="num">km</th><th class="num">Anteil</th></tr></thead><tbody>
+            <tr><td>beruflich</td><td class="num">${num(byCat.beruflich||0)}</td><td class="num">${num(catPct('beruflich'))} %</td></tr>
+            <tr><td>privat</td><td class="num">${num(byCat.privat||0)}</td><td class="num">${num(catPct('privat'))} %</td></tr>
+            <tr><td class="muted">ohne Kategorie</td><td class="num">${num(byCat['(ohne)']||0)}</td><td class="num">${num(catPct('(ohne)'))} %</td></tr>
+          </tbody></table>
+        </div>
+        <div>
+          <h3 style="margin:0 0 8px; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em">Monatsübersicht</h3>
+          ${aggRows(months,'Monat')}
+        </div>
+        <div>
+          <h3 style="margin:0 0 8px; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em">Wochenübersicht</h3>
+          ${aggRows(weeks,'Woche')}
+        </div>
+        <div>
+          <h3 style="margin:0 0 8px; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em">Häufigste Ziele / Orte</h3>
+          ${topPlaces.length ? `<table><thead><tr><th>Ort</th><th class="num">Besuche</th><th class="num">Gesamtdauer</th></tr></thead><tbody>${topPlaces.map(([n,o])=>`<tr><td>${escHtml(n)}</td><td class="num">${o.n}</td><td class="num">${U.fmtDur(o.min)}</td></tr>`).join('')}</tbody></table>` : '<div class="muted">Keine Ortsdaten (Adress-Spalte im Export nötig).</div>'}
+        </div>
+      </div>`;
+  }
+
   /* ---------- Export ---------- */
+  function downloadCsv(rows, filename){
+    const csv='﻿'+rows.map(r=>r.map(c=>{const s=String(c); return /[";\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(';')).join('\r\n');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  }
   function exportCsv(){
     const trips=filteredTrips();
     const rows=[['Datum','Start','Ziel','Start-Ort','Ziel-Ort','km','Dauer_min','Ø_kmh','Max_kmh','Nacht','Kategorie']];
@@ -989,23 +1120,39 @@ GPS.importer = (function(){
       const ps=U.berlinParts(tr.startT), pe=U.berlinParts(tr.endT);
       rows.push([U.fmtDate(ps),U.fmtTime(ps),U.fmtTime(pe),tr.startPlace||U.shortAddr(tr.startAddr)||'',tr.endPlace||U.shortAddr(tr.endAddr)||'',tr.km.toFixed(2).replace('.',','),Math.round(tr.durMin),Math.round(tr.avgSpeed),Math.round(tr.maxSpeed),tr.night?'ja':'nein',catOf(tr.startT)]);
     }
-    const csv='﻿'+rows.map(r=>r.map(c=>{const s=String(c); return /[";\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(';')).join('\r\n');
-    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='fahrten.csv'; a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    downloadCsv(rows,'fahrten.csv');
+  }
+  // Fahrtenbuch-CSV mit km-Stand-Spalten (fortlaufend ab optionalem Startwert)
+  function exportLogbook(){
+    const trips=filteredTrips().slice().sort((a,b)=>a.startT-b.startT);
+    const rows=[['Datum','Startzeit','Start-Adresse','Endzeit','Ziel-Adresse','gefahrene_km','km-Stand_Anfang','km-Stand_Ende','Zweck','Notiz']];
+    let odo = (settings.odoStart!=null && !isNaN(settings.odoStart)) ? settings.odoStart : null;
+    for(const tr of trips){
+      const ps=U.berlinParts(tr.startT), pe=U.berlinParts(tr.endT);
+      const start=tr.startPlace||U.shortAddr(tr.startAddr)||'';
+      const ziel =tr.endPlace||U.shortAddr(tr.endAddr)||'';
+      const km=tr.km;
+      let odoA='', odoE='';
+      if(odo!=null){ odoA=Math.round(odo); odo=odo+km; odoE=Math.round(odo); }
+      const zweck=catOf(tr.startT)||'';
+      rows.push([U.fmtDate(ps),U.fmtTime(ps),start,U.fmtTime(pe),ziel,km.toFixed(1).replace('.',','),odoA,odoE,zweck,'']);
+    }
+    downloadCsv(rows,'fahrtenbuch.csv');
   }
 
   /* ---------- Einstellungen-UI ---------- */
   function openSettings(){
-    for(const k of ['tripSpeed','stopSpeed','stopRadius','stopMinMin','shortStopMinMin','speedLimit','dataGapMin','jumpSpeed','nightStart','nightEnd']){ $('s-'+k).value=settings[k]; }
+    for(const k of ['tripSpeed','stopSpeed','stopRadius','stopMinMin','shortStopMinMin','speedLimit','dataGapMin','jumpSpeed','nightStart','nightEnd','microStopMinSec','microStopMaxSec']){ $('s-'+k).value=settings[k]; }
     $('s-longStandH').value=settings.longStandMin/60;
+    $('s-odoStart').value=(settings.odoStart!=null?settings.odoStart:'');
     renderPlacesList();
     $('selftest-out').textContent='';
     $('set-modal').classList.add('open');
   }
   function saveSettings(){
-    for(const k of ['tripSpeed','stopSpeed','stopRadius','stopMinMin','shortStopMinMin','speedLimit','dataGapMin','jumpSpeed','nightStart','nightEnd']){ const v=parseFloat($('s-'+k).value); if(!isNaN(v)) settings[k]=v; }
+    for(const k of ['tripSpeed','stopSpeed','stopRadius','stopMinMin','shortStopMinMin','speedLimit','dataGapMin','jumpSpeed','nightStart','nightEnd','microStopMinSec','microStopMaxSec']){ const v=parseFloat($('s-'+k).value); if(!isNaN(v)) settings[k]=v; }
     const lh=parseFloat($('s-longStandH').value); if(!isNaN(lh)) settings.longStandMin=lh*60;
+    const od=parseFloat($('s-odoStart').value); settings.odoStart=isNaN(od)?null:od;
     GPS.store.set('gpsdash.settings', settings);
     $('set-modal').classList.remove('open');
     recompute();
@@ -1040,6 +1187,7 @@ GPS.importer = (function(){
     $('tz').addEventListener('change',e=>{ state.sourceTZ=e.target.value; GPS.store.set('gpsdash.tz',state.sourceTZ); if(state.mapping && state.raw){ banner('warn','Zeitzone geändert – bitte Datei erneut laden, damit die Zeitstempel neu interpretiert werden.',false); } });
 
     $('btn-csv').addEventListener('click',exportCsv);
+    $('btn-logbook').addEventListener('click',exportLogbook);
     $('btn-print').addEventListener('click',()=>window.print());
     $('btn-settings').addEventListener('click',openSettings);
 
@@ -1048,7 +1196,7 @@ GPS.importer = (function(){
 
     document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); t.classList.add('active');
-      ['trips','stops','anoms'].forEach(n=>$('tab-'+n).classList.toggle('hidden', n!==t.dataset.tab));
+      ['trips','stops','anoms','report'].forEach(n=>$('tab-'+n).classList.toggle('hidden', n!==t.dataset.tab));
     }));
 
     $('set-cancel').addEventListener('click',()=>$('set-modal').classList.remove('open'));

@@ -33,7 +33,18 @@ aber Strecke, Marker und **alle Auswertungen, Kennzahlen und Listen funktioniere
 - **Ortsnamen:** Enthält der Export eine Adress-/`Position`-Spalte, werden die Adressen
   automatisch als Ort in Popups und Listen angezeigt (benannte Orte haben Vorrang).
 - **Filter:** Zeitraum, Tag, Kategorie, Ereignistyp
-- **Export:** CSV der Fahrtenliste, Druck-/PDF-Ansicht
+- **Auswertung (Tab):** Fahrten-Statistik (Ø/längste Fahrt, Ø-Tempo, Nachtfahrten, Tempo- und
+  Kurzhalt-Zähler), km-Aufteilung privat/beruflich, Monats- und Wochenübersicht,
+  häufigste Ziele/Orte.
+- **Kurzhalte (15–50 s):** sehr kurze Stillstände werden als Auffälligkeit gelistet.
+  **Hinweis:** ob ein Kurzhalt an einer Kreuzung/Ampel liegt, lässt sich offline ohne
+  Straßendaten nicht automatisch bestimmen – die Liste dient der manuellen Prüfung
+  (Zeit + Adresse werden angezeigt). Fenster im Zahnrad-Menü einstellbar.
+- **Export:** CSV der Fahrtenliste · **Fahrtenbuch-CSV** (Datum, Start/Ziel mit Adresse,
+  gefahrene km, km-Stand Anfang/Ende, Zweck, Notiz) · Druck-/PDF-Ansicht.
+  km-Stand wird ab einem optionalen Startwert (Zahnrad → Fahrtenbuch) fortlaufend gefüllt,
+  sonst bleiben die Spalten zum manuellen Nachtragen leer. **GPS liefert keinen echten
+  Tacho-Kilometerstand – für ein steuerlich anerkanntes Fahrtenbuch bitte Steuerberater prüfen.**
 
 ## Erkennungsregeln
 
