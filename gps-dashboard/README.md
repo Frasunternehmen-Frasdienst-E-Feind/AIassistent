@@ -78,6 +78,18 @@ nicht vorhanden, Tempo).
 - **Fahrtenbuch:** liefert nur eine Arbeitsgrundlage. Für ein steuerlich anerkanntes
   Fahrtenbuch gelten eigene Anforderungen – **bitte Steuerberater prüfen.**
 
+## Corporate Design
+
+Das Dashboard nutzt das Fräsdienst-Feind-CI aus `branding/feind-ci.tokens.json`
+(Grün `#84bb20` als Akzent-/Flächenfarbe mit Anthrazit-Text, Rot `#e3000b` nur als
+Signal, Schrift Exo/Helvetica, kleine Radien). Farben sind ausschließlich als
+CSS-Tokens definiert. **Hell- und Dunkel-Theme** werden mitgeliefert (automatisch nach
+Systemeinstellung; oben rechts auf **Auto / Hell / Dunkel** umschaltbar).
+
+Die Tempo-Einfärbung der Karte ist eine funktionale Datenskala im CI-Rahmen
+(Neutralgrau → Grün-Abstufungen → Signalrot); es werden keine markenfremden Farben
+verwendet.
+
 ## Offline-Build (für Entwickler)
 
 Die verteilte `gps-dashboard.html` wird aus einer wartbaren Quelle erzeugt, damit die
