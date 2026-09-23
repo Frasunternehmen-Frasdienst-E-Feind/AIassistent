@@ -18,11 +18,9 @@ Grundlage für die verknüpfte Claude-Code-Session und den Manager-Agenten.
 - **Team & Zugriff**-Tab: Mitglieder anlegen/entfernen (Name, Rolle); Mitglieder erscheinen als Owner und im Owner-Filter; Hinweis, wie man das Team später per Share-Menü zum Cockpit einlädt. Speicherung in `settings/general`.
 - **Termin-Erinnerungen**: konfigurierbare Vorlaufzeiten (Tage) + Dashboard-Panel „Anstehende Erinnerungen"; Push/E-Mail-Zustellung über den wöchentlichen Manager-Agenten.
 - **„Meine Aufgaben" / Owner-Ansicht**: 1-Klick-Chips je Teammitglied (statt Dropdown), inkl. hervorgehobenem „★ Meine Aufgaben (David)".
+- **Abhängigkeiten / Blocker** zwischen Aufgaben: im Editor „Blockiert durch" (Mehrfachauswahl, nach Bereich gruppiert), Speicherung als `deps` in `tasks/<id>`. Offene Blocker zeigen an der Aufgabe eine Pille „⛔ wartet auf n" (Tooltip nennt die Titel); erledigte/archivierte Blocker lösen die Blockade auf.
 
 ## Backlog (Vorschläge, priorisiert)
-
-### P1 – hoher Nutzen
-1. **Verantwortlichkeiten & Abhängigkeiten** zwischen Aufgaben (z. B. „Fläche entschieden" blockiert „Layout").
 
 ### P2 – Komfort
 5. **ICS-Export** der Fristen (Kalender-Abo) und **CSV/Markdown-Export** der Aufgaben.

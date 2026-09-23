@@ -143,6 +143,7 @@
   .pill.flag{background:transparent;border:1px dashed var(--warn);color:var(--warn);text-transform:none}
   .pill.recht{background:transparent;border:1px dashed var(--crit);color:var(--crit);text-transform:none}
   .pill.custom{background:transparent;border:1px solid var(--accent);color:var(--accent-text);text-transform:none}
+  .pill.blocked{background:var(--warn-bg);color:var(--warn);text-transform:none}
   .tnote{font-size:12px;color:var(--ink-muted);margin-top:4px;font-style:italic}
   .stsel{font-size:11px;border:1px solid var(--line);border-radius:var(--r-input);background:var(--surface);color:var(--ink-muted);padding:3px 4px;font-family:var(--sans)}
   .edit{margin-left:auto;background:transparent;border:1px solid var(--line);border-radius:var(--r-btn);color:var(--ink-muted);
@@ -181,6 +182,8 @@
   .field input,.field select,.field textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r-input);
     background:var(--surface);color:var(--ink);font-size:14px;font-family:var(--sans)}
   .field textarea{min-height:66px;resize:vertical}
+  .field small{display:block;margin-top:4px;font-size:11px;color:var(--ink-muted);font-weight:400;text-transform:none;letter-spacing:normal}
+  .field select[multiple]{min-height:118px;padding:4px}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp2)}
   .modal-actions{display:flex;gap:var(--sp2);justify-content:flex-end;margin-top:var(--sp3);flex-wrap:wrap}
   .modal-actions .btn.danger{margin-right:auto}
@@ -444,6 +447,12 @@ function allTasks(inclArchived){
   return inclArchived ? arr.filter(isArch) : arr.filter(x=>!isArch(x));
 }
 function owners(){ const set=[...DEFAULT_OWNERS]; team.forEach(m=>{ if(m.name&&!set.includes(m.name)) set.push(m.name); }); return set; }
+// Offene (nicht erledigte) Blocker einer Aufgabe. Archivierte/entfernte Blocker gelten als aufgelöst.
+function unmetDeps(x){
+  if(!x.deps||!x.deps.length) return [];
+  const map=Object.fromEntries(allTasks(false).map(t=>[t.id,t]));
+  return x.deps.map(id=>map[id]).filter(b=>b&&b.status!=="done");
+}
 function progress(){ const a=allTasks(); const done=a.filter(x=>x.status==="done").length; return {done,total:a.length,pct:a.length?Math.round(done/a.length*100):0}; }
 
 /* ============================================================ HELFER ============================================================ */
@@ -578,6 +587,8 @@ function taskRow(x){
   const check = x.status==="done"?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>':'';
   const flags=(x.flags||[]).map(f=> f==="fakt"?'<span class="pill flag">Fakt prüfen</span>': f==="recht"?'<span class="pill recht">Recht prüfen</span>':'').join("");
   const isArch=!!(x.archived||x.deleted);
+  const blk=unmetDeps(x);
+  const blkPill=blk.length?`<span class="pill blocked" title="Wartet auf: ${esc(blk.map(b=>b.title).join(' · '))}">⛔ wartet auf ${blk.length}</span>`:'';
   const actions = isArch
     ? `<button class="edit" data-restore="${x.id}" aria-label="Aufgabe wiederherstellen">Wiederherstellen</button>`
     : `<button class="edit" data-edit="${x.id}" aria-label="Aufgabe bearbeiten">Bearbeiten</button>`;
@@ -589,6 +600,7 @@ function taskRow(x){
         <span class="pill own">${esc(x.owner)}</span>
         ${x.due?`<span class="pill due ${dueClass(x.due)}">${dueLabel(x.due)}</span>`:'<span class="pill due">Termin offen</span>'}
         ${x.custom?'<span class="pill custom">eigene</span>':''}
+        ${blkPill}
         ${flags}
         <select class="stsel" data-id="${x.id}" aria-label="Detailstatus">
           ${["open","in_progress","blocked","done"].map(o=>`<option value="${o}" ${o===x.status?'selected':''}>${({open:'offen',in_progress:'in Arbeit',blocked:'blockiert',done:'erledigt'})[o]}</option>`).join("")}
@@ -620,6 +632,10 @@ function openTaskModal(id){
   const catOpts=CATS.map(c=>`<option value="${c.id}" ${c.id===x.cat?'selected':''}>${c.label}</option>`).join("");
   const prioOpts=["P0","P1","P2"].map(pv=>`<option value="${pv}" ${pv===x.prio?'selected':''}>${pv}</option>`).join("");
   const ownerOpts=owners().map(o=>`<option value="${esc(o)}" ${o===x.owner?'selected':''}>${esc(o)}</option>`).join("");
+  const depsSel=new Set(x.deps||[]);
+  const depOpts=CATS.map(c=>{ const opts=allTasks(false).filter(t=>t.cat===c.id&&t.id!==x.id)
+      .map(t=>`<option value="${t.id}" ${depsSel.has(t.id)?'selected':''}>${esc(t.title)}</option>`).join("");
+    return opts?`<optgroup label="${esc(c.label)}">${opts}</optgroup>`:''; }).join("");
   const root=document.getElementById("modalRoot");
   root.innerHTML=`<div class="modal-bg" id="mbg"><div class="modal" role="dialog" aria-modal="true" aria-label="Aufgabe">
     <h3>${isNew?'Neue Aufgabe':'Aufgabe bearbeiten'}</h3>
@@ -633,6 +649,9 @@ function openTaskModal(id){
       <div class="field"><label for="f_due">Termin</label><input id="f_due" type="date" value="${x.due||''}"></div>
     </div>
     <div class="field"><label for="f_note">Notiz</label><textarea id="f_note" placeholder="Optionale Details">${esc(x.note||'')}</textarea></div>
+    <div class="field"><label for="f_deps">Blockiert durch (Abhängigkeiten)</label>
+      <select id="f_deps" multiple aria-label="Abhängigkeiten">${depOpts}</select>
+      <small>Mehrfachauswahl mit Strg/Cmd. Diese Aufgabe wartet, bis die gewählten Aufgaben erledigt sind.</small></div>
     <div class="modal-actions">
       ${isNew?''
         :(x.archived||x.deleted)
@@ -648,8 +667,9 @@ function openTaskModal(id){
   const restore=document.getElementById("f_restore"); if(restore) restore.onclick=()=>{ archiveTask(id,false); close(); };
   document.getElementById("f_save").onclick=()=>{
     const title=document.getElementById("f_title").value.trim(); if(!title){ document.getElementById("f_title").focus(); return; }
+    const deps=Array.from(document.getElementById("f_deps").selectedOptions).map(o=>o.value);
     const patch={title,cat:document.getElementById("f_cat").value,prio:document.getElementById("f_prio").value,
-      owner:document.getElementById("f_owner").value,due:document.getElementById("f_due").value||null,note:document.getElementById("f_note").value.trim()};
+      owner:document.getElementById("f_owner").value,due:document.getElementById("f_due").value||null,note:document.getElementById("f_note").value.trim(),deps};
     if(isNew){ const nid="u"+Date.now().toString(36); saveTask(nid,Object.assign({custom:true,status:"open",flags:[]},patch)); }
     else saveTask(id,patch);
     close();
