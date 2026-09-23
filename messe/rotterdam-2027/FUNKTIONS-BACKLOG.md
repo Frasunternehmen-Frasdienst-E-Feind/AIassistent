@@ -19,11 +19,12 @@ Grundlage für die verknüpfte Claude-Code-Session und den Manager-Agenten.
 - **Termin-Erinnerungen**: konfigurierbare Vorlaufzeiten (Tage) + Dashboard-Panel „Anstehende Erinnerungen"; Push/E-Mail-Zustellung über den wöchentlichen Manager-Agenten.
 - **„Meine Aufgaben" / Owner-Ansicht**: 1-Klick-Chips je Teammitglied (statt Dropdown), inkl. hervorgehobenem „★ Meine Aufgaben (David)".
 - **Abhängigkeiten / Blocker** zwischen Aufgaben: im Editor „Blockiert durch" (Mehrfachauswahl, nach Bereich gruppiert), Speicherung als `deps` in `tasks/<id>`. Offene Blocker zeigen an der Aufgabe eine Pille „⛔ wartet auf n" (Tooltip nennt die Titel); erledigte/archivierte Blocker lösen die Blockade auf.
+- **Fristen-Export ICS & CSV** (Fristen-Tab): ICS-Kalenderdatei (RFC 5545, ganztägige Termine, Zeilenfaltung) zum Import/Abo in Outlook/Google/Apple Kalender; CSV (UTF-8-BOM, Semikolon, DE-Datum) für Excel.
 
 ## Backlog (Vorschläge, priorisiert)
 
 ### P2 – Komfort
-5. **ICS-Export** der Fristen (Kalender-Abo) und **CSV/Markdown-Export** der Aufgaben.
+5. **CSV/Markdown-Export der Aufgaben** (analog zum Fristen-Export; Fristen-ICS/CSV ist umgesetzt).
 6. **Budget-Ist-Erfassung** je Kostenblock (Forecast vs. Ist, Ampel bei >10 %).
 7. **Lead-Zähler live** während der Messe (Tageszählung, ohne personenbezogene Daten).
 8. **Aktivitätsprotokoll** (wer hat wann welchen Status geändert) via `user`-Capability.

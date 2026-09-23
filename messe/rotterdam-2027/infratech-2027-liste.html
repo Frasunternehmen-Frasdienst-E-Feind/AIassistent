@@ -501,6 +501,7 @@ function render(){
   sec.innerHTML=(V[activeTab]||viewDashboard)(pr); p.appendChild(sec);
   if(activeTab==="aufgaben") wireAufgaben();
   if(activeTab==="team") wireTeam();
+  if(activeTab==="fristen") wireFristen();
 }
 
 function upcomingReminders(){
@@ -716,7 +717,66 @@ function viewFristen(){
   return `<h2 class="sec">Fristenmatrix</h2>
    <p class="lead">Rot = für 2027 bestätigt · Gelb = Referenzwert 2026, offiziell für 2027 zu verifizieren · Grün = Messetermin. Größte Lektion 2026 (E2): eine zentrale Fristenmatrix verhindert Zuschläge.</p>
    <div class="banner"><strong>Offen beim Veranstalter (infratech.nl / Ahoy):</strong> Anmeldeschluss, Standentwurf-Genehmigung, Standbau-/Abbauzeiten und VRS-/Slot-Zeitfenster 2027.</div>
+   <div class="toolbar">
+     <button class="btn" id="icsBtn">ICS (Kalender) exportieren</button>
+     <button class="btn ghost" id="csvBtn">CSV exportieren</button>
+     <span class="savehint">Alle Fristen als Kalender-Datei (.ics, ganztägige Termine) oder Tabelle (.csv).</span>
+   </div>
    <div class="tblwrap"><table><thead><tr><th>Datum</th><th>Frist</th><th class="n">Rest</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* ---------- Fristen-Export (ICS / CSV) ---------- */
+const _TE = (typeof TextEncoder!=="undefined") ? new TextEncoder() : null;
+function utf8len(s){ return _TE ? _TE.encode(s).length : s.length; }
+function pad2(n){ return String(n).padStart(2,"0"); }
+function icsEsc(s){ return (s||"").replace(/[\\;,]/g,m=>"\\"+m).replace(/\r?\n/g,"\\n"); }
+function icsDate(s){ const d=parseD(s); return ""+d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate()); }
+function icsDateEnd(s){ const d=parseD(s); d.setDate(d.getDate()+1); return ""+d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate()); }
+function icsStamp(){ const d=new Date(); return ""+d.getUTCFullYear()+pad2(d.getUTCMonth()+1)+pad2(d.getUTCDate())+"T"+pad2(d.getUTCHours())+pad2(d.getUTCMinutes())+pad2(d.getUTCSeconds())+"Z"; }
+// Zeilenfaltung nach RFC 5545 (<=75 Oktett/Zeile), byteweise, ohne Zeichen zu zerteilen.
+function icsFold(line){ let out="",cur="",b=0; for(const ch of line){ const cb=utf8len(ch);
+  if(b+cb>73){ out+=(out?"\r\n ":"")+cur; cur=ch; b=cb; } else { cur+=ch; b+=cb; } } return out+(out?"\r\n ":"")+cur; }
+function fristenSorted(){ return DEADLINES.slice().sort((a,b)=>parseD(a.d)-parseD(b.d)); }
+
+function buildFristenICS(){
+  const stamp=icsStamp();
+  const lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Fraesdienst E. Feind//InfraTech 2027 Cockpit//DE",
+    "CALSCALE:GREGORIAN","METHOD:PUBLISH","X-WR-CALNAME:InfraTech 2027 – Fristen","X-WR-TIMEZONE:Europe/Amsterdam"];
+  fristenSorted().forEach((d,i)=>{
+    lines.push("BEGIN:VEVENT","UID:frist-"+icsDate(d.d)+"-"+i+"@feind-infratech2027","DTSTAMP:"+stamp,
+      "DTSTART;VALUE=DATE:"+icsDate(d.d),"DTEND;VALUE=DATE:"+icsDateEnd(d.d),
+      "SUMMARY:"+icsEsc("InfraTech 2027 – "+d.t),"DESCRIPTION:"+icsEsc(d.s),"TRANSP:TRANSPARENT","END:VEVENT");
+  });
+  lines.push("END:VCALENDAR");
+  return lines.map(icsFold).join("\r\n")+"\r\n";
+}
+function buildFristenCSV(){
+  const q=v=>{ v=(v==null?"":String(v)); return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const head=["Datum","Frist","Rest (Tage)","Status"];
+  const body=fristenSorted().map(d=>{ const dd=daysBetween(parseD(d.d),TODAY);
+    return [fmtD(d.d), d.t, (dd<0?("-"+(-dd)):(""+dd)), d.s].map(q).join(";"); });
+  return "﻿"+[head.map(q).join(";")].concat(body).join("\r\n")+"\r\n";
+}
+function downloadFile(name,mime,text){
+  try{
+    const blob=new Blob([text],{type:mime+";charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=url; a.download=name; a.rel="noopener";
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ try{URL.revokeObjectURL(url);}catch(e){} a.remove(); },800);
+    return true;
+  }catch(e){
+    try{ const a=document.createElement("a"); a.href="data:"+mime+";charset=utf-8,"+encodeURIComponent(text); a.download=name; a.click(); return true; }
+    catch(e2){ return false; }
+  }
+}
+function wireFristen(){
+  const ics=document.getElementById("icsBtn");
+  if(ics) ics.onclick=()=>{ const okd=downloadFile("InfraTech2027-Fristen.ics","text/calendar",buildFristenICS());
+    ics.textContent=okd?"ICS geladen ✓":"Download blockiert"; setTimeout(()=>ics.textContent="ICS (Kalender) exportieren",1600); };
+  const csv=document.getElementById("csvBtn");
+  if(csv) csv.onclick=()=>{ const okd=downloadFile("InfraTech2027-Fristen.csv","text/csv",buildFristenCSV());
+    csv.textContent=okd?"CSV geladen ✓":"Download blockiert"; setTimeout(()=>csv.textContent="CSV exportieren",1600); };
 }
 function viewBudget(){
   const rows=BUDGET.map(b=>`<tr><td>${esc(b.p)}</td><td class="n num">${b.b} €</td><td class="n num">${b.z} €</td><td>${esc(b.a)}</td></tr>`).join("");
