@@ -720,7 +720,7 @@ function viewFristen(){
    <div class="toolbar">
      <button class="btn" id="icsBtn">ICS (Kalender) exportieren</button>
      <button class="btn ghost" id="csvBtn">CSV exportieren</button>
-     <span class="savehint">Alle Fristen als Kalender-Datei (.ics, ganztägige Termine) oder Tabelle (.csv).</span>
+     <span class="savehint" id="expHint">Alle Fristen als Kalender-Datei (.ics, ganztägige Termine) oder Tabelle (.csv).</span>
    </div>
    <div class="tblwrap"><table><thead><tr><th>Datum</th><th>Frist</th><th class="n">Rest</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
@@ -757,26 +757,41 @@ function buildFristenCSV(){
     return [fmtD(d.d), d.t, (dd<0?("-"+(-dd)):(""+dd)), d.s].map(q).join(";"); });
   return "﻿"+[head.map(q).join(";")].concat(body).join("\r\n")+"\r\n";
 }
-function downloadFile(name,mime,text){
-  try{
-    const blob=new Blob([text],{type:mime+";charset=utf-8"});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement("a"); a.href=url; a.download=name; a.rel="noopener";
-    document.body.appendChild(a); a.click();
-    setTimeout(()=>{ try{URL.revokeObjectURL(url);}catch(e){} a.remove(); },800);
-    return true;
-  }catch(e){
-    try{ const a=document.createElement("a"); a.href="data:"+mime+";charset=utf-8,"+encodeURIComponent(text); a.download=name; a.click(); return true; }
-    catch(e2){ return false; }
+function copyText(t){ return (navigator.clipboard&&navigator.clipboard.writeText)? navigator.clipboard.writeText(t):Promise.reject(new Error("no clipboard")); }
+// Datei anbieten. Im Artefakt-Viewer liefert nur die downloads-Capability echte Dateien
+// (Allowlist u. a. csv, aber NICHT ics); außerhalb (Standalone-Browser) klassischer Blob-Download.
+async function offerFile(filename, mime, text){
+  let dl=null;
+  try{ dl=(window.claude&&claude.use)? await claude.use("downloads") : null; }catch(e){ dl=null; }
+  if(dl){
+    try{ await dl.save({filename, data:text}); return {ok:true, how:"saved"}; }
+    catch(e){ const code=e&&e.code;
+      if(code==="declined") return {ok:false, how:"declined"};
+      if(code==="rejected_extension"||code==="extension_not_enabled"){
+        try{ await copyText(text); return {ok:true, how:"clipboard"}; }catch(e2){ return {ok:false, how:"failed"}; } }
+      return {ok:false, how:"failed"}; }
   }
+  try{
+    const blob=new Blob([text],{type:mime+";charset=utf-8"}); const url=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+    setTimeout(()=>{ try{URL.revokeObjectURL(url);}catch(e){} a.remove(); },800);
+    return {ok:true, how:"download"};
+  }catch(e){ try{ await copyText(text); return {ok:true, how:"clipboard"}; }catch(e2){ return {ok:false, how:"failed"}; } }
+}
+function flashBtn(btn, base, r){
+  btn.textContent = r.how==="clipboard" ? "In Zwischenablage ✓" : r.how==="declined" ? "Abgebrochen" : r.ok ? "Geladen ✓" : "Nicht möglich";
+  setTimeout(()=>{ btn.textContent=base; },2400);
 }
 function wireFristen(){
-  const ics=document.getElementById("icsBtn");
-  if(ics) ics.onclick=()=>{ const okd=downloadFile("InfraTech2027-Fristen.ics","text/calendar",buildFristenICS());
-    ics.textContent=okd?"ICS geladen ✓":"Download blockiert"; setTimeout(()=>ics.textContent="ICS (Kalender) exportieren",1600); };
-  const csv=document.getElementById("csvBtn");
-  if(csv) csv.onclick=()=>{ const okd=downloadFile("InfraTech2027-Fristen.csv","text/csv",buildFristenCSV());
-    csv.textContent=okd?"CSV geladen ✓":"Download blockiert"; setTimeout(()=>csv.textContent="CSV exportieren",1600); };
+  const ics=document.getElementById("icsBtn"), csv=document.getElementById("csvBtn"), hint=document.getElementById("expHint");
+  const baseHint = hint? hint.textContent : "";
+  if(ics) ics.onclick=async()=>{ const r=await offerFile("InfraTech2027-Fristen.ics","text/calendar",buildFristenICS());
+    flashBtn(ics,"ICS (Kalender) exportieren",r);
+    if(hint){ hint.textContent = r.how==="clipboard"
+      ? 'In dieser Ansicht wird der .ics-Inhalt in die Zwischenablage kopiert – als .ics-Datei speichern und in den Kalender importieren.'
+      : baseHint; } };
+  if(csv) csv.onclick=async()=>{ const r=await offerFile("InfraTech2027-Fristen.csv","text/csv",buildFristenCSV());
+    flashBtn(csv,"CSV exportieren",r); };
 }
 function viewBudget(){
   const rows=BUDGET.map(b=>`<tr><td>${esc(b.p)}</td><td class="n num">${b.b} €</td><td class="n num">${b.z} €</td><td>${esc(b.a)}</td></tr>`).join("");
