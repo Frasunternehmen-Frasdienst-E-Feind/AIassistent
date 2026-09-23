@@ -13,16 +13,16 @@ Grundlage für die verknüpfte Claude-Code-Session und den Manager-Agenten.
 - Corporate Design (feind-ci.tokens.json), Hell/Dunkel, mobil.
 
 ## Bereits umgesetzt (v2)
-- **Aufgaben direkt im Cockpit anlegen/bearbeiten/löschen** (Modal: Titel, Bereich, Owner, Prio, Termin, Notiz); Speicherung in `db`-Sammlung `tasks/<id>`, überlagert den eingebetteten Seed; eigene Aufgaben als „eigene" markiert.
+- **Aufgaben direkt im Cockpit anlegen/bearbeiten** (Modal: Titel, Bereich, Owner, Prio, Termin, Notiz); Speicherung in `db`-Sammlung `tasks/<id>`, überlagert den eingebetteten Seed; eigene Aufgaben als „eigene" markiert.
+- **Archivieren statt Löschen**: Aufgaben werden ausgeblendet, bleiben aber in der DB erhalten und sind über „Archiv anzeigen" → „Wiederherstellen" zurückholbar (kein Hard-Delete, auch für eigene Aufgaben). Alt-Tombstones aus dem früheren „Löschen" erscheinen im Archiv und lassen sich wiederherstellen.
 - **Team & Zugriff**-Tab: Mitglieder anlegen/entfernen (Name, Rolle); Mitglieder erscheinen als Owner und im Owner-Filter; Hinweis, wie man das Team später per Share-Menü zum Cockpit einlädt. Speicherung in `settings/general`.
 - **Termin-Erinnerungen**: konfigurierbare Vorlaufzeiten (Tage) + Dashboard-Panel „Anstehende Erinnerungen"; Push/E-Mail-Zustellung über den wöchentlichen Manager-Agenten.
-- **Owner-Filter** in der Aufgabenansicht.
+- **„Meine Aufgaben" / Owner-Ansicht**: 1-Klick-Chips je Teammitglied (statt Dropdown), inkl. hervorgehobenem „★ Meine Aufgaben (David)".
 
 ## Backlog (Vorschläge, priorisiert)
 
 ### P1 – hoher Nutzen
 1. **Verantwortlichkeiten & Abhängigkeiten** zwischen Aufgaben (z. B. „Fläche entschieden" blockiert „Layout").
-2. **„Meine Aufgaben"-Schnellansicht** je Teammitglied (ein Klick statt Filter).
 
 ### P2 – Komfort
 5. **ICS-Export** der Fristen (Kalender-Abo) und **CSV/Markdown-Export** der Aufgaben.

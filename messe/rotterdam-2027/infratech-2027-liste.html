@@ -193,6 +193,9 @@
   .member .mn{flex:1}.member .mn b{color:var(--ink-strong)} .member .mn span{display:block;font-size:12px;color:var(--ink-muted)}
   .rem-thr{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--warn-bg);color:var(--warn);text-transform:uppercase}
   .rem-thr.over{background:var(--crit-bg);color:var(--crit)}
+  .chip.star{border-color:var(--accent);color:var(--accent-text);font-weight:700}
+  .chip.star[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .task.arch{opacity:.62}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -420,22 +423,25 @@ async function initStore(){
 }
 async function saveTask(id,patch){ custom[id]=Object.assign({},custom[id],patch); mTasks[id]=Object.assign({id},custom[id]); saveLocal(); render();
   if(tasksColl){ try{ await tasksColl.doc(id).set(Object.assign({id},custom[id],{updatedAt:Date.now()})); }catch(e){ setSaveHint("Nicht synchronisiert – lokal gesichert"); } } }
-async function removeTask(id){ const isSeed=TASKS.some(s=>s.id===id);
-  if(isSeed){ return saveTask(id,{deleted:true}); }
-  delete custom[id]; delete mTasks[id]; saveLocal(); render();
-  if(tasksColl){ try{ await tasksColl.doc(id).delete(); }catch(e){} } }
+// Archivieren statt Löschen: Aufgabe bleibt in der DB erhalten und ist wiederherstellbar.
+// Gilt für Seed- und eigene Aufgaben gleich (kein Hard-Delete). deleted:false räumt
+// evtl. vorhandene Alt-Tombstones (früheres „Löschen") mit auf.
+async function archiveTask(id,val){ return saveTask(id,{archived:!!val, deleted:false}); }
 async function saveSettings(){ saveLocal(); if(settingsDoc){ try{ await settingsDoc.set({team,reminders,updatedAt:Date.now()}); }catch(e){} } }
 
 /* ============================================================ MODELL ============================================================ */
-function allTasks(){
+// inclArchived=false (Standard): nur aktive Aufgaben. true: nur archivierte
+// (inkl. Alt-Tombstones deleted:true, damit auch früher „gelöschte" wiederherstellbar sind).
+function allTasks(inclArchived){
   const map={};
   TASKS.forEach(s=>{ map[s.id]=Object.assign({status:"open"},s); });
   Object.keys(custom).forEach(id=>{ const c=custom[id];
-    if(c.deleted){ delete map[id]; return; }
     const base=map[id]||{id,cat:"steuerung",prio:"P2",owner:"David",title:"(neue Aufgabe)",note:"",flags:[],due:null,status:"open",custom:true};
     map[id]=Object.assign({},base,c);
   });
-  return Object.values(map);
+  const isArch=x=>!!(x.archived||x.deleted);
+  const arr=Object.values(map);
+  return inclArchived ? arr.filter(isArch) : arr.filter(x=>!isArch(x));
 }
 function owners(){ const set=[...DEFAULT_OWNERS]; team.forEach(m=>{ if(m.name&&!set.includes(m.name)) set.push(m.name); }); return set; }
 function progress(){ const a=allTasks(); const done=a.filter(x=>x.status==="done").length; return {done,total:a.length,pct:a.length?Math.round(done/a.length*100):0}; }
@@ -458,7 +464,7 @@ const TABS=[
  {id:"lessons",label:"Lessons Learned"},{id:"fakten",label:"Faktencheck"},
  {id:"team",label:"Team & Zugriff"},{id:"wissen",label:"Wissensbasis"},
 ];
-let activeTab="dashboard", filterCat="all", filterPrio="all", filterOwner="all", filterQuery="";
+let activeTab="dashboard", filterCat="all", filterPrio="all", filterOwner="all", filterQuery="", showArchived=false;
 
 function buildTabs(){
   const bar=document.getElementById("tabbar"); bar.innerHTML="";
@@ -539,32 +545,43 @@ function viewAufgaben(){
   const catChips=`<button class="chip" data-fc="all" aria-pressed="${filterCat==='all'}">Alle Bereiche</button>`+
     CATS.map(c=>`<button class="chip" data-fc="${c.id}" aria-pressed="${filterCat===c.id}">${c.label}</button>`).join("");
   const prioChips=["all","P0","P1","P2"].map(pv=>`<button class="chip ${pv==='P0'?'p0':''}" data-fp="${pv}" aria-pressed="${filterPrio===pv}">${pv==='all'?'Alle Prios':pv}</button>`).join("");
-  const ownerOpts=`<option value="all">Alle Zuständigen</option>`+owners().map(o=>`<option value="${esc(o)}" ${filterOwner===o?'selected':''}>${esc(o)}</option>`).join("");
+  // „Meine Aufgaben" per 1-Klick + je Teammitglied ein Klick (statt Dropdown).
+  const ownerChips=`<button class="chip star" data-fo="David" aria-pressed="${filterOwner==='David'}">★ Meine Aufgaben (David)</button>`+
+    `<button class="chip" data-fo="all" aria-pressed="${filterOwner==='all'}">Alle</button>`+
+    owners().filter(o=>o!=="David").map(o=>`<button class="chip" data-fo="${esc(o)}" aria-pressed="${filterOwner===o}">${esc(o)}</button>`).join("");
+  const archN=allTasks(true).length;
 
-  let list=allTasks().filter(x=>(filterCat==="all"||x.cat===filterCat)&&(filterPrio==="all"||x.prio===filterPrio)&&(filterOwner==="all"||x.owner===filterOwner));
+  let list=allTasks(showArchived).filter(x=>(filterCat==="all"||x.cat===filterCat)&&(filterPrio==="all"||x.prio===filterPrio)&&(filterOwner==="all"||x.owner===filterOwner));
   if(filterQuery){ const q=filterQuery.toLowerCase(); list=list.filter(x=>(x.title+" "+(x.note||"")+" "+x.owner).toLowerCase().includes(q)); }
   const cats=CATS.filter(c=>list.some(x=>x.cat===c.id));
   const groups=cats.map(c=>{ const ts=list.filter(x=>x.cat===c.id); const done=ts.filter(x=>x.status==="done").length;
     return `<div class="catgroup"><div class="cathead"><span class="catdot" style="background:${c.color}"></span><h3>${c.label}</h3><span class="cnt num">${done}/${ts.length}</span></div>
       <ul class="tasklist">${ts.map(taskRow).join("")}</ul></div>`; }).join("");
+  const emptyMsg = showArchived ? "Keine archivierten Aufgaben." : "Keine Aufgaben für diese Filter.";
 
   return `
    <div class="toolbar">
      <button class="btn" id="addBtn">＋ Neue Aufgabe</button>
      <button class="btn ghost" id="copyBtn">Stand als JSON kopieren</button>
+     <button class="btn ghost" id="archToggle" aria-pressed="${showArchived}">${showArchived?'Aktive anzeigen':'Archiv anzeigen'+(archN?` (${archN})`:'')}</button>
      <span class="savehint" id="saveHint">● Lokal gespeichert</span>
    </div>
-   <div class="filters"><input type="search" id="q" placeholder="Aufgaben durchsuchen…" value="${esc(filterQuery)}" aria-label="Aufgaben durchsuchen">
-     <select id="ownerFilter" aria-label="Nach Zuständigem filtern">${ownerOpts}</select></div>
+   <div class="filters"><input type="search" id="q" placeholder="Aufgaben durchsuchen…" value="${esc(filterQuery)}" aria-label="Aufgaben durchsuchen"></div>
+   <div class="filters"><div class="chipset" id="ownChips">${ownerChips}</div></div>
    <div class="filters"><div class="chipset" id="catChips">${catChips}</div></div>
    <div class="filters"><div class="chipset" id="prioChips">${prioChips}</div></div>
-   ${groups||'<p class="lead">Keine Aufgaben für diese Filter.</p>'}`;
+   ${showArchived?'<p class="lead">Archivierte Aufgaben – über „Wiederherstellen" zurückholen. Nichts wird endgültig gelöscht.</p>':''}
+   ${groups||`<p class="lead">${emptyMsg}</p>`}`;
 }
 
 function taskRow(x){
   const check = x.status==="done"?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>':'';
   const flags=(x.flags||[]).map(f=> f==="fakt"?'<span class="pill flag">Fakt prüfen</span>': f==="recht"?'<span class="pill recht">Recht prüfen</span>':'').join("");
-  return `<li class="task ${x.status==='done'?'done':''}" data-id="${x.id}">
+  const isArch=!!(x.archived||x.deleted);
+  const actions = isArch
+    ? `<button class="edit" data-restore="${x.id}" aria-label="Aufgabe wiederherstellen">Wiederherstellen</button>`
+    : `<button class="edit" data-edit="${x.id}" aria-label="Aufgabe bearbeiten">Bearbeiten</button>`;
+  return `<li class="task ${x.status==='done'?'done':''} ${isArch?'arch':''}" data-id="${x.id}">
     <button class="cb" data-st="${x.status}" data-id="${x.id}" aria-label="Erledigt umschalten" title="Klick: erledigt/offen">${check}</button>
     <div class="tbody"><span class="tt">${esc(x.title)}</span>
       <div class="tmeta">
@@ -578,16 +595,18 @@ function taskRow(x){
         </select>
       </div>${x.note?`<div class="tnote">${esc(x.note)}</div>`:''}
     </div>
-    <button class="edit" data-edit="${x.id}" aria-label="Aufgabe bearbeiten">Bearbeiten</button></li>`;
+    ${actions}</li>`;
 }
 
 function wireAufgaben(){
   document.querySelectorAll(".cb").forEach(b=>b.onclick=()=>{ const id=b.dataset.id; const cur=allTasks().find(x=>x.id===id); saveTask(id,{status:cur.status==="done"?"open":"done"}); });
   document.querySelectorAll(".stsel").forEach(s=>s.onchange=()=>saveTask(s.dataset.id,{status:s.value}));
   document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openTaskModal(b.dataset.edit));
+  document.querySelectorAll("[data-restore]").forEach(b=>b.onclick=()=>archiveTask(b.dataset.restore,false));
   document.querySelectorAll("#catChips .chip").forEach(c=>c.onclick=()=>{ filterCat=c.dataset.fc; render(); });
   document.querySelectorAll("#prioChips .chip").forEach(c=>c.onclick=()=>{ filterPrio=c.dataset.fp; render(); });
-  const of=document.getElementById("ownerFilter"); if(of) of.onchange=()=>{ filterOwner=of.value; render(); };
+  document.querySelectorAll("#ownChips .chip").forEach(c=>c.onclick=()=>{ filterOwner=c.dataset.fo; render(); });
+  const at=document.getElementById("archToggle"); if(at) at.onclick=()=>{ showArchived=!showArchived; render(); };
   const add=document.getElementById("addBtn"); if(add) add.onclick=()=>openTaskModal(null);
   const q=document.getElementById("q"); if(q) q.oninput=()=>{ filterQuery=q.value; const pos=q.selectionStart; render(); const nq=document.getElementById("q"); if(nq){nq.focus();nq.setSelectionRange(pos,pos);} };
   const cp=document.getElementById("copyBtn"); if(cp) cp.onclick=()=>{ const data={exported:new Date().toISOString(),progress:progress(),tasks:allTasks(),team,reminders};
@@ -615,14 +634,18 @@ function openTaskModal(id){
     </div>
     <div class="field"><label for="f_note">Notiz</label><textarea id="f_note" placeholder="Optionale Details">${esc(x.note||'')}</textarea></div>
     <div class="modal-actions">
-      ${isNew?'':'<button class="btn danger" id="f_del">Löschen</button>'}
+      ${isNew?''
+        :(x.archived||x.deleted)
+          ? '<button class="btn ghost" id="f_restore" style="margin-right:auto">Wiederherstellen</button>'
+          : '<button class="btn ghost" id="f_archive" style="margin-right:auto">Archivieren</button>'}
       <button class="btn ghost" id="f_cancel">Abbrechen</button>
       <button class="btn" id="f_save">${isNew?'Anlegen':'Speichern'}</button>
     </div></div></div>`;
   const close=()=>root.innerHTML="";
   document.getElementById("mbg").onclick=e=>{ if(e.target.id==="mbg") close(); };
   document.getElementById("f_cancel").onclick=close;
-  const del=document.getElementById("f_del"); if(del) del.onclick=()=>{ if(confirm("Aufgabe wirklich löschen?")){ removeTask(id); close(); } };
+  const arch=document.getElementById("f_archive"); if(arch) arch.onclick=()=>{ archiveTask(id,true); close(); };
+  const restore=document.getElementById("f_restore"); if(restore) restore.onclick=()=>{ archiveTask(id,false); close(); };
   document.getElementById("f_save").onclick=()=>{
     const title=document.getElementById("f_title").value.trim(); if(!title){ document.getElementById("f_title").focus(); return; }
     const patch={title,cat:document.getElementById("f_cat").value,prio:document.getElementById("f_prio").value,
