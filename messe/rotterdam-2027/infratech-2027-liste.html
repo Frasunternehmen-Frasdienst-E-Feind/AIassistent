@@ -417,10 +417,13 @@ const LS_KEY="feind_infratech2027_v2";
 let custom={};            // taskId -> {status?,note?,title?,cat?,prio?,owner?,due?,deleted?,custom?}
 let team=[];              // [{id,name,role}]
 let reminders={leadDays:[14,7,2]};
-let dbNS=null, tasksColl=null, settingsDoc=null, budgetDoc=null, leadsDoc=null;
+let dbNS=null, tasksColl=null, settingsDoc=null, budgetDoc=null, leadsDoc=null, activityColl=null;
 let mTasks={}, legacyBase={};
 let budgetActuals={};     // Kostenblock-Key -> {ist?:number, forecast?:number}
 let leadCounts={};        // Datum(JJJJ-MM-TT) -> {a,b,c}  (nur Stückzahlen, keine personenbezogenen Daten)
+let userNS=null, myUserId=null;   // user-Capability: opake Team-ID des Betrachters
+let activity=[];          // [{id, ts, actorId, action, detail}] – Aktivitätsprotokoll (geteilt)
+let profileCache={};      // actorId -> Anzeigename (nur ids gespeichert, Namen zur Anzeige aufgelöst)
 
 function recompute(){ custom={}; Object.keys(legacyBase).forEach(id=>custom[id]=Object.assign({},legacyBase[id]));
   Object.keys(mTasks).forEach(id=>custom[id]=Object.assign({},custom[id],mTasks[id])); }
@@ -443,6 +446,15 @@ async function initStore(){
     budgetDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v&&v.blocks){ budgetActuals=v.blocks; saveLocal(); render(); } });
     leadsDoc=dbNS.doc("leads/counts");
     leadsDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v&&v.days){ leadCounts=v.days; saveLocal(); render(); } });
+    // user-Capability: Betrachter-ID für das Aktivitätsprotokoll (nur id gespeichert, Name zur Anzeige aufgelöst).
+    try{ userNS = (window.claude&&claude.use)? await claude.use("user") : null; if(userNS&&userNS.id){ myUserId = await userNS.id(); } }catch(e){ userNS=null; }
+    activityColl=dbNS.collection("activity");
+    activityColl.onSnapshot(snap=>{
+      const arr=[]; (snap.docs||snap||[]).forEach(d=>{ const v=d.data?d.data():d; if(v&&v.id&&v.ts) arr.push(v); });
+      activity=arr.sort((a,b)=>b.ts-a.ts);
+      resolveActors([...new Set(activity.map(e=>e.actorId).filter(Boolean))]);
+      render();
+    });
     setSaveHint("Verbunden – Änderungen für das Team sichtbar");
   }catch(e){ dbNS=null; setSaveHint("Lokal gespeichert (nur dieses Gerät)"); }
 }
@@ -456,6 +468,23 @@ async function saveSettings(){ saveLocal(); if(settingsDoc){ try{ await settings
 async function saveBudget(){ saveLocal(); if(budgetDoc){ try{ await budgetDoc.set({blocks:budgetActuals,updatedAt:Date.now()}); }catch(e){ setSaveHint("Budget nur lokal gesichert"); } } }
 async function saveLeads(){ saveLocal(); if(leadsDoc){ try{ await leadsDoc.set({days:leadCounts,updatedAt:Date.now()}); }catch(e){ setSaveHint("Lead-Zähler nur lokal gesichert"); } } }
 async function bumpLead(date,grade,delta){ const c=Object.assign({a:0,b:0,c:0},leadCounts[date]); c[grade]=Math.max(0,(+c[grade]||0)+delta); leadCounts[date]=c; saveLeads(); render(); }
+
+/* Aktivitätsprotokoll: „wer hat wann was geändert". Nur opake Team-ID (actorId) speichern;
+   Namen werden über die user-Capability zur Anzeige aufgelöst. Ohne geteilte DB kein Log. */
+async function logActivity(action,detail){
+  if(!activityColl) return;
+  const entry={ id:"a"+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36), ts:Date.now(), actorId: myUserId||null, action, detail: detail!=null?String(detail):"" };
+  try{ await activityColl.doc(entry.id).set(entry); }catch(e){}
+}
+async function resolveActors(ids){
+  if(!userNS||!userNS.profiles) return;
+  const need=ids.filter(id=>id&&profileCache[id]===undefined);
+  if(!need.length) return;
+  try{ const ps=await userNS.profiles(need); need.forEach(id=>{ profileCache[id]=(ps[id]&&ps[id].name)||""; }); render(); }
+  catch(e){ need.forEach(id=>{ if(profileCache[id]===undefined) profileCache[id]=""; }); }
+}
+function actorName(id){ if(!id) return "System/lokal"; const n=profileCache[id]||""; const base=n||"Teammitglied"; return id===myUserId? base+" (ich)" : base; }
+function taskTitle(id){ const t=allTasks(true).concat(allTasks(false)).find(x=>x.id===id); return t?t.title:id; }
 
 /* ============================================================ MODELL ============================================================ */
 // inclArchived=false (Standard): nur aktive Aufgaben. true: nur archivierte
@@ -497,7 +526,7 @@ const TABS=[
  {id:"fristen",label:"Fristen"},{id:"budget",label:"Budget"},{id:"kpi",label:"Ziele & KPIs"},
  {id:"leadzaehler",label:"Lead-Zähler"},
  {id:"lessons",label:"Lessons Learned"},{id:"fakten",label:"Faktencheck"},
- {id:"team",label:"Team & Zugriff"},{id:"wissen",label:"Wissensbasis"},
+ {id:"team",label:"Team & Zugriff"},{id:"protokoll",label:"Protokoll"},{id:"wissen",label:"Wissensbasis"},
 ];
 let activeTab="dashboard", filterCat="all", filterPrio="all", filterOwner="all", filterQuery="", showArchived=false;
 
@@ -523,13 +552,14 @@ function render(){
 
   const p=document.getElementById("panels"); p.innerHTML="";
   const sec=document.createElement("section"); sec.setAttribute("role","tabpanel"); sec.tabIndex=0;
-  const V={dashboard:viewDashboard,aufgaben:viewAufgaben,fristen:viewFristen,budget:viewBudget,kpi:viewKpi,leadzaehler:viewLeadZaehler,lessons:viewLessons,fakten:viewFakten,team:viewTeam,wissen:viewWissen};
+  const V={dashboard:viewDashboard,aufgaben:viewAufgaben,fristen:viewFristen,budget:viewBudget,kpi:viewKpi,leadzaehler:viewLeadZaehler,lessons:viewLessons,fakten:viewFakten,team:viewTeam,protokoll:viewProtokoll,wissen:viewWissen};
   sec.innerHTML=(V[activeTab]||viewDashboard)(pr); p.appendChild(sec);
   if(activeTab==="aufgaben") wireAufgaben();
   if(activeTab==="team") wireTeam();
   if(activeTab==="fristen") wireFristen();
   if(activeTab==="budget") wireBudget();
   if(activeTab==="leadzaehler") wireLeadZaehler();
+  if(activeTab==="protokoll") wireProtokoll();
 }
 
 function upcomingReminders(){
@@ -674,10 +704,10 @@ function taskRow(x){
 }
 
 function wireAufgaben(){
-  document.querySelectorAll(".cb").forEach(b=>b.onclick=()=>{ const id=b.dataset.id; const cur=allTasks().find(x=>x.id===id); saveTask(id,{status:cur.status==="done"?"open":"done"}); });
-  document.querySelectorAll(".stsel").forEach(s=>s.onchange=()=>saveTask(s.dataset.id,{status:s.value}));
+  document.querySelectorAll(".cb").forEach(b=>b.onclick=()=>{ const id=b.dataset.id; const cur=allTasks().find(x=>x.id===id); const ns=cur.status==="done"?"open":"done"; saveTask(id,{status:ns}); logActivity("Status", taskTitle(id)+" → "+(STLABEL[ns]||ns)); });
+  document.querySelectorAll(".stsel").forEach(s=>s.onchange=()=>{ saveTask(s.dataset.id,{status:s.value}); logActivity("Status", taskTitle(s.dataset.id)+" → "+(STLABEL[s.value]||s.value)); });
   document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openTaskModal(b.dataset.edit));
-  document.querySelectorAll("[data-restore]").forEach(b=>b.onclick=()=>archiveTask(b.dataset.restore,false));
+  document.querySelectorAll("[data-restore]").forEach(b=>b.onclick=()=>{ logActivity("Aufgabe wiederhergestellt", taskTitle(b.dataset.restore)); archiveTask(b.dataset.restore,false); });
   document.querySelectorAll("#catChips .chip").forEach(c=>c.onclick=()=>{ filterCat=c.dataset.fc; render(); });
   document.querySelectorAll("#prioChips .chip").forEach(c=>c.onclick=()=>{ filterPrio=c.dataset.fp; render(); });
   document.querySelectorAll("#ownChips .chip").forEach(c=>c.onclick=()=>{ filterOwner=c.dataset.fo; render(); });
@@ -728,15 +758,15 @@ function openTaskModal(id){
   const close=()=>root.innerHTML="";
   document.getElementById("mbg").onclick=e=>{ if(e.target.id==="mbg") close(); };
   document.getElementById("f_cancel").onclick=close;
-  const arch=document.getElementById("f_archive"); if(arch) arch.onclick=()=>{ archiveTask(id,true); close(); };
-  const restore=document.getElementById("f_restore"); if(restore) restore.onclick=()=>{ archiveTask(id,false); close(); };
+  const arch=document.getElementById("f_archive"); if(arch) arch.onclick=()=>{ logActivity("Aufgabe archiviert", taskTitle(id)); archiveTask(id,true); close(); };
+  const restore=document.getElementById("f_restore"); if(restore) restore.onclick=()=>{ logActivity("Aufgabe wiederhergestellt", taskTitle(id)); archiveTask(id,false); close(); };
   document.getElementById("f_save").onclick=()=>{
     const title=document.getElementById("f_title").value.trim(); if(!title){ document.getElementById("f_title").focus(); return; }
     const deps=Array.from(document.getElementById("f_deps").selectedOptions).map(o=>o.value);
     const patch={title,cat:document.getElementById("f_cat").value,prio:document.getElementById("f_prio").value,
       owner:document.getElementById("f_owner").value,due:document.getElementById("f_due").value||null,note:document.getElementById("f_note").value.trim(),deps};
-    if(isNew){ const nid="u"+Date.now().toString(36); saveTask(nid,Object.assign({custom:true,status:"open",flags:[]},patch)); }
-    else saveTask(id,patch);
+    if(isNew){ const nid="u"+Date.now().toString(36); saveTask(nid,Object.assign({custom:true,status:"open",flags:[]},patch)); logActivity("Aufgabe angelegt", patch.title); }
+    else { saveTask(id,patch); logActivity("Aufgabe bearbeitet", patch.title); }
     close();
   };
   setTimeout(()=>document.getElementById("f_title").focus(),30);
@@ -767,9 +797,9 @@ function viewTeam(){
    </div>`;
 }
 function wireTeam(){
-  document.querySelectorAll("[data-delm]").forEach(b=>b.onclick=()=>{ team=team.filter(m=>m.id!==b.dataset.delm); saveSettings(); render(); });
+  document.querySelectorAll("[data-delm]").forEach(b=>b.onclick=()=>{ const m=team.find(x=>x.id===b.dataset.delm); team=team.filter(x=>x.id!==b.dataset.delm); saveSettings(); logActivity("Teammitglied entfernt", m?m.name:""); render(); });
   const add=document.getElementById("m_add"); if(add) add.onclick=()=>{ const n=document.getElementById("m_name").value.trim(); if(!n) return;
-    team.push({id:"m"+Date.now().toString(36),name:n,role:document.getElementById("m_role").value.trim()}); saveSettings(); render(); };
+    team.push({id:"m"+Date.now().toString(36),name:n,role:document.getElementById("m_role").value.trim()}); saveSettings(); logActivity("Teammitglied hinzugefügt", n); render(); };
   const rs=document.getElementById("r_save"); if(rs) rs.onclick=()=>{ const days=document.getElementById("r_lead").value.split(",").map(s=>parseInt(s.trim(),10)).filter(n=>!isNaN(n)&&n>=0).sort((a,b)=>b-a);
     reminders={leadDays:days.length?days:[14,7,2]}; saveSettings(); render(); };
 }
@@ -894,9 +924,10 @@ function wireBudget(){
     const key=inp.dataset.bk, field=inp.dataset.bf;
     const raw=(inp.value||"").replace(/[.\s€]/g,"");
     const cur=Object.assign({}, budgetActuals[key]);
-    if(raw===""||isNaN(parseInt(raw,10))) delete cur[field]; else cur[field]=parseInt(raw,10);
+    let val=null;
+    if(raw===""||isNaN(parseInt(raw,10))){ delete cur[field]; } else { val=parseInt(raw,10); cur[field]=val; }
     if(Object.keys(cur).length) budgetActuals[key]=cur; else delete budgetActuals[key];
-    saveBudget(); render();
+    saveBudget(); const bl=BUDGET.find(x=>euroKey(x.p)===key); logActivity("Budget", (bl?bl.p:key)+" · "+(field==="ist"?"Ist":"Forecast")+" = "+(val==null?"—":fmtEuro(val))); render();
   }; });
 }
 function viewKpi(){
@@ -949,6 +980,35 @@ function buildLeadsCSV(){
   const head=["Tag","Datum","A (heiß)","B (warm)","C (Info)","Gesamt"];
   const body=fairDays().map((d,i)=>{ const c=dayCounts(d); return [String(i+1),fmtD(d),c.a,c.b,c.c,c.a+c.b+c.c].map(q).join(";"); });
   const s=leadsSum(); body.push(["Gesamt","",s.a,s.b,s.c,s.total].map(q).join(";"));
+  return "﻿"+[head.map(q).join(";")].concat(body).join("\r\n")+"\r\n";
+}
+
+/* ---------- Aktivitätsprotokoll ---------- */
+function fmtDateTime(ts){ const d=new Date(ts); return d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit"})+" "+d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}); }
+function viewProtokoll(){
+  if(!activityColl && !activity.length){
+    return `<h2 class="sec">Aktivitätsprotokoll</h2>
+     <p class="lead">Das Protokoll erfasst Änderungen (Status, Aufgaben anlegen/bearbeiten/archivieren, Budget, Team) mit Team-Mitglied und Zeitpunkt.
+       Es benötigt die geteilte Datenbank – in dieser Ansicht ist sie nicht verbunden, daher wird nichts protokolliert.</p>`;
+  }
+  const list=activity.slice(0,200).map(e=>`<li class="task"><div class="tbody">
+      <span class="tt">${esc(e.action)}${e.detail?': '+esc(e.detail):''}</span>
+      <div class="tmeta"><span class="pill own">${esc(actorName(e.actorId))}</span>
+        <span class="pill due">${esc(fmtDateTime(e.ts))}</span></div></div></li>`).join("");
+  return `<h2 class="sec">Aktivitätsprotokoll</h2>
+   <p class="lead">Wer hat wann was geändert (neueste zuerst, max. 200 angezeigt). Gespeichert werden nur opake Team-IDs; Namen werden zur Anzeige aufgelöst.
+     Keine personenbezogenen Daten Dritter.${activity.length>200?(' Insgesamt '+activity.length+' Einträge.'):''}</p>
+   <div class="toolbar"><button class="btn ghost" id="logCsvBtn">Protokoll als CSV</button>
+     <span class="savehint">${activity.length} Einträge</span></div>
+   <ul class="tasklist">${list||'<li class="task"><div class="tbody"><span class="tt">Noch keine Aktivitäten erfasst.</span></div></li>'}</ul>`;
+}
+function wireProtokoll(){
+  const cb=document.getElementById("logCsvBtn"); if(cb) cb.onclick=async()=>{ const r=await offerFile("InfraTech2027-Protokoll.csv","text/csv",buildActivityCSV()); flashBtn(cb,"Protokoll als CSV",r); };
+}
+function buildActivityCSV(){
+  const q=v=>{ v=(v==null?"":String(v)); return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const head=["Zeitpunkt","Wer","Aktion","Detail"];
+  const body=activity.map(e=>[fmtDateTime(e.ts), actorName(e.actorId), e.action, e.detail].map(q).join(";"));
   return "﻿"+[head.map(q).join(";")].concat(body).join("\r\n")+"\r\n";
 }
 
