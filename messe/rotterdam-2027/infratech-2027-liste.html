@@ -184,6 +184,9 @@
   .field textarea{min-height:66px;resize:vertical}
   .field small{display:block;margin-top:4px;font-size:11px;color:var(--ink-muted);font-weight:400;text-transform:none;letter-spacing:normal}
   .field select[multiple]{min-height:118px;padding:4px}
+  .numinput{width:110px;max-width:100%;padding:5px 7px;border:1px solid var(--line);border-radius:var(--r-input);
+    background:var(--surface);color:var(--ink);font-size:13px;font-family:var(--sans);text-align:right;font-variant-numeric:tabular-nums}
+  .numinput:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp2)}
   .modal-actions{display:flex;gap:var(--sp2);justify-content:flex-end;margin-top:var(--sp3);flex-wrap:wrap}
   .modal-actions .btn.danger{margin-right:auto}
@@ -401,13 +404,14 @@ const LS_KEY="feind_infratech2027_v2";
 let custom={};            // taskId -> {status?,note?,title?,cat?,prio?,owner?,due?,deleted?,custom?}
 let team=[];              // [{id,name,role}]
 let reminders={leadDays:[14,7,2]};
-let dbNS=null, tasksColl=null, settingsDoc=null;
+let dbNS=null, tasksColl=null, settingsDoc=null, budgetDoc=null;
 let mTasks={}, legacyBase={};
+let budgetActuals={};     // Kostenblock-Key -> {ist?:number, forecast?:number}
 
 function recompute(){ custom={}; Object.keys(legacyBase).forEach(id=>custom[id]=Object.assign({},legacyBase[id]));
   Object.keys(mTasks).forEach(id=>custom[id]=Object.assign({},custom[id],mTasks[id])); }
-function loadLocal(){ try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s){ custom=s.custom||{}; team=s.team||[]; if(s.reminders) reminders=s.reminders; } }catch(e){} }
-function saveLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify({custom,team,reminders})); }catch(e){} }
+function loadLocal(){ try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s){ custom=s.custom||{}; team=s.team||[]; if(s.reminders) reminders=s.reminders; if(s.budget) budgetActuals=s.budget; } }catch(e){} }
+function saveLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify({custom,team,reminders,budget:budgetActuals})); }catch(e){} }
 function setSaveHint(txt){ const el=document.getElementById("saveHint"); if(el) el.textContent="● "+txt; }
 
 async function initStore(){
@@ -421,6 +425,8 @@ async function initStore(){
     tasksColl.onSnapshot(snap=>{ mTasks={}; (snap.docs||snap||[]).forEach(d=>{ const v=d.data?d.data():d; if(v&&v.id) mTasks[v.id]=v; }); recompute(); saveLocal(); render(); setSaveHint("Synchronisiert mit geteilter Datenbank"); });
     settingsDoc=dbNS.doc("settings/general");
     settingsDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v){ if(Array.isArray(v.team)) team=v.team; if(v.reminders&&Array.isArray(v.reminders.leadDays)) reminders=v.reminders; saveLocal(); render(); } });
+    budgetDoc=dbNS.doc("budget/actuals");
+    budgetDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v&&v.blocks){ budgetActuals=v.blocks; saveLocal(); render(); } });
     setSaveHint("Verbunden – Änderungen für das Team sichtbar");
   }catch(e){ dbNS=null; setSaveHint("Lokal gespeichert (nur dieses Gerät)"); }
 }
@@ -431,6 +437,7 @@ async function saveTask(id,patch){ custom[id]=Object.assign({},custom[id],patch)
 // evtl. vorhandene Alt-Tombstones (früheres „Löschen") mit auf.
 async function archiveTask(id,val){ return saveTask(id,{archived:!!val, deleted:false}); }
 async function saveSettings(){ saveLocal(); if(settingsDoc){ try{ await settingsDoc.set({team,reminders,updatedAt:Date.now()}); }catch(e){} } }
+async function saveBudget(){ saveLocal(); if(budgetDoc){ try{ await budgetDoc.set({blocks:budgetActuals,updatedAt:Date.now()}); }catch(e){ setSaveHint("Budget nur lokal gesichert"); } } }
 
 /* ============================================================ MODELL ============================================================ */
 // inclArchived=false (Standard): nur aktive Aufgaben. true: nur archivierte
@@ -502,6 +509,7 @@ function render(){
   if(activeTab==="aufgaben") wireAufgaben();
   if(activeTab==="team") wireTeam();
   if(activeTab==="fristen") wireFristen();
+  if(activeTab==="budget") wireBudget();
 }
 
 function upcomingReminders(){
@@ -829,12 +837,47 @@ function wireFristen(){
   if(csv) csv.onclick=async()=>{ const r=await offerFile("InfraTech2027-Fristen.csv","text/csv",buildFristenCSV());
     flashBtn(csv,"CSV exportieren",r); };
 }
+/* ---------- Budget: Plan vs. Ist (Forecast/Ist je Kostenblock, Ampel > 10 %) ---------- */
+function euroKey(p){ return String(p).toLowerCase().replace(/[äöü]/g,m=>({"ä":"ae","ö":"oe","ü":"ue"}[m])).replace(/ß/g,"ss").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); }
+function parseEuroRange(s){ const nums=(String(s||"").match(/\d[\d.]*/g)||[]).map(x=>parseInt(x.replace(/\./g,""),10)).filter(n=>!isNaN(n)); if(!nums.length) return null; return nums.length>=2? Math.round((nums[0]+nums[1])/2) : nums[0]; }
+function fmtEuro(n){ return (n==null||isNaN(n))?"—":Number(n).toLocaleString("de-DE")+" €"; }
+function blockForecast(b,key){ const a=budgetActuals[key]||{}; return (a.forecast!=null&&a.forecast!=="")? +a.forecast : parseEuroRange(b.z); }
+function blockIst(key){ const a=budgetActuals[key]||{}; return (a.ist!=null&&a.ist!=="")? +a.ist : null; }
+function budgetDev(forecast,ist){ if(ist==null||!forecast) return {cls:"",txt:"—"}; const d=(ist-forecast)/forecast; const pct=Math.round(d*100); const txt=(pct>0?"+":"")+pct+" %"; if(d>0.10) return {cls:"r",txt}; if(d>0) return {cls:"y",txt}; return {cls:"g",txt}; }
+
 function viewBudget(){
-  const rows=BUDGET.map(b=>`<tr><td>${esc(b.p)}</td><td class="n num">${b.b} €</td><td class="n num">${b.z} €</td><td>${esc(b.a)}</td></tr>`).join("");
-  return `<h2 class="sec">Budgetrahmen 2027</h2>
-   <p class="lead">Baseline 2026: <strong>21.023 € brutto</strong>. Planrahmen 2027: <strong>24.200–26.500 € brutto</strong>. Ziel: Abweichung ≤ 10 %. Bei vertraglichen Fragen Rechtsabteilung prüfen.</p>
-   <div class="tblwrap"><table><thead><tr><th>Kostenblock</th><th class="n">2026 Baseline</th><th class="n">2027 Planwert</th><th>Annahme</th></tr></thead><tbody>${rows}
-   <tr class="total"><td>Gesamt</td><td class="n num">21.023 €</td><td class="n num">24.200–26.500 €</td><td>Planrahmen, keine Angebote</td></tr></tbody></table></div>`;
+  let sumF=0,sumI=0,sumFcmp=0,haveI=false;
+  const rows=BUDGET.map(b=>{ const key=euroKey(b.p); const f=blockForecast(b,key); const ist=blockIst(key);
+    if(f) sumF+=f; if(ist!=null){ sumI+=ist; if(f) sumFcmp+=f; haveI=true; }
+    const dv=budgetDev(f,ist);
+    const fVal = (budgetActuals[key]&&budgetActuals[key].forecast!=null) ? String(budgetActuals[key].forecast) : (f!=null?String(f):"");
+    const iVal = (budgetActuals[key]&&budgetActuals[key].ist!=null) ? String(budgetActuals[key].ist) : "";
+    return `<tr>
+      <td>${esc(b.p)}</td>
+      <td class="n num">${esc(b.z)} €</td>
+      <td class="n"><input class="numinput" inputmode="numeric" data-bk="${esc(key)}" data-bf="forecast" value="${esc(fVal)}" aria-label="Forecast ${esc(b.p)}"></td>
+      <td class="n"><input class="numinput" inputmode="numeric" data-bk="${esc(key)}" data-bf="ist" value="${esc(iVal)}" placeholder="—" aria-label="Ist ${esc(b.p)}"></td>
+      <td><span class="st ${dv.cls}">${dv.txt}</span></td>
+      <td>${esc(b.a)}</td></tr>`; }).join("");
+  const sdv=budgetDev(haveI?sumFcmp:null, haveI?sumI:null);
+  return `<h2 class="sec">Budget: Plan vs. Ist 2027</h2>
+   <p class="lead">Baseline 2026: <strong>21.023 € brutto</strong>. Planrahmen 2027: <strong>24.200–26.500 € brutto</strong>. Ziel: Abweichung ≤ 10 %.
+     Forecast ist mit dem Mittelwert des Planrahmens vorbelegt und überschreibbar; „Ist" eintragen, sobald Angebote/Rechnungen vorliegen (nur Zahl, € optional).
+     Ampel: grün = im/unter Plan · gelb = bis +10 % · rot = über +10 %. Bei vertraglichen Fragen Rechtsabteilung prüfen.</p>
+   <div class="tblwrap"><table><thead><tr><th>Kostenblock</th><th class="n">Planrahmen</th><th class="n">Forecast €</th><th class="n">Ist €</th><th>Abweichung</th><th>Annahme</th></tr></thead>
+   <tbody>${rows}
+   <tr class="total"><td>Gesamt</td><td class="n num">24.200–26.500 €</td><td class="n num">${fmtEuro(sumF)}</td><td class="n num">${haveI?fmtEuro(sumI):"—"}</td><td><span class="st ${sdv.cls}">${sdv.txt}</span></td><td>${haveI?'Abweichung nur über Blöcke mit Ist':'Ziel ≤ 10 %'}</td></tr>
+   </tbody></table></div>`;
+}
+function wireBudget(){
+  document.querySelectorAll(".numinput").forEach(inp=>{ inp.onchange=()=>{
+    const key=inp.dataset.bk, field=inp.dataset.bf;
+    const raw=(inp.value||"").replace(/[.\s€]/g,"");
+    const cur=Object.assign({}, budgetActuals[key]);
+    if(raw===""||isNaN(parseInt(raw,10))) delete cur[field]; else cur[field]=parseInt(raw,10);
+    if(Object.keys(cur).length) budgetActuals[key]=cur; else delete budgetActuals[key];
+    saveBudget(); render();
+  }; });
 }
 function viewKpi(){
   const rows=KPIS.map(k=>`<tr><td>${esc(k.k)}</td><td>${esc(k.b)}</td><td><strong>${esc(k.z)}</strong></td><td>${esc(k.m)}</td></tr>`).join("");
