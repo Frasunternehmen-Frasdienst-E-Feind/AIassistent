@@ -187,6 +187,19 @@
   .numinput{width:110px;max-width:100%;padding:5px 7px;border:1px solid var(--line);border-radius:var(--r-input);
     background:var(--surface);color:var(--ink);font-size:13px;font-family:var(--sans);text-align:right;font-variant-numeric:tabular-nums}
   .numinput:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+  .leadcard{padding:var(--sp3)}
+  .lc-head{display:flex;align-items:center;gap:var(--sp2);border-bottom:1px solid var(--line);padding-bottom:var(--sp2);margin-bottom:var(--sp2)}
+  .lc-head h3{flex:1;font-size:15px}
+  .lc-total{font-family:var(--display);font-weight:800;font-size:24px;color:var(--accent-text);font-variant-numeric:tabular-nums}
+  .lc-row{display:flex;align-items:center;gap:var(--sp2);padding:6px 0}
+  .lc-grade{flex:1;font-size:12px;font-weight:700;color:var(--ink-muted)}
+  .lc-grade.lc-a{color:var(--ok)} .lc-grade.lc-b{color:var(--warn)}
+  .lc-n{min-width:2.2em;text-align:center;font-family:var(--display);font-weight:800;font-size:18px;color:var(--ink-strong);font-variant-numeric:tabular-nums}
+  .lc-btn{width:40px;height:40px;flex:0 0 auto;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);
+    color:var(--ink-strong);font-size:20px;font-weight:700;cursor:pointer;font-family:var(--sans);line-height:1;display:grid;place-items:center}
+  .lc-btn:hover{border-color:var(--accent)}
+  .lc-btn.plus{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .lc-btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp2)}
   .modal-actions{display:flex;gap:var(--sp2);justify-content:flex-end;margin-top:var(--sp3);flex-wrap:wrap}
   .modal-actions .btn.danger{margin-right:auto}
@@ -404,14 +417,15 @@ const LS_KEY="feind_infratech2027_v2";
 let custom={};            // taskId -> {status?,note?,title?,cat?,prio?,owner?,due?,deleted?,custom?}
 let team=[];              // [{id,name,role}]
 let reminders={leadDays:[14,7,2]};
-let dbNS=null, tasksColl=null, settingsDoc=null, budgetDoc=null;
+let dbNS=null, tasksColl=null, settingsDoc=null, budgetDoc=null, leadsDoc=null;
 let mTasks={}, legacyBase={};
 let budgetActuals={};     // Kostenblock-Key -> {ist?:number, forecast?:number}
+let leadCounts={};        // Datum(JJJJ-MM-TT) -> {a,b,c}  (nur Stückzahlen, keine personenbezogenen Daten)
 
 function recompute(){ custom={}; Object.keys(legacyBase).forEach(id=>custom[id]=Object.assign({},legacyBase[id]));
   Object.keys(mTasks).forEach(id=>custom[id]=Object.assign({},custom[id],mTasks[id])); }
-function loadLocal(){ try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s){ custom=s.custom||{}; team=s.team||[]; if(s.reminders) reminders=s.reminders; if(s.budget) budgetActuals=s.budget; } }catch(e){} }
-function saveLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify({custom,team,reminders,budget:budgetActuals})); }catch(e){} }
+function loadLocal(){ try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s){ custom=s.custom||{}; team=s.team||[]; if(s.reminders) reminders=s.reminders; if(s.budget) budgetActuals=s.budget; if(s.leads) leadCounts=s.leads; } }catch(e){} }
+function saveLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify({custom,team,reminders,budget:budgetActuals,leads:leadCounts})); }catch(e){} }
 function setSaveHint(txt){ const el=document.getElementById("saveHint"); if(el) el.textContent="● "+txt; }
 
 async function initStore(){
@@ -427,6 +441,8 @@ async function initStore(){
     settingsDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v){ if(Array.isArray(v.team)) team=v.team; if(v.reminders&&Array.isArray(v.reminders.leadDays)) reminders=v.reminders; saveLocal(); render(); } });
     budgetDoc=dbNS.doc("budget/actuals");
     budgetDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v&&v.blocks){ budgetActuals=v.blocks; saveLocal(); render(); } });
+    leadsDoc=dbNS.doc("leads/counts");
+    leadsDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v&&v.days){ leadCounts=v.days; saveLocal(); render(); } });
     setSaveHint("Verbunden – Änderungen für das Team sichtbar");
   }catch(e){ dbNS=null; setSaveHint("Lokal gespeichert (nur dieses Gerät)"); }
 }
@@ -438,6 +454,8 @@ async function saveTask(id,patch){ custom[id]=Object.assign({},custom[id],patch)
 async function archiveTask(id,val){ return saveTask(id,{archived:!!val, deleted:false}); }
 async function saveSettings(){ saveLocal(); if(settingsDoc){ try{ await settingsDoc.set({team,reminders,updatedAt:Date.now()}); }catch(e){} } }
 async function saveBudget(){ saveLocal(); if(budgetDoc){ try{ await budgetDoc.set({blocks:budgetActuals,updatedAt:Date.now()}); }catch(e){ setSaveHint("Budget nur lokal gesichert"); } } }
+async function saveLeads(){ saveLocal(); if(leadsDoc){ try{ await leadsDoc.set({days:leadCounts,updatedAt:Date.now()}); }catch(e){ setSaveHint("Lead-Zähler nur lokal gesichert"); } } }
+async function bumpLead(date,grade,delta){ const c=Object.assign({a:0,b:0,c:0},leadCounts[date]); c[grade]=Math.max(0,(+c[grade]||0)+delta); leadCounts[date]=c; saveLeads(); render(); }
 
 /* ============================================================ MODELL ============================================================ */
 // inclArchived=false (Standard): nur aktive Aufgaben. true: nur archivierte
@@ -477,6 +495,7 @@ function initials(n){ return (n||"?").split(/[\s\/]+/).map(x=>x[0]).join("").sli
 const TABS=[
  {id:"dashboard",label:"Dashboard"},{id:"aufgaben",label:"Aufgaben",count:true},
  {id:"fristen",label:"Fristen"},{id:"budget",label:"Budget"},{id:"kpi",label:"Ziele & KPIs"},
+ {id:"leadzaehler",label:"Lead-Zähler"},
  {id:"lessons",label:"Lessons Learned"},{id:"fakten",label:"Faktencheck"},
  {id:"team",label:"Team & Zugriff"},{id:"wissen",label:"Wissensbasis"},
 ];
@@ -504,12 +523,13 @@ function render(){
 
   const p=document.getElementById("panels"); p.innerHTML="";
   const sec=document.createElement("section"); sec.setAttribute("role","tabpanel"); sec.tabIndex=0;
-  const V={dashboard:viewDashboard,aufgaben:viewAufgaben,fristen:viewFristen,budget:viewBudget,kpi:viewKpi,lessons:viewLessons,fakten:viewFakten,team:viewTeam,wissen:viewWissen};
+  const V={dashboard:viewDashboard,aufgaben:viewAufgaben,fristen:viewFristen,budget:viewBudget,kpi:viewKpi,leadzaehler:viewLeadZaehler,lessons:viewLessons,fakten:viewFakten,team:viewTeam,wissen:viewWissen};
   sec.innerHTML=(V[activeTab]||viewDashboard)(pr); p.appendChild(sec);
   if(activeTab==="aufgaben") wireAufgaben();
   if(activeTab==="team") wireTeam();
   if(activeTab==="fristen") wireFristen();
   if(activeTab==="budget") wireBudget();
+  if(activeTab==="leadzaehler") wireLeadZaehler();
 }
 
 function upcomingReminders(){
@@ -885,6 +905,53 @@ function viewKpi(){
    <p class="lead">Zielbild: qualifizierte Kontakte aus Kommunen, Straßenbau, Infrastruktur & Partnern; das Schleifverfahren erlebbar zeigen; ein steuerbarer Auftritt ohne Frist-, Liefer- oder Budgetüberraschungen.</p>
    <div class="tblwrap"><table><thead><tr><th>KPI</th><th>Baseline 2026</th><th>Ziel 2027</th><th>Messmethode</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
+/* ---------- Lead-Zähler (live, nur Stückzahlen – keine personenbezogenen Daten) ---------- */
+function fairDays(){ const out=[]; let d=parseD(FAIR_START); const end=parseD(FAIR_END);
+  while(d<=end){ out.push(d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate())); d=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1); } return out; }
+function isoToday(){ const d=new Date(); return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate()); }
+function dayCounts(date){ const c=leadCounts[date]||{}; return {a:+c.a||0,b:+c.b||0,c:+c.c||0}; }
+function leadsSum(){ let a=0,b=0,c=0; fairDays().forEach(d=>{ const x=dayCounts(d); a+=x.a;b+=x.b;c+=x.c; }); return {a,b,c,total:a+b+c}; }
+const LEADGRADE={a:"heiß",b:"warm",c:"Info"};
+
+function viewLeadZaehler(){
+  const days=fairDays(); const sum=leadsSum(); const target=300;
+  const pct=Math.min(100,Math.round(sum.total/target*100)); const today=isoToday();
+  const cards=days.map((d,i)=>{ const c=dayCounts(d); const t=c.a+c.b+c.c; const isToday=d===today;
+    const rows=["a","b","c"].map(g=>`<div class="lc-row">
+        <span class="lc-grade lc-${g}">${g.toUpperCase()} · ${LEADGRADE[g]}</span>
+        <button class="lc-btn" data-ld="${d}" data-lg="${g}" data-dl="-1" aria-label="Tag ${i+1} ${g.toUpperCase()} verringern">–</button>
+        <span class="lc-n num">${c[g]}</span>
+        <button class="lc-btn plus" data-ld="${d}" data-lg="${g}" data-dl="1" aria-label="Tag ${i+1} ${g.toUpperCase()} erhöhen">+</button>
+      </div>`).join("");
+    return `<div class="card leadcard ${isToday?'accentbar':''}">
+      <div class="lc-head"><h3>Tag ${i+1} · ${fmtD(d)}${isToday?' · heute':''}</h3><span class="lc-total num">${t}</span></div>
+      ${rows}</div>`; }).join("");
+  return `<h2 class="sec">Lead-Zähler (live)</h2>
+   <p class="lead">Tageszählung während der Messe (12.–15.01.2027) – nur Stückzahlen, <strong>keine personenbezogenen Daten</strong>.
+     Namen/Kontakte gehören ins Leadformular bzw. CRM. A = heißer Lead (nächster Schritt terminiert) · B = warm · C = Info/Streukontakt.</p>
+   <div class="strip">
+     <div class="kpi ${sum.total>=target?'ok':''}"><div class="v num">${sum.total}</div><div class="k">Leads gesamt</div><div class="sub">Ziel ≥ ${target}</div></div>
+     <div class="kpi ${pct>=100?'ok':''}"><div class="v num">${pct}%</div><div class="k">Zielerreichung</div><div class="sub">qualifizierte Leads</div></div>
+     <div class="kpi ok"><div class="v num">${sum.a}</div><div class="k">A · heiß</div><div class="sub">≤ 48 h nachfassen</div></div>
+     <div class="kpi warn"><div class="v num">${sum.b}</div><div class="k">B · warm</div><div class="sub">≤ 5 Tage</div></div>
+     <div class="kpi"><div class="v num">${sum.c}</div><div class="k">C · Info</div><div class="sub">Streukontakt</div></div>
+   </div>
+   <div class="grid2">${cards}</div>
+   <div class="toolbar" style="margin-top:var(--sp3)"><button class="btn ghost" id="leadCsvBtn">Zählung als CSV</button>
+     <span class="savehint">Zählstände werden geteilt gespeichert (sonst pro Gerät lokal).</span></div>`;
+}
+function wireLeadZaehler(){
+  document.querySelectorAll(".lc-btn").forEach(b=>b.onclick=()=>bumpLead(b.dataset.ld,b.dataset.lg,parseInt(b.dataset.dl,10)));
+  const cb=document.getElementById("leadCsvBtn"); if(cb) cb.onclick=async()=>{ const r=await offerFile("InfraTech2027-Leads.csv","text/csv",buildLeadsCSV()); flashBtn(cb,"Zählung als CSV",r); };
+}
+function buildLeadsCSV(){
+  const q=v=>{ v=(v==null?"":String(v)); return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const head=["Tag","Datum","A (heiß)","B (warm)","C (Info)","Gesamt"];
+  const body=fairDays().map((d,i)=>{ const c=dayCounts(d); return [String(i+1),fmtD(d),c.a,c.b,c.c,c.a+c.b+c.c].map(q).join(";"); });
+  const s=leadsSum(); body.push(["Gesamt","",s.a,s.b,s.c,s.total].map(q).join(";"));
+  return "﻿"+[head.map(q).join(";")].concat(body).join("\r\n")+"\r\n";
+}
+
 function viewLessons(){
   const rows=LESSONS.map(l=>`<tr><td><strong>${l[0]}</strong></td><td>${esc(l[1])}</td><td>${l[2]}</td><td>${esc(l[3])}</td></tr>`).join("");
   return `<h2 class="sec">Lessons Learned 2026 → Maßnahmen 2027</h2>
