@@ -143,6 +143,7 @@
   .pill.flag{background:transparent;border:1px dashed var(--warn);color:var(--warn);text-transform:none}
   .pill.recht{background:transparent;border:1px dashed var(--crit);color:var(--crit);text-transform:none}
   .pill.custom{background:transparent;border:1px solid var(--accent);color:var(--accent-text);text-transform:none}
+  .pill.blocked{background:var(--warn-bg);color:var(--warn);text-transform:none}
   .tnote{font-size:12px;color:var(--ink-muted);margin-top:4px;font-style:italic}
   .stsel{font-size:11px;border:1px solid var(--line);border-radius:var(--r-input);background:var(--surface);color:var(--ink-muted);padding:3px 4px;font-family:var(--sans)}
   .edit{margin-left:auto;background:transparent;border:1px solid var(--line);border-radius:var(--r-btn);color:var(--ink-muted);
@@ -181,6 +182,11 @@
   .field input,.field select,.field textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r-input);
     background:var(--surface);color:var(--ink);font-size:14px;font-family:var(--sans)}
   .field textarea{min-height:66px;resize:vertical}
+  .field small{display:block;margin-top:4px;font-size:11px;color:var(--ink-muted);font-weight:400;text-transform:none;letter-spacing:normal}
+  .field select[multiple]{min-height:118px;padding:4px}
+  .numinput{width:110px;max-width:100%;padding:5px 7px;border:1px solid var(--line);border-radius:var(--r-input);
+    background:var(--surface);color:var(--ink);font-size:13px;font-family:var(--sans);text-align:right;font-variant-numeric:tabular-nums}
+  .numinput:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp2)}
   .modal-actions{display:flex;gap:var(--sp2);justify-content:flex-end;margin-top:var(--sp3);flex-wrap:wrap}
   .modal-actions .btn.danger{margin-right:auto}
@@ -193,6 +199,9 @@
   .member .mn{flex:1}.member .mn b{color:var(--ink-strong)} .member .mn span{display:block;font-size:12px;color:var(--ink-muted)}
   .rem-thr{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--warn-bg);color:var(--warn);text-transform:uppercase}
   .rem-thr.over{background:var(--crit-bg);color:var(--crit)}
+  .chip.star{border-color:var(--accent);color:var(--accent-text);font-weight:700}
+  .chip.star[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .task.arch{opacity:.62}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -395,13 +404,14 @@ const LS_KEY="feind_infratech2027_v2";
 let custom={};            // taskId -> {status?,note?,title?,cat?,prio?,owner?,due?,deleted?,custom?}
 let team=[];              // [{id,name,role}]
 let reminders={leadDays:[14,7,2]};
-let dbNS=null, tasksColl=null, settingsDoc=null;
+let dbNS=null, tasksColl=null, settingsDoc=null, budgetDoc=null;
 let mTasks={}, legacyBase={};
+let budgetActuals={};     // Kostenblock-Key -> {ist?:number, forecast?:number}
 
 function recompute(){ custom={}; Object.keys(legacyBase).forEach(id=>custom[id]=Object.assign({},legacyBase[id]));
   Object.keys(mTasks).forEach(id=>custom[id]=Object.assign({},custom[id],mTasks[id])); }
-function loadLocal(){ try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s){ custom=s.custom||{}; team=s.team||[]; if(s.reminders) reminders=s.reminders; } }catch(e){} }
-function saveLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify({custom,team,reminders})); }catch(e){} }
+function loadLocal(){ try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s){ custom=s.custom||{}; team=s.team||[]; if(s.reminders) reminders=s.reminders; if(s.budget) budgetActuals=s.budget; } }catch(e){} }
+function saveLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify({custom,team,reminders,budget:budgetActuals})); }catch(e){} }
 function setSaveHint(txt){ const el=document.getElementById("saveHint"); if(el) el.textContent="● "+txt; }
 
 async function initStore(){
@@ -415,29 +425,41 @@ async function initStore(){
     tasksColl.onSnapshot(snap=>{ mTasks={}; (snap.docs||snap||[]).forEach(d=>{ const v=d.data?d.data():d; if(v&&v.id) mTasks[v.id]=v; }); recompute(); saveLocal(); render(); setSaveHint("Synchronisiert mit geteilter Datenbank"); });
     settingsDoc=dbNS.doc("settings/general");
     settingsDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v){ if(Array.isArray(v.team)) team=v.team; if(v.reminders&&Array.isArray(v.reminders.leadDays)) reminders=v.reminders; saveLocal(); render(); } });
+    budgetDoc=dbNS.doc("budget/actuals");
+    budgetDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v&&v.blocks){ budgetActuals=v.blocks; saveLocal(); render(); } });
     setSaveHint("Verbunden – Änderungen für das Team sichtbar");
   }catch(e){ dbNS=null; setSaveHint("Lokal gespeichert (nur dieses Gerät)"); }
 }
 async function saveTask(id,patch){ custom[id]=Object.assign({},custom[id],patch); mTasks[id]=Object.assign({id},custom[id]); saveLocal(); render();
   if(tasksColl){ try{ await tasksColl.doc(id).set(Object.assign({id},custom[id],{updatedAt:Date.now()})); }catch(e){ setSaveHint("Nicht synchronisiert – lokal gesichert"); } } }
-async function removeTask(id){ const isSeed=TASKS.some(s=>s.id===id);
-  if(isSeed){ return saveTask(id,{deleted:true}); }
-  delete custom[id]; delete mTasks[id]; saveLocal(); render();
-  if(tasksColl){ try{ await tasksColl.doc(id).delete(); }catch(e){} } }
+// Archivieren statt Löschen: Aufgabe bleibt in der DB erhalten und ist wiederherstellbar.
+// Gilt für Seed- und eigene Aufgaben gleich (kein Hard-Delete). deleted:false räumt
+// evtl. vorhandene Alt-Tombstones (früheres „Löschen") mit auf.
+async function archiveTask(id,val){ return saveTask(id,{archived:!!val, deleted:false}); }
 async function saveSettings(){ saveLocal(); if(settingsDoc){ try{ await settingsDoc.set({team,reminders,updatedAt:Date.now()}); }catch(e){} } }
+async function saveBudget(){ saveLocal(); if(budgetDoc){ try{ await budgetDoc.set({blocks:budgetActuals,updatedAt:Date.now()}); }catch(e){ setSaveHint("Budget nur lokal gesichert"); } } }
 
 /* ============================================================ MODELL ============================================================ */
-function allTasks(){
+// inclArchived=false (Standard): nur aktive Aufgaben. true: nur archivierte
+// (inkl. Alt-Tombstones deleted:true, damit auch früher „gelöschte" wiederherstellbar sind).
+function allTasks(inclArchived){
   const map={};
   TASKS.forEach(s=>{ map[s.id]=Object.assign({status:"open"},s); });
   Object.keys(custom).forEach(id=>{ const c=custom[id];
-    if(c.deleted){ delete map[id]; return; }
     const base=map[id]||{id,cat:"steuerung",prio:"P2",owner:"David",title:"(neue Aufgabe)",note:"",flags:[],due:null,status:"open",custom:true};
     map[id]=Object.assign({},base,c);
   });
-  return Object.values(map);
+  const isArch=x=>!!(x.archived||x.deleted);
+  const arr=Object.values(map);
+  return inclArchived ? arr.filter(isArch) : arr.filter(x=>!isArch(x));
 }
 function owners(){ const set=[...DEFAULT_OWNERS]; team.forEach(m=>{ if(m.name&&!set.includes(m.name)) set.push(m.name); }); return set; }
+// Offene (nicht erledigte) Blocker einer Aufgabe. Archivierte/entfernte Blocker gelten als aufgelöst.
+function unmetDeps(x){
+  if(!x.deps||!x.deps.length) return [];
+  const map=Object.fromEntries(allTasks(false).map(t=>[t.id,t]));
+  return x.deps.map(id=>map[id]).filter(b=>b&&b.status!=="done");
+}
 function progress(){ const a=allTasks(); const done=a.filter(x=>x.status==="done").length; return {done,total:a.length,pct:a.length?Math.round(done/a.length*100):0}; }
 
 /* ============================================================ HELFER ============================================================ */
@@ -458,7 +480,7 @@ const TABS=[
  {id:"lessons",label:"Lessons Learned"},{id:"fakten",label:"Faktencheck"},
  {id:"team",label:"Team & Zugriff"},{id:"wissen",label:"Wissensbasis"},
 ];
-let activeTab="dashboard", filterCat="all", filterPrio="all", filterOwner="all", filterQuery="";
+let activeTab="dashboard", filterCat="all", filterPrio="all", filterOwner="all", filterQuery="", showArchived=false;
 
 function buildTabs(){
   const bar=document.getElementById("tabbar"); bar.innerHTML="";
@@ -486,6 +508,8 @@ function render(){
   sec.innerHTML=(V[activeTab]||viewDashboard)(pr); p.appendChild(sec);
   if(activeTab==="aufgaben") wireAufgaben();
   if(activeTab==="team") wireTeam();
+  if(activeTab==="fristen") wireFristen();
+  if(activeTab==="budget") wireBudget();
 }
 
 function upcomingReminders(){
@@ -539,32 +563,79 @@ function viewAufgaben(){
   const catChips=`<button class="chip" data-fc="all" aria-pressed="${filterCat==='all'}">Alle Bereiche</button>`+
     CATS.map(c=>`<button class="chip" data-fc="${c.id}" aria-pressed="${filterCat===c.id}">${c.label}</button>`).join("");
   const prioChips=["all","P0","P1","P2"].map(pv=>`<button class="chip ${pv==='P0'?'p0':''}" data-fp="${pv}" aria-pressed="${filterPrio===pv}">${pv==='all'?'Alle Prios':pv}</button>`).join("");
-  const ownerOpts=`<option value="all">Alle Zuständigen</option>`+owners().map(o=>`<option value="${esc(o)}" ${filterOwner===o?'selected':''}>${esc(o)}</option>`).join("");
+  // „Meine Aufgaben" per 1-Klick + je Teammitglied ein Klick (statt Dropdown).
+  const ownerChips=`<button class="chip star" data-fo="David" aria-pressed="${filterOwner==='David'}">★ Meine Aufgaben (David)</button>`+
+    `<button class="chip" data-fo="all" aria-pressed="${filterOwner==='all'}">Alle</button>`+
+    owners().filter(o=>o!=="David").map(o=>`<button class="chip" data-fo="${esc(o)}" aria-pressed="${filterOwner===o}">${esc(o)}</button>`).join("");
+  const archN=allTasks(true).length;
 
-  let list=allTasks().filter(x=>(filterCat==="all"||x.cat===filterCat)&&(filterPrio==="all"||x.prio===filterPrio)&&(filterOwner==="all"||x.owner===filterOwner));
-  if(filterQuery){ const q=filterQuery.toLowerCase(); list=list.filter(x=>(x.title+" "+(x.note||"")+" "+x.owner).toLowerCase().includes(q)); }
+  const list=filteredTasks();
   const cats=CATS.filter(c=>list.some(x=>x.cat===c.id));
   const groups=cats.map(c=>{ const ts=list.filter(x=>x.cat===c.id); const done=ts.filter(x=>x.status==="done").length;
     return `<div class="catgroup"><div class="cathead"><span class="catdot" style="background:${c.color}"></span><h3>${c.label}</h3><span class="cnt num">${done}/${ts.length}</span></div>
       <ul class="tasklist">${ts.map(taskRow).join("")}</ul></div>`; }).join("");
+  const emptyMsg = showArchived ? "Keine archivierten Aufgaben." : "Keine Aufgaben für diese Filter.";
 
   return `
    <div class="toolbar">
      <button class="btn" id="addBtn">＋ Neue Aufgabe</button>
      <button class="btn ghost" id="copyBtn">Stand als JSON kopieren</button>
+     <button class="btn ghost" id="csvTasksBtn" title="Aktuell gefilterte Aufgaben als CSV">CSV</button>
+     <button class="btn ghost" id="mdTasksBtn" title="Aktuell gefilterte Aufgaben als Markdown">Markdown</button>
+     <button class="btn ghost" id="archToggle" aria-pressed="${showArchived}">${showArchived?'Aktive anzeigen':'Archiv anzeigen'+(archN?` (${archN})`:'')}</button>
      <span class="savehint" id="saveHint">● Lokal gespeichert</span>
    </div>
-   <div class="filters"><input type="search" id="q" placeholder="Aufgaben durchsuchen…" value="${esc(filterQuery)}" aria-label="Aufgaben durchsuchen">
-     <select id="ownerFilter" aria-label="Nach Zuständigem filtern">${ownerOpts}</select></div>
+   <div class="filters"><input type="search" id="q" placeholder="Aufgaben durchsuchen…" value="${esc(filterQuery)}" aria-label="Aufgaben durchsuchen"></div>
+   <div class="filters"><div class="chipset" id="ownChips">${ownerChips}</div></div>
    <div class="filters"><div class="chipset" id="catChips">${catChips}</div></div>
    <div class="filters"><div class="chipset" id="prioChips">${prioChips}</div></div>
-   ${groups||'<p class="lead">Keine Aufgaben für diese Filter.</p>'}`;
+   ${showArchived?'<p class="lead">Archivierte Aufgaben – über „Wiederherstellen" zurückholen. Nichts wird endgültig gelöscht.</p>':''}
+   ${groups||`<p class="lead">${emptyMsg}</p>`}`;
+}
+
+/* ---------- Aufgaben: Filter (geteilt mit Export) & Export CSV/Markdown ---------- */
+const STLABEL={open:"offen",in_progress:"in Arbeit",blocked:"blockiert",done:"erledigt"};
+function catIndex(id){ const i=CATS.findIndex(c=>c.id===id); return i<0?99:i; }
+function filteredTasks(){
+  let list=allTasks(showArchived).filter(x=>(filterCat==="all"||x.cat===filterCat)&&(filterPrio==="all"||x.prio===filterPrio)&&(filterOwner==="all"||x.owner===filterOwner));
+  if(filterQuery){ const q=filterQuery.toLowerCase(); list=list.filter(x=>(x.title+" "+(x.note||"")+" "+x.owner).toLowerCase().includes(q)); }
+  return list.slice().sort((a,b)=>catIndex(a.cat)-catIndex(b.cat));
+}
+function depTitles(x){ if(!x.deps||!x.deps.length) return [];
+  const map=Object.fromEntries(allTasks(true).concat(allTasks(false)).map(t=>[t.id,t]));
+  return x.deps.map(id=>map[id]?map[id].title:id); }
+function buildAufgabenCSV(){
+  const q=v=>{ v=(v==null?"":String(v)); return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const head=["Bereich","Titel","Priorität","Verantwortlich","Termin","Status","Blockiert durch","Notiz"];
+  const rows=filteredTasks().map(x=>[ (CATMAP[x.cat]?CATMAP[x.cat].label:x.cat), x.title, x.prio, x.owner,
+    x.due?fmtD(x.due):"", (STLABEL[x.status]||x.status), depTitles(x).join(" | "), x.note||"" ].map(q).join(";"));
+  return "﻿"+[head.map(q).join(";")].concat(rows).join("\r\n")+"\r\n";
+}
+function buildAufgabenMD(){
+  const list=filteredTasks();
+  const out=["# InfraTech 2027 – Aufgaben ("+(showArchived?"Archiv":"Aktiv")+", Stand "+TODAY.toLocaleDateString("de-DE")+")",""];
+  CATS.forEach(c=>{ const ts=list.filter(x=>x.cat===c.id); if(!ts.length) return;
+    out.push("## "+c.label);
+    ts.forEach(x=>{ const box=x.status==="done"?"[x]":"[ ]";
+      const meta="("+[x.prio,x.owner,x.due?fmtD(x.due):"kein Termin"].join(" · ")+")";
+      const st=(x.status!=="open"&&x.status!=="done")?" — _"+(STLABEL[x.status]||x.status)+"_":"";
+      out.push("- "+box+" "+meta+" "+x.title+st);
+      const dt=depTitles(x); if(dt.length) out.push("  - blockiert durch: "+dt.join("; "));
+      if(x.note) out.push("  - "+String(x.note).replace(/\s*\n+\s*/g," ")); });
+    out.push(""); });
+  return out.join("\n");
 }
 
 function taskRow(x){
   const check = x.status==="done"?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>':'';
   const flags=(x.flags||[]).map(f=> f==="fakt"?'<span class="pill flag">Fakt prüfen</span>': f==="recht"?'<span class="pill recht">Recht prüfen</span>':'').join("");
-  return `<li class="task ${x.status==='done'?'done':''}" data-id="${x.id}">
+  const isArch=!!(x.archived||x.deleted);
+  const blk=unmetDeps(x);
+  const blkPill=blk.length?`<span class="pill blocked" title="Wartet auf: ${esc(blk.map(b=>b.title).join(' · '))}">⛔ wartet auf ${blk.length}</span>`:'';
+  const actions = isArch
+    ? `<button class="edit" data-restore="${x.id}" aria-label="Aufgabe wiederherstellen">Wiederherstellen</button>`
+    : `<button class="edit" data-edit="${x.id}" aria-label="Aufgabe bearbeiten">Bearbeiten</button>`;
+  return `<li class="task ${x.status==='done'?'done':''} ${isArch?'arch':''}" data-id="${x.id}">
     <button class="cb" data-st="${x.status}" data-id="${x.id}" aria-label="Erledigt umschalten" title="Klick: erledigt/offen">${check}</button>
     <div class="tbody"><span class="tt">${esc(x.title)}</span>
       <div class="tmeta">
@@ -572,26 +643,31 @@ function taskRow(x){
         <span class="pill own">${esc(x.owner)}</span>
         ${x.due?`<span class="pill due ${dueClass(x.due)}">${dueLabel(x.due)}</span>`:'<span class="pill due">Termin offen</span>'}
         ${x.custom?'<span class="pill custom">eigene</span>':''}
+        ${blkPill}
         ${flags}
         <select class="stsel" data-id="${x.id}" aria-label="Detailstatus">
           ${["open","in_progress","blocked","done"].map(o=>`<option value="${o}" ${o===x.status?'selected':''}>${({open:'offen',in_progress:'in Arbeit',blocked:'blockiert',done:'erledigt'})[o]}</option>`).join("")}
         </select>
       </div>${x.note?`<div class="tnote">${esc(x.note)}</div>`:''}
     </div>
-    <button class="edit" data-edit="${x.id}" aria-label="Aufgabe bearbeiten">Bearbeiten</button></li>`;
+    ${actions}</li>`;
 }
 
 function wireAufgaben(){
   document.querySelectorAll(".cb").forEach(b=>b.onclick=()=>{ const id=b.dataset.id; const cur=allTasks().find(x=>x.id===id); saveTask(id,{status:cur.status==="done"?"open":"done"}); });
   document.querySelectorAll(".stsel").forEach(s=>s.onchange=()=>saveTask(s.dataset.id,{status:s.value}));
   document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openTaskModal(b.dataset.edit));
+  document.querySelectorAll("[data-restore]").forEach(b=>b.onclick=()=>archiveTask(b.dataset.restore,false));
   document.querySelectorAll("#catChips .chip").forEach(c=>c.onclick=()=>{ filterCat=c.dataset.fc; render(); });
   document.querySelectorAll("#prioChips .chip").forEach(c=>c.onclick=()=>{ filterPrio=c.dataset.fp; render(); });
-  const of=document.getElementById("ownerFilter"); if(of) of.onchange=()=>{ filterOwner=of.value; render(); };
+  document.querySelectorAll("#ownChips .chip").forEach(c=>c.onclick=()=>{ filterOwner=c.dataset.fo; render(); });
+  const at=document.getElementById("archToggle"); if(at) at.onclick=()=>{ showArchived=!showArchived; render(); };
   const add=document.getElementById("addBtn"); if(add) add.onclick=()=>openTaskModal(null);
   const q=document.getElementById("q"); if(q) q.oninput=()=>{ filterQuery=q.value; const pos=q.selectionStart; render(); const nq=document.getElementById("q"); if(nq){nq.focus();nq.setSelectionRange(pos,pos);} };
   const cp=document.getElementById("copyBtn"); if(cp) cp.onclick=()=>{ const data={exported:new Date().toISOString(),progress:progress(),tasks:allTasks(),team,reminders};
     navigator.clipboard?.writeText(JSON.stringify(data,null,2)).then(()=>{cp.textContent="Kopiert ✓"; setTimeout(()=>cp.textContent="Stand als JSON kopieren",1600);}); };
+  const cta=document.getElementById("csvTasksBtn"); if(cta) cta.onclick=async()=>{ const r=await offerFile("InfraTech2027-Aufgaben.csv","text/csv",buildAufgabenCSV()); flashBtn(cta,"CSV",r); };
+  const mta=document.getElementById("mdTasksBtn"); if(mta) mta.onclick=async()=>{ const r=await offerFile("InfraTech2027-Aufgaben.md","text/markdown",buildAufgabenMD()); flashBtn(mta,"Markdown",r); };
 }
 
 /* ---------- Modal: Aufgabe anlegen/bearbeiten ---------- */
@@ -601,6 +677,10 @@ function openTaskModal(id){
   const catOpts=CATS.map(c=>`<option value="${c.id}" ${c.id===x.cat?'selected':''}>${c.label}</option>`).join("");
   const prioOpts=["P0","P1","P2"].map(pv=>`<option value="${pv}" ${pv===x.prio?'selected':''}>${pv}</option>`).join("");
   const ownerOpts=owners().map(o=>`<option value="${esc(o)}" ${o===x.owner?'selected':''}>${esc(o)}</option>`).join("");
+  const depsSel=new Set(x.deps||[]);
+  const depOpts=CATS.map(c=>{ const opts=allTasks(false).filter(t=>t.cat===c.id&&t.id!==x.id)
+      .map(t=>`<option value="${t.id}" ${depsSel.has(t.id)?'selected':''}>${esc(t.title)}</option>`).join("");
+    return opts?`<optgroup label="${esc(c.label)}">${opts}</optgroup>`:''; }).join("");
   const root=document.getElementById("modalRoot");
   root.innerHTML=`<div class="modal-bg" id="mbg"><div class="modal" role="dialog" aria-modal="true" aria-label="Aufgabe">
     <h3>${isNew?'Neue Aufgabe':'Aufgabe bearbeiten'}</h3>
@@ -614,19 +694,27 @@ function openTaskModal(id){
       <div class="field"><label for="f_due">Termin</label><input id="f_due" type="date" value="${x.due||''}"></div>
     </div>
     <div class="field"><label for="f_note">Notiz</label><textarea id="f_note" placeholder="Optionale Details">${esc(x.note||'')}</textarea></div>
+    <div class="field"><label for="f_deps">Blockiert durch (Abhängigkeiten)</label>
+      <select id="f_deps" multiple aria-label="Abhängigkeiten">${depOpts}</select>
+      <small>Mehrfachauswahl mit Strg/Cmd. Diese Aufgabe wartet, bis die gewählten Aufgaben erledigt sind.</small></div>
     <div class="modal-actions">
-      ${isNew?'':'<button class="btn danger" id="f_del">Löschen</button>'}
+      ${isNew?''
+        :(x.archived||x.deleted)
+          ? '<button class="btn ghost" id="f_restore" style="margin-right:auto">Wiederherstellen</button>'
+          : '<button class="btn ghost" id="f_archive" style="margin-right:auto">Archivieren</button>'}
       <button class="btn ghost" id="f_cancel">Abbrechen</button>
       <button class="btn" id="f_save">${isNew?'Anlegen':'Speichern'}</button>
     </div></div></div>`;
   const close=()=>root.innerHTML="";
   document.getElementById("mbg").onclick=e=>{ if(e.target.id==="mbg") close(); };
   document.getElementById("f_cancel").onclick=close;
-  const del=document.getElementById("f_del"); if(del) del.onclick=()=>{ if(confirm("Aufgabe wirklich löschen?")){ removeTask(id); close(); } };
+  const arch=document.getElementById("f_archive"); if(arch) arch.onclick=()=>{ archiveTask(id,true); close(); };
+  const restore=document.getElementById("f_restore"); if(restore) restore.onclick=()=>{ archiveTask(id,false); close(); };
   document.getElementById("f_save").onclick=()=>{
     const title=document.getElementById("f_title").value.trim(); if(!title){ document.getElementById("f_title").focus(); return; }
+    const deps=Array.from(document.getElementById("f_deps").selectedOptions).map(o=>o.value);
     const patch={title,cat:document.getElementById("f_cat").value,prio:document.getElementById("f_prio").value,
-      owner:document.getElementById("f_owner").value,due:document.getElementById("f_due").value||null,note:document.getElementById("f_note").value.trim()};
+      owner:document.getElementById("f_owner").value,due:document.getElementById("f_due").value||null,note:document.getElementById("f_note").value.trim(),deps};
     if(isNew){ const nid="u"+Date.now().toString(36); saveTask(nid,Object.assign({custom:true,status:"open",flags:[]},patch)); }
     else saveTask(id,patch);
     close();
@@ -673,14 +761,123 @@ function viewFristen(){
   return `<h2 class="sec">Fristenmatrix</h2>
    <p class="lead">Rot = für 2027 bestätigt · Gelb = Referenzwert 2026, offiziell für 2027 zu verifizieren · Grün = Messetermin. Größte Lektion 2026 (E2): eine zentrale Fristenmatrix verhindert Zuschläge.</p>
    <div class="banner"><strong>Offen beim Veranstalter (infratech.nl / Ahoy):</strong> Anmeldeschluss, Standentwurf-Genehmigung, Standbau-/Abbauzeiten und VRS-/Slot-Zeitfenster 2027.</div>
+   <div class="toolbar">
+     <button class="btn" id="icsBtn">ICS (Kalender) exportieren</button>
+     <button class="btn ghost" id="csvBtn">CSV exportieren</button>
+     <span class="savehint" id="expHint">Alle Fristen als Kalender-Datei (.ics, ganztägige Termine) oder Tabelle (.csv).</span>
+   </div>
    <div class="tblwrap"><table><thead><tr><th>Datum</th><th>Frist</th><th class="n">Rest</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
+
+/* ---------- Fristen-Export (ICS / CSV) ---------- */
+const _TE = (typeof TextEncoder!=="undefined") ? new TextEncoder() : null;
+function utf8len(s){ return _TE ? _TE.encode(s).length : s.length; }
+function pad2(n){ return String(n).padStart(2,"0"); }
+function icsEsc(s){ return (s||"").replace(/[\\;,]/g,m=>"\\"+m).replace(/\r?\n/g,"\\n"); }
+function icsDate(s){ const d=parseD(s); return ""+d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate()); }
+function icsDateEnd(s){ const d=parseD(s); d.setDate(d.getDate()+1); return ""+d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate()); }
+function icsStamp(){ const d=new Date(); return ""+d.getUTCFullYear()+pad2(d.getUTCMonth()+1)+pad2(d.getUTCDate())+"T"+pad2(d.getUTCHours())+pad2(d.getUTCMinutes())+pad2(d.getUTCSeconds())+"Z"; }
+// Zeilenfaltung nach RFC 5545 (<=75 Oktett/Zeile), byteweise, ohne Zeichen zu zerteilen.
+function icsFold(line){ let out="",cur="",b=0; for(const ch of line){ const cb=utf8len(ch);
+  if(b+cb>73){ out+=(out?"\r\n ":"")+cur; cur=ch; b=cb; } else { cur+=ch; b+=cb; } } return out+(out?"\r\n ":"")+cur; }
+function fristenSorted(){ return DEADLINES.slice().sort((a,b)=>parseD(a.d)-parseD(b.d)); }
+
+function buildFristenICS(){
+  const stamp=icsStamp();
+  const lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Fraesdienst E. Feind//InfraTech 2027 Cockpit//DE",
+    "CALSCALE:GREGORIAN","METHOD:PUBLISH","X-WR-CALNAME:InfraTech 2027 – Fristen","X-WR-TIMEZONE:Europe/Amsterdam"];
+  fristenSorted().forEach((d,i)=>{
+    lines.push("BEGIN:VEVENT","UID:frist-"+icsDate(d.d)+"-"+i+"@feind-infratech2027","DTSTAMP:"+stamp,
+      "DTSTART;VALUE=DATE:"+icsDate(d.d),"DTEND;VALUE=DATE:"+icsDateEnd(d.d),
+      "SUMMARY:"+icsEsc("InfraTech 2027 – "+d.t),"DESCRIPTION:"+icsEsc(d.s),"TRANSP:TRANSPARENT","END:VEVENT");
+  });
+  lines.push("END:VCALENDAR");
+  return lines.map(icsFold).join("\r\n")+"\r\n";
+}
+function buildFristenCSV(){
+  const q=v=>{ v=(v==null?"":String(v)); return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const head=["Datum","Frist","Rest (Tage)","Status"];
+  const body=fristenSorted().map(d=>{ const dd=daysBetween(parseD(d.d),TODAY);
+    return [fmtD(d.d), d.t, (dd<0?("-"+(-dd)):(""+dd)), d.s].map(q).join(";"); });
+  return "﻿"+[head.map(q).join(";")].concat(body).join("\r\n")+"\r\n";
+}
+function copyText(t){ return (navigator.clipboard&&navigator.clipboard.writeText)? navigator.clipboard.writeText(t):Promise.reject(new Error("no clipboard")); }
+// Datei anbieten. Im Artefakt-Viewer liefert nur die downloads-Capability echte Dateien
+// (Allowlist u. a. csv, aber NICHT ics); außerhalb (Standalone-Browser) klassischer Blob-Download.
+async function offerFile(filename, mime, text){
+  let dl=null;
+  try{ dl=(window.claude&&claude.use)? await claude.use("downloads") : null; }catch(e){ dl=null; }
+  if(dl){
+    try{ await dl.save({filename, data:text}); return {ok:true, how:"saved"}; }
+    catch(e){ const code=e&&e.code;
+      if(code==="declined") return {ok:false, how:"declined"};
+      if(code==="rejected_extension"||code==="extension_not_enabled"){
+        try{ await copyText(text); return {ok:true, how:"clipboard"}; }catch(e2){ return {ok:false, how:"failed"}; } }
+      return {ok:false, how:"failed"}; }
+  }
+  try{
+    const blob=new Blob([text],{type:mime+";charset=utf-8"}); const url=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+    setTimeout(()=>{ try{URL.revokeObjectURL(url);}catch(e){} a.remove(); },800);
+    return {ok:true, how:"download"};
+  }catch(e){ try{ await copyText(text); return {ok:true, how:"clipboard"}; }catch(e2){ return {ok:false, how:"failed"}; } }
+}
+function flashBtn(btn, base, r){
+  btn.textContent = r.how==="clipboard" ? "In Zwischenablage ✓" : r.how==="declined" ? "Abgebrochen" : r.ok ? "Geladen ✓" : "Nicht möglich";
+  setTimeout(()=>{ btn.textContent=base; },2400);
+}
+function wireFristen(){
+  const ics=document.getElementById("icsBtn"), csv=document.getElementById("csvBtn"), hint=document.getElementById("expHint");
+  const baseHint = hint? hint.textContent : "";
+  if(ics) ics.onclick=async()=>{ const r=await offerFile("InfraTech2027-Fristen.ics","text/calendar",buildFristenICS());
+    flashBtn(ics,"ICS (Kalender) exportieren",r);
+    if(hint){ hint.textContent = r.how==="clipboard"
+      ? 'In dieser Ansicht wird der .ics-Inhalt in die Zwischenablage kopiert – als .ics-Datei speichern und in den Kalender importieren.'
+      : baseHint; } };
+  if(csv) csv.onclick=async()=>{ const r=await offerFile("InfraTech2027-Fristen.csv","text/csv",buildFristenCSV());
+    flashBtn(csv,"CSV exportieren",r); };
+}
+/* ---------- Budget: Plan vs. Ist (Forecast/Ist je Kostenblock, Ampel > 10 %) ---------- */
+function euroKey(p){ return String(p).toLowerCase().replace(/[äöü]/g,m=>({"ä":"ae","ö":"oe","ü":"ue"}[m])).replace(/ß/g,"ss").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); }
+function parseEuroRange(s){ const nums=(String(s||"").match(/\d[\d.]*/g)||[]).map(x=>parseInt(x.replace(/\./g,""),10)).filter(n=>!isNaN(n)); if(!nums.length) return null; return nums.length>=2? Math.round((nums[0]+nums[1])/2) : nums[0]; }
+function fmtEuro(n){ return (n==null||isNaN(n))?"—":Number(n).toLocaleString("de-DE")+" €"; }
+function blockForecast(b,key){ const a=budgetActuals[key]||{}; return (a.forecast!=null&&a.forecast!=="")? +a.forecast : parseEuroRange(b.z); }
+function blockIst(key){ const a=budgetActuals[key]||{}; return (a.ist!=null&&a.ist!=="")? +a.ist : null; }
+function budgetDev(forecast,ist){ if(ist==null||!forecast) return {cls:"",txt:"—"}; const d=(ist-forecast)/forecast; const pct=Math.round(d*100); const txt=(pct>0?"+":"")+pct+" %"; if(d>0.10) return {cls:"r",txt}; if(d>0) return {cls:"y",txt}; return {cls:"g",txt}; }
+
 function viewBudget(){
-  const rows=BUDGET.map(b=>`<tr><td>${esc(b.p)}</td><td class="n num">${b.b} €</td><td class="n num">${b.z} €</td><td>${esc(b.a)}</td></tr>`).join("");
-  return `<h2 class="sec">Budgetrahmen 2027</h2>
-   <p class="lead">Baseline 2026: <strong>21.023 € brutto</strong>. Planrahmen 2027: <strong>24.200–26.500 € brutto</strong>. Ziel: Abweichung ≤ 10 %. Bei vertraglichen Fragen Rechtsabteilung prüfen.</p>
-   <div class="tblwrap"><table><thead><tr><th>Kostenblock</th><th class="n">2026 Baseline</th><th class="n">2027 Planwert</th><th>Annahme</th></tr></thead><tbody>${rows}
-   <tr class="total"><td>Gesamt</td><td class="n num">21.023 €</td><td class="n num">24.200–26.500 €</td><td>Planrahmen, keine Angebote</td></tr></tbody></table></div>`;
+  let sumF=0,sumI=0,sumFcmp=0,haveI=false;
+  const rows=BUDGET.map(b=>{ const key=euroKey(b.p); const f=blockForecast(b,key); const ist=blockIst(key);
+    if(f) sumF+=f; if(ist!=null){ sumI+=ist; if(f) sumFcmp+=f; haveI=true; }
+    const dv=budgetDev(f,ist);
+    const fVal = (budgetActuals[key]&&budgetActuals[key].forecast!=null) ? String(budgetActuals[key].forecast) : (f!=null?String(f):"");
+    const iVal = (budgetActuals[key]&&budgetActuals[key].ist!=null) ? String(budgetActuals[key].ist) : "";
+    return `<tr>
+      <td>${esc(b.p)}</td>
+      <td class="n num">${esc(b.z)} €</td>
+      <td class="n"><input class="numinput" inputmode="numeric" data-bk="${esc(key)}" data-bf="forecast" value="${esc(fVal)}" aria-label="Forecast ${esc(b.p)}"></td>
+      <td class="n"><input class="numinput" inputmode="numeric" data-bk="${esc(key)}" data-bf="ist" value="${esc(iVal)}" placeholder="—" aria-label="Ist ${esc(b.p)}"></td>
+      <td><span class="st ${dv.cls}">${dv.txt}</span></td>
+      <td>${esc(b.a)}</td></tr>`; }).join("");
+  const sdv=budgetDev(haveI?sumFcmp:null, haveI?sumI:null);
+  return `<h2 class="sec">Budget: Plan vs. Ist 2027</h2>
+   <p class="lead">Baseline 2026: <strong>21.023 € brutto</strong>. Planrahmen 2027: <strong>24.200–26.500 € brutto</strong>. Ziel: Abweichung ≤ 10 %.
+     Forecast ist mit dem Mittelwert des Planrahmens vorbelegt und überschreibbar; „Ist" eintragen, sobald Angebote/Rechnungen vorliegen (nur Zahl, € optional).
+     Ampel: grün = im/unter Plan · gelb = bis +10 % · rot = über +10 %. Bei vertraglichen Fragen Rechtsabteilung prüfen.</p>
+   <div class="tblwrap"><table><thead><tr><th>Kostenblock</th><th class="n">Planrahmen</th><th class="n">Forecast €</th><th class="n">Ist €</th><th>Abweichung</th><th>Annahme</th></tr></thead>
+   <tbody>${rows}
+   <tr class="total"><td>Gesamt</td><td class="n num">24.200–26.500 €</td><td class="n num">${fmtEuro(sumF)}</td><td class="n num">${haveI?fmtEuro(sumI):"—"}</td><td><span class="st ${sdv.cls}">${sdv.txt}</span></td><td>${haveI?'Abweichung nur über Blöcke mit Ist':'Ziel ≤ 10 %'}</td></tr>
+   </tbody></table></div>`;
+}
+function wireBudget(){
+  document.querySelectorAll(".numinput").forEach(inp=>{ inp.onchange=()=>{
+    const key=inp.dataset.bk, field=inp.dataset.bf;
+    const raw=(inp.value||"").replace(/[.\s€]/g,"");
+    const cur=Object.assign({}, budgetActuals[key]);
+    if(raw===""||isNaN(parseInt(raw,10))) delete cur[field]; else cur[field]=parseInt(raw,10);
+    if(Object.keys(cur).length) budgetActuals[key]=cur; else delete budgetActuals[key];
+    saveBudget(); render();
+  }; });
 }
 function viewKpi(){
   const rows=KPIS.map(k=>`<tr><td>${esc(k.k)}</td><td>${esc(k.b)}</td><td><strong>${esc(k.z)}</strong></td><td>${esc(k.m)}</td></tr>`).join("");
