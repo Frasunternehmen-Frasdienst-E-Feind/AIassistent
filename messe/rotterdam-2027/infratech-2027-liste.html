@@ -561,8 +561,7 @@ function viewAufgaben(){
     owners().filter(o=>o!=="David").map(o=>`<button class="chip" data-fo="${esc(o)}" aria-pressed="${filterOwner===o}">${esc(o)}</button>`).join("");
   const archN=allTasks(true).length;
 
-  let list=allTasks(showArchived).filter(x=>(filterCat==="all"||x.cat===filterCat)&&(filterPrio==="all"||x.prio===filterPrio)&&(filterOwner==="all"||x.owner===filterOwner));
-  if(filterQuery){ const q=filterQuery.toLowerCase(); list=list.filter(x=>(x.title+" "+(x.note||"")+" "+x.owner).toLowerCase().includes(q)); }
+  const list=filteredTasks();
   const cats=CATS.filter(c=>list.some(x=>x.cat===c.id));
   const groups=cats.map(c=>{ const ts=list.filter(x=>x.cat===c.id); const done=ts.filter(x=>x.status==="done").length;
     return `<div class="catgroup"><div class="cathead"><span class="catdot" style="background:${c.color}"></span><h3>${c.label}</h3><span class="cnt num">${done}/${ts.length}</span></div>
@@ -573,6 +572,8 @@ function viewAufgaben(){
    <div class="toolbar">
      <button class="btn" id="addBtn">＋ Neue Aufgabe</button>
      <button class="btn ghost" id="copyBtn">Stand als JSON kopieren</button>
+     <button class="btn ghost" id="csvTasksBtn" title="Aktuell gefilterte Aufgaben als CSV">CSV</button>
+     <button class="btn ghost" id="mdTasksBtn" title="Aktuell gefilterte Aufgaben als Markdown">Markdown</button>
      <button class="btn ghost" id="archToggle" aria-pressed="${showArchived}">${showArchived?'Aktive anzeigen':'Archiv anzeigen'+(archN?` (${archN})`:'')}</button>
      <span class="savehint" id="saveHint">● Lokal gespeichert</span>
    </div>
@@ -582,6 +583,39 @@ function viewAufgaben(){
    <div class="filters"><div class="chipset" id="prioChips">${prioChips}</div></div>
    ${showArchived?'<p class="lead">Archivierte Aufgaben – über „Wiederherstellen" zurückholen. Nichts wird endgültig gelöscht.</p>':''}
    ${groups||`<p class="lead">${emptyMsg}</p>`}`;
+}
+
+/* ---------- Aufgaben: Filter (geteilt mit Export) & Export CSV/Markdown ---------- */
+const STLABEL={open:"offen",in_progress:"in Arbeit",blocked:"blockiert",done:"erledigt"};
+function catIndex(id){ const i=CATS.findIndex(c=>c.id===id); return i<0?99:i; }
+function filteredTasks(){
+  let list=allTasks(showArchived).filter(x=>(filterCat==="all"||x.cat===filterCat)&&(filterPrio==="all"||x.prio===filterPrio)&&(filterOwner==="all"||x.owner===filterOwner));
+  if(filterQuery){ const q=filterQuery.toLowerCase(); list=list.filter(x=>(x.title+" "+(x.note||"")+" "+x.owner).toLowerCase().includes(q)); }
+  return list.slice().sort((a,b)=>catIndex(a.cat)-catIndex(b.cat));
+}
+function depTitles(x){ if(!x.deps||!x.deps.length) return [];
+  const map=Object.fromEntries(allTasks(true).concat(allTasks(false)).map(t=>[t.id,t]));
+  return x.deps.map(id=>map[id]?map[id].title:id); }
+function buildAufgabenCSV(){
+  const q=v=>{ v=(v==null?"":String(v)); return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const head=["Bereich","Titel","Priorität","Verantwortlich","Termin","Status","Blockiert durch","Notiz"];
+  const rows=filteredTasks().map(x=>[ (CATMAP[x.cat]?CATMAP[x.cat].label:x.cat), x.title, x.prio, x.owner,
+    x.due?fmtD(x.due):"", (STLABEL[x.status]||x.status), depTitles(x).join(" | "), x.note||"" ].map(q).join(";"));
+  return "﻿"+[head.map(q).join(";")].concat(rows).join("\r\n")+"\r\n";
+}
+function buildAufgabenMD(){
+  const list=filteredTasks();
+  const out=["# InfraTech 2027 – Aufgaben ("+(showArchived?"Archiv":"Aktiv")+", Stand "+TODAY.toLocaleDateString("de-DE")+")",""];
+  CATS.forEach(c=>{ const ts=list.filter(x=>x.cat===c.id); if(!ts.length) return;
+    out.push("## "+c.label);
+    ts.forEach(x=>{ const box=x.status==="done"?"[x]":"[ ]";
+      const meta="("+[x.prio,x.owner,x.due?fmtD(x.due):"kein Termin"].join(" · ")+")";
+      const st=(x.status!=="open"&&x.status!=="done")?" — _"+(STLABEL[x.status]||x.status)+"_":"";
+      out.push("- "+box+" "+meta+" "+x.title+st);
+      const dt=depTitles(x); if(dt.length) out.push("  - blockiert durch: "+dt.join("; "));
+      if(x.note) out.push("  - "+String(x.note).replace(/\s*\n+\s*/g," ")); });
+    out.push(""); });
+  return out.join("\n");
 }
 
 function taskRow(x){
@@ -624,6 +658,8 @@ function wireAufgaben(){
   const q=document.getElementById("q"); if(q) q.oninput=()=>{ filterQuery=q.value; const pos=q.selectionStart; render(); const nq=document.getElementById("q"); if(nq){nq.focus();nq.setSelectionRange(pos,pos);} };
   const cp=document.getElementById("copyBtn"); if(cp) cp.onclick=()=>{ const data={exported:new Date().toISOString(),progress:progress(),tasks:allTasks(),team,reminders};
     navigator.clipboard?.writeText(JSON.stringify(data,null,2)).then(()=>{cp.textContent="Kopiert ✓"; setTimeout(()=>cp.textContent="Stand als JSON kopieren",1600);}); };
+  const cta=document.getElementById("csvTasksBtn"); if(cta) cta.onclick=async()=>{ const r=await offerFile("InfraTech2027-Aufgaben.csv","text/csv",buildAufgabenCSV()); flashBtn(cta,"CSV",r); };
+  const mta=document.getElementById("mdTasksBtn"); if(mta) mta.onclick=async()=>{ const r=await offerFile("InfraTech2027-Aufgaben.md","text/markdown",buildAufgabenMD()); flashBtn(mta,"Markdown",r); };
 }
 
 /* ---------- Modal: Aufgabe anlegen/bearbeiten ---------- */
