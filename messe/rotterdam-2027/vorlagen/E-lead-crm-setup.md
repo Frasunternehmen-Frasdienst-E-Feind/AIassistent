@@ -1,6 +1,6 @@
 # E · Lead- & CRM-Setup (InfraTech 2027)
 
-![Realitätsnahe Visualisierung des Stands mit Gesprächs-/Lead-Zone (Übersichtsbild, KI-generiert).](img/C_overview.png)
+![Realitätsnahe Visualisierung: Gesprächs- und Lead-Erfassungszone am Stand mit Tablet (KI-generiert).](img/E_leads.png)
 
 ## 0. Kurz-Zusammenfassung
 2026 wurden Gesprächsnotizen kaum erfasst und die Nachfassmail kam erst am 26.01. (Lektion E3/E4).
