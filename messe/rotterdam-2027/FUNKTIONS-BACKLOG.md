@@ -24,11 +24,9 @@ Grundlage für die verknüpfte Claude-Code-Session und den Manager-Agenten.
 - **Budget-Ist-Erfassung** (Budget-Tab): je Kostenblock editierbare Felder Forecast (mit Planrahmen-Mittelwert vorbelegt) und Ist; Abweichungs-Ampel grün (≤ Plan) / gelb (bis +10 %) / rot (> +10 %), inkl. Gesamtzeile. Speicherung in `db`-Sammlung `budget/actuals` (geteilt), lokaler Fallback.
 - **Lead-Zähler live** (Tab „Lead-Zähler"): Tageszählung 12.–15.01.2027 je Qualität A/B/C mit +/–-Buttons, Tages- und Gesamtsummen, Zielerreichung ≥ 300; heutiger Tag hervorgehoben; CSV-Export. **Nur Stückzahlen, keine personenbezogenen Daten.** Speicherung in `db`-Sammlung `leads/counts` (geteilt), lokaler Fallback.
 - **Aktivitätsprotokoll** (Tab „Protokoll"): erfasst „wer hat wann was geändert" (Status, Aufgabe anlegen/bearbeiten/archivieren/wiederherstellen, Budget, Team) mit Zeitstempel; neueste zuerst, CSV-Export. Nutzt die `user`-Capability – gespeichert werden nur opake Team-IDs (`activity/<id>`), Namen werden zur Anzeige aufgelöst (Scope `profile`). Ohne geteilte DB kein Log.
+- **Anhänge & Links je Aufgabe** (Editor-Modal, bestehende Aufgaben): Links (Bezeichnung + URL, nur http(s)/mailto) und Datei-Uploads (PDF/Bild/Text bis 20 MB) über die `assets`-Capability; Anzeige als Liste mit Entfernen, 📎-Pille an der Aufgabe. Datei-IDs liegen im Task-Doc (`tasks/<id>.attachments`), Löschen entfernt auch das Asset. Hinweis: keine personenbezogenen Daten Dritter hochladen, bei Verträgen Rechtsabteilung prüfen. **Damit sind alle P2-Punkte umgesetzt.**
 
 ## Backlog (Vorschläge, priorisiert)
-
-### P2 – Komfort
-9. **Anhänge/Links** je Aufgabe (Angebote, Freigaben) über `assets`-Capability.
 
 ### P3 – Ausbau
 10. **Mehrsprachige Giveaway-Sprüche DE/EN/NL** direkt im Marketing-Tab.

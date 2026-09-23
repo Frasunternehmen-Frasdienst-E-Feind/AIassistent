@@ -200,6 +200,18 @@
   .lc-btn:hover{border-color:var(--accent)}
   .lc-btn.plus{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
   .lc-btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+  .att-list{display:flex;flex-direction:column;gap:4px;margin:4px 0}
+  .att-row{display:flex;align-items:center;gap:var(--sp2)}
+  .att-link{flex:1;font-size:13px;color:var(--accent-text);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .att-link:hover{text-decoration:underline}
+  .att-empty{font-size:12px;color:var(--ink-muted)}
+  .att-x{flex:0 0 auto;width:24px;height:24px;border:1px solid var(--line);border-radius:var(--r-input);background:var(--surface);color:var(--signal-text);cursor:pointer;font-size:14px;line-height:1}
+  .att-x:hover{border-color:var(--signal)}
+  .att-add{display:flex;gap:var(--sp2);align-items:center;margin-top:4px;flex-wrap:wrap}
+  .att-add input:not([type=file]){flex:1 1 120px;min-width:100px;padding:6px 8px;border:1px solid var(--line);border-radius:var(--r-input);background:var(--surface);color:var(--ink);font-size:13px;font-family:var(--sans)}
+  .att-add input[type=file]{font-size:12px;color:var(--ink-muted);flex:1 1 100%}
+  .att-hint{font-size:12px;color:var(--ink-muted)}
+  .pill.att{background:var(--info-bg);color:var(--ink-muted);text-transform:none}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp2)}
   .modal-actions{display:flex;gap:var(--sp2);justify-content:flex-end;margin-top:var(--sp3);flex-wrap:wrap}
   .modal-actions .btn.danger{margin-right:auto}
@@ -682,6 +694,7 @@ function taskRow(x){
   const isArch=!!(x.archived||x.deleted);
   const blk=unmetDeps(x);
   const blkPill=blk.length?`<span class="pill blocked" title="Wartet auf: ${esc(blk.map(b=>b.title).join(' · '))}">⛔ wartet auf ${blk.length}</span>`:'';
+  const nAtt=attachCount(x); const attPill=nAtt?`<span class="pill att" title="Anhänge/Links">📎 ${nAtt}</span>`:'';
   const actions = isArch
     ? `<button class="edit" data-restore="${x.id}" aria-label="Aufgabe wiederherstellen">Wiederherstellen</button>`
     : `<button class="edit" data-edit="${x.id}" aria-label="Aufgabe bearbeiten">Bearbeiten</button>`;
@@ -694,6 +707,7 @@ function taskRow(x){
         ${x.due?`<span class="pill due ${dueClass(x.due)}">${dueLabel(x.due)}</span>`:'<span class="pill due">Termin offen</span>'}
         ${x.custom?'<span class="pill custom">eigene</span>':''}
         ${blkPill}
+        ${attPill}
         ${flags}
         <select class="stsel" data-id="${x.id}" aria-label="Detailstatus">
           ${["open","in_progress","blocked","done"].map(o=>`<option value="${o}" ${o===x.status?'selected':''}>${({open:'offen',in_progress:'in Arbeit',blocked:'blockiert',done:'erledigt'})[o]}</option>`).join("")}
@@ -718,6 +732,31 @@ function wireAufgaben(){
     navigator.clipboard?.writeText(JSON.stringify(data,null,2)).then(()=>{cp.textContent="Kopiert ✓"; setTimeout(()=>cp.textContent="Stand als JSON kopieren",1600);}); };
   const cta=document.getElementById("csvTasksBtn"); if(cta) cta.onclick=async()=>{ const r=await offerFile("InfraTech2027-Aufgaben.csv","text/csv",buildAufgabenCSV()); flashBtn(cta,"CSV",r); };
   const mta=document.getElementById("mdTasksBtn"); if(mta) mta.onclick=async()=>{ const r=await offerFile("InfraTech2027-Aufgaben.md","text/markdown",buildAufgabenMD()); flashBtn(mta,"Markdown",r); };
+}
+
+/* ---------- Anhänge & Links (assets-Capability für Datei-Uploads) ---------- */
+function safeUrl(u){ u=(u||"").trim(); return /^(https?:|mailto:)/i.test(u)? u : ""; }
+function guessAssetType(name){ const e=(String(name).split(".").pop()||"").toLowerCase();
+  return ({pdf:"application/pdf",png:"image/png",jpg:"image/jpeg",jpeg:"image/jpeg",gif:"image/gif",webp:"image/webp",svg:"image/svg+xml",
+    csv:"text/csv",md:"text/markdown",json:"application/json",txt:"text/plain"})[e]||""; }
+function attachCount(x){ return ((x.links||[]).length)+((x.attachments||[]).length); }
+function attachSectionHtml(x){
+  const links=(x.links||[]).map((l,i)=>`<div class="att-row"><a class="att-link" href="${esc(safeUrl(l.url)||'#')}" target="_blank" rel="noopener noreferrer">🔗 ${esc(l.label||l.url)}</a>
+    <button class="att-x" data-lx="${i}" aria-label="Link entfernen">×</button></div>`).join("");
+  const files=(x.attachments||[]).map(a=>`<div class="att-row"><a class="att-link" href="/_blob/${esc(a.id)}" target="_blank" rel="noopener noreferrer">📎 ${esc(a.name||a.id)}</a>
+    <button class="att-x" data-ax="${esc(a.id)}" aria-label="Anhang entfernen">×</button></div>`).join("");
+  return `<div class="field"><label>Anhänge &amp; Links</label>
+    <div class="att-list">${links}${files}${(links+files)?'':'<span class="att-empty">Noch keine Anhänge/Links.</span>'}</div>
+    <div class="att-add">
+      <input id="a_label" placeholder="Bezeichnung (z. B. Angebot Standbau)">
+      <input id="a_url" type="url" placeholder="https://…" inputmode="url">
+      <button class="btn ghost" id="a_addlink" type="button">Link</button>
+    </div>
+    <div class="att-add">
+      <input type="file" id="a_file" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,.svg,.csv,.md,.json,.txt">
+      <span class="att-hint" id="a_status"></span>
+    </div>
+    <small>Keine personenbezogenen Daten Dritter hochladen; bei Verträgen/Freigaben Rechtsabteilung prüfen. Max. 20 MB je Datei.</small></div>`;
 }
 
 /* ---------- Modal: Aufgabe anlegen/bearbeiten ---------- */
@@ -747,6 +786,7 @@ function openTaskModal(id){
     <div class="field"><label for="f_deps">Blockiert durch (Abhängigkeiten)</label>
       <select id="f_deps" multiple aria-label="Abhängigkeiten">${depOpts}</select>
       <small>Mehrfachauswahl mit Strg/Cmd. Diese Aufgabe wartet, bis die gewählten Aufgaben erledigt sind.</small></div>
+    ${isNew?'':attachSectionHtml(x)}
     <div class="modal-actions">
       ${isNew?''
         :(x.archived||x.deleted)
@@ -769,6 +809,31 @@ function openTaskModal(id){
     else { saveTask(id,patch); logActivity("Aufgabe bearbeitet", patch.title); }
     close();
   };
+  if(!isNew){
+    const cur=()=>allTasks(true).concat(allTasks(false)).find(o=>o.id===id)||x;
+    const addlink=document.getElementById("a_addlink");
+    if(addlink) addlink.onclick=()=>{ const label=(document.getElementById("a_label").value||"").trim(); const url=safeUrl(document.getElementById("a_url").value);
+      if(!url){ const u=document.getElementById("a_url"); u.focus(); document.getElementById("a_status").textContent="Bitte gültige http(s)-/mailto-Adresse"; return; }
+      const links=((cur().links)||[]).concat([{label:label||url,url}]);
+      saveTask(id,{links}); logActivity("Link hinzugefügt", taskTitle(id)+": "+(label||url)); openTaskModal(id); };
+    const file=document.getElementById("a_file"); const st=document.getElementById("a_status");
+    if(file) file.onchange=async()=>{ const fobj=file.files&&file.files[0]; if(!fobj) return;
+      if(fobj.size>20*1024*1024){ if(st) st.textContent="Datei zu groß (max. 20 MB)"; return; }
+      let assets=null; try{ assets=(window.claude&&claude.use)?await claude.use("assets"):null; }catch(e){ assets=null; }
+      if(!assets){ if(st) st.textContent="Upload in dieser Ansicht nicht verfügbar (nur mit geteilter Datenbank)"; return; }
+      if(st) st.textContent="Lädt hoch …";
+      try{ const opt=fobj.type?undefined:{type:guessAssetType(fobj.name)}; const res=await assets.upload(fobj,opt);
+        const att=((cur().attachments)||[]).concat([{id:res.id,name:fobj.name,type:res.contentType}]);
+        await saveTask(id,{attachments:att}); logActivity("Anhang hinzugefügt", taskTitle(id)+": "+fobj.name); openTaskModal(id);
+      }catch(e){ if(st) st.textContent="Upload fehlgeschlagen"+(e&&e.code?(" ("+e.code+")"):""); } };
+    document.querySelectorAll("[data-lx]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.lx; const links=((cur().links)||[]).slice(); const rm=links.splice(i,1)[0];
+      saveTask(id,{links}); logActivity("Link entfernt", taskTitle(id)+(rm?": "+(rm.label||rm.url):"")); openTaskModal(id); });
+    document.querySelectorAll("[data-ax]").forEach(b=>b.onclick=async()=>{ const aid=b.dataset.ax; const atts=((cur().attachments)||[]).filter(a=>a.id!==aid);
+      await saveTask(id,{attachments:atts});
+      let assets=null; try{ assets=(window.claude&&claude.use)?await claude.use("assets"):null; }catch(e){}
+      if(assets){ try{ await assets.delete(aid); }catch(e){} }
+      logActivity("Anhang entfernt", taskTitle(id)); openTaskModal(id); });
+  }
   setTimeout(()=>document.getElementById("f_title").focus(),30);
 }
 
