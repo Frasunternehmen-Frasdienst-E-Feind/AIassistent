@@ -19,7 +19,7 @@ Stand: 2026-09-24.
 | Webrecherche (Suche) | Parallel Search | verbunden | `tender-monitoring`, `seo-local`, `reference-library` |
 | Grafiken, Social-Media-Vorlagen | Canva | verbunden | `content-pipeline` |
 | Übersetzung und Korrektur | DeepL | verbunden | `content-pipeline` |
-| Kundenbeziehungen, Lead-Pipeline | CRM (HubSpot, Pipedrive oder Salesforce) | nicht verbunden – offene Frage | `lead-tracking` |
+| Kundenbeziehungen, Lead-Pipeline | HubSpot (von David bestätigt) | nicht verbunden – in Cowork unter Connectors hinzufügen; bis dahin CSV-Export | `lead-tracking` |
 | Unternehmensablage | SharePoint oder Nextcloud | nicht verbunden – offene Frage | alle Skills mit Dateizugriff |
 | LinkedIn-Unternehmensseite (Reichweite, Posts) | LinkedIn | nicht verbunden – offene Frage | `content-pipeline` |
 | Firmen-E-Mail und -Kalender, falls nicht Google | Outlook / Microsoft 365 | nicht verbunden – offene Frage | `lead-tracking`, `event-planning` |
@@ -35,7 +35,7 @@ GA4. Vor einer Anbindung von GA4-Daten: „Bitte Rechtsabteilung prüfen.“
 
 ## Offene Fragen
 
-1. Welches CRM nutzt der Vertrieb (HubSpot, Pipedrive, Salesforce, keines)?
+1. ~~Welches CRM?~~ Beantwortet: HubSpot (24.09.2026). Offen: Freigabe der Anbindung durch GF/Datenschutz.
 2. Liegt die Unternehmensablage in Google Drive, Dropbox, SharePoint oder Nextcloud?
 3. Ist die Firmen-E-Mail Gmail/Google Workspace oder Outlook/Microsoft 365?
 4. Soll LinkedIn angebunden werden, und wer verwaltet die Unternehmensseite?

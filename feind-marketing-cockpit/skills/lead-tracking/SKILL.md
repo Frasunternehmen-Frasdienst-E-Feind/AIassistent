@@ -67,11 +67,12 @@ Fehlen die Zusatzspalten, lege den Lead trotzdem an, setze fehlende Pflichtfelde
 ohne Angabe = `createdAt`. ID: `lead-<createdAt>-<laufende Nr.>` oder aus einer
 CRM-ID abgeleitet, damit Re-Importe denselben Datensatz treffen.
 
-### CRM-Connector (Annahme, unbestätigt)
+### CRM-Connector HubSpot (von David bestätigt, 24.09.2026)
 
-**Annahme:** Ein CRM (z. B. HubSpot) könnte später als Connector angebunden werden. Das ist
-nicht bestätigt. Prüfe vor Nutzung, ob ein CRM-Connector in der Sitzung verfügbar ist, und
-frage David, welches System gilt. Übernimm aus dem Connector nur Organisationsfelder,
+Das CRM ist **HubSpot**. Ein HubSpot-Connector ist in Cowork noch nicht verbunden. Bis dahin
+gilt der CSV-Export aus HubSpot (Deals/Unternehmen, ohne Kontakt-Objekte) als Quelle,
+`source` = `"HubSpot-Export: <Dateiname>"`. Ist der Connector verbunden, prüfe zu Beginn,
+ob seine Werkzeuge in der Sitzung verfügbar sind. Übernimm aus dem Connector nur Organisationsfelder,
 Stage, Quelle, Region und Termine – keine Kontakt-Objekte. `source` = `"connector: <Name>"`.
 
 ### Ordner Marketing/Leads/
@@ -143,4 +144,4 @@ Rückfragen: <Liste>
 * Du versendest keine E-Mails und rufst nicht an; du bereitest vor.
 * Keine Bonitäts- oder Personenrecherche zu Ansprechpartnern.
 * Keine Umsatzprognosen aus `valueBand` als Unternehmenskennzahl ausgeben.
-* CRM-Anbindung bleibt Annahme, bis David das System bestätigt.
+* HubSpot-Connector noch nicht verbunden; bis dahin nur CSV-Export aus HubSpot.

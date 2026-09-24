@@ -83,12 +83,12 @@ als Vorschlag, Dateien werden erst nach Bestätigung verschoben.
 
 ## Offene Fragen
 
-1. Welche Dashboard-URL gilt (Ersatz für `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`)?
-2. Welches CRM nutzt der Vertrieb, und soll es angebunden werden?
+1. Dashboard-URL: https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd (erledigt).
+2. CRM: HubSpot (bestätigt 24.09.2026) – Connector in Cowork noch verbinden.
 3. Wo liegt die Unternehmensablage (Google Drive, Dropbox, SharePoint, Nextcloud)?
 4. Firmen-E-Mail und Kalender: Google oder Microsoft 365/Outlook?
 5. Maschinenpark: rund 40 Fräsen oder über 30 Wirtgen-Fräsmaschinen?
-6. Einsatzgebiet: Schwerpunktregionen Ost-/Norddeutschland oder deutschlandweit?
+6. Einsatzgebiet: deutschlandweit (bestätigt 24.09.2026).
 7. Gehören Grinding & Grooving, Pflasterschleifen, Baugrundsanierung und
    Verkehrssicherung zum aktuellen Leistungsangebot?
 8. Wer erteilt Freigaben für Kundennamen und Veröffentlichungen (Rolle Vertrieb oder GF)?

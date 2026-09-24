@@ -31,7 +31,7 @@ Status-Werte:
 | Mitarbeitende | rund 160 | P | von David angegeben – vor Veröffentlichung bestätigen (DS nennt keine Mitarbeiterzahl; dessen Annahme „< 20 Personen verarbeiten ständig personenbezogene Daten“ betrifft nur die DSB-Pflicht) |
 | Einsätze pro Jahr | über 2.200 | P | von David angegeben – vor Veröffentlichung bestätigen |
 | Fräsgut pro Jahr | über 1,4 Mio. t | P | von David angegeben – vor Veröffentlichung bestätigen |
-| Einsatzgebiet | P: Brandenburg, Berlin, Sachsen, Sachsen-Anhalt, Norddeutschland; DS: deutschlandweit | P, DS | Widerspruch – klären (Schwerpunktregionen vs. Einsatzradius) |
+| Einsatzgebiet | deutschlandweit | DS, David (24.09.2026) | bestätigt (David) |
 | Leistung | Kaltfräsen von Asphalt und Beton (Straßen, Autobahnen, Gewerbe- und Industrieflächen, Flughäfen) | P, DS | bestätigt (Website) |
 | Leistung | Grinding & Grooving | DS | bestätigt (Website); fehlt in P – Aufnahme mit David klären |
 | Leistung | Pflasterschleifen | DS | bestätigt (Website); fehlt in P – Aufnahme mit David klären |
@@ -40,6 +40,7 @@ Status-Werte:
 | Leistung | Baugrundsanierung | P | von David angegeben – vor Veröffentlichung bestätigen |
 | Leistung | Verkehrssicherung | P | von David angegeben – vor Veröffentlichung bestätigen |
 | Auftraggeber | Straßen- und Tiefbauunternehmen, Kommunen, Flughäfen, Industrie | DS | bestätigt (Website) |
+| CRM | HubSpot | David (24.09.2026) | bestätigt (David) |
 | Lead-Quellen | Website-Kontaktformular, Telefon, E-Mail, Ausschreibungen, Empfehlung, Messe | DS | bestätigt (Notion-Scan) |
 
 **Hinweis Wittenburg:** Wittenburg (Landkreis Ludwigslust-Parchim) liegt in
@@ -47,10 +48,10 @@ Mecklenburg-Vorpommern, nicht in Niedersachsen und nicht in Hamburg. „Bei Hamb
 beschreibt höchstens die Nähe zur Metropolregion. Für Texte „Niederlassung Wittenburg
 (Mecklenburg-Vorpommern)“ verwenden. Folge für `tender-monitoring`: Landesvergaberecht
 und Vergabeportale von **Brandenburg und Mecklenburg-Vorpommern** prüfen, dazu Bund
-bzw. weitere Länder je nach bestätigtem Einsatzgebiet. Vergaberechtliche Einzelfragen:
+sowie – da das Einsatzgebiet deutschlandweit ist – Bund (TED, service.bund.de) und alle Länderportale. Vergaberechtliche Einzelfragen:
 „Bitte Rechtsabteilung prüfen.“
 
-**Offene Klärungen (für Vertrieb/GF):** Maschinenzahl, Mitarbeiterzahl, Einsatzgebiet,
+**Offene Klärungen (für Vertrieb/GF):** Maschinenzahl, Mitarbeiterzahl,
 Leistungsumfang (Grinding & Grooving, Pflasterschleifen, Baugrundsanierung,
 Verkehrssicherung), Gründungsjahr und Kennzahlen (Einsätze, Fräsgut). Bis zur Klärung
 in Veröffentlichungen keine Zahlen zu Maschinen, Personal, Einsätzen oder Tonnagen.

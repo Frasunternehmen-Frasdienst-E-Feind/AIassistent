@@ -10,7 +10,7 @@ durch den zuständigen Skill:
 | Bereich | Skill | Quellen |
 |---|---|---|
 | content | `content-pipeline` | `Marketing/Content/` (Frontmatter nach `vorlagen/content-frontmatter.md`), Notion/ClickUp falls genutzt |
-| leads | `lead-tracking` | `Marketing/Leads/`, Gmail (nur lesen); kein CRM verbunden |
+| leads | `lead-tracking` | `Marketing/Leads/`, HubSpot (CRM, Connector noch nicht verbunden – bis dahin CSV-Export), Gmail (nur lesen) |
 | tenders | `tender-monitoring` | `Marketing/Ausschreibungen/`, Vergabeplattformen über Firecrawl/Parallel Search |
 | events | `event-planning` | `Marketing/Events/`, Google Calendar |
 | seo | `seo-local` | Exporte von David; Search Console/GA4 nicht verbunden |
