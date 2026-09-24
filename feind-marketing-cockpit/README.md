@@ -52,7 +52,7 @@ Danach Cowork neu laden. Prüfen: Die Commands `/tagesbrief` usw. erscheinen, un
 
 1. **Dashboard öffnen:** Skill `dashboard-builder` veröffentlicht das Cockpit
    (`dashboard/dashboard.html`) als Artefakt. Die URL ersetzt den Platzhalter
-   `{{DASHBOARD_URL}}` in allen Dateien des Plugins (Agent, Commands,
+   `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd` in allen Dateien des Plugins (Agent, Commands,
    `kontext/datenmodell.md`, `geplante-aufgaben.md`).
 2. **`/cockpit-sync`** ausführen: legt `settings/general` mit Standardwerten an und
    übernimmt vorhandene Dateien aus `Marketing/…` und `Referenzen/`. Vor dem
@@ -83,7 +83,7 @@ als Vorschlag, Dateien werden erst nach Bestätigung verschoben.
 
 ## Offene Fragen
 
-1. Welche Dashboard-URL gilt (Ersatz für `{{DASHBOARD_URL}}`)?
+1. Welche Dashboard-URL gilt (Ersatz für `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`)?
 2. Welches CRM nutzt der Vertrieb, und soll es angebunden werden?
 3. Wo liegt die Unternehmensablage (Google Drive, Dropbox, SharePoint, Nextcloud)?
 4. Firmen-E-Mail und Kalender: Google oder Microsoft 365/Outlook?

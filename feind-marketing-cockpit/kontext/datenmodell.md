@@ -3,7 +3,7 @@
 Einzige Datenquelle des Dashboards. Der Feind Copilot und die Skills schreiben hier
 (in Claude Code / Cowork über das Werkzeug `ArtifactData`, Aktionen `set`, `update`,
 `batch`, `list`, `query`), das Dashboard liest live (`onSnapshot`).
-Dashboard-URL: `{{DASHBOARD_URL}}`
+Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 
 Grundregeln
 * Datum immer `JJJJ-MM-TT`, Zeitstempel ISO 8601. IDs: kleinbuchstaben-mit-bindestrich.

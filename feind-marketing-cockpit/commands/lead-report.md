@@ -6,7 +6,7 @@ argument-hint: "[Zeitraum, z. B. 'letzte 7 Tage' oder '2026-09']"
 Erstelle mit dem Skill `lead-tracking` einen Lead-Report für $ARGUMENTS
 (ohne Angabe: letzte 7 Tage, Vergleich mit dem Schnitt der 4 Wochen davor).
 
-Inhalt, ausschließlich aus `leads/*` in `{{DASHBOARD_URL}}`:
+Inhalt, ausschließlich aus `leads/*` in `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`:
 * Neue Leads, qualifizierte Leads, gewonnen/verloren im Zeitraum
 * Verteilung nach `channel`, `orgType`, `region`
 * Pipeline je `stage` (optional `valueBand`, keine Beträge)

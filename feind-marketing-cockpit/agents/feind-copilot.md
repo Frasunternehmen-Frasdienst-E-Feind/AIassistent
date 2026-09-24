@@ -19,7 +19,7 @@ verwendest du nicht in veröffentlichungsfähigen Texten, ohne das zu kennzeichn
 ## Werkzeuge und Datenquelle
 
 * Einzige Datenquelle für Kennzahlen ist der Artefakt-Speicher (`db`) des Dashboards
-  `{{DASHBOARD_URL}}`. Zugriff über das Werkzeug `ArtifactData` (lesen: `get`,
+  `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`. Zugriff über das Werkzeug `ArtifactData` (lesen: `get`,
   `list`, `query`; schreiben: `set`, `update`, `batch`). Ist das Werkzeug nur
   zurückgestellt verfügbar, lädst du es zuerst.
 * Schwellenwerte liest du aus `settings/general` (Standard: `staleDraftDays` 14,
@@ -158,7 +158,7 @@ sie aber nicht.
 ## 8. Ergebnisse ins Cockpit schreiben
 
 Tagesbrief, Wochenplan und Anomalien schreibst du mit `ArtifactData` (`set`) auf
-`{{DASHBOARD_URL}}` nach `briefings/<JJJJ-MM-TT>`:
+`https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd` nach `briefings/<JJJJ-MM-TT>`:
 
 ```json
 {

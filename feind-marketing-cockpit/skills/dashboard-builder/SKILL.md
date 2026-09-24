@@ -14,7 +14,7 @@ Du veröffentlichst die Seite, richtest den Speicher ein und synchronisierst die
 Arbeitsordner hinein. Verbindliches Datenmodell: `kontext/datenmodell.md` – Pfade und
 Feldnamen exakt übernehmen, keine eigenen Felder erfinden.
 
-Dashboard-URL: `{{DASHBOARD_URL}}`
+Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 
 ## Grundregeln
 
@@ -52,10 +52,10 @@ Findest du einen Ordner nicht, frage nach dem Pfad, statt einen anzulegen.
 3. Veröffentliche die Seite mit `Artifact` (action `publish`), `file_path` auf
    `dashboard/dashboard.html`, `icon: "chart"` und `capabilities` mit `db` und `sample`.
    Notiere die zurückgegebene URL und bitte David, sie in der Plugin-Konfiguration als
-   `{{DASHBOARD_URL}}` einzutragen.
+   `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd` einzutragen.
 4. Lege die Einstellungen an (nur wenn noch nicht vorhanden – vorher per `list` auf die
    Sammlung `settings` prüfen):
-   `ArtifactData set` auf `{{DASHBOARD_URL}}`, collection `settings`, doc_id `general`:
+   `ArtifactData set` auf `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`, collection `settings`, doc_id `general`:
    ```json
    { "staleDraftDays": 14, "followupDays": 5, "tenderRedDays": 3,
      "tenderYellowDays": 7, "regions": [] }
@@ -89,15 +89,16 @@ Findest du einen Ordner nicht, frage nach dem Pfad, statt einen anzulegen.
 
 ## Arbeitsablauf C – Dashboard ändern und neu veröffentlichen
 
-1. Lies die veröffentlichte Fassung mit `Artifact` (action `read`, `url` = `{{DASHBOARD_URL}}`)
+1. Lies die veröffentlichte Fassung mit `Artifact` (action `read`, `url` = `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`)
    und gleiche sie mit `dashboard/dashboard.html` ab. Weicht die veröffentlichte Fassung ab,
    übernimm deren Änderungen, bevor du eigene machst.
 2. Lade `artifact-design` (und bei Datenzugriffen `artifact-capabilities`), bevor du das
    HTML änderst. Bei Diagrammen zusätzlich `dataviz`.
 3. Ändere nur Darstellung und Logik. Datenzugriffe laufen über die `db`-Laufzeit
-   (live lesen, `onSnapshot`); die Capability `sample` dient nur für Beispieldaten in der
-   Vorschau, wenn `db` leer ist – Beispieldaten nie als echte Werte ausgeben.
-4. Veröffentliche mit `Artifact` publish, `url` = `{{DASHBOARD_URL}}`, gleiches
+   (live lesen, `onSnapshot`); die Capability `sample` dient ausschließlich dem Button
+   „Tagesbrief mit KI erzeugen“ (nur auf Klick, nur aus den db-Daten). Keine Beispiel-
+   oder Demodaten ins Dashboard einbauen.
+4. Veröffentliche mit `Artifact` publish, `url` = `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`, gleiches
    `file_path`. Beim Redeploy kein `icon` und kein `capabilities` angeben, damit beides
    erhalten bleibt.
 
@@ -135,7 +136,7 @@ Sync <Datum Uhrzeit>
 - events: 0 neu, 2 geändert (Quelle: Marketing/Events/)
 - references: 1 neu; 1 verwaist -> bitte entscheiden: <id>
 Offene Fragen: <Liste>
-Dashboard: {{DASHBOARD_URL}}
+Dashboard: https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd
 ```
 
 Nenne bei jeder Zahl die Quelle. Fehlende Felder listest du als offene Fragen, statt sie
@@ -144,7 +145,7 @@ zu füllen.
 ## Grenzen
 
 * Kein Löschen von Datensätzen ohne ausdrückliche Zustimmung von David.
-* Keine Veröffentlichung einer neuen Artefakt-URL, wenn `{{DASHBOARD_URL}}` schon existiert.
+* Keine Veröffentlichung einer neuen Artefakt-URL, wenn `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd` schon existiert.
 * Keine Zugangsdaten in HTML, `db` oder versionierte Dateien.
 * Inhalte von Dritten (Namen, Kontakte) werden nicht übernommen, auch wenn sie in den
   Quelldateien stehen.

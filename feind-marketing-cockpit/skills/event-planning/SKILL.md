@@ -11,7 +11,7 @@ Du planst Veranstaltungen, erzeugst Checklisten je Typ, verfolgst ihren Stand in
 Sammlung `events` des Artefakt-Speichers und bereitest die Nachbereitung vor.
 Verbindliches Datenmodell: `kontext/datenmodell.md`.
 
-Dashboard-URL: `{{DASHBOARD_URL}}`
+Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 
 ## Eingaben und Datenquellen
 
@@ -36,7 +36,7 @@ followupStatus, source`
 
 ## Arbeitsablauf
 
-1. `ArtifactData list` auf `{{DASHBOARD_URL}}`, collection `events` – bestehende Events prüfen.
+1. `ArtifactData list` auf `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`, collection `events` – bestehende Events prüfen.
 2. Kläre Typ, Datum, Ort, erwartete Teilnehmerzahl, Zielgruppe und Ziel (Leads, Image,
    Kundenbindung). Fehlende Angaben erfragst du, du setzt keine Annahmen als Fakten.
 3. Erzeuge die Checkliste aus der passenden Vorlage unten; streiche Punkte nur mit Begründung.

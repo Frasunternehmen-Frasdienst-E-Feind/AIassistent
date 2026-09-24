@@ -6,7 +6,7 @@ argument-hint: "[Datum JJJJ-MM-TT, Standard heute]"
 Erzeuge mit dem Subagenten `feind-copilot` den Tagesbrief für $ARGUMENTS
 (ohne Angabe: heutiges Datum).
 
-1. Lies über `ArtifactData` aus `{{DASHBOARD_URL}}`: `content`, `leads`, `tenders`,
+1. Lies über `ArtifactData` aus `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`: `content`, `leads`, `tenders`,
    `events`, `seo_keywords`, `settings/general`, `meta/sync`.
 2. Zähle neue Leads, Ausschreibungen mit Frist diese Woche und Content im Status
    `review` ausschließlich aus diesen Daten. Form der Kopfzeile:

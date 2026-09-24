@@ -5,7 +5,7 @@ im Chat mit `/schedule`. Das Plugin kann sie nicht automatisch einrichten. Die g
 Lage des Menüs kann je nach App-Version abweichen.
 
 Alle Zeiten Europe/Berlin. Voraussetzung: Plugin installiert, Dashboard-URL statt
-`{{DASHBOARD_URL}}` eingesetzt, Cowork zur Ausführungszeit erreichbar (bei lokal
+`https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd` eingesetzt, Cowork zur Ausführungszeit erreichbar (bei lokal
 ausgeführten Aufgaben muss der Rechner an sein). Keine Aufgabe versendet oder
 veröffentlicht etwas; Ergebnisse landen im Cockpit und als Entwurf.
 
@@ -19,7 +19,7 @@ Prompt zum Einfügen:
 
 ```
 Führe /tagesbrief für heute aus. Nutze den Subagenten feind-copilot und das
-Marketing Cockpit {{DASHBOARD_URL}}. Zähle nur aus den Daten im Cockpit, prüfe die
+Marketing Cockpit https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd. Zähle nur aus den Daten im Cockpit, prüfe die
 Anomalien (Lead-Einbruch, Frist übersehen, Content länger als 14 Tage im Entwurf,
 Lead ohne Kontakt länger als 5 Tage) und schreibe das Ergebnis nach
 briefings/<heutiges Datum>. Nichts versenden oder veröffentlichen.
@@ -34,7 +34,7 @@ briefings/<heutiges Datum>. Nichts versenden oder veröffentlichen.
 Prompt zum Einfügen:
 
 ```
-Prüfe mit dem Skill lead-tracking im Marketing Cockpit {{DASHBOARD_URL}} alle Leads,
+Prüfe mit dem Skill lead-tracking im Marketing Cockpit https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd alle Leads,
 deren Stage nicht gewonnen oder verloren ist und deren lastContact älter als
 followupDays (settings/general) ist, sowie alle mit nextActionDate heute oder früher.
 Ergänze das heutige Briefing unter briefings/<heutiges Datum> um je einen Punkt pro
@@ -52,7 +52,7 @@ Prompt zum Einfügen:
 
 ```
 Führe /content-performance für die laufende Woche aus. Nutze die Skills
-content-pipeline und seo-local mit dem Marketing Cockpit {{DASHBOARD_URL}}.
+content-pipeline und seo-local mit dem Marketing Cockpit https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd.
 Nenne veröffentlichte Beiträge, Beiträge im Review, Entwürfe älter als 14 Tage und
 die Planung der Folgewoche. Reichweitenzahlen nur mit Quelle, sonst "nicht
 verfügbar". Schließe mit drei Empfehlungen für die nächste Woche und schreibe das
@@ -70,6 +70,6 @@ Prompt zum Einfügen:
 ```
 Führe /lead-report für die letzten 7 Tage aus, im Vergleich zum Durchschnitt der
 4 Wochen davor. Nutze den Skill lead-tracking und das Marketing Cockpit
-{{DASHBOARD_URL}}. Danach /wochenplan für die kommende Woche als Vorschlag.
+https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd. Danach /wochenplan für die kommende Woche als Vorschlag.
 Keine Personendaten, keine Preise, jede Kennzahl mit Datenstand aus meta/sync.
 ```

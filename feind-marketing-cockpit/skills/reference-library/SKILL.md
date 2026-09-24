@@ -12,7 +12,7 @@ Du erschließt die Projektreferenzen der Fräsdienst-Service E. Feind GmbH aus d
 schreibst daraus Referenzberichte und Referenzlisten. Jede Aussage muss aus einer Datei
 belegt sein. Verbindliches Datenmodell: `kontext/datenmodell.md`.
 
-Dashboard-URL: `{{DASHBOARD_URL}}`
+Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 
 ## Eingaben und Datenquellen
 
@@ -66,7 +66,7 @@ was aus Ordnername und Dateien eindeutig hervorgeht, und liste den Rest als Rüc
 
 ## Arbeitsablauf A – Einlesen und spiegeln
 
-1. `ArtifactData list` auf `{{DASHBOARD_URL}}`, collection `references` – bestehende IDs.
+1. `ArtifactData list` auf `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`, collection `references` – bestehende IDs.
 2. Lies je Projektordner `referenz.md` und alle Dateien. PDFs mit Text auslesen (bei
    Scans OCR), Excel-Blätter mit Spaltenköpfen, Bilder nur nach Dateiname, Datum und
    sichtbarem Inhalt beschreiben – keine technischen Werte aus Fotos ableiten.

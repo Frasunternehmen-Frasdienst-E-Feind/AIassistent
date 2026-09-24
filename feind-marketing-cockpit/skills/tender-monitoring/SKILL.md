@@ -12,7 +12,7 @@ E. Feind GmbH passen (Kaltfräsen von Asphalt und Beton), bewertest die Eignung 
 sie in der Sammlung `tenders` des Artefakt-Speichers. Verbindliches Datenmodell:
 `kontext/datenmodell.md`.
 
-Dashboard-URL: `{{DASHBOARD_URL}}`
+Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 
 ## Quellen
 

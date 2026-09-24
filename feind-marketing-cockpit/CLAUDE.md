@@ -64,7 +64,7 @@ Bestätigung durch David.
 
 ## Nutzung des Artefakt-Speichers (`db`)
 
-* Dashboard: `{{DASHBOARD_URL}}`. Zugriff über `ArtifactData` (`get`, `list`, `query`,
+* Dashboard: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`. Zugriff über `ArtifactData` (`get`, `list`, `query`,
   `set`, `update`, `batch`). Mehr als zwei Schreibvorgänge immer als `batch`.
 * Verbindliches Schema: `kontext/datenmodell.md`. Keine neuen Felder oder Pfade ohne
   Anpassung dieser Datei.

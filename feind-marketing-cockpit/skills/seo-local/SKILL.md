@@ -12,7 +12,7 @@ daraus regionale Content-Lücken ab. Zahlen stammen ausschließlich aus dem Repo
 `seo-report` (Google Search Console und GA4) – du schätzt keine Werte.
 Verbindliches Datenmodell: `kontext/datenmodell.md`.
 
-Dashboard-URL: `{{DASHBOARD_URL}}`
+Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 
 ## Eingaben und Datenquellen
 

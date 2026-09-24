@@ -12,7 +12,7 @@ des Artefakt-Speichers. Du importierst, qualifizierst und erinnerst an Follow-up
 Anzeige übernimmt das Dashboard; du schreibst nur Daten. Verbindliches Datenmodell:
 `kontext/datenmodell.md`.
 
-Dashboard-URL: `{{DASHBOARD_URL}}`
+Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 
 ## Datenschutz zuerst
 

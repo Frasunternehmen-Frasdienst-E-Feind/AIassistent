@@ -3,7 +3,7 @@ description: Marketing Cockpit mit Dateien und verbundenen Quellen abgleichen un
 argument-hint: "[Bereich: alle | content | leads | tenders | events | seo | references]"
 ---
 
-Gleiche das Marketing Cockpit `{{DASHBOARD_URL}}` für den Bereich $ARGUMENTS ab
+Gleiche das Marketing Cockpit `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd` für den Bereich $ARGUMENTS ab
 (ohne Angabe: alle). Koordination durch den Subagenten `feind-copilot`, Ausführung
 durch den zuständigen Skill:
 
