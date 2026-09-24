@@ -68,7 +68,7 @@ sup[id^="fnref"] a { text-decoration:none; }
 <body>
 <aside id="nav">
   <div class="brand">🔒 Datenschutzbericht</div>
-  <div class="sub">Fräsdienst-Service E. Feind GmbH · v1.3 · 21.09.2026</div>
+  <div class="sub">Fräsdienst-Service E. Feind GmbH · v1.4 · 21.09.2026</div>
   <nav id="navlinks"></nav>
 </aside>
 <main>
@@ -77,8 +77,10 @@ sup[id^="fnref"] a { text-decoration:none; }
 <strong>Berichtstyp:</strong> Zusammenfassender Datenschutz-/DSGVO-Statusbericht mit Maßnahmen, Vorlagen und Roadmap
 <strong>Zielgruppe:</strong> Geschäftsführung, Datenschutzbeauftragte&reg; (intern/extern), IT-Verantwortliche, ggf. Aufsichtsbehörde (LDA Brandenburg)
 <strong>Erstellt von:</strong> David Halko (Marketing &amp; Eventmanagement) mit KI-Unterstützung
-<strong>Berichtsdatum:</strong> 14.09.2026
-Version: 1.3 (Entwurf)<br>Änderungsvermerk v1.3 (21.09.2026): Unternehmensprofil korrigiert (Kaltfräsarbeiten im Straßen-/Tiefbau statt CNC-Fertigung), Standorte Lübben (Brandenburg) und Wittenburg (Mecklenburg-Vorpommern) sowie zuständige Aufsichtsbehörde (LDA Brandenburg statt LDI NRW), Datenkategorien und Empfänger an das Baugeschäft angepasst.
+<strong>Berichtsdatum:</strong> 21.09.2026
+<strong>Version:</strong> 1.4 (Entwurf)
+<strong>Änderungsvermerk v1.4:</strong> Mitgelieferte <strong><code>.env</code>-Vorlage</strong> (<code>.env.example</code> im Repository-Wurzelverzeichnis): Alle im Bericht referenzierten Umgebungsvariablen (Abschnitt 0, Anhang R) sind dort als ausfüllbare Vorlage hinterlegt. Abschnitt 0 und der Faktenlage-Hinweis verweisen jetzt auf diese Datei; das Platzhalter-Verzeichnis (Anhang R) nennt die zugehörigen <code>.env</code>-Schlüssel.
+<strong>Änderungsvermerk v1.3 (21.09.2026):</strong> Unternehmensprofil korrigiert (Kaltfräsarbeiten im Straßen-/Tiefbau statt CNC-Fertigung), Standorte Lübben (Brandenburg) und Wittenburg (Mecklenburg-Vorpommern) sowie zuständige Aufsichtsbehörde (LDA Brandenburg statt LDI NRW), Datenkategorien und Empfänger an das Baugeschäft angepasst.
 <strong>Änderungsvermerk v1.2:</strong> Aufgewertete Ausgabe (klickbares Inhaltsverzeichnis mit Anker-Links, verbesserte Tabellen-Darstellung, <strong>Fußnoten</strong> zu Rechtsquellen) sowie zusätzliche browserfreundliche HTML-Ansicht mit Navigations-Seitenleiste.
 <strong>Änderungsvermerk v1.1:</strong> Durchgängige <code>Annahme:</code>/<code>Offene Frage:</code>-Kennzeichnung, <code>{{PLATZHALTER}}</code>-Mechanismus in allen Vorlagen, neuer Abschnitt zur <code>.env</code>-Ableitungslogik, 4-spaltige Offene-Fragen-Tabelle, ergänzte kostengünstige/Open-Source-Optionen.
 <strong>Vertraulichkeit:</strong> Streng vertraulich — nur zur internen Verwendung</p>
@@ -100,6 +102,10 @@ Die im Auftrag beispielhaft genannten Werte („Hetzner", „WordPress") sind da
 keine bestätigten Daten</strong>. Alle aus diesen Variablen ableitbaren Angaben sind deshalb als
 <strong><code>Annahme:</code></strong> gekennzeichnet und über <code>{{PLATZHALTER}}</code> sowie den Fragenkatalog (Kap. 16/17)
 als offene Punkte geführt. Verifizierte Fakten zum Unternehmensprofil stammen von der Website fraesdienst-feind.de und dem Notion Marketing-Scan (09/2026); technische Fakten aus der internen SEO-/Lead-Reporting-Codebasis (<code>config.example.yaml</code>, <code>docs/SPEC.md</code>, <code>docs/SETUP.md</code>, <code>data/crm/leads.example.csv</code>).</p>
+<p><strong>Seit v1.4</strong> liegt im Repository-Wurzelverzeichnis eine <strong><code>.env</code>-Vorlage (<code>.env.example</code>)</strong> bereit,
+in der alle hier genannten Variablen aufgeführt sind. Sobald David/IT diese Vorlage nach <code>.env</code>
+kopiert und mit echten Werten füllt (<code>cp .env.example .env</code>), lassen sich die Annahmen in
+<strong>Fakten</strong> überführen und der Bericht kann darauf gestützt aktualisiert werden (Anhang Q).</p>
 <p><strong>Platzhalter-Mechanismus:</strong> Alle Vorlagen und mehrere Textstellen enthalten Platzhalter in
 doppelten geschweiften Klammern, z. B. <code>{{COMPANY_NAME}}</code>, <code>{{ADRESSE}}</code>, <code>{{GESCHAEFTSFUEHRER}}</code>,
 <code>{{HOSTING_PROVIDER}}</code>, <code>{{CMS}}</code>, <code>{{DPO_CONTACT}}</code>, <code>{{USt-IdNr}}</code>. Vor produktivem Einsatz
@@ -132,8 +138,14 @@ per Suchen-&amp;-Ersetzen mit echten Werten füllen. Eine vollständige Platzhal
 <hr>
 <h2 id="0-env-ableitungslogik-datenquelle-des-berichts">0. <code>.env</code>-Ableitungslogik (Datenquelle des Berichts)<a class="headerlink" href="#0-env-ableitungslogik-datenquelle-des-berichts" title="Permanent link">¶</a></h2>
 <p>Der Bericht ist so konstruiert, dass er aus einer <code>.env</code>/Konfiguration automatisch mit realen
-Werten befüllt werden kann. Da aktuell <strong>keine</strong> solchen Werte vorliegen, dokumentiert dieser
+Werten befüllt werden kann. Da aktuell <strong>keine</strong> solchen Werte gesetzt sind, dokumentiert dieser
 Abschnitt die <strong>Ableitungsregeln</strong> und den jeweils gesetzten Platzhalter/Annahmestatus.</p>
+<blockquote>
+<p><strong><code>.env</code>-Vorlage (seit v1.4):</strong> Die Datei <code>.env.example</code> im Repository-Wurzelverzeichnis enthält
+alle unten aufgeführten Variablen als leere, kommentierte Vorlage. Zum Befüllen:
+<code>cp .env.example .env</code> und echte Werte eintragen. Die echte <code>.env</code> ist per <code>.gitignore</code>
+ausgeschlossen und wird <strong>nie</strong> committet (nur die Vorlage <code>.env.example</code> ist versioniert).</p>
+</blockquote>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -1941,6 +1953,10 @@ Rechtlicher Hinweis: Muster vor Einsatz durch Rechtsabteilung/Fachanwalt pruefen
 </ol>
 <hr>
 <h3 id="anhang-r-platzhalter-verzeichnis">Anhang R — Platzhalter-Verzeichnis<a class="headerlink" href="#anhang-r-platzhalter-verzeichnis" title="Permanent link">¶</a></h3>
+<blockquote>
+<p>Die Spalte „Quelle" nennt den zugehörigen Schlüssel in der <code>.env</code>-Vorlage (<code>.env.example</code>,
+Repository-Wurzel) bzw. „manuell", wenn der Wert direkt einzutragen ist.</p>
+</blockquote>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -2055,7 +2071,7 @@ KMU-/Branchenpraxis. Es wurde <strong>keine</strong> externe Live-Recherche durc
 <p><strong>Aktualisierung:</strong> siehe Anhang Q. Bei Nachlieferung realer Werte (<code>.env</code>/Config) kann der
 Bericht automatisiert neu erzeugt und Annahmen in Fakten überführt werden.</p>
 <hr>
-<p><em>Ende des Berichts — Version 1.2 (Entwurf), 14.09.2026. Streng vertraulich. Vor rechtsverbindlichem
+<p><em>Ende des Berichts — Version 1.4 (Entwurf), 21.09.2026. Streng vertraulich. Vor rechtsverbindlichem
 Einsatz der Vorlagen: Prüfung durch Rechtsabteilung / Fachanwalt für IT-Recht.</em></p>
 <div class="footnote">
 <hr>
