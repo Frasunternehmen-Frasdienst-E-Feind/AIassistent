@@ -35,9 +35,10 @@ Dashboard-URL: `{{DASHBOARD_URL}}`
 
 ## Frontmatter-Konvention für Marketing/Content/
 
-Schlage David diese Konvention vor und nutze sie beim Einlesen. Bei DOCX erwartest du die
-gleichen Angaben als Tabelle auf der ersten Seite oder im Dateinamen
-(`JJJJ-MM-TT_kanal_titel.docx`).
+Maßgeblich ist die Vorlage `vorlagen/content-frontmatter.md` im Plugin; weicht sie von der
+folgenden Kurzfassung ab, gilt die Vorlage. Bei DOCX erwartest du die gleichen Angaben als
+Tabelle auf der ersten Seite oder im Dateinamen `JJJJ-MM-TT_thema_kanal.docx`
+(Kleinbuchstaben, Umlaute als `ae`, `oe`, `ue`).
 
 ```yaml
 ---
@@ -81,7 +82,7 @@ Fehlt Frontmatter, leite nur `title` (aus Dateiname oder erster Überschrift) ab
      keine Superlative ohne Beleg;
    * 800 bis 1.300 Zeichen, ein klarer Einstieg aus Sicht des Auftraggebers
      (Termin, Verkehrsführung, Einbauhöhe, Entsorgung);
-   * Fachbegriffe korrekt: Kaltfräsen, Fräsgut, Frästiefe, Feinfräsen, Deckschicht,
+   * Fachbegriffe laut Glossar in `kontext/unternehmen.md`, u. a. Kaltfräsen, Fräsgut, Frästiefe, Feinfräsen, Deckschicht,
      Verkehrssicherungspflicht, Verkehrssicherung nach RSA;
    * höchstens 3 bis 5 fachliche Hashtags am Ende, z. B. `#Kaltfräsen #Straßenbau
      #Brandenburg`;
@@ -108,8 +109,9 @@ Events (`events`) und SEO-Lücken (`seo_gaps`), wo es passt.
 Setze `freigegeben` nur, wenn alle Punkte erfüllt sind, und nenne im Ergebnis, welcher
 Punkt wie geprüft wurde:
 
-1. Kundennamen und Projektorte nur, wenn die Referenz `clientApproved: true` trägt oder
-   David eine schriftliche Freigabe bestätigt.
+1. Kundennamen und Projektorte nur, wenn die Referenz `clientApproved: true` trägt (Freigabe
+   durch Vertrieb oder Geschäftsführung); sonst anonymisieren, z. B. „kommunaler
+   Auftraggeber in Brandenburg“.
 2. Keine Preise, Stundensätze, Angebotssummen oder Kalkulationen.
 3. Keine personenbezogenen Daten (Namen, Fotos erkennbarer Personen ohne Einwilligung,
    Kontaktdaten Dritter).
@@ -118,7 +120,9 @@ Punkt wie geprüft wurde:
 5. Jede Tatsachenbehauptung hat eine Quelle (Datei oder `kontext/unternehmen.md`).
 6. Keine Aussagen zu Normen, Haftung oder Vertragsbedingungen ohne Prüfung – dort
    „Bitte Rechtsabteilung prüfen.“
-7. Die Freigabe selbst erteilt David. Du setzt `freigegeben` nur auf seine Anweisung und
+7. Keine Inhalte aus Vergabeunterlagen, Angeboten oder vertraulichen Kundendokumenten.
+8. Die ausführliche Prüfliste liefert `/compliance-check` (Subagent `feind-copilot`).
+9. Die Freigabe selbst erteilt David. Du setzt `freigegeben` nur auf seine Anweisung und
    vermerkst in `note` `"freigegeben durch David am JJJJ-MM-TT"`.
 
 ## Ausgabeformat

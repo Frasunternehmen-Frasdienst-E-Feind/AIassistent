@@ -74,6 +74,11 @@ nicht bestätigt. Prüfe vor Nutzung, ob ein CRM-Connector in der Sitzung verfü
 frage David, welches System gilt. Übernimm aus dem Connector nur Organisationsfelder,
 Stage, Quelle, Region und Termine – keine Kontakt-Objekte. `source` = `"connector: <Name>"`.
 
+### Ordner Marketing/Leads/
+
+Lead-Notizen ohne Personendaten; Messe-Listen nur anonymisiert. Findest du dort Namen oder
+Kontaktdaten, übernimm sie nicht und empfiehl David die Bereinigung der Datei.
+
 ### Manuelle Erfassung
 
 David nennt einen Lead im Chat → frage die Pflichtfelder ab, `source: "manuell: David"`.
