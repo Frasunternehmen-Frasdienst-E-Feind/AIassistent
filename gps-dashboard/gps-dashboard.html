@@ -719,17 +719,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 <style>
   /* --- Fräsdienst-Feind Corporate Design (Tokens = einzige Quelle, vgl. branding/feind-ci.tokens.json) --- */
   :root{
-    --surface:#ffffff; --surface-muted:#f2f4f4; --surface-inverse:#424e4e;
-    --ink:#3c5457; --ink-strong:#424e4e; --ink-muted:#6b7575; --ink-inverse:#ffffff;
-    --line:#d5dada;
-    --accent:#84bb20; --accent-text:#5e8a14; --on-accent:#424e4e; --accent-soft:#eef6df;
+    --surface:#ffffff; --surface-muted:#f5f9ef; --surface-inverse:#4a5757;
+    --ink:#3c5457; --ink-strong:#3a4747; --ink-muted:#728080; --ink-inverse:#ffffff;
+    --line:#e4ebdd;
+    --accent:#84bb20; --accent-text:#5e8a14; --on-accent:#33402a; --accent-soft:#eef7de;
     --signal:#e3000b; --signal-text:#b8000a; --signal-soft:#fdecec;
-    --neutral:#999999; --focus:#424e4e;
-    --shadow:0 1px 2px rgba(66,78,78,.10), 0 1px 3px rgba(66,78,78,.06);
-    --radius:0px; --radius-input:2px; --radius-btn:4px;
+    --neutral:#9aa79a; --focus:#5e8a14;
+    --shadow:0 2px 10px rgba(66,78,78,.07), 0 1px 3px rgba(66,78,78,.05);
+    --shadow-hover:0 6px 20px rgba(66,78,78,.12), 0 2px 6px rgba(66,78,78,.08);
+    --radius:12px; --radius-input:8px; --radius-btn:10px; --radius-pill:999px;
     --font-display:Exo,"Arial Black",Arial,sans-serif;
     --font-sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
-    --overlay:rgba(31,37,37,.55);
+    --overlay:rgba(31,37,37,.5);
     /* Legacy-Aliasse (in JS/Inline-Styles referenziert) – lösen sich pro Theme neu auf */
     --bg:var(--surface-muted); --panel:var(--surface); --muted:var(--ink-muted);
     --grey:var(--neutral); --red:var(--signal); --green:var(--accent); --yellow:var(--accent);
@@ -737,24 +738,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   /* Dunkles Theme: automatisch, außer explizit hell erzwungen … */
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --surface:#2e3737; --surface-muted:#384242; --surface-inverse:#1f2525;
-      --ink:#e7ecec; --ink-strong:#ffffff; --ink-muted:#b8bfbf; --ink-inverse:#ffffff;
-      --line:#4d5858;
-      --accent:#84bb20; --accent-text:#84bb20; --on-accent:#424e4e; --accent-soft:#33402a;
+      --surface:#333e3e; --surface-muted:#3c4848; --surface-inverse:#273030;
+      --ink:#eaeeea; --ink-strong:#ffffff; --ink-muted:#c1c9c1; --ink-inverse:#ffffff;
+      --line:#54615f;
+      --accent:#95cc2c; --accent-text:#a6d84a; --on-accent:#26301c; --accent-soft:#39472a;
       --signal:#e3000b; --signal-text:#ff9a9f; --signal-soft:#4a2020;
-      --neutral:#999999; --focus:#84bb20;
-      --shadow:0 1px 2px rgba(0,0,0,.45); --overlay:rgba(0,0,0,.6);
+      --neutral:#8f9c8f; --focus:#a6d84a;
+      --shadow:0 2px 10px rgba(0,0,0,.30); --shadow-hover:0 6px 22px rgba(0,0,0,.40); --overlay:rgba(0,0,0,.55);
     }
   }
   /* … oder explizit dunkel erzwungen */
   :root[data-theme="dark"]{
-    --surface:#2e3737; --surface-muted:#384242; --surface-inverse:#1f2525;
-    --ink:#e7ecec; --ink-strong:#ffffff; --ink-muted:#b8bfbf; --ink-inverse:#ffffff;
-    --line:#4d5858;
-    --accent:#84bb20; --accent-text:#84bb20; --on-accent:#424e4e; --accent-soft:#33402a;
+    --surface:#333e3e; --surface-muted:#3c4848; --surface-inverse:#273030;
+    --ink:#eaeeea; --ink-strong:#ffffff; --ink-muted:#c1c9c1; --ink-inverse:#ffffff;
+    --line:#54615f;
+    --accent:#95cc2c; --accent-text:#a6d84a; --on-accent:#26301c; --accent-soft:#39472a;
     --signal:#e3000b; --signal-text:#ff9a9f; --signal-soft:#4a2020;
-    --neutral:#999999; --focus:#84bb20;
-    --shadow:0 1px 2px rgba(0,0,0,.45); --overlay:rgba(0,0,0,.6);
+    --neutral:#8f9c8f; --focus:#a6d84a;
+    --shadow:0 2px 10px rgba(0,0,0,.30); --shadow-hover:0 6px 22px rgba(0,0,0,.40); --overlay:rgba(0,0,0,.55);
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
@@ -766,7 +767,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   :focus-visible{outline:2px solid var(--focus); outline-offset:1px}
   header.app{
     position:sticky; top:0; z-index:1200; background:var(--panel);
-    border-bottom:1px solid var(--line); box-shadow:var(--shadow);
+    border-bottom:2px solid var(--accent); box-shadow:var(--shadow);
   }
   .bar{
     display:flex; align-items:center; gap:16px; flex-wrap:wrap;
@@ -779,9 +780,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     border:1px solid var(--line); background:var(--surface); color:var(--ink); cursor:pointer;
     padding:7px 12px; border-radius:var(--radius-btn); font-size:14px; display:inline-flex; align-items:center; gap:6px;
   }
-  .btn:hover{background:var(--surface-muted)}
-  .btn.primary{background:var(--accent); color:var(--on-accent); border-color:var(--accent)}
-  .btn.primary:hover{filter:brightness(.96)}
+  .btn{transition:background .15s, box-shadow .15s, transform .1s}
+  .btn:hover{background:var(--accent-soft); border-color:var(--accent); color:var(--accent-text); box-shadow:var(--shadow); transform:translateY(-1px)}
+  .btn.primary{background:var(--accent); color:var(--on-accent); border-color:var(--accent); font-weight:600}
+  .btn.primary:hover{filter:brightness(1.04); color:var(--on-accent); box-shadow:var(--shadow-hover); transform:translateY(-1px)}
   .btn[disabled]{opacity:.5; cursor:not-allowed}
   select,input[type=date],input[type=number],input[type=text]{
     border:1px solid var(--line); border-radius:var(--radius-input); padding:6px 8px; font-size:14px; background:var(--surface); color:var(--ink);
@@ -797,9 +799,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   #drop strong{color:var(--ink-strong)}
 
   .kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:16px}
-  .kpi{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow)}
+  .kpi{background:var(--panel); border:1px solid var(--line); border-top:3px solid var(--accent); border-radius:var(--radius); padding:18px 18px 16px; box-shadow:var(--shadow); transition:box-shadow .18s, transform .12s}
+  .kpi:hover{box-shadow:var(--shadow-hover); transform:translateY(-2px)}
   .kpi .label{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em}
-  .kpi .value{font-size:26px; font-weight:700; margin-top:4px; color:var(--ink-strong)}
+  .kpi .value{font-size:28px; font-weight:700; margin-top:6px; color:var(--ink-strong)}
+  .kpi.alert{border-top-color:var(--signal)}
   .kpi.alert .value{color:var(--signal-text)}
 
   .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
@@ -832,15 +836,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   /* Tabs & Tabellen */
   .tabs{display:flex; gap:2px; padding:8px 16px 0; flex-wrap:wrap}
   .tab{border:1px solid var(--line); border-bottom:none; background:var(--surface-muted); padding:7px 14px; border-radius:var(--radius-btn) var(--radius-btn) 0 0; cursor:pointer; font-size:14px; color:var(--muted)}
-  .tab.active{background:var(--surface); color:var(--ink-strong); font-weight:600}
+  .tab.active{background:var(--surface); color:var(--ink-strong); font-weight:600; box-shadow:inset 0 3px 0 var(--accent)}
   .tabwrap{border-top:1px solid var(--line)}
+  #tab-report h3{border-left:3px solid var(--accent); padding-left:10px}
   table{width:100%; border-collapse:collapse; font-size:13px}
   th,td{text-align:left; padding:8px 16px; border-bottom:1px solid var(--line); white-space:nowrap}
   th{color:var(--muted); font-weight:600; position:sticky; top:0; background:var(--surface); cursor:pointer; user-select:none}
   tbody tr{cursor:pointer}
   tbody tr:hover{background:var(--surface-muted)}
   .tblwrap{max-height:420px; overflow:auto}
-  .tag{display:inline-block; font-size:11px; padding:1px 7px; border-radius:2px; background:var(--surface-muted); color:var(--ink-muted)}
+  .tag{display:inline-block; font-size:11px; padding:1px 9px; border-radius:var(--radius-pill); background:var(--surface-muted); color:var(--ink-muted)}
   .tag.night{background:var(--surface-inverse); color:var(--ink-inverse)}
   .tag.red{background:var(--signal-soft); color:var(--signal-text)}
   .tag.yellow{background:var(--accent-soft); color:var(--accent-text)}
@@ -1717,7 +1722,7 @@ GPS.importer = (function(){
       tr.addEventListener('click',e=>{ if(e.target.classList.contains('cat-sel')) return; const lat=+tr.dataset.lat,lon=+tr.dataset.lon; if(!isNaN(lat)) focusPoint(lat,lon); });
     });
     $('tab-trips').querySelectorAll('.cat-sel').forEach(sel=>{
-      sel.addEventListener('change',()=>{ setCat(+sel.dataset.ms, sel.value); renderKpis(); });
+      sel.addEventListener('change',()=>{ setCat(+sel.dataset.ms, sel.value); renderKpis(); renderReport(); });
       sel.addEventListener('click',e=>e.stopPropagation());
     });
 

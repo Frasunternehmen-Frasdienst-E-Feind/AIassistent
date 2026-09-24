@@ -81,10 +81,17 @@ nicht vorhanden, Tempo).
 ## Corporate Design
 
 Das Dashboard nutzt das Fräsdienst-Feind-CI aus `branding/feind-ci.tokens.json`
-(Grün `#84bb20` als Akzent-/Flächenfarbe mit Anthrazit-Text, Rot `#e3000b` nur als
-Signal, Schrift Exo/Helvetica, kleine Radien). Farben sind ausschließlich als
-CSS-Tokens definiert. **Hell- und Dunkel-Theme** werden mitgeliefert (automatisch nach
-Systemeinstellung; oben rechts auf **Auto / Hell / Dunkel** umschaltbar).
+(Grün `#84bb20` als Akzent-/Flächenfarbe mit Anthrazit-Text, `accent-text` `#5e8a14`
+für Text auf hellem Grund, Rot `#e3000b` nur als Signal, Schrift Exo/Helvetica).
+Farben sind ausschließlich als CSS-Tokens definiert. **Hell- und Dunkel-Theme** werden
+mitgeliefert (automatisch nach Systemeinstellung; oben rechts auf **Auto / Hell / Dunkel**
+umschaltbar).
+
+Für ein helleres, freundlicheres Erscheinungsbild weicht das Dashboard bewusst in einem
+Punkt von den strikten CI-Tokens ab: **größere Eckradien** (Karten ~12 px, Buttons ~10 px)
+statt der 0/2/4 px des Tokensets, dazu weichere Schatten, ein warm-heller Hintergrund und
+grüne Akzente (Header-Linie, KPI-Akzentbalken, aktiver Tab). Farbwerte und Kontrastregeln
+der CI bleiben unverändert.
 
 Die Tempo-Einfärbung der Karte ist eine funktionale Datenskala im CI-Rahmen
 (Neutralgrau → Grün-Abstufungen → Signalrot); es werden keine markenfremden Farben
