@@ -11,8 +11,12 @@ auf der **InfraTech 2027, Rotterdam Ahoy, 12.–15. Januar 2027**.
 | `MASTER-TODO.md` | Vollständige, kategorisierte Aufgabenliste als versionierbarer Text (Grundlage des Cockpits). |
 | `KATEGORISIERUNG-MANUS.md` | Kategorisierung der MANUS-Export-Inhalte + Plan, wie sie die ToDo-Liste ergänzen. |
 | `FUNKTIONS-BACKLOG.md` | Backlog neuer Funktionen/Installationen für die Weiterentwicklung des Cockpits. |
+| `SYSTEM-UEBERSICHT.md` | **Systemlandkarte & Rund-um-Check**: alle Bausteine, Verknüpfungen, blinde Flecken, Rollen (eine Quelle pro Zweck). |
+| `vorlagen/` | Vorlagen A–E (Innovationspreis, Standkonzept, Giveaways, Lead/CRM) als MD + bebilderte PDFs. |
+| `sheet-integration/` | Apps-Script „Messe-Cockpit" + Anleitung: Tab „Messe-Aufgaben" im Team-Google-Sheet, Live-Sicht + Import. |
 
 Der zugehörige Manager-Agent ist in `../../.claude/agents/messe-manager.md` beschrieben.
+Einstieg/Überblick über das Gesamtsystem: **`SYSTEM-UEBERSICHT.md`**.
 
 ## Live-Cockpit
 

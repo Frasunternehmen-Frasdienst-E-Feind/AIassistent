@@ -65,3 +65,14 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
 - **Wöchentlich (Mo):** Fristen der nächsten 14 Tage prüfen, Fortschritt melden, Blocker eskalieren.
 - **Anlassbezogen:** Sobald der Veranstalter neue 2027-Infos veröffentlicht, Fristenmatrix aktualisieren.
 - Der Rhythmus wird über eine geplante Routine ausgelöst; Zeitpunkt/Kanal bestätigt David.
+
+## Google-Sheet-Integration (Team-Aufgaben)
+- **Führende Statusquelle für Team-Aufgaben ist das Google Sheet** „Aufgabenliste_Team_Marketing_FEIND"
+  (Tab „Messe-Aufgaben" = Live-Sicht auf Thema Events/InfraTech). Gepflegt wird dort; das Cockpit
+  ist die Messe-Steuerungs-/Übersichtsebene.
+- **Wochencheck (read-only):** Sheet über Google Drive lesen, InfraTech-Aufgaben (Thema Events,
+  Unterthema enthält „INFRA") mit dem Cockpit-Stand vergleichen und **Abweichungen/überfällige
+  Fristen an David melden**. **Nicht** automatisch ins Sheet zurückschreiben (kein Sheets-Schreib-
+  Connector; das Sheet hat eigene Automatik) – Änderungen schlägt der Agent vor, David/Team pflegen sie.
+- Systemlandkarte & blinde Flecken: `messe/rotterdam-2027/SYSTEM-UEBERSICHT.md`.
+- Sheet-Integrationspaket: `messe/rotterdam-2027/sheet-integration/` (Apps Script + Anleitung).
