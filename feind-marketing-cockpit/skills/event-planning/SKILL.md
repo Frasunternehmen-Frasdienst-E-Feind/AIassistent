@@ -30,7 +30,7 @@ Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 followupStatus, source`
 
 * `type`: `messe`, `tag_der_offenen_tuer`, `baustellenbesichtigung`, `sonstiges`
-* `area`: `sicherheit`, `ansprechpartner`, `materialien`, `verkehrssicherung`, `nachbereitung`
+* `area`: `sicherheit`, `ansprechpartner`, `materialien`, `verkehrssicherung`, `logistik`, `budget`, `marketing`, `nachbereitung`
 * `followupStatus`: `offen`, `laeuft`, `erledigt`
 * ID: `<typ>-<JJJJ-MM-TT>-<ort>`, z. B. `baustellenbesichtigung-2026-10-14-luebben`.
 

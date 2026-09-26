@@ -319,7 +319,7 @@ const ORG_TYPES = { bauunternehmen: 'Bauunternehmen', kommune: 'Kommune', behoer
 const FIT = { passt: 'passt', pruefen: 'prüfen', passt_nicht: 'passt nicht' };
 const TENDER_STATUS = { neu: 'neu', in_pruefung: 'in Prüfung', angebot: 'Angebot', abgegeben: 'abgegeben', verworfen: 'verworfen' };
 const EVENT_TYPES = { messe: 'Messe', tag_der_offenen_tuer: 'Tag der offenen Tür', baustellenbesichtigung: 'Baustellenbesichtigung', sonstiges: 'Sonstiges' };
-const AREAS = [['sicherheit','Sicherheit'],['ansprechpartner','Ansprechpartner'],['materialien','Materialien'],['verkehrssicherung','Verkehrssicherung'],['nachbereitung','Nachbereitung']];
+const AREAS = [['sicherheit','Sicherheit'],['ansprechpartner','Ansprechpartner'],['materialien','Materialien'],['verkehrssicherung','Verkehrssicherung'],['logistik','Logistik'],['budget','Budget'],['marketing','Marketing'],['nachbereitung','Nachbereitung']];
 const FOLLOWUP = { offen: 'offen', laeuft: 'läuft', erledigt: 'erledigt' };
 const SEV_ORDER = { kritisch: 0, warnung: 1, info: 2 };
 const SEV_LABEL = { kritisch: 'kritisch', warnung: 'Warnung', info: 'Info' };
@@ -336,9 +336,9 @@ const S = {
   meta: null, briefing: null,
   filters: { region: '', range: 'all' },
   mod: {
-    content: { channel: '', ptype: '', month: null },
-    leads: { channel: '', dueOnly: false },
-    tenders: { fit: '', showClosed: false },
+    content: { channel: '', ptype: '', status: '', month: null },
+    leads: { channel: '', stage: '', dueOnly: false },
+    tenders: { fit: '', status: '', showClosed: false },
     events: { showPast: true },
     seo: { metric: 'clicks' },
     references: { q: '', service: '', year: '' },
@@ -467,15 +467,15 @@ function filtered(key) {
   switch (key) {
     case 'content': {
       const m = S.mod.content;
-      return d.content.filter(c => matchRegion(c) && inRange(contentDate(c)) && (!m.channel || c.channel === m.channel) && (!m.ptype || str(c.projectType) === m.ptype));
+      return d.content.filter(c => matchRegion(c) && inRange(contentDate(c)) && (!m.channel || c.channel === m.channel) && (!m.ptype || str(c.projectType) === m.ptype) && (!m.status || c.status === m.status));
     }
     case 'leads': {
       const m = S.mod.leads;
-      return d.leads.filter(l => matchRegion(l) && inRange(parseDay(l.lastContact) || parseDay(l.createdAt)) && (!m.channel || l.channel === m.channel) && (!m.dueOnly || leadFollowup(l) != null));
+      return d.leads.filter(l => matchRegion(l) && inRange(parseDay(l.lastContact) || parseDay(l.createdAt)) && (!m.channel || l.channel === m.channel) && (!m.stage || l.stage === m.stage) && (!m.dueOnly || leadFollowup(l) != null));
     }
     case 'tenders': {
       const m = S.mod.tenders;
-      return d.tenders.filter(t => matchRegion(t) && inRange(parseDay(t.deadline)) && (!m.fit || t.fit === m.fit) && (m.showClosed || tenderOpen(t)));
+      return d.tenders.filter(t => matchRegion(t) && inRange(parseDay(t.deadline)) && (!m.fit || t.fit === m.fit) && (!m.status || t.status === m.status) && (m.showClosed || tenderOpen(t)));
     }
     case 'events':
       return d.events.filter(e => { const a = parseDay(e.date); return spanInRange(a, parseDay(e.endDate) || a); });
@@ -584,6 +584,8 @@ function localHints() {
   const review = S.data.content.filter(c => matchRegion(c) && c.status === 'review');
   const stale = S.data.content.filter(c => matchRegion(c) && contentStale(c) != null);
   const due = leads.filter(l => leadFollowup(l) != null);
+  const overdueTenders = S.data.tenders.filter(x => matchRegion(x) && tenderOpen(x) && tenderAmpel(x).level === 'gone' && tenderAmpel(x).days != null);
+  const noClientApproval = S.data.references.filter(r => matchRegion(r) && r.clientApproved !== true);
   const st = settings();
   return [
     { n: new24.length, sev: new24.length ? 'info' : null, mod: 'leads', text: `neue Leads in den letzten 24 Stunden (7 Tage: ${new7.length})` },
@@ -591,6 +593,8 @@ function localHints() {
     { n: review.length, sev: review.length ? 'info' : null, mod: 'content', text: 'Beiträge im Status Review' },
     { n: stale.length, sev: stale.length ? 'warnung' : null, mod: 'content', text: `Entwürfe hängen länger als ${numOr(st.staleDraftDays, 14)} Tage` },
     { n: due.length, sev: due.length ? 'kritisch' : null, mod: 'leads', text: `Leads ohne Kontakt seit mehr als ${numOr(st.followupDays, 5)} Tagen (Follow-up fällig)` },
+    { n: overdueTenders.length, sev: overdueTenders.length ? 'kritisch' : null, mod: 'tenders', text: 'Ausschreibungen mit abgelaufener Frist, aber noch offenem Status (Anomalie: Status prüfen)' },
+    { n: noClientApproval.length, sev: noClientApproval.length ? 'info' : null, mod: 'references', text: 'Referenzen ohne Kundenfreigabe (Kundenname wird nicht angezeigt)' },
   ];
 }
 function sevChip(sev) {
@@ -820,8 +824,13 @@ function panelHead(m, shown) {
   const total = totalOf(m.key);
   const cnt = shown === total ? `${fmtN(total)} ${m.key === 'seo' ? 'Keywords' : 'Einträge'}` : `${fmtN(shown)} von ${fmtN(total)}`;
   const ref = S.refreshedAt[m.key];
+  const meta = S.meta && typeof S.meta[m.key] === 'object' ? S.meta[m.key] : null;
+  const syncAt = meta ? parseTs(meta.at) : null;
+  const srcNote = meta && (syncAt || str(meta.source))
+    ? h('span', { class: 'muted small' }, 'Quelle: ' + (str(meta.source) || '–') + ' · Stand ' + (syncAt ? fmtTs(syncAt) : 'unbekannt'))
+    : h('span', { class: 'muted small' }, 'Quelle: noch nicht synchronisiert');
   return h('div', { class: 'panel-head' },
-    h('div', { class: 'ttl' }, h('h2', null, m.label), h('span', { class: 'count num' }, cnt)),
+    h('div', { class: 'ttl' }, h('h2', null, m.label), h('span', { class: 'count num' }, cnt), srcNote),
     h('div', { class: 'right' },
       ref ? h('span', { class: 'muted small' }, 'abgefragt ' + ref.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })) : null,
       h('button', { class: 'btn', type: 'button', id: 'refresh-' + m.key, disabled: !S.db, onclick: () => refreshModule(m.key) }, refreshIcon(), 'Aktualisieren')));
@@ -881,6 +890,7 @@ function rContent(items) {
   if (!st.month) { const t = today0(); st.month = new Date(t.getFullYear(), t.getMonth(), 1); }
   const tools = h('div', { class: 'tools' },
     sel('c-channel', 'Kanal', st.channel, [['', 'Alle Kanäle'], ...Object.entries(CHANNELS_CONTENT)], v => { st.channel = v; renderModule('content'); }),
+    sel('c-status', 'Status', st.status, [['', 'Alle Status'], ...CONTENT_STATUS], v => { st.status = v; renderModule('content'); }),
     sel('c-ptype', 'Projekttyp', st.ptype, [['', 'Alle Projekttypen'], ...uniq(S.data.content.map(c => c.projectType)).map(x => [x, x])], v => { st.ptype = v; renderModule('content'); }));
   if (!items.length) return [tools, emptyState('content', S.data.content.length > 0)];
 
@@ -954,6 +964,7 @@ function rLeads(items) {
   const st = S.mod.leads;
   const tools = h('div', { class: 'tools' },
     sel('l-channel', 'Kanal (Quelle)', st.channel, [['', 'Alle Kanäle'], ...Object.entries(LEAD_CHANNELS)], v => { st.channel = v; renderModule('leads'); }),
+    sel('l-stage', 'Status', st.stage, [['', 'Alle Status'], ...LEAD_STAGES], v => { st.stage = v; renderModule('leads'); }),
     checkField('l-due', 'Nur Follow-up fällig', st.dueOnly, v => { st.dueOnly = v; renderModule('leads'); }));
   if (!items.length) return [tools, emptyState('leads', S.data.leads.length > 0)];
   const kanban = h('div', { class: 'cols' }, LEAD_STAGES.map(([k, l]) => {
@@ -982,6 +993,7 @@ function rTenders(items) {
   const st = S.mod.tenders;
   const tools = h('div', { class: 'tools' },
     sel('t-fit', 'Eignung', st.fit, [['', 'Alle'], ['passt', 'passt'], ['pruefen', 'prüfen'], ['passt_nicht', 'passt nicht']], v => { st.fit = v; renderModule('tenders'); }),
+    sel('t-status', 'Status', st.status, [['', 'Alle Status'], ...Object.entries(TENDER_STATUS)], v => { st.status = v; renderModule('tenders'); }),
     checkField('t-closed', 'Abgegebene und verworfene zeigen', st.showClosed, v => { st.showClosed = v; renderModule('tenders'); }),
     h('span', { class: 'muted small' }, `Ampel: rot ≤ ${settings().tenderRedDays} Tage, gelb ≤ ${settings().tenderYellowDays} Tage, sonst grün.`));
   if (!items.length) return [tools, emptyState('tenders', S.data.tenders.length > 0)];
