@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "seo-reporting"
+version = "0.1.0"
+description = "SEO-/Lead-Reporting für fraesdienst-feind.de: Search Console, GA4 und CRM-Export mit MoM/YoY und Cluster-Bewegungen"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+dependencies = [
+    "google-api-python-client>=2.150",
+    "google-auth>=2.30",
+    "cryptography>=42",
+    "google-analytics-data>=0.18",
+    "pandas>=2.2",
+    "openpyxl>=3.1",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+seo-report = "seo_reporting.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["seo_reporting*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

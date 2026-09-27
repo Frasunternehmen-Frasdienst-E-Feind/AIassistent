@@ -1,13 +1,18 @@
 """Kommandozeile.
 
-  python -m seo_reporting monthly [--as-of YYYY-MM-DD] [--demo] [--email]
-  python -m seo_reporting weekly  [--as-of YYYY-MM-DD] [--demo] [--email]
-  python -m seo_reporting check-auth
+  seo-report monthly [--as-of YYYY-MM-DD] [--demo] [--email]
+  seo-report weekly  [--as-of YYYY-MM-DD] [--demo] [--email]
+  seo-report check-auth
+
+(`python -m seo_reporting ...` funktioniert weiterhin.)
+
+Konfigurationssuche: --config → ENV SEO_REPORTING_CONFIG → ./config.yaml → ./config.example.yaml → eingebaute Standardwerte.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from datetime import date
 from pathlib import Path
@@ -20,7 +25,7 @@ from seo_reporting.report.markdown import render
 
 def _parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="seo_reporting", description="SEO-/Lead-Reporting fraesdienst-feind.de")
-    p.add_argument("--config", default=None, help="Pfad zur config.yaml (Standard: ./config.yaml, sonst config.example.yaml)")
+    p.add_argument("--config", default=None, help="Pfad zur config.yaml (Standard: ENV SEO_REPORTING_CONFIG, ./config.yaml, ./config.example.yaml)")
     sub = p.add_subparsers(dest="command", required=True)
 
     for name, help_text in (("monthly", "Workflow 1: Monatsreport (Vormonat, MoM + YoY)"),
@@ -30,6 +35,7 @@ def _parser() -> argparse.ArgumentParser:
         sp.add_argument("--demo", action="store_true", help="Synthetische Daten statt echter APIs")
         sp.add_argument("--email", action="store_true", help="Report per E-Mail senden (SMTP-Konfiguration nötig)")
         sp.add_argument("--stdout", action="store_true", help="Markdown zusätzlich auf stdout ausgeben")
+        sp.add_argument("--xlsx", action="store_true", help="Report zusätzlich als Excel (.xlsx) schreiben")
 
     sub.add_parser("check-auth", help="Prüft Credentials und Zugriff auf Search Console + GA4")
     return p
@@ -38,11 +44,19 @@ def _parser() -> argparse.ArgumentParser:
 def _resolve_config_path(arg: str | None) -> str | None:
     if arg:
         return arg
+    env_path = os.environ.get("SEO_REPORTING_CONFIG")
+    if env_path:
+        return env_path
     for candidate in ("config.yaml", "config.example.yaml"):
         if Path(candidate).exists():
             if candidate.endswith("example.yaml"):
                 print("Hinweis: config.yaml fehlt, verwende config.example.yaml.", file=sys.stderr)
             return candidate
+    print(
+        "Hinweis: keine config.yaml im aktuellen Ordner gefunden, verwende eingebaute Standardwerte "
+        "(keine Cluster). Pfad per --config oder ENV SEO_REPORTING_CONFIG angeben.",
+        file=sys.stderr,
+    )
     return None
 
 
@@ -56,7 +70,8 @@ def _sources(cfg: Config, demo: bool):
     return LiveSources(cfg)
 
 
-def run_report(cfg: Config, workflow: str, as_of: date, demo: bool, send_email: bool, to_stdout: bool) -> Path:
+def run_report(cfg: Config, workflow: str, as_of: date, demo: bool, send_email: bool, to_stdout: bool,
+               write_xlsx: bool = False) -> Path:
     periods = periods_for(workflow, as_of)
     report = build_report(cfg, periods, _sources(cfg, demo))
     md = render(report)
@@ -70,6 +85,14 @@ def run_report(cfg: Config, workflow: str, as_of: date, demo: bool, send_email: 
     json_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Report geschrieben: {md_path} und {json_path}", file=sys.stderr)
 
+    attachments = [md_path, json_path]
+    if write_xlsx:
+        from seo_reporting.report.excel import write_xlsx as _write_xlsx
+
+        xlsx_path = _write_xlsx(report, out_dir / f"{stem}.xlsx")
+        attachments.append(xlsx_path)
+        print(f"Excel geschrieben: {xlsx_path}", file=sys.stderr)
+
     if to_stdout:
         print(md)
 
@@ -77,7 +100,7 @@ def run_report(cfg: Config, workflow: str, as_of: date, demo: bool, send_email: 
         from seo_reporting.report.email import send_report
 
         subject = f"{'Monatsreport' if workflow == 'monthly' else 'Wochen-Check'} {periods.current.label}"
-        send_report(cfg.email, subject, md, [md_path, json_path])
+        send_report(cfg.email, subject, md, attachments)
         print(f"E-Mail gesendet an: {', '.join(cfg.email.recipients)}", file=sys.stderr)
     return md_path
 
@@ -119,5 +142,5 @@ def main(argv: list[str] | None = None) -> int:
         return check_auth(cfg)
 
     as_of = date.fromisoformat(args.as_of) if args.as_of else date.today()
-    run_report(cfg, args.command, as_of, args.demo, args.email, args.stdout)
+    run_report(cfg, args.command, as_of, args.demo, args.email, args.stdout, args.xlsx)
     return 0

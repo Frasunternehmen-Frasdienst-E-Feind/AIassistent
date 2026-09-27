@@ -34,14 +34,14 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-      - run: pip install -r requirements.txt
+      - run: pip install .
       - name: Report erzeugen
         run: |
           ARGS=""
           if [ -n "${{ inputs.as_of }}" ]; then ARGS="$ARGS --as-of ${{ inputs.as_of }}"; fi
           if [ "${{ inputs.demo }}" = "true" ]; then ARGS="$ARGS --demo"; fi
           if [ -n "$SMTP_HOST" ] && [ -n "$REPORT_EMAIL_TO" ]; then ARGS="$ARGS --email"; fi
-          python -m seo_reporting --config config.example.yaml weekly --stdout $ARGS
+          seo-report --config config.example.yaml weekly --stdout $ARGS
       - uses: actions/upload-artifact@v4
         with:
           name: seo-wochencheck

@@ -1,2 +1,2 @@
--r requirements.txt
-pytest>=8.0
+# Entwicklung: pip install -e ".[dev]"
+-e .[dev]

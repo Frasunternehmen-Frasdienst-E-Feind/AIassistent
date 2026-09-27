@@ -12,18 +12,20 @@ from seo_reporting.periods import Period
 from seo_reporting.sources.base import CrmData, Ga4Data, Ga4Row, Lead, SearchData, SearchRow
 
 _QUERIES = {
-    "Marke": ["fräsdienst feind", "feind fräsdienst", "e. feind gmbh fräsdienst", "fraesdienst-feind.de"],
-    "CNC-Fräsen": ["cnc fräsen", "cnc fräsen lassen", "cnc frästeile", "cnc fräsen dienstleister"],
-    "Lohnfertigung": ["lohnfertigung fräsen", "lohnfräsen", "lohnfertigung metall", "lohnfertiger cnc"],
-    "Werkstoffe": ["aluminium fräsen", "kunststoff fräsen", "edelstahl fräsen", "pom fräsen"],
-    "Prototypen & Kleinserien": ["prototypen fräsen", "kleinserie fräsen", "einzelteil fräsen lassen"],
-    "Regional": ["fräsdienst nrw", "cnc fräsen in der nähe", "frästeile hersteller deutschland"],
-    "Sonstige": ["fräsmaschine kaufen", "fräsen definition", "frästechnik wiki"],
+    "Marke": ["fräsdienst feind", "feind fräsdienst", "e. feind gmbh lübben", "fraesdienst-feind.de"],
+    "Hauptleistungen": ["kaltfräsen", "asphaltfräsen", "betonfräsen", "straßenfräsen", "fräsarbeiten asphalt"],
+    "Flächengröße": ["kleinflächenfräsen", "großflächenfräsen", "feinfräsen asphalt"],
+    "Spezialverfahren": ["diamond grinding", "grooving beton", "pflasterschleifen", "nutfräsen asphalt"],
+    "Service": ["fräsgut aufnehmen", "fräsarbeiten mit kehrsauger", "baustellenreinigung nach fräsen"],
+    "Regional": ["asphaltfräsen brandenburg", "fräsarbeiten berlin", "betonfräsen sachsen", "kaltfräsen mecklenburg-vorpommern"],
+    "Zielgruppen": ["fräsdienst für bauunternehmen", "fräsarbeiten für kommunen"],
+    "Problembezogen": ["asphalt abfräsen lassen", "straßenbelag entfernen", "was kostet asphaltfräsen"],
+    "Sonstige": ["fräsmaschine kaufen", "wirtgen w250 technische daten", "fräsen definition"],
 }
 
 _CHANNELS = ["Organic Search", "Direct", "Referral", "Paid Search", "Organic Social", "Email"]
-_PAGES = ["/", "/cnc-fraesen", "/lohnfertigung", "/werkstoffe", "/prototypen", "/kontakt", "/anfrage"]
-_SOURCES = ["Website-Formular", "Telefon", "E-Mail", "Messe", "Empfehlung"]
+_PAGES = ["/", "/kaltfraesen", "/leistungen", "/diamond-grinding-grooving", "/pflasterschleifen", "/referenzen", "/maschinenpark", "/anfrage"]
+_SOURCES = ["Website-Formular", "Telefon", "E-Mail", "Ausschreibung", "Empfehlung"]
 
 
 def _rng(period: Period, salt: str) -> random.Random:
@@ -45,8 +47,8 @@ class DemoSources:
         scale = _season(period) * period.days / 30.0
         queries: list[SearchRow] = []
         for group, qs in _QUERIES.items():
-            base = {"Marke": 90, "CNC-Fräsen": 120, "Lohnfertigung": 80, "Werkstoffe": 60,
-                    "Prototypen & Kleinserien": 40, "Regional": 35, "Sonstige": 25}[group]
+            base = {"Marke": 90, "Hauptleistungen": 120, "Flächengröße": 45, "Spezialverfahren": 60,
+                    "Service": 30, "Regional": 50, "Zielgruppen": 25, "Problembezogen": 40, "Sonstige": 25}[group]
             for i, q in enumerate(qs):
                 impressions = int(base * scale * rng.uniform(4, 9) / (i + 1))
                 position = round(rng.uniform(2.0, 14.0), 1) if group != "Marke" else round(rng.uniform(1.0, 2.5), 1)

@@ -93,7 +93,9 @@ def _apply_env(cfg: Config) -> Config:
 def load_config(path: str | os.PathLike | None) -> Config:
     """Lädt config.yaml (falls vorhanden) und überlagert ENV-Variablen."""
     data: dict = {}
-    if path is not None and Path(path).exists():
+    if path is not None:
+        if not Path(path).exists():
+            raise FileNotFoundError(f"Konfigurationsdatei nicht gefunden: {path}")
         with open(path, encoding="utf-8") as fh:
             data = yaml.safe_load(fh) or {}
 
