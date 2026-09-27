@@ -32,12 +32,16 @@ Grundlage für die verknüpfte Claude-Code-Session und den Manager-Agenten.
 - **Lead-Follow-up-Tracker (E3)**: Im Lead-Zähler ein Follow-up-Board – je Qualität A/B/C „nachgefasst" mit +/–, offene Nachfässe und Quote; KPI „Follow-up A" mit Ampel (Ziel ≥ 95 %, < 48 h). Nur Stückzahlen, keine personenbezogenen Daten. Speicherung in `leads/counts.follow`.
 - **Akquise-Planer (E4)**: Neuer Tab „Akquise-Planer" – 2 aktive Akquise-Slots je Messetag (Zielkunde/Firma, Notiz, erledigt) + Zielkundenliste (Firma + Segment, „angesprochen"-Status). **Nur Firmennamen, keine Ansprechpartner/Kontaktdaten Dritter.** Speicherung in `acquisition/plan` (geteilt), lokaler Fallback.
 
+## Bereits umgesetzt (v3 – Paket „Übergreifend & Reporting")
+- **Globale Suche** (🔍 im Header): durchsucht Aufgaben, Fristen, KPIs, Budget, Lessons, Faktencheck, Wissensbasis, Team und Zielkunden; Treffer springen per Klick in den passenden Tab (Aufgaben-Treffer setzen zusätzlich den Suchfilter).
+- **Agenda „nächste 14 Tage"** (Dashboard): vereint überfällige + kommende Meilensteine **und** Aufgaben-Termine (aus derselben Fristen-Quelle) in einer Liste mit Typ-Kennzeichnung.
+- **Statusbericht-Onepager**: Dashboard-Button erzeugt einen kompakten Markdown-Statusbericht (Fortschritt, überfällig/P0/blockiert, nächste Fristen, Budget-Abweichung, Leads/Follow-up, kritisch offene P0) zum Download; deckt den früheren P3-Punkt „Wochenreport" inhaltlich ab. Zusätzlich „Drucken / PDF" mit Druck-Layout (@media print).
+
 ## Backlog (Vorschläge, priorisiert)
 
 ### P3 – Ausbau
 10. **Mehrsprachige Giveaway-Sprüche DE/EN/NL** direkt im Marketing-Tab.
-11. **Wochenreport** automatisch als kurze Statusmail an Stakeholder.
-12. **Anbindung an Zeitplan/Meilensteine** (Gantt-Mini-Ansicht T-12M … T+14d).
+11. **Anbindung an Zeitplan/Meilensteine** (Gantt-Mini-Ansicht T-12M … T+14d).
 
 ## Technische Hinweise für die Weiterentwicklung
 - Aufgaben-Definitionen liegen aktuell im HTML (`const TASKS`). Beim Umzug in `db` die IDs
