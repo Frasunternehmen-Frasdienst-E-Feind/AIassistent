@@ -26,6 +26,12 @@ Grundlage für die verknüpfte Claude-Code-Session und den Manager-Agenten.
 - **Aktivitätsprotokoll** (Tab „Protokoll"): erfasst „wer hat wann was geändert" (Status, Aufgabe anlegen/bearbeiten/archivieren/wiederherstellen, Budget, Team) mit Zeitstempel; neueste zuerst, CSV-Export. Nutzt die `user`-Capability – gespeichert werden nur opake Team-IDs (`activity/<id>`), Namen werden zur Anzeige aufgelöst (Scope `profile`). Ohne geteilte DB kein Log.
 - **Anhänge & Links je Aufgabe** (Editor-Modal, bestehende Aufgaben): Links (Bezeichnung + URL, nur http(s)/mailto) und Datei-Uploads (PDF/Bild/Text bis 20 MB) über die `assets`-Capability; Anzeige als Liste mit Entfernen, 📎-Pille an der Aufgabe. Datei-IDs liegen im Task-Doc (`tasks/<id>.attachments`), Löschen entfernt auch das Asset. Hinweis: keine personenbezogenen Daten Dritter hochladen, bei Verträgen Rechtsabteilung prüfen. **Damit sind alle P2-Punkte umgesetzt.**
 
+## Bereits umgesetzt (v3 – Paket „Aufräumen + Lessons-Learned")
+- **Vereinheitlichung Exporte**: ein zentraler CSV-Baustein (`csvCell`/`csvDoc`, UTF-8-BOM · Semikolon · CRLF) ersetzt das früher 4× duplizierte Quoting in Aufgaben-, Fristen-, Lead- und Protokoll-Export.
+- **Fristen – eine Quelle**: Die Fristenmatrix führt jetzt feste Meilensteine **und** alle offenen Aufgaben-Termine zusammen (nach Datum sortiert), mit Spalte **Owner** und **Eskalationsdatum** (Vorlauf konfigurierbar im Team-Tab, Default 7 Tage; Lektion E2). ICS- und CSV-Export umfassen beide Quellen.
+- **Lead-Follow-up-Tracker (E3)**: Im Lead-Zähler ein Follow-up-Board – je Qualität A/B/C „nachgefasst" mit +/–, offene Nachfässe und Quote; KPI „Follow-up A" mit Ampel (Ziel ≥ 95 %, < 48 h). Nur Stückzahlen, keine personenbezogenen Daten. Speicherung in `leads/counts.follow`.
+- **Akquise-Planer (E4)**: Neuer Tab „Akquise-Planer" – 2 aktive Akquise-Slots je Messetag (Zielkunde/Firma, Notiz, erledigt) + Zielkundenliste (Firma + Segment, „angesprochen"-Status). **Nur Firmennamen, keine Ansprechpartner/Kontaktdaten Dritter.** Speicherung in `acquisition/plan` (geteilt), lokaler Fallback.
+
 ## Backlog (Vorschläge, priorisiert)
 
 ### P3 – Ausbau
