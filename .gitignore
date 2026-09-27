@@ -29,3 +29,12 @@ output/*
 # Build-Artefakte
 build/
 dist/
+
+# Messe-Generator: versionierte Inhalte & Vorlagen wieder einschließen
+# (das globale *.json oben würde sie sonst ausschließen)
+!messe/content/**/*.json
+!messe/data/team.example.json
+# Personenbezogene Daten & generierte Dokumente NIE committen (DSGVO):
+messe/data/*.local.json
+messe/output/*
+!messe/output/.gitkeep

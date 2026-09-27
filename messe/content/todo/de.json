@@ -1,0 +1,489 @@
+{
+ "code": "DE",
+ "file": "Brennglas_ToDo_Rotterdam_2027_DE.pdf",
+ "title": "Brennglas – ToDo Rotterdam 2027",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Stand 5.209 · Di 12.–Fr 15. Januar 2027",
+ "chip": "AP0 · oberste Prioritaet",
+ "src": "Ausfuellbares Formular · Quelle: ToDo-Liste Rotterdam 2027 (Notion) + Projekt-Hub · verdichtet 22.09.2026",
+ "intern": "INTERN / vertraulich – enthält Teamnamen, nicht veröffentlichen.",
+ "basis": "Basis: InfraTech 2026 + Lessons Learned, ergänzt",
+ "howto": "So funktioniert das Formular",
+ "howto_lines": [
+  "1)  Kästchen abhaken = erledigt.   2)  Status-Dropdown rechts: Offen / In Arbeit / Erledigt / Entfällt / Klärung nötig.",
+  "3)  Festes Notizfeld unter jedem Punkt – Freitext + Link, max. 250 Zeichen.",
+  "Vorbelegung: Jeder Punkt steht auf „Offen“ und wird beim Ausdruck so gedruckt, solange nicht bearbeitet.",
+  "Speichern/Weitergeben: „Formular ausgefüllt speichern“. Ausfüllen & Drucken funktionieren in jedem PDF-Viewer."
+ ],
+ "legend_label": "Legende:",
+ "legend": [
+  [
+   "ok",
+   "bewährt (beibehalten)"
+  ],
+  [
+   "no",
+   "2026 ungenutzt / streichen"
+  ],
+  [
+   "warn",
+   "offen – für Rotterdam klären"
+  ],
+  [
+   "none",
+   "neu zu erledigen"
+  ],
+  [
+   "add",
+   "ergänzt (blinder Fleck)"
+  ]
+ ],
+ "blocker_title": "Zuerst entscheiden – kritische Blocker (Stand 22.09.2026)",
+ "blockers": [
+  [
+   "Owner/Projektleitung benennen (GF)",
+   "war fällig 14.09. – blockiert Team & Budget"
+  ],
+  [
+   "Buchung Stand 5.209 vertraglich bestätigen",
+   "Abgleich mit info@infratech.nl"
+  ],
+  [
+   "Förderung ILB „Markt International“ prüfen",
+   "vor Neuanmeldung – Anmeldung = Vorhabenbeginn"
+  ],
+  [
+   "Hotel-Option ibis Styles Ahoy bestätigen",
+   "10 Zi., 11.–16.01., kostenfrei stornierbar"
+  ],
+  [
+   "Budget-Deckel & Messeziel festlegen",
+   "Sichtbarkeit vs. Lead-Qualität"
+  ]
+ ],
+ "blocker_note": "Diese Punkte laufen als eigene ClickUp-Tickets mit Wochenfrist – hier zur Steuerung gespiegelt, nicht doppelt abzuarbeiten.",
+ "status": [
+  "Offen",
+  "In Arbeit",
+  "Erledigt",
+  "Entfällt",
+  "Klärung nötig"
+ ],
+ "status_def": "Offen",
+ "tt_status": "Status: Offen / In Arbeit / Erledigt / Entfällt / Klärung nötig",
+ "tt_note": "Freitext + Link, max. 250 Zeichen",
+ "tt_done": "Erledigt abhaken",
+ "blind_banner": "Blinde Flecken – sinn- & sachgemäß ergänzt",
+ "blind_sub": "Nicht in der Original-Checkliste, aber für InfraTech 2027 erfahrungsgemäß relevant. Rechtliches ist markiert.",
+ "dp_title": "Datenschutz & Recht",
+ "dp": [
+  "• Internes Arbeitsdokument mit Teamnamen – vertraulich behandeln, nicht an Externe/Aussteller weitergeben.",
+  "• Lead-Erfassung, Foto/Video am Stand und CRM-Import nur mit Einwilligung/DSGVO-Hinweis.",
+  "• Bei vertraglichen, steuerlichen oder arbeitsrechtlichen Fragen gilt: bitte Rechtsabteilung prüfen."
+ ],
+ "src_title": "Quellen & Arbeitsflächen",
+ "links": [
+  "Master · Messe Rotterdam 2027 (Notion)",
+  "ToDo-Liste Rotterdam 2027 (Notion)",
+  "Aufgaben-Tracker (ClickUp)",
+  "InfraTech-Handbuch 2027 V1.3 (PDF)"
+ ],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stand 5.209  ·  Stand 22.09.2026",
+ "page": "Seite",
+ "cont": "Fortsetzung",
+ "brand": "BRENNGLAS · ToDo Rotterdam 2027",
+ "slim": "ToDo Rotterdam 2027",
+ "sections": [
+  [
+   "Logistik & Anreise",
+   [
+    [
+     "none",
+     "Fahrzeug festlegen: V-Klasse mit Anhänger oder LKW mit Anhänger (2026 offen)"
+    ],
+    [
+     "none",
+     "Bedarf Kompaktlader / „Ameise“ für Rotterdam klären (2026: „?“)"
+    ],
+    [
+     "none",
+     "Anlieferung/Parkplatz-Prozess bei Rotterdam Ahoy klären (2026 Essen: 200 € Kaution, rückerstattet)"
+    ],
+    [
+     "none",
+     "Dauerausweise / Parkausweise organisieren"
+    ]
+   ]
+  ],
+  [
+   "Standbau & Exponate",
+   [
+    [
+     "ok",
+     "Schleifwelle groß + Pflasterfläche – Kernexponat; Aufbau vereinfachbar prüfen (Steinmatte statt Pflasterfläche, LL 2026)"
+    ],
+    [
+     "ok",
+     "Schleifwelle klein mit Tisch (wenn Platz vorhanden)"
+    ],
+    [
+     "ok",
+     "Exponat „Ungeschliffen“/„Geschliffen“"
+    ],
+    [
+     "ok",
+     "Exponat Horizontalschleifen mit Flammen"
+    ],
+    [
+     "ok",
+     "Aufsteller mit Flyerspendern (Kundenstopper) – mit Beleuchtung versehen"
+    ],
+    [
+     "ok",
+     "Leuchtendes Grinding-Schild – Blickfang"
+    ],
+    [
+     "none",
+     "2x Schleifscheibe – optional, nur wenn kleine Schleifscheibe ohnehin dabei"
+    ],
+    [
+     "no",
+     "2x kleine Exponate + Aschenbecher – 2026 ungenutzt, nicht mitnehmen"
+    ],
+    [
+     "warn",
+     "Standflächen-Bedarf realistisch planen – 2026: von 2 Stehtischen passte nur 1 auf die Fläche"
+    ]
+   ]
+  ],
+  [
+   "Equipment & Verbrauchsmaterial",
+   [
+    [
+     "warn",
+     "Kaffeemaschine, Kaffeekapseln – Sortenanzahl reduzieren (Lessons Learned)"
+    ],
+    [
+     "none",
+     "Kaffeesahne / Zucker / Kekse"
+    ],
+    [
+     "ok",
+     "Servietten klein – nötig"
+    ],
+    [
+     "no",
+     "Servietten groß – 2026: zu groß, kein Einsatz"
+    ],
+    [
+     "warn",
+     "Reinigungsset + Mülltüten – mehr Feuchttücher einpacken"
+    ],
+    [
+     "none",
+     "Molton-Tuch – passend für Tisch zuschneiden, mit Klettband"
+    ],
+    [
+     "none",
+     "Hussen (wenn Tisch dabei)"
+    ],
+    [
+     "none",
+     "Staubsauger"
+    ],
+    [
+     "none",
+     "Fugenmaterial (zum Ausbessern)"
+    ],
+    [
+     "none",
+     "Tischmülleimer, Müllsäcke 120 L"
+    ],
+    [
+     "none",
+     "Deko optional (frische Blumen/Pflanze, wenn Platz)"
+    ],
+    [
+     "no",
+     "Wein – 2026: kaum getrunken, streichen"
+    ]
+   ]
+  ],
+  [
+   "Technik",
+   [
+    [
+     "warn",
+     "TV klären – 2026 als offene Frage („TV?“) stehengeblieben, Bedarf neu entscheiden"
+    ],
+    [
+     "warn",
+     "Mobile Daten / WLAN-Box klären"
+    ],
+    [
+     "none",
+     "Laptop, Stick mit Präsentation"
+    ],
+    [
+     "none",
+     "Verlängerungskabel/Verteiler, Ladekabel (Handy, Kamera)"
+    ],
+    [
+     "warn",
+     "Präsentation aktualisieren – Kopfhörer-Option anbieten, etwas kürzer fassen (LL)"
+    ],
+    [
+     "none",
+     "Bühnenmolton, LED-Band"
+    ]
+   ]
+  ],
+  [
+   "Marketing & Werbemittel",
+   [
+    [
+     "warn",
+     "Flyer überarbeiten – Format überdenken (Lessons Learned)"
+    ],
+    [
+     "ok",
+     "Steine mit rückseitigem Aufkleber – kommen gut an"
+    ],
+    [
+     "ok",
+     "Zollstöcke, Feuerzeuge, Kugelschreiber, Schlüsselbänder, Einkaufswagenlöser – beibehalten"
+    ],
+    [
+     "no",
+     "Minz-Spender – 2026: nicht attraktiv, streichen"
+    ],
+    [
+     "warn",
+     "Goodie-Bags kleiner/handlicher packen – Kalenderbücher zu wertig & Transport unpraktisch"
+    ],
+    [
+     "warn",
+     "Vorab-Bewerbung der Teilnahme planen – 2026 gefehlt: Social Media, Messe-Logo in Mail-Signatur, Prä-Mail an Bestandskontakte, Website-Hinweis"
+    ],
+    [
+     "none",
+     "Infobroschüren, Aufsteller+Infoblatt, Prospektständer, magn. Flyerbox"
+    ]
+   ]
+  ],
+  [
+   "Personal & Auftritt",
+   [
+    [
+     "warn",
+     "Namensschilder konsequent einsetzen – 2026 nur an einem Tag genutzt, Position vermerken"
+    ],
+    [
+     "warn",
+     "Visitenkarten-Verteilung optimieren – 2026: 100 VK, an Flyer geheftet"
+    ],
+    [
+     "warn",
+     "Kleidung: andere Farbe als Weiß prüfen – Differenzierung zu anderen Ausstellern"
+    ],
+    [
+     "warn",
+     "Einheitliches, sauberes Schuhwerk festlegen"
+    ]
+   ]
+  ],
+  [
+   "Akquise & Lead-Erfassung",
+   [
+    [
+     "none",
+     "Ansprache auf die Messefläche ausweiten – nicht nur am Stand warten"
+    ],
+    [
+     "ok",
+     "Digitales Gesprächsnotiz-Formular nutzen – als ClickUp-Ticket in EPIC-06 angelegt"
+    ],
+    [
+     "none",
+     "Gezielt Visitenkarten von Kommunen/Städten sammeln – 2026 kaum vorhanden"
+    ]
+   ]
+  ],
+  [
+   "Offene „zu buchen/zu klären“-Punkte 2026",
+   [
+    [
+     "none",
+     "Catering – Prozess wie 2026 (Aramark) oder neuer Anbieter in Rotterdam?"
+    ],
+    [
+     "none",
+     "Anlieferung/Parkplätze final klären (s. Logistik oben)"
+    ],
+    [
+     "warn",
+     "2026-Platzhalter (TRUE/FALSE ohne Text) – keine Angaben vorhanden, nicht übernehmbar"
+    ]
+   ]
+  ],
+  [
+   "Team (Referenz 2026)",
+   [
+    [
+     "none",
+     "Teilnehmerliste final bestätigen – 2026: {{TEAM_2026}}"
+    ],
+    [
+     "none",
+     "Übernachtende final abgleichen mit Hotelkontingent-Ticket"
+    ]
+   ]
+  ]
+ ],
+ "blind": [
+  [
+   "Steuerung & Rahmen (Voraussetzung für alles Weitere)",
+   [
+    [
+     "add",
+     "Projektleitung/Owner offiziell benennen (GF) – bislang „offen“, blockiert Personal & Budget"
+    ],
+    [
+     "add",
+     "Budget-Deckel & Messeziel definieren (Sichtbarkeit vs. Lead-Qualität) – Freigaben: GF"
+    ],
+    [
+     "add",
+     "Buchung Stand 5.209 vertraglich bestätigen (Größe, Vertrag) – Abgleich info@infratech.nl"
+    ],
+    [
+     "add",
+     "Förderung ILB „Markt International“ prüfen VOR Neuanmeldung (Anmeldung = Vorhabenbeginn)"
+    ]
+   ]
+  ],
+  [
+   "Recht, Versicherung & Steuer  –  bitte Rechtsabteilung prüfen",
+   [
+    [
+     "add",
+     "Messe-/Ausstellerhaftpflicht + Transport-/Exponatversicherung klären – Rechtsabteilung prüfen"
+    ],
+    [
+     "add",
+     "A1-Bescheinigungen für entsandte Mitarbeiter (NL-Einsatz) prüfen – HR/Rechtsabteilung prüfen"
+    ],
+    [
+     "add",
+     "Reverse-Charge/USt bei NL-Dienstleistern (Global Expo, LOCO) – Rechtsabteilung/Steuerberater"
+    ],
+    [
+     "add",
+     "Verträge Standbau/Aufbauhelfer prüfen (Leistung, Haftung, Storno) – Rechtsabteilung prüfen"
+    ]
+   ]
+  ],
+  [
+   "Standservices im Ahoy-Portal (Fristen beachten!)",
+   [
+    [
+     "add",
+     "Stromanschluss/Leistung am Stand bestellen (Ahoy-Bestellportal)"
+    ],
+    [
+     "add",
+     "Internet/LAN am Stand bestellen (statt nur WLAN-Box)"
+    ],
+    [
+     "add",
+     "Rigging/Abhängung, Bodenlast & Bauhöhe-Freigabe (Standbau-Richtlinien anfordern)"
+    ],
+    [
+     "add",
+     "Standreinigung & Abfallentsorgung über die Messe bestellen"
+    ],
+    [
+     "add",
+     "Wasser-/Druckluftbedarf für Schleif-Exponate prüfen"
+    ]
+   ]
+  ],
+  [
+   "Marketing-Sichtbarkeit (leicht übersehen)",
+   [
+    [
+     "add",
+     "Ausstellerverzeichnis/Katalogeintrag + Firmenprofil + Logo fristgerecht einreichen"
+    ],
+    [
+     "add",
+     "Innovationspreis 2027 einreichen: ja/nein (Frist 25.09.2026)"
+    ],
+    [
+     "add",
+     "Terminvereinbarung mit Bestandskunden vorab (feste Slots am Stand)"
+    ],
+    [
+     "add",
+     "Vorlauf-/Nachbestellfristen für Druck & Werbemittel einplanen"
+    ],
+    [
+     "add",
+     "Messesprache (NL/EN/DE) & Übersetzung Kernmaterial festlegen"
+    ]
+   ]
+  ],
+  [
+   "DSGVO & Lead-Prozess  –  bitte Rechtsabteilung prüfen",
+   [
+    [
+     "add",
+     "Einwilligung/DSGVO-Hinweis im digitalen Lead-Formular sicherstellen – Rechtsabteilung prüfen"
+    ],
+    [
+     "add",
+     "Foto-/Video-Content am Stand: Einwilligung abgebildeter Personen – Rechtsabteilung prüfen"
+    ],
+    [
+     "add",
+     "Lead-Weiterverarbeitung, Speicherfrist & CRM-Import DSGVO-konform definieren"
+    ]
+   ]
+  ],
+  [
+   "Personal-Organisation vor Ort",
+   [
+    [
+     "add",
+     "Standdienst-/Schichtplan inkl. Pausen (ArbZG) erstellen – bei Fragen Rechtsabteilung prüfen"
+    ],
+    [
+     "add",
+     "Verpflegung/Getränke für das Standteam einplanen (nicht nur Kundencatering)"
+    ],
+    [
+     "add",
+     "Erste-Hilfe/Notfallkontakte & Ansprechpartner Ahoy hinterlegen"
+    ]
+   ]
+  ],
+  [
+   "Nachbereitung",
+   [
+    [
+     "add",
+     "Lead-Nachverfolgung-Timeline + Dankes-/Follow-up-Mail vorbereiten (ab 29.01.2027)"
+    ],
+    [
+     "add",
+     "ROI-/Erfolgsauswertung (Kosten vs. Leads/Qualität) als Lessons Learned 2027"
+    ]
+   ]
+  ]
+ ],
+ "link_urls": [
+  "https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db",
+  "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a",
+  "https://app.clickup.com/90122021025/v/l/li/901222034862",
+  "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"
+ ]
+}

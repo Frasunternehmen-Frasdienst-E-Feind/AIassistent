@@ -1,0 +1,489 @@
+{
+ "code": "EN",
+ "file": "Brennglas_ToDo_Rotterdam_2027_EN.pdf",
+ "title": "Focus Sheet – Rotterdam 2027 To-Dos",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Booth 5.209 · Tue 12–Fri 15 January 2027",
+ "chip": "AP0 · top priority",
+ "src": "Fillable form · Source: Rotterdam 2027 To-Do list (Notion) + Project Hub · condensed 22 Sep 2026",
+ "intern": "INTERNAL / confidential – contains team names, do not publish.",
+ "basis": "Base: InfraTech 2026 + lessons learned, extended",
+ "howto": "How to use this form",
+ "howto_lines": [
+  "1)  Tick the box = done.   2)  Status dropdown on the right: Open / In progress / Done / N/A / Needs clarification.",
+  "3)  Fixed note field under each item – free text + link, max. 250 characters.",
+  "Default: every item is set to “Open” and prints that way until edited.",
+  "Save/share: “Save the filled-in form”. Filling in and printing work in any PDF viewer."
+ ],
+ "legend_label": "Legend:",
+ "legend": [
+  [
+   "ok",
+   "proven (keep)"
+  ],
+  [
+   "no",
+   "unused 2026 / drop"
+  ],
+  [
+   "warn",
+   "open – clarify for Rotterdam"
+  ],
+  [
+   "none",
+   "new to do"
+  ],
+  [
+   "add",
+   "added (blind spot)"
+  ]
+ ],
+ "blocker_title": "Decide first – critical blockers (as of 22 Sep 2026)",
+ "blockers": [
+  [
+   "Appoint owner/project lead (mgmt)",
+   "was due 14 Sep – blocks team & budget"
+  ],
+  [
+   "Confirm booth 5.209 contractually",
+   "reconcile with info@infratech.nl"
+  ],
+  [
+   "Check ILB “Markt International” grant",
+   "before re-registering – registration = project start"
+  ],
+  [
+   "Confirm hotel option ibis Styles Ahoy",
+   "10 rooms, 11–16 Jan, free cancellation"
+  ],
+  [
+   "Set budget cap & fair objective",
+   "visibility vs. lead quality"
+  ]
+ ],
+ "blocker_note": "These items run as separate ClickUp tickets with weekly deadlines – mirrored here for steering, not to be done twice.",
+ "status": [
+  "Open",
+  "In progress",
+  "Done",
+  "N/A",
+  "Needs clarification"
+ ],
+ "status_def": "Open",
+ "tt_status": "Status: Open / In progress / Done / N/A / Needs clarification",
+ "tt_note": "Free text + link, max. 250 characters",
+ "tt_done": "Tick when done",
+ "blind_banner": "Blind spots – added appropriately",
+ "blind_sub": "Not in the original checklist, but relevant for InfraTech 2027 by experience. Legal items are flagged.",
+ "dp_title": "Data protection & legal",
+ "dp": [
+  "• Internal working document with team names – keep confidential, do not share with external parties/exhibitors.",
+  "• Lead capture, photo/video at the stand and CRM import only with consent/GDPR notice.",
+  "• For contractual, tax or employment-law questions: please have legal review."
+ ],
+ "src_title": "Sources & workspaces",
+ "links": [
+  "Master · Rotterdam 2027 fair (Notion)",
+  "Rotterdam 2027 To-Do list (Notion)",
+  "Task tracker (ClickUp)",
+  "InfraTech handbook 2027 V1.3 (PDF)"
+ ],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Booth 5.209  ·  As of 22 Sep 2026",
+ "page": "Page",
+ "cont": "continued",
+ "brand": "FOCUS SHEET · Rotterdam 2027",
+ "slim": "Rotterdam 2027 To-Dos",
+ "sections": [
+  [
+   "Logistics & travel",
+   [
+    [
+     "none",
+     "Decide on vehicle: V-Class with trailer or truck with trailer (open in 2026)"
+    ],
+    [
+     "none",
+     "Clarify need for compact loader / pallet truck for Rotterdam (2026: “?“)"
+    ],
+    [
+     "none",
+     "Clarify delivery/parking process at Rotterdam Ahoy (2026 Essen: EUR 200 deposit, refunded)"
+    ],
+    [
+     "none",
+     "Organise permanent passes / parking permits"
+    ]
+   ]
+  ],
+  [
+   "Stand build & exhibits",
+   [
+    [
+     "ok",
+     "Large grinding shaft + paving area – core exhibit; check simpler build (stone mat instead of paving, lessons 2026)"
+    ],
+    [
+     "ok",
+     "Small grinding shaft with table (if space allows)"
+    ],
+    [
+     "ok",
+     "Exhibit “Unground”/“Ground”"
+    ],
+    [
+     "ok",
+     "Exhibit horizontal grinding with flames"
+    ],
+    [
+     "ok",
+     "Display with flyer holders (customer stopper) – add lighting"
+    ],
+    [
+     "ok",
+     "Illuminated grinding sign – eye-catcher"
+    ],
+    [
+     "none",
+     "2x grinding disc – optional, only if a small disc is coming anyway"
+    ],
+    [
+     "no",
+     "2x small exhibits + ashtray – unused in 2026, do not bring"
+    ],
+    [
+     "warn",
+     "Plan stand space realistically – 2026: only 1 of 2 bar tables fit the area"
+    ]
+   ]
+  ],
+  [
+   "Equipment & consumables",
+   [
+    [
+     "warn",
+     "Coffee machine, capsules – reduce number of varieties (lessons learned)"
+    ],
+    [
+     "none",
+     "Coffee creamer / sugar / biscuits"
+    ],
+    [
+     "ok",
+     "Small napkins – needed"
+    ],
+    [
+     "no",
+     "Large napkins – 2026: too big, not used"
+    ],
+    [
+     "warn",
+     "Cleaning set + bin bags – pack more wet wipes"
+    ],
+    [
+     "none",
+     "Molton cloth – cut to fit table, with velcro"
+    ],
+    [
+     "none",
+     "Covers (if table is included)"
+    ],
+    [
+     "none",
+     "Vacuum cleaner"
+    ],
+    [
+     "none",
+     "Joint filler (for touch-ups)"
+    ],
+    [
+     "none",
+     "Table bin, 120 L bin bags"
+    ],
+    [
+     "none",
+     "Decoration optional (fresh flowers/plant, if space)"
+    ],
+    [
+     "no",
+     "Wine – 2026: barely consumed, drop"
+    ]
+   ]
+  ],
+  [
+   "Technology",
+   [
+    [
+     "warn",
+     "Clarify TV – left open in 2026 (“TV?”), decide need anew"
+    ],
+    [
+     "warn",
+     "Clarify mobile data / Wi-Fi box"
+    ],
+    [
+     "none",
+     "Laptop, USB stick with presentation"
+    ],
+    [
+     "none",
+     "Extension cables/power strips, chargers (phone, camera)"
+    ],
+    [
+     "warn",
+     "Update presentation – offer headphone option, make it shorter (lessons)"
+    ],
+    [
+     "none",
+     "Stage molton, LED strip"
+    ]
+   ]
+  ],
+  [
+   "Marketing & giveaways",
+   [
+    [
+     "warn",
+     "Revise flyer – rethink format (lessons learned)"
+    ],
+    [
+     "ok",
+     "Stones with sticker on the back – well received"
+    ],
+    [
+     "ok",
+     "Folding rules, lighters, pens, lanyards, trolley coins – keep"
+    ],
+    [
+     "no",
+     "Mint dispensers – 2026: not attractive, drop"
+    ],
+    [
+     "warn",
+     "Pack goodie bags smaller/handier – calendar books too valuable & impractical to transport"
+    ],
+    [
+     "warn",
+     "Plan advance promotion of attendance – missing in 2026: social media, fair logo in email signature, pre-mailing to existing contacts, website note"
+    ],
+    [
+     "none",
+     "Info brochures, display + info sheet, brochure stand, magnetic flyer box"
+    ]
+   ]
+  ],
+  [
+   "Staff & appearance",
+   [
+    [
+     "warn",
+     "Use name badges consistently – used only one day in 2026, note position"
+    ],
+    [
+     "warn",
+     "Optimise business-card distribution – 2026: 100 cards, stapled to flyers"
+    ],
+    [
+     "warn",
+     "Clothing: consider a colour other than white – differentiate from other exhibitors"
+    ],
+    [
+     "warn",
+     "Define uniform, clean footwear"
+    ]
+   ]
+  ],
+  [
+   "Acquisition & lead capture",
+   [
+    [
+     "none",
+     "Extend outreach onto the show floor – don't just wait at the stand"
+    ],
+    [
+     "ok",
+     "Use digital conversation-note form – created as ClickUp ticket in EPIC-06"
+    ],
+    [
+     "none",
+     "Deliberately collect cards from municipalities/cities – scarce in 2026"
+    ]
+   ]
+  ],
+  [
+   "Open “to book/clarify” items 2026",
+   [
+    [
+     "none",
+     "Catering – process like 2026 (Aramark) or new provider in Rotterdam?"
+    ],
+    [
+     "none",
+     "Finalise delivery/parking (see logistics above)"
+    ],
+    [
+     "warn",
+     "2026 placeholders (TRUE/FALSE without text) – no data, cannot be carried over"
+    ]
+   ]
+  ],
+  [
+   "Team (2026 reference)",
+   [
+    [
+     "none",
+     "Confirm final attendee list – 2026: {{TEAM_2026}}"
+    ],
+    [
+     "none",
+     "Reconcile overnight guests with hotel-allotment ticket"
+    ]
+   ]
+  ]
+ ],
+ "blind": [
+  [
+   "Steering & framework (prerequisite for everything else)",
+   [
+    [
+     "add",
+     "Officially appoint project lead/owner (mgmt) – still “open”, blocks staff & budget"
+    ],
+    [
+     "add",
+     "Define budget cap & fair objective (visibility vs. lead quality) – approvals: mgmt"
+    ],
+    [
+     "add",
+     "Confirm booth 5.209 contractually (size, contract) – reconcile info@infratech.nl"
+    ],
+    [
+     "add",
+     "Check ILB “Markt International” grant BEFORE re-registering (registration = project start)"
+    ]
+   ]
+  ],
+  [
+   "Legal, insurance & tax  –  please have legal review",
+   [
+    [
+     "add",
+     "Clarify exhibitor liability + transport/exhibit insurance – legal to review"
+    ],
+    [
+     "add",
+     "Check A1 certificates for posted staff (NL assignment) – HR/legal to review"
+    ],
+    [
+     "add",
+     "Reverse-charge/VAT for NL service providers (Global Expo, LOCO) – legal/tax advisor"
+    ],
+    [
+     "add",
+     "Review stand-build/setup-helper contracts (scope, liability, cancellation) – legal to review"
+    ]
+   ]
+  ],
+  [
+   "Stand services in the Ahoy portal (watch deadlines!)",
+   [
+    [
+     "add",
+     "Order power connection/capacity at the stand (Ahoy order portal)"
+    ],
+    [
+     "add",
+     "Order internet/LAN at the stand (instead of only a Wi-Fi box)"
+    ],
+    [
+     "add",
+     "Rigging/suspension, floor load & build-height approval (request stand-build guidelines)"
+    ],
+    [
+     "add",
+     "Order stand cleaning & waste disposal via the fair"
+    ],
+    [
+     "add",
+     "Check water/compressed-air needs for grinding exhibits"
+    ]
+   ]
+  ],
+  [
+   "Marketing visibility (easily overlooked)",
+   [
+    [
+     "add",
+     "Submit exhibitor directory/catalogue entry + company profile + logo on time"
+    ],
+    [
+     "add",
+     "Innovation award 2027 submission: yes/no (deadline 25 Sep 2026)"
+    ],
+    [
+     "add",
+     "Pre-arrange meetings with existing customers (fixed slots at the stand)"
+    ],
+    [
+     "add",
+     "Plan lead times/reorder deadlines for print & giveaways"
+    ],
+    [
+     "add",
+     "Define fair language (NL/EN/DE) & translation of core material"
+    ]
+   ]
+  ],
+  [
+   "GDPR & lead process  –  please have legal review",
+   [
+    [
+     "add",
+     "Ensure consent/GDPR notice in the digital lead form – legal to review"
+    ],
+    [
+     "add",
+     "Photo/video content at the stand: consent of persons shown – legal to review"
+    ],
+    [
+     "add",
+     "Define lead processing, retention period & CRM import in a GDPR-compliant way"
+    ]
+   ]
+  ],
+  [
+   "On-site staff organisation",
+   [
+    [
+     "add",
+     "Create stand duty/shift plan incl. breaks (working-time law) – legal to review if unsure"
+    ],
+    [
+     "add",
+     "Plan food/drinks for the stand team (not just customer catering)"
+    ],
+    [
+     "add",
+     "Record first-aid/emergency contacts & Ahoy contact person"
+    ]
+   ]
+  ],
+  [
+   "Follow-up",
+   [
+    [
+     "add",
+     "Prepare lead follow-up timeline + thank-you/follow-up email (from 29 Jan 2027)"
+    ],
+    [
+     "add",
+     "ROI/success review (costs vs. leads/quality) as lessons learned 2027"
+    ]
+   ]
+  ]
+ ],
+ "link_urls": [
+  "https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db",
+  "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a",
+  "https://app.clickup.com/90122021025/v/l/li/901222034862",
+  "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"
+ ]
+}

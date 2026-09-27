@@ -1,0 +1,489 @@
+{
+ "code": "PL",
+ "file": "Brennglas_ToDo_Rotterdam_2027_PL.pdf",
+ "title": "Soczewka – Zadania Rotterdam 2027",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Stoisko 5.209 · wt. 12 – pt. 15 stycznia 2027",
+ "chip": "AP0 · najwyższy priorytet",
+ "src": "Formularz do wypełnienia · Źródło: lista zadań Rotterdam 2027 (Notion) + Hub projektu · streszczono 22.09.2026",
+ "intern": "WEWNĘTRZNE / poufne – zawiera nazwiska zespołu, nie publikować.",
+ "basis": "Podstawa: InfraTech 2026 + wnioski, uzupełnione",
+ "howto": "Jak korzystać z formularza",
+ "howto_lines": [
+  "1)  Zaznacz pole = zrobione.   2)  Lista statusów po prawej: Otwarte / W toku / Zrobione / Nie dotyczy / Do ustalenia.",
+  "3)  Stałe pole notatki pod każdym punktem – tekst + link, maks. 250 znaków.",
+  "Domyślnie każdy punkt ma status „Otwarte” i tak jest drukowany, dopóki nie zostanie zmieniony.",
+  "Zapis/udostępnianie: „Zapisz wypełniony formularz”. Wypełnianie i druk działają w każdej przeglądarce PDF."
+ ],
+ "legend_label": "Legenda:",
+ "legend": [
+  [
+   "ok",
+   "sprawdzone (zostaje)"
+  ],
+  [
+   "no",
+   "nieużyte 2026 / skreślić"
+  ],
+  [
+   "warn",
+   "otwarte – ustalić dla Rotterdamu"
+  ],
+  [
+   "none",
+   "nowe do zrobienia"
+  ],
+  [
+   "add",
+   "uzupełnione (przeoczenia)"
+  ]
+ ],
+ "blocker_title": "Najpierw zdecydować – krytyczne blokery (stan 22.09.2026)",
+ "blockers": [
+  [
+   "Wyznaczyć właściciela/kier. projektu (zarząd)",
+   "termin był 14.09. – blokuje zespół i budżet"
+  ],
+  [
+   "Potwierdzić stoisko 5.209 umową",
+   "uzgodnić z info@infratech.nl"
+  ],
+  [
+   "Sprawdzić dotację ILB „Markt International”",
+   "przed rejestracją – rejestracja = początek projektu"
+  ],
+  [
+   "Potwierdzić opcję hotelu ibis Styles Ahoy",
+   "10 pokoi, 11–16.01., bezpłatna anulacja"
+  ],
+  [
+   "Ustalić limit budżetu i cel targów",
+   "widoczność vs. jakość leadów"
+  ]
+ ],
+ "blocker_note": "Te punkty są osobnymi zadaniami w ClickUp z terminem tygodniowym – tu odwzorowane do sterowania, nie robić podwójnie.",
+ "status": [
+  "Otwarte",
+  "W toku",
+  "Zrobione",
+  "Nie dotyczy",
+  "Do ustalenia"
+ ],
+ "status_def": "Otwarte",
+ "tt_status": "Status: Otwarte / W toku / Zrobione / Nie dotyczy / Do ustalenia",
+ "tt_note": "Tekst + link, maks. 250 znaków",
+ "tt_done": "Zaznacz po wykonaniu",
+ "blind_banner": "Białe punkty – uzupełnione rzeczowo",
+ "blind_sub": "Brak na oryginalnej liście, ale istotne dla InfraTech 2027 z doświadczenia. Kwestie prawne oznaczono.",
+ "dp_title": "Ochrona danych i kwestie prawne",
+ "dp": [
+  "• Wewnętrzny dokument roboczy z nazwiskami – traktować poufnie, nie udostępniać na zewnątrz/wystawcom.",
+  "• Pozyskiwanie leadów, foto/wideo na stoisku i import do CRM tylko za zgodą/z informacją RODO.",
+  "• W sprawach umownych, podatkowych lub prawa pracy: proszę o kontrolę działu prawnego."
+ ],
+ "src_title": "Źródła i przestrzenie robocze",
+ "links": [
+  "Master · Targi Rotterdam 2027 (Notion)",
+  "Lista zadań Rotterdam 2027 (Notion)",
+  "Tracker zadań (ClickUp)",
+  "Podręcznik InfraTech 2027 V1.3 (PDF)"
+ ],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stoisko 5.209  ·  Stan 22.09.2026",
+ "page": "Strona",
+ "cont": "c.d.",
+ "brand": "SOCZEWKA · Rotterdam 2027",
+ "slim": "Zadania Rotterdam 2027",
+ "sections": [
+  [
+   "Logistyka i dojazd",
+   [
+    [
+     "none",
+     "Ustalić pojazd: klasa V z przyczepą lub ciężarówka z przyczepą (otwarte w 2026)"
+    ],
+    [
+     "none",
+     "Ustalić potrzebę ładowarki / wózka paletowego na Rotterdam (2026: „?”)"
+    ],
+    [
+     "none",
+     "Ustalić proces dostawy/parkowania w Rotterdam Ahoy (2026 Essen: kaucja 200 €, zwrócona)"
+    ],
+    [
+     "none",
+     "Zorganizować karnety wstępu / karty parkingowe"
+    ]
+   ]
+  ],
+  [
+   "Zabudowa stoiska i eksponaty",
+   [
+    [
+     "ok",
+     "Duży wał szlifierski + powierzchnia brukowa – eksponat główny; sprawdzić uproszczenie (mata kamienna zamiast bruku, wnioski 2026)"
+    ],
+    [
+     "ok",
+     "Mały wał szlifierski ze stołem (jeśli jest miejsce)"
+    ],
+    [
+     "ok",
+     "Eksponat „nieszlifowane”/„szlifowane”"
+    ],
+    [
+     "ok",
+     "Eksponat szlifowanie poziome z płomieniami"
+    ],
+    [
+     "ok",
+     "Stojak z podajnikami ulotek (customer stopper) – z oświetleniem"
+    ],
+    [
+     "ok",
+     "Podświetlany szyld „grinding” – przyciąga wzrok"
+    ],
+    [
+     "none",
+     "2x tarcza szlifierska – opcjonalnie, tylko jeśli mała tarcza i tak jedzie"
+    ],
+    [
+     "no",
+     "2x małe eksponaty + popielniczka – nieużyte w 2026, nie zabierać"
+    ],
+    [
+     "warn",
+     "Realnie zaplanować powierzchnię stoiska – 2026: z 2 stolików zmieścił się tylko 1"
+    ]
+   ]
+  ],
+  [
+   "Wyposażenie i materiały",
+   [
+    [
+     "warn",
+     "Ekspres do kawy, kapsułki – ograniczyć liczbę rodzajów (wnioski)"
+    ],
+    [
+     "none",
+     "Śmietanka do kawy / cukier / ciastka"
+    ],
+    [
+     "ok",
+     "Serwetki małe – potrzebne"
+    ],
+    [
+     "no",
+     "Serwetki duże – 2026: za duże, nieużywane"
+    ],
+    [
+     "warn",
+     "Zestaw do sprzątania + worki na śmieci – spakować więcej chusteczek"
+    ],
+    [
+     "none",
+     "Tkanina molton – dociąć do stołu, z rzepem"
+    ],
+    [
+     "none",
+     "Pokrowce (jeśli stół jedzie)"
+    ],
+    [
+     "none",
+     "Odkurzacz"
+    ],
+    [
+     "none",
+     "Materiał do fug (do poprawek)"
+    ],
+    [
+     "none",
+     "Kosz na stół, worki 120 l"
+    ],
+    [
+     "none",
+     "Dekoracja opcjonalnie (świeże kwiaty/roślina, jeśli miejsce)"
+    ],
+    [
+     "no",
+     "Wino – 2026: prawie niepite, skreślić"
+    ]
+   ]
+  ],
+  [
+   "Technika",
+   [
+    [
+     "warn",
+     "Ustalić TV – w 2026 pozostało pytanie („TV?”), zdecydować na nowo"
+    ],
+    [
+     "warn",
+     "Ustalić dane mobilne / router Wi-Fi"
+    ],
+    [
+     "none",
+     "Laptop, pendrive z prezentacją"
+    ],
+    [
+     "none",
+     "Przedłużacze/listwy, ładowarki (telefon, aparat)"
+    ],
+    [
+     "warn",
+     "Zaktualizować prezentację – opcja słuchawek, nieco skrócić (wnioski)"
+    ],
+    [
+     "none",
+     "Molton sceniczny, taśma LED"
+    ]
+   ]
+  ],
+  [
+   "Marketing i gadżety",
+   [
+    [
+     "warn",
+     "Przerobić ulotkę – przemyśleć format (wnioski)"
+    ],
+    [
+     "ok",
+     "Kamienie z naklejką z tyłu – dobrze przyjmowane"
+    ],
+    [
+     "ok",
+     "Miarki składane, zapalniczki, długopisy, smycze, żetony do wózków – zostają"
+    ],
+    [
+     "no",
+     "Podajniki miętówek – 2026: nieatrakcyjne, skreślić"
+    ],
+    [
+     "warn",
+     "Pakować goodie-bagi mniejsze/poręczniejsze – kalendarze zbyt wartościowe i niewygodne w transporcie"
+    ],
+    [
+     "warn",
+     "Zaplanować wcześniejszą promocję udziału – brak w 2026: social media, logo targów w stopce e-mail, mailing do kontaktów, informacja na stronie"
+    ],
+    [
+     "none",
+     "Broszury informacyjne, stojak + ulotka, stojak na prospekty, magnetyczny pojemnik na ulotki"
+    ]
+   ]
+  ],
+  [
+   "Personel i wizerunek",
+   [
+    [
+     "warn",
+     "Konsekwentnie używać identyfikatorów – w 2026 tylko jeden dzień, zanotować miejsce"
+    ],
+    [
+     "warn",
+     "Zoptymalizować rozdawanie wizytówek – 2026: 100 szt., przypięte do ulotek"
+    ],
+    [
+     "warn",
+     "Odzież: rozważyć kolor inny niż biały – odróżnienie od innych wystawców"
+    ],
+    [
+     "warn",
+     "Ustalić jednolite, czyste obuwie"
+    ]
+   ]
+  ],
+  [
+   "Akwizycja i pozyskiwanie leadów",
+   [
+    [
+     "none",
+     "Rozszerzyć zaczepianie na halę targową – nie tylko czekać przy stoisku"
+    ],
+    [
+     "ok",
+     "Używać cyfrowego formularza notatek z rozmów – utworzone jako zadanie ClickUp w EPIC-06"
+    ],
+    [
+     "none",
+     "Celowo zbierać wizytówki gmin/miast – w 2026 prawie brak"
+    ]
+   ]
+  ],
+  [
+   "Otwarte punkty „do zamówienia/ustalenia” 2026",
+   [
+    [
+     "none",
+     "Catering – proces jak w 2026 (Aramark) czy nowy dostawca w Rotterdamie?"
+    ],
+    [
+     "none",
+     "Ostatecznie ustalić dostawę/parking (zob. logistyka wyżej)"
+    ],
+    [
+     "warn",
+     "Zaślepki z 2026 (TRUE/FALSE bez tekstu) – brak danych, nie do przeniesienia"
+    ]
+   ]
+  ],
+  [
+   "Zespół (odniesienie 2026)",
+   [
+    [
+     "none",
+     "Potwierdzić ostateczną listę uczestników – 2026: {{TEAM_2026}}"
+    ],
+    [
+     "none",
+     "Uzgodnić nocujących z zadaniem o kontyngencie hotelowym"
+    ]
+   ]
+  ]
+ ],
+ "blind": [
+  [
+   "Sterowanie i ramy (warunek dla reszty)",
+   [
+    [
+     "add",
+     "Oficjalnie wyznaczyć kierownika/właściciela projektu (zarząd) – wciąż „otwarte”, blokuje personel i budżet"
+    ],
+    [
+     "add",
+     "Zdefiniować limit budżetu i cel targów (widoczność vs. jakość leadów) – akceptacje: zarząd"
+    ],
+    [
+     "add",
+     "Potwierdzić stoisko 5.209 umową (wielkość, umowa) – uzgodnić info@infratech.nl"
+    ],
+    [
+     "add",
+     "Sprawdzić dotację ILB „Markt International” PRZED rejestracją (rejestracja = początek projektu)"
+    ]
+   ]
+  ],
+  [
+   "Prawo, ubezpieczenia i podatki  –  proszę o kontrolę działu prawnego",
+   [
+    [
+     "add",
+     "Ustalić OC wystawcy + ubezpieczenie transportu/eksponatów – kontrola prawna"
+    ],
+    [
+     "add",
+     "Sprawdzić zaświadczenia A1 dla oddelegowanych (wyjazd NL) – HR/dział prawny"
+    ],
+    [
+     "add",
+     "Odwrotne obciążenie/VAT u dostawców z NL (Global Expo, LOCO) – dział prawny/doradca podatkowy"
+    ],
+    [
+     "add",
+     "Sprawdzić umowy zabudowy/pomocy montażowej (zakres, odpowiedzialność, anulacja) – dział prawny"
+    ]
+   ]
+  ],
+  [
+   "Usługi stoiskowe w portalu Ahoy (pilnować terminów!)",
+   [
+    [
+     "add",
+     "Zamówić przyłącze prądu/moc na stoisku (portal zamówień Ahoy)"
+    ],
+    [
+     "add",
+     "Zamówić internet/LAN na stoisku (zamiast tylko routera Wi-Fi)"
+    ],
+    [
+     "add",
+     "Rigging/podwieszenia, obciążenie podłogi i zgoda na wysokość (poprosić o wytyczne zabudowy)"
+    ],
+    [
+     "add",
+     "Zamówić sprzątanie stoiska i wywóz odpadów przez targi"
+    ],
+    [
+     "add",
+     "Sprawdzić zapotrzebowanie na wodę/sprężone powietrze dla eksponatów"
+    ]
+   ]
+  ],
+  [
+   "Widoczność marketingowa (łatwo przeoczyć)",
+   [
+    [
+     "add",
+     "Terminowo zgłosić wpis do katalogu wystawców + profil firmy + logo"
+    ],
+    [
+     "add",
+     "Zgłoszenie do nagrody innowacji 2027: tak/nie (termin 25.09.2026)"
+    ],
+    [
+     "add",
+     "Wcześniej umówić spotkania ze stałymi klientami (stałe sloty na stoisku)"
+    ],
+    [
+     "add",
+     "Zaplanować terminy realizacji/dodruku dla druku i gadżetów"
+    ],
+    [
+     "add",
+     "Ustalić język targów (NL/EN/DE) i tłumaczenie kluczowych materiałów"
+    ]
+   ]
+  ],
+  [
+   "RODO i proces leadów  –  proszę o kontrolę działu prawnego",
+   [
+    [
+     "add",
+     "Zapewnić zgodę/informację RODO w cyfrowym formularzu leadów – kontrola prawna"
+    ],
+    [
+     "add",
+     "Foto/wideo na stoisku: zgoda osób na zdjęciach – kontrola prawna"
+    ],
+    [
+     "add",
+     "Zdefiniować przetwarzanie leadów, okres przechowywania i import do CRM zgodnie z RODO"
+    ]
+   ]
+  ],
+  [
+   "Organizacja personelu na miejscu",
+   [
+    [
+     "add",
+     "Utworzyć grafik dyżurów/zmian na stoisku wraz z przerwami (czas pracy) – w razie wątpliwości dział prawny"
+    ],
+    [
+     "add",
+     "Zaplanować wyżywienie/napoje dla zespołu stoiska (nie tylko catering dla klientów)"
+    ],
+    [
+     "add",
+     "Zapisać kontakty pierwszej pomocy/awaryjne i osobę kontaktową Ahoy"
+    ]
+   ]
+  ],
+  [
+   "Działania po targach",
+   [
+    [
+     "add",
+     "Przygotować harmonogram kontaktu z leadami + e-mail z podziękowaniem/follow-up (od 29.01.2027)"
+    ],
+    [
+     "add",
+     "Ocena ROI/sukcesu (koszty vs. leady/jakość) jako wnioski 2027"
+    ]
+   ]
+  ]
+ ],
+ "link_urls": [
+  "https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db",
+  "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a",
+  "https://app.clickup.com/90122021025/v/l/li/901222034862",
+  "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"
+ ]
+}
