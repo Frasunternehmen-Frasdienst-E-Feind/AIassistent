@@ -1,0 +1,1116 @@
+<title>InfraTech 2027 Cockpit</title>
+<meta name="description" content="Interaktive Messeplanung Fräsdienst E. Feind – InfraTech Rotterdam Ahoy, 12.–15. Januar 2027.">
+<style>
+  /* ============ Corporate-Design-Tokens (branding/feind-ci.tokens.json) ============ */
+  :root{
+    --accent:#84bb20; --accent-text:#5e8a14; --on-accent:#424e4e;
+    --signal:#e3000b; --signal-text:#b8000a;
+    --surface:#ffffff; --surface-muted:#f2f4f4; --surface-inverse:#424e4e;
+    --ink:#3c5457; --ink-strong:#424e4e; --ink-muted:#6b7575; --ink-inverse:#ffffff;
+    --line:#d5dada; --focus:#424e4e;
+    --warn:#b5730a; --warn-bg:#fbf1e0;
+    --ok:#5e8a14; --ok-bg:#eef5e2;
+    --crit:#b8000a; --crit-bg:#fbe7e8;
+    --info-bg:#eef3f4;
+    --sp1:4px; --sp2:8px; --sp3:16px; --sp4:24px; --sp5:40px; --sp6:64px;
+    --r-input:2px; --r-btn:4px;
+    --shadow:0 1px 2px rgba(66,78,78,.08), 0 4px 16px rgba(66,78,78,.06);
+    --display:Exo,"Arial Black",Arial,sans-serif;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+    --accent:#84bb20; --accent-text:#84bb20; --on-accent:#424e4e;
+    --signal:#e3000b; --signal-text:#ff9a9f;
+    --surface:#2e3737; --surface-muted:#384242; --surface-inverse:#1f2525;
+    --ink:#e7ecec; --ink-strong:#ffffff; --ink-muted:#b8bfbf; --ink-inverse:#ffffff;
+    --line:#4d5858; --focus:#84bb20;
+    --warn:#e6b567; --warn-bg:#3a3320;
+    --ok:#a6d15f; --ok-bg:#26301a;
+    --crit:#ff9a9f; --crit-bg:#3a2224;
+    --info-bg:#2b3536;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  }}
+  :root[data-theme="dark"]{
+    --accent:#84bb20; --accent-text:#84bb20; --on-accent:#424e4e;
+    --signal:#e3000b; --signal-text:#ff9a9f;
+    --surface:#2e3737; --surface-muted:#384242; --surface-inverse:#1f2525;
+    --ink:#e7ecec; --ink-strong:#ffffff; --ink-muted:#b8bfbf; --ink-inverse:#ffffff;
+    --line:#4d5858; --focus:#84bb20;
+    --warn:#e6b567; --warn-bg:#3a3320;
+    --ok:#a6d15f; --ok-bg:#26301a;
+    --crit:#ff9a9f; --crit-bg:#3a2224;
+    --info-bg:#2b3536;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--surface-muted);color:var(--ink);font-family:var(--sans);
+    font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:var(--display);color:var(--ink-strong);text-wrap:balance;margin:0}
+  a{color:var(--accent-text)}
+  .num{font-variant-numeric:tabular-nums}
+  .wrap{max-width:1180px;margin:0 auto;padding-inline:var(--sp3)}
+
+  header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;
+    background:var(--surface-inverse);color:var(--ink-inverse);box-shadow:var(--shadow)}
+  .top .wrap{display:flex;align-items:center;gap:var(--sp3);padding-block:var(--sp2);flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:var(--sp2);min-width:0}
+  .brand .mark{width:30px;height:30px;flex:0 0 auto;border-radius:var(--r-btn);
+    background:var(--accent);color:var(--on-accent);display:grid;place-items:center;
+    font-family:var(--display);font-weight:800;font-size:17px}
+  .brand h1{font-size:16px;color:var(--ink-inverse);line-height:1.1}
+  .brand small{color:#b8bfbf;font-size:11px;letter-spacing:.03em;text-transform:uppercase}
+  .cd{margin-left:auto;display:flex;align-items:center;gap:var(--sp3);flex-wrap:wrap}
+  .count{text-align:right;line-height:1}
+  .count .n{font-family:var(--display);font-size:26px;font-weight:800;color:var(--accent)}
+  .count .l{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#b8bfbf}
+  .ring{display:flex;align-items:center;gap:var(--sp2)}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pct{font-family:var(--display);font-weight:800;font-size:15px;color:var(--ink-inverse)}
+  .tbtn{background:transparent;border:1px solid #5c6767;color:var(--ink-inverse);
+    border-radius:var(--r-btn);padding:6px 9px;cursor:pointer;font-size:15px;line-height:1}
+  .tbtn:hover{border-color:var(--accent)}
+
+  .alert{border-left:4px solid var(--crit);background:var(--crit-bg);color:var(--ink-strong);
+    padding:var(--sp3);border-radius:var(--r-btn);display:flex;gap:var(--sp3);align-items:flex-start;
+    margin-top:var(--sp3);box-shadow:var(--shadow)}
+  .alert.warn{border-left-color:var(--warn);background:var(--warn-bg)}
+  .alert.info{border-left-color:var(--accent);background:var(--info-bg)}
+  .alert .ic{font-size:20px;flex:0 0 auto;line-height:1.2}
+  .alert h3{font-size:14px;margin-bottom:2px}
+  .alert p{margin:2px 0 0}
+
+  nav.tabs{position:sticky;top:calc(env(safe-area-inset-top,0px) + 48px);z-index:15;
+    background:var(--surface);border-bottom:1px solid var(--line)}
+  nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto;padding-block:0;scrollbar-width:thin}
+  .tab{appearance:none;background:transparent;border:0;border-bottom:3px solid transparent;
+    color:var(--ink-muted);padding:11px 12px;font-size:13px;font-weight:600;white-space:nowrap;
+    cursor:pointer;font-family:var(--sans)}
+  .tab[aria-selected="true"]{color:var(--ink-strong);border-bottom-color:var(--accent)}
+  .tab:hover{color:var(--ink-strong)}
+  .tab .badge{margin-left:5px;font-size:10px;background:var(--surface-muted);color:var(--ink-muted);
+    border-radius:20px;padding:1px 6px;font-variant-numeric:tabular-nums}
+
+  main{padding-block:var(--sp4) var(--sp6)}
+  section[role=tabpanel]{outline:none}
+  .lead{color:var(--ink-muted);max-width:70ch;margin:0 0 var(--sp3)}
+  h2.sec{font-size:22px;margin-bottom:var(--sp1)}
+
+  .strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--sp2);margin-bottom:var(--sp4)}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-btn);padding:var(--sp3);box-shadow:var(--shadow)}
+  .kpi .v{font-family:var(--display);font-size:28px;font-weight:800;color:var(--ink-strong);line-height:1}
+  .kpi .k{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-muted);margin-top:6px}
+  .kpi .sub{font-size:12px;color:var(--ink-muted);margin-top:3px}
+  .kpi.crit .v{color:var(--crit)} .kpi.warn .v{color:var(--warn)} .kpi.ok .v{color:var(--ok)}
+
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--sp3)}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-btn);padding:var(--sp3);box-shadow:var(--shadow)}
+  .card h3{font-size:15px;margin-bottom:var(--sp2)}
+  .card.accentbar{border-top:3px solid var(--accent)}
+
+  .filters{display:flex;gap:var(--sp2);flex-wrap:wrap;align-items:center;margin-bottom:var(--sp3)}
+  .filters input[type=search],.filters select{flex:1 1 160px;min-width:130px;padding:8px 10px;border:1px solid var(--line);
+    border-radius:var(--r-input);background:var(--surface);color:var(--ink);font-size:13px;font-family:var(--sans)}
+  .chipset{display:flex;gap:var(--sp1);flex-wrap:wrap}
+  .chip{border:1px solid var(--line);background:var(--surface);color:var(--ink-muted);border-radius:20px;padding:5px 11px;font-size:12px;cursor:pointer;font-weight:600}
+  .chip[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .chip.p0[aria-pressed="true"]{background:var(--signal);color:#fff;border-color:var(--signal)}
+
+  .catgroup{margin-bottom:var(--sp3)}
+  .cathead{display:flex;align-items:center;gap:var(--sp2);padding:var(--sp2) 0;border-bottom:2px solid var(--line)}
+  .cathead h3{font-size:15px;flex:1}
+  .cathead .cnt{font-size:12px;color:var(--ink-muted);font-variant-numeric:tabular-nums}
+  .catdot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:var(--accent)}
+  .tasklist{list-style:none;margin:0;padding:0}
+  .task{display:flex;gap:var(--sp2);align-items:flex-start;padding:var(--sp2) var(--sp1);border-bottom:1px solid var(--line)}
+  .task:last-child{border-bottom:0}
+  .task.done .tt{text-decoration:line-through;color:var(--ink-muted)}
+  .cb{flex:0 0 auto;width:20px;height:20px;margin-top:1px;border:2px solid var(--ink-muted);border-radius:var(--r-input);
+    background:var(--surface);cursor:pointer;display:grid;place-items:center;padding:0}
+  .cb[data-st="done"]{background:var(--accent);border-color:var(--accent)}
+  .cb[data-st="in_progress"]{border-color:var(--warn);background:var(--warn-bg)}
+  .cb[data-st="blocked"]{border-color:var(--crit);background:var(--crit-bg)}
+  .cb svg{width:12px;height:12px;color:var(--on-accent)}
+  .tbody{flex:1;min-width:0}
+  .tt{font-size:13.5px;color:var(--ink);line-height:1.35}
+  .tmeta{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;align-items:center}
+  .pill{font-size:10.5px;font-weight:700;letter-spacing:.02em;padding:2px 7px;border-radius:20px;text-transform:uppercase;white-space:nowrap}
+  .pill.p0{background:var(--crit-bg);color:var(--crit)} .pill.p1{background:var(--warn-bg);color:var(--warn)}
+  .pill.p2{background:var(--info-bg);color:var(--ink-muted)}
+  .pill.own{background:var(--surface-muted);color:var(--ink-muted);text-transform:none}
+  .pill.due{background:var(--info-bg);color:var(--ink-muted);text-transform:none;font-variant-numeric:tabular-nums}
+  .pill.due.over{background:var(--crit-bg);color:var(--crit)}
+  .pill.due.soon{background:var(--warn-bg);color:var(--warn)}
+  .pill.flag{background:transparent;border:1px dashed var(--warn);color:var(--warn);text-transform:none}
+  .pill.recht{background:transparent;border:1px dashed var(--crit);color:var(--crit);text-transform:none}
+  .pill.custom{background:transparent;border:1px solid var(--accent);color:var(--accent-text);text-transform:none}
+  .pill.blocked{background:var(--warn-bg);color:var(--warn);text-transform:none}
+  .tnote{font-size:12px;color:var(--ink-muted);margin-top:4px;font-style:italic}
+  .stsel{font-size:11px;border:1px solid var(--line);border-radius:var(--r-input);background:var(--surface);color:var(--ink-muted);padding:3px 4px;font-family:var(--sans)}
+  .edit{margin-left:auto;background:transparent;border:1px solid var(--line);border-radius:var(--r-btn);color:var(--ink-muted);
+    cursor:pointer;font-size:12px;padding:3px 8px;font-family:var(--sans);align-self:flex-start}
+  .edit:hover{border-color:var(--accent);color:var(--ink-strong)}
+
+  .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);box-shadow:var(--shadow)}
+  table{border-collapse:collapse;width:100%;font-size:13px;min-width:520px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:var(--display);font-size:12px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-muted);background:var(--surface-muted);position:sticky;top:0}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:0}
+  .st{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+  .st.g{background:var(--ok-bg);color:var(--ok)} .st.y{background:var(--warn-bg);color:var(--warn)} .st.r{background:var(--crit-bg);color:var(--crit)}
+  tr.total td{font-weight:800;background:var(--surface-muted);color:var(--ink-strong)}
+
+  .banner{background:var(--info-bg);border:1px solid var(--line);border-radius:var(--r-btn);padding:var(--sp3);margin-bottom:var(--sp3)}
+  .toolbar{display:flex;gap:var(--sp2);flex-wrap:wrap;margin-bottom:var(--sp3);align-items:center}
+  .btn{background:var(--accent);color:var(--on-accent);border:0;border-radius:var(--r-btn);padding:8px 14px;font-weight:700;cursor:pointer;font-family:var(--sans);font-size:13px}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  .btn.danger{background:transparent;border:1px solid var(--signal);color:var(--signal-text)}
+  .btn:focus-visible,.tab:focus-visible,.chip:focus-visible,.cb:focus-visible,.edit:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+  .savehint{font-size:12px;color:var(--ink-muted);align-self:center}
+  ul.clean{margin:var(--sp1) 0;padding-left:1.1em} ul.clean li{margin:3px 0}
+  .foot{color:var(--ink-muted);font-size:12px;border-top:1px solid var(--line);margin-top:var(--sp5);padding-top:var(--sp3)}
+  details.acc{border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);padding:var(--sp2) var(--sp3);margin-bottom:var(--sp2)}
+  details.acc summary{cursor:pointer;font-weight:700;color:var(--ink-strong)}
+
+  /* Modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(31,37,37,.55);display:grid;place-items:center;z-index:40;padding:var(--sp3)}
+  .modal{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-btn);box-shadow:var(--shadow);
+    width:100%;max-width:520px;max-height:88vh;overflow:auto;padding:var(--sp4)}
+  .modal h3{font-size:18px;margin-bottom:var(--sp3)}
+  .field{margin-bottom:var(--sp3)}
+  .field label{display:block;font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:4px}
+  .field input,.field select,.field textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r-input);
+    background:var(--surface);color:var(--ink);font-size:14px;font-family:var(--sans)}
+  .field textarea{min-height:66px;resize:vertical}
+  .field small{display:block;margin-top:4px;font-size:11px;color:var(--ink-muted);font-weight:400;text-transform:none;letter-spacing:normal}
+  .field select[multiple]{min-height:118px;padding:4px}
+  .numinput{width:110px;max-width:100%;padding:5px 7px;border:1px solid var(--line);border-radius:var(--r-input);
+    background:var(--surface);color:var(--ink);font-size:13px;font-family:var(--sans);text-align:right;font-variant-numeric:tabular-nums}
+  .numinput:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+  .leadcard{padding:var(--sp3)}
+  .lc-head{display:flex;align-items:center;gap:var(--sp2);border-bottom:1px solid var(--line);padding-bottom:var(--sp2);margin-bottom:var(--sp2)}
+  .lc-head h3{flex:1;font-size:15px}
+  .lc-total{font-family:var(--display);font-weight:800;font-size:24px;color:var(--accent-text);font-variant-numeric:tabular-nums}
+  .lc-row{display:flex;align-items:center;gap:var(--sp2);padding:6px 0}
+  .lc-grade{flex:1;font-size:12px;font-weight:700;color:var(--ink-muted)}
+  .lc-grade.lc-a{color:var(--ok)} .lc-grade.lc-b{color:var(--warn)}
+  .lc-n{min-width:2.2em;text-align:center;font-family:var(--display);font-weight:800;font-size:18px;color:var(--ink-strong);font-variant-numeric:tabular-nums}
+  .lc-btn{width:40px;height:40px;flex:0 0 auto;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);
+    color:var(--ink-strong);font-size:20px;font-weight:700;cursor:pointer;font-family:var(--sans);line-height:1;display:grid;place-items:center}
+  .lc-btn:hover{border-color:var(--accent)}
+  .lc-btn.plus{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .lc-btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+  .att-list{display:flex;flex-direction:column;gap:4px;margin:4px 0}
+  .att-row{display:flex;align-items:center;gap:var(--sp2)}
+  .att-link{flex:1;font-size:13px;color:var(--accent-text);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .att-link:hover{text-decoration:underline}
+  .att-empty{font-size:12px;color:var(--ink-muted)}
+  .att-x{flex:0 0 auto;width:24px;height:24px;border:1px solid var(--line);border-radius:var(--r-input);background:var(--surface);color:var(--signal-text);cursor:pointer;font-size:14px;line-height:1}
+  .att-x:hover{border-color:var(--signal)}
+  .att-add{display:flex;gap:var(--sp2);align-items:center;margin-top:4px;flex-wrap:wrap}
+  .att-add input:not([type=file]){flex:1 1 120px;min-width:100px;padding:6px 8px;border:1px solid var(--line);border-radius:var(--r-input);background:var(--surface);color:var(--ink);font-size:13px;font-family:var(--sans)}
+  .att-add input[type=file]{font-size:12px;color:var(--ink-muted);flex:1 1 100%}
+  .att-hint{font-size:12px;color:var(--ink-muted)}
+  .pill.att{background:var(--info-bg);color:var(--ink-muted);text-transform:none}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp2)}
+  .modal-actions{display:flex;gap:var(--sp2);justify-content:flex-end;margin-top:var(--sp3);flex-wrap:wrap}
+  .modal-actions .btn.danger{margin-right:auto}
+
+  /* Team */
+  .member{display:flex;align-items:center;gap:var(--sp2);padding:var(--sp2) 0;border-bottom:1px solid var(--line)}
+  .member:last-child{border-bottom:0}
+  .member .av{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;
+    font-family:var(--display);font-weight:800;font-size:13px;flex:0 0 auto}
+  .member .mn{flex:1}.member .mn b{color:var(--ink-strong)} .member .mn span{display:block;font-size:12px;color:var(--ink-muted)}
+  .rem-thr{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--warn-bg);color:var(--warn);text-transform:uppercase}
+  .rem-thr.over{background:var(--crit-bg);color:var(--crit)}
+  .chip.star{border-color:var(--accent);color:var(--accent-text);font-weight:700}
+  .chip.star[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+  .task.arch{opacity:.62}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <span class="mark">EF</span>
+      <span>
+        <h1>InfraTech 2027 Cockpit</h1>
+        <small>Fräsdienst&nbsp;E.&nbsp;Feind · Rotterdam&nbsp;Ahoy</small>
+      </span>
+    </div>
+    <div class="cd">
+      <div class="count"><span class="n num" id="cdDays">–</span><div class="l">Tage bis Messe</div></div>
+      <div class="ring" title="Gesamtfortschritt">
+        <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true">
+          <circle cx="23" cy="23" r="19" fill="none" stroke="#5c6767" stroke-width="6"/>
+          <circle id="ringFg" cx="23" cy="23" r="19" fill="none" stroke="var(--accent)" stroke-width="6"
+            stroke-linecap="round" stroke-dasharray="119" stroke-dashoffset="119"/>
+        </svg>
+        <span class="pct num" id="ringPct">0%</span>
+      </div>
+      <button class="tbtn" id="themeBtn" title="Hell/Dunkel umschalten" aria-label="Theme umschalten">◐</button>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Bereiche"><div class="wrap" id="tabbar" role="tablist"></div></nav>
+
+<main class="wrap"><div id="panels"></div>
+  <div class="foot">
+    <strong>Datenquelle:</strong> Konsolidiert aus der ToDo-Liste Messeplanung 2027, den Manus-Checklisten &amp;
+    Analysen (InfraTech 2026 → 2027), dem Faktencheck Rotterdam Ahoy und den Giveaway-Ideen. ·
+    Aufgaben, Team und Erinnerungen werden in der geteilten Datenbank gespeichert (sonst pro Gerät lokal). ·
+    <strong>Datenschutz:</strong> keine personenbezogenen Kontaktdaten Dritter – die Leadliste 2026 bleibt in der Originaldatei.
+  </div>
+</main>
+<div id="modalRoot"></div>
+
+<script>
+/* ============================================================ DATEN ============================================================ */
+const FAIR_START="2027-01-12", FAIR_END="2027-01-15";
+const CATS=[
+  {id:"steuerung",label:"Steuerung & Fristen",color:"#424e4e"},
+  {id:"innovation",label:"Innovationspreis",color:"#e3000b"},
+  {id:"standbau",label:"Standbau & Technik",color:"#84bb20"},
+  {id:"logistik",label:"Logistik & Transport",color:"#5e8a14"},
+  {id:"reise",label:"Hotel & Reise",color:"#6b7575"},
+  {id:"material",label:"Material & Packliste",color:"#84bb20"},
+  {id:"catering",label:"Catering",color:"#6b7575"},
+  {id:"marketing",label:"Marketing & Print",color:"#5e8a14"},
+  {id:"leads",label:"Leads & CRM",color:"#424e4e"},
+  {id:"rotterdam",label:"Rotterdam / NL-Spezifika",color:"#e3000b"},
+  {id:"ablauf",label:"Durchführung & Review",color:"#84bb20"},
+  {id:"dokumente",label:"Dokumente & Ablage",color:"#6b7575"},
+];
+const CATMAP=Object.fromEntries(CATS.map(c=>[c.id,c]));
+const DEFAULT_OWNERS=["David","Team","Enrico","Eric","Thomas","Steffi/Alexandra","Madlen/Kim"];
+
+function t(id,cat,prio,due,owner,title,note,flags){return {id,cat,prio,due,owner,title,note:note||"",flags:flags||[]};}
+const TASKS=[
+ t("s1","steuerung","P0","2026-10-02","David","2027-Handbuch, Standnummer & Portalzugänge bei Rotterdam Ahoy anfordern/bestätigen","Voraussetzung für alle weiteren Fristen.",[]),
+ t("s2","steuerung","P0","2026-10-09","David","Verbindliche 2027-Fristenmatrix mit Ahoy verifizieren","Standentwurf-Genehmigung, Anmeldeschluss, VRS/Slot, Auf-/Abbauzeiten – 2027 offiziell noch nicht publiziert.",["fakt"]),
+ t("s3","steuerung","P1","2026-10-02","David","Offizielle 2027-Sales-Kontaktperson bei infratech.nl erfragen","„k.vlot@ahoy.nl\" laut Faktencheck unbestätigt; Ahoy-Adressen enden auf @ahoy.nl.",["fakt"]),
+ t("s4","steuerung","P2","2026-10-16","David","Rechtsform des Vertragspartners (Rotterdam Ahoy N.V.?) prüfen","Gegen die tatsächliche 2027-Teilnahmevereinbarung abgleichen.",["recht"]),
+ t("s5","steuerung","P1",null,"David","Verträge/Bestellungen mit Belegnr., Betrag, Frist, Kündigungs- & Lieferbedingung archivieren","Laufend – zentrale Ablage.",[]),
+ t("s6","steuerung","P2",null,"David","Eskalationskontakt + 72-Stunden-Regel dokumentieren","Bei Nicht-Antwort des Veranstalters.",[]),
+ t("s7","steuerung","P1","2026-09-30","Team","Wöchentlichen 15-min-Sync + Kanal „Messe2027_INFRATEC\" einrichten","Fester Jour fixe bis Messe.",[]),
+ t("s8","steuerung","P1","2026-10-23","David","Budget-Forecast (24.200–26.500 € brutto) + Freigabegrenzen einrichten","Ziel: max. 10 % Abweichung. Bei Vertragsfragen Rechtsabteilung prüfen.",["recht"]),
+ t("i1","innovation","P0","2026-09-25","David","Innovationspreis-Einsendung abschließen","KONFLIKT: ToDo nannte 31.10.2026, Faktencheck nennt 25.09.2026. Datum SOFORT verifizieren!",["fakt"]),
+ t("i2","innovation","P0","2026-09-23","David","Problemdefinition & Nutzen formulieren",""),
+ t("i3","innovation","P0","2026-09-24","Team","Video mit 3 Kernbotschaften erstellen",""),
+ t("i4","innovation","P1","2026-09-24","David","Partner & Entwicklung dokumentieren",""),
+ t("i5","innovation","P0","2026-09-25","David","Jury-Unterlagen final bereitstellen",""),
+ t("b1","standbau","P0","2026-10-16","David","Flächenentscheidung: 25 m² vs. größer/offen/modular","2026 war 25 m² für 2 Pflasterflächen + Sitzbereich zu eng. Eck-/offener Stand, mittig prüfen.",[]),
+ t("b2","standbau","P1","2026-11-06","David","Standbau-Partner bestätigen","Verifiziert: Global Expo Stand B.V., LOCO. Stabilo/weitere: KvK-Auszug + Referenzen einholen.",["fakt"]),
+ t("b3","standbau","P1","2026-10-30","David","Layout: Besucherweg, Gesprächszone, Lager, Kaffee-Bar, Fluchtwege",""),
+ t("b4","standbau","P0","2026-11-20","David","Standdesign/technische Abweichungen genehmigen lassen","Standentwurf-Freigabe bei Stand >2,75 m. Referenz 2026: 21.11. – für 2027 verifizieren.",["fakt"]),
+ t("b5","standbau","P1","2026-11-27","David","Eyecatcher/Grafik-Druck freigeben","Leuchtendes Grün + Grinding-Schild funktionierten 2026 gut → beibehalten.",[]),
+ t("b6","standbau","P1","2027-01-06","David","Möbelpaket, Teppichfarbe & Namensblende wählen","Referenz 2026: Teppich/Möbel 06.01. – 2027 verifizieren.",["fakt"]),
+ t("b7","standbau","P1","2026-12-01","David","Stromanschluss & Steckdosen bestätigen","2026 ausreichend.",[]),
+ t("b8","standbau","P1","2026-12-11","Team","TV/Display buchen, Loop <3 min + Kopfhörer testen","2026 wirksam; Kopfhörer könnten Aufmerksamkeit erhöhen (E5).",[]),
+ t("b9","standbau","P2","2026-12-11","Team","Mobile Daten / Router / WLAN-Box organisieren",""),
+ t("b10","standbau","P2","2026-11-27","David","Beleuchtung/Spots + beleuchteten Flyerständer prüfen","Flyer ist DIN lang → A4-Ständer 2026 unbrauchbar. Format vor Druck testen (E6).",[]),
+ t("b11","standbau","P1",null,"Team","Standabnahme mit Foto + Mängelliste durchführen","Beim Aufbau.",[]),
+ t("l1","logistik","P0","2026-11-27","David","Vertragsspediteur (DB Schenker) + Liefer-Slot buchen","Eigene Stapler/Krane NICHT erlaubt – nur zugelassene Spedition oder Person vor Ort (E9).",[]),
+ t("l2","logistik","P0","2026-10-30","David","Exponate final definieren: zwingend / optional / nicht mitnehmen","Redundante Kleinexponate 2026 ungenutzt. Schleifwelle+Pflasterfläche zentral – Aufbau ggf. via Steinmatte vereinfachen.",[]),
+ t("l3","logistik","P1","2026-12-04","Team","Packliste mit Menge, Gewicht, Maß, Verantwortlichem & Rücktransport",""),
+ t("l4","logistik","P1",null,"Team","Lieferetikett: Aussteller, Halle/Stand, Messezeitraum, Mobilnummer",""),
+ t("l5","logistik","P1","2026-12-18","David","Empfangsperson + Ausweichperson je Lieferfenster benennen","Offene Entscheidung: Wer nimmt vor Ort an und übernimmt Rückgabe?",[]),
+ t("l6","logistik","P1",null,"Team","Einfahrt Tor 1, Kaution 200 €, Zufahrtsdauer ins Fahrerbriefing",""),
+ t("l7","logistik","P1",null,"Team","Transportplan (V-Klasse, LKW, Anhänger) erstellen",""),
+ t("l8","logistik","P1",null,"Team","Maschinen anmelden (Kompaktlader, Ameise, Schleifwelle)",""),
+ t("l9","logistik","P1",null,"David","Rücktransport, Abfall, Sperrmüll & Abbauhelfer bestätigen",""),
+ t("l10","logistik","P2",null,"Team","Parkausweise & Zeitfenster für Fahrzeuge organisieren",""),
+ t("r1","reise","P1","2026-10-15","David","Hotel buchen – ibis Styles Rotterdam Ahoy (einziges fußläufig, ~2 min)","Faktencheck: Hilton/Postillion WTC/DoubleTree ~5 km Zentrum; „The Manhattan\" = Rotterdam Marriott. Nah: ART Hotel (~1,6 km), Van der Valk Ridderkerk (Parken).",["fakt"]),
+ t("r2","reise","P2","2026-11-13","David","Zimmerliste finalisieren",""),
+ t("r3","reise","P2","2026-12-18","Team","Anreisezeiten für Team koordinieren",""),
+ t("r4","reise","P2",null,"Team","Parkhaus Ahoy prüfen",""),
+ t("m1","material","P1",null,"Team","Werbemittel packen – Renner behalten","Zollstöcke, Feuerzeuge, Kugelschreiber, Schlüsselbänder, Einkaufwagenlöser + Steine m. Aufkleber kamen 2026 sehr gut an.",[]),
+ t("m2","material","P2",null,"Team","Hemden & Namensschilder","Namensschilder konsequent einsetzen; Kleidung 2026 ohne Wiedererkennung → eigene Farbe + sauberes Schuhwerk.",[]),
+ t("m3","material","P2",null,"Team","Infobroschüren / Prospektständer (DIN lang, beleuchtet)",""),
+ t("m4","material","P1",null,"David","Präsentation auf Stick + Cloud sichern",""),
+ t("m5","material","P2",null,"Team","LED-Band, Aufsteller, Infoblatt, Flyerspender mit Magnet",""),
+ t("m6","material","P2",null,"Team","Zaubertasche, Kabel/Verteiler, Kamera+Ladekabel, Tablet, Trittleiter, Bargeld (3×25 €)",""),
+ t("m7","material","P2",null,"Team","Reinigungsset, Müllsäcke, mehr Feuchttücher, Staubsauger, Fugenmaterial",""),
+ t("m8","material","P2",null,"Team","NICHT mitnehmen (Ballast reduzieren)","Redundante Kleinexponate, große Servietten, 5-tlg. Kalender, Minz-Spender, Wein (2026 kaum getrunken) – E7.",[]),
+ t("c1","catering","P2",null,"Team","Kaffeemaschine + Kapseln (weniger, Sorten reduzieren)","Kaffee-Bar auf dem Tresen wirkte einladend – beibehalten.",[]),
+ t("c2","catering","P2",null,"Team","Wasser / Milch / Zucker / Kekse besorgen",""),
+ t("c3","catering","P2",null,"Team","Kühlschrank befüllen – Bedarf messen","2026 zu viele Gläser/Getränke; Kühlschrank im Lager hätte gereicht.",[]),
+ t("c4","catering","P2","2026-12-11","David","Catering-Angebote prüfen (Aramark o. Ä.)","Foodcourt 2026 gut, aber teuer.",[]),
+ t("mk1","marketing","P1","2026-12-04","David","Social-Media-Vorabkampagne planen","2026 KEINE Vorab-/Live-Bewerbung. Instagram + LinkedIn, Messe-Logo in Mail-Signatur, Prä-Mail, Website.",[]),
+ t("mk2","marketing","P1","2026-11-27","David","Flyer überarbeiten (Format DIN lang, Beleuchtung, Design)",""),
+ t("mk3","marketing","P1","2026-12-11","David","Nachfassmail neu: kurz, segmentiert, klare CTA + Special","2026 erst am 26.01. versendet, zu viel Text (E3).",[]),
+ t("mk4","marketing","P2","2026-11-13","David","Anzeigen-/Katalogoptionen 2027 bewerten","Basis: „Werben im Messekatalog\" – Preise/Termine 2027 neu einholen.",[]),
+ t("mk5","marketing","P2","2026-11-13","David","Giveaway-Strategie finalisieren","Prio: 1) Zollstock Lasergravur 2) USB-Bauhelm 3) Warnweste 4) Isolierbecher 5) HARIBO. Alle mit Logo + QR + NL-Landingpage.",[]),
+ t("mk6","marketing","P2","2026-12-04","David","QR-Code + Landingpage DE/EN/NL, Sprüche freigeben (DE/EN/NL)","Leads direkt nachverfolgbar machen.",[]),
+ t("cr1","leads","P0","2026-11-27","David","Leadformular mit Pflichtfeldern etablieren","Firma, Name, Funktion, Segment, Bedarf, Priorität, Einwilligung, nächster Schritt, Owner, Fälligkeit (E3).",[]),
+ t("cr2","leads","P0","2026-10-16","David","Kontaktliste 2026 bereinigen, A/B/C priorisieren, DSGVO prüfen","Achtung Datenschutz: personenbezogene Kontaktdaten NICHT in dieses Tool – nur in geschützter Originaldatei.",["recht"]),
+ t("cr3","leads","P1","2026-12-11","David","Zielkundenliste (Kommunen, Straßenbau, Infrastruktur, Partner) erstellen",""),
+ t("cr4","leads","P1",null,"Team","2 aktive Akquise-Slots je Messetag außerhalb des Standes","2026 Ansprache fast nur am Stand (E4).",[]),
+ t("cr5","leads","P1",null,"Team","Tägl. Lead-Check auf Vollständigkeit & Dubletten","Mittlerer Messetag am stärksten (100/125/121) → Personal dort verstärken.",[]),
+ t("cr6","leads","P0",null,"David","Nachfassen: A-Leads <48 h, B-Leads <5 Arbeitstagen","Ziel ≥95 % A-Leads innerhalb 48 h.",[]),
+ t("nl1","rotterdam","P1",null,"David","NL-Arbeitsschutz prüfen","Bei arbeitsrechtlichen Fragen Rechtsabteilung prüfen.",["recht"]),
+ t("nl2","rotterdam","P1",null,"David","Brandschutz Ahoy klären",""),
+ t("nl3","rotterdam","P2",null,"Team","Müllentsorgung NL organisieren",""),
+ t("nl4","rotterdam","P1","2026-11-27","David","Zoll / Grenzübertritt Maschinen (NL) klären","Rechtsabteilung / Zoll prüfen.",["recht"]),
+ t("nl5","rotterdam","P1",null,"David","Versicherung NL abschließen","Rechtsabteilung prüfen.",["recht"]),
+ t("d1","ablauf","P1",null,"David","Morgenbriefing: Rollen, Ziele, Standbesetzung, Eskalationsweg",""),
+ t("d2","ablauf","P2",null,"Team","Besucherzahl stündlich erfassen, Auslastung je Tag auswerten",""),
+ t("d3","ablauf","P2",null,"Team","Exponate, Werbemittel & Getränke täglich nachfüllen",""),
+ t("d4","ablauf","P2",null,"Team","Fotos (Stand, Exponate, Team, Interaktion) mit Einwilligung","Einwilligung dokumentieren (Datenschutz).",["recht"]),
+ t("d5","ablauf","P1",null,"Team","Abbau nicht vor zulässigem Zeitpunkt; Stand vollständig räumen","Lager, Theke, Banner, persönliche Gegenstände.",[]),
+ t("d6","ablauf","P1",null,"David","Abschlussbericht <14 Tage: KPI, Kosten, Leads, Risiken, Lessons Learned",""),
+ t("do1","dokumente","P2",null,"David","Drive-Ordnerstruktur (01_Inventar … 05_Dashboard) pflegen",""),
+ t("do2","dokumente","P2",null,"David","Checklisten, Logistikplan, Freigaben, Teilnehmerliste ablegen",""),
+ t("do3","dokumente","P2",null,"David","Wissensbasis 2026 (9 Manus-Dateien) verlinken","Handbücher, Auswertung, Deadlines, Inventar als 2027-Grundlage.",[]),
+];
+
+const DEADLINES=[
+ {d:"2026-09-25",t:"Innovationspreis – Einsendung",s:"2027 bestätigt (Faktencheck)",st:"r"},
+ {d:"2026-11-21",t:"Standentwurf-Genehmigung (>2,75 m) + Katalog-Firmendaten + Produkte/Dienstleistungen",s:"Referenz 2026 – 2027 verifizieren",st:"y"},
+ {d:"2026-12-01",t:"Bestellungen im Webshop vor Zuschlagsfrist",s:"Referenz 2026 – 2027 verifizieren",st:"y"},
+ {d:"2026-12-12",t:"Namensblende, Teppichfarbe & Grafikdatei an Standbauer",s:"Referenz 2026 – 2027 verifizieren",st:"y"},
+ {d:"2027-01-06",t:"Bestellung Teppich & Möbel (Ahoy InfraTech Webshop)",s:"Referenz 2026 – 2027 verifizieren",st:"y"},
+ {d:"2027-01-12",t:"InfraTech 2027 – Messebeginn (Di), Rotterdam Ahoy",s:"12.–15.01.2027 (Faktencheck)",st:"g"},
+ {d:"2027-01-15",t:"InfraTech 2027 – Messeende (Fr)",s:"Öffnungszeiten Fr 10–16 Uhr",st:"g"},
+];
+const KPIS=[
+ {k:"Standbesucher",b:"ca. 350",z:"≥ 450",m:"Tageszählung"},
+ {k:"Qualifizierte Leads",b:"nicht sauber getrennt",z:"≥ 300",m:"Pflichtformular"},
+ {k:"A-Leads mit nächstem Schritt",b:"nicht systematisch",z:"≥ 90 %",m:"CRM-Check"},
+ {k:"Follow-up < 48 h",b:"erst am 26.01.",z:"≥ 95 % A-Leads",m:"Versandstatus"},
+ {k:"Fristtreue",b:"nicht systemisch",z:"100 %",m:"Fristenmatrix"},
+ {k:"Budgetabweichung",b:"—",z:"≤ 10 %",m:"Forecast vs. Ist"},
+];
+const BUDGET=[
+ {p:"Messestand / Standbau",b:"10.500",z:"11.000–13.000",a:"Fläche/Offenheit optimieren"},
+ {p:"Technik, Strom, TV, Parken/Müll",b:"1.931",z:"2.000–2.400",a:"Kopfhörer/Technik ergänzen"},
+ {p:"Logistik / Spedition",b:"995",z:"1.100–1.400",a:"Slot + Rücktransport"},
+ {p:"Hotel / Aufbaupersonal",b:"3.535",z:"3.700–4.300",a:"Frühbuchung, Direktkonditionen"},
+ {p:"Catering / Geschirr",b:"537",z:"600–750",a:"Mengen reduzieren"},
+ {p:"Werbemittel / Print",b:"2.863",z:"3.000–3.500",a:"weniger redundante Streuartikel"},
+ {p:"Reserve",b:"—",z:"2.800–3.200",a:"ca. 12–13 %"},
+];
+const LESSONS=[
+ ["E1","Standfläche & Wegeführung für 2 Pflasterflächen + Sitzbereich zu knapp.","Hoch","Standgröße/-typ + Exponatmodul früh entscheiden."],
+ ["E2","Fristen/Portale/Ansprechpartner unübersichtlich – Zuschlagsrisiko.","Hoch","Zentrale Fristenmatrix mit Owner, Status, Eskalationsdatum."],
+ ["E3","Gesprächsnotizen kaum erfasst; Nachfassmail erst 26.01.","Hoch","Leadformular mit Pflichtfeldern + Follow-up <48 h."],
+ ["E4","Ansprache überwiegend am Stand statt auf der Fläche.","Hoch","2 aktive Akquise-Slots/Tag mit Zielkundenliste."],
+ ["E5","TV/Präsentation wirksam, tonlos akzeptabel.","Mittel","Kürzerer Loop + Kopfhörer testen."],
+ ["E6","Grüne Seitenwände + beleuchteter Flyerständer top; A4-Ständer passte nicht.","Mittel","Format (DIN lang) & Beleuchtung vor Druck testen."],
+ ["E7","Viele Giveaways beliebt; Kalender/Minzspender/große Servietten ineffizient.","Mittel","Streuartikel nach Nutzen & Transportvolumen standardisieren."],
+ ["E8","Messeportal/Kommunikation teils langsam bzw. englisch.","Mittel","Ansprechpartnerliste + 72-h-Eskalation."],
+ ["E9","Eigene Stapler/Krane verboten; Lieferannahme geregelt nötig.","Hoch","Slot- & Empfangsverfahren dokumentieren."],
+ ["E10","Ausstellerabend laut/zu wenig Sitzplätze – kaum Networking.","Niedrig","Gezielte Termine außerhalb des Abends."],
+];
+const FACTS=[
+ ["Messedatum","12.–15. Januar 2027 (Di–Fr), Rotterdam Ahoy","Bestätigt","ToDo nannte 12.–14.01. → Aufbau/Abbau-Plan an 4 Messetage anpassen."],
+ ["Innovationspreis","Einsendung vóór 25.09.2026","Bestätigt (2027)","ToDo nannte 31.10.2026 – DRINGEND verifizieren, Frist ggf. in Tagen!"],
+ ["Hotels","Nur ibis Styles Rotterdam Ahoy fußläufig (~2 min)","Korrektur","Hilton/Postillion WTC/DoubleTree ~5 km Zentrum; „The Manhattan\" = Rotterdam Marriott."],
+ ["Kennzahlen","500 Aussteller / >23.000 Besucher","Fortschreibung","2025-Werte (23.344), keine testierte 2027-Prognose."],
+ ["Dienstleister","Global Expo Stand B.V. & LOCO verifiziert","Prüfen","Whimsical Exhibits & LIVE Event Staffing schwach belegt; „ExproGloble\" nicht auffindbar – streichen."],
+ ["Öffnungszeiten","Di 10–18 · Mi 10–21 · Do 10–18 · Fr 10–16","Bestätigt","Mittwoch langer Abend."],
+];
+const SOURCES=[
+ ["Ausstellerhandbuch InfraTech 2026","PDF","Aufbau/Abbau, Lieferungen, Ansprechpartner – Checklistenbasis"],
+ ["Standbauhandbuch InfraTech 2026","PDF","Technische Standbauregeln, Tor 1, Kaution 200 €"],
+ ["Overview Deadlines 2026","PDF","Fristen-Referenz (Standentwurf, Katalog, Teppich/Möbel)"],
+ ["Werben im Messekatalog 2026","PDF","Anzeigen-/Logo-/PR-Optionen (Preise 2027 neu)"],
+ ["Auswertung InfraTech 2026","XLSX","Lessons Learned + Kostenbaseline 21.023 €"],
+ ["InfraTech 2026 (Masterliste)","XLSX","Stammdaten, Team, Packliste, Aufbauzeiten"],
+ ["Standbesucher 2026","XLSX","Leadliste – geschützt, NICHT ins Tool (DSGVO)"],
+ ["Nachfassmail 2026","DOCX","Vorlage – kürzen auf klare CTA"],
+ ["Zusammenfassung Messe 2026","PPTX","Review-Deck als 2027-Kickoff-Basis"],
+];
+
+/* ============================================================ ZUSTAND ============================================================ */
+const LS_KEY="feind_infratech2027_v2";
+let custom={};            // taskId -> {status?,note?,title?,cat?,prio?,owner?,due?,deleted?,custom?}
+let team=[];              // [{id,name,role}]
+let reminders={leadDays:[14,7,2]};
+let dbNS=null, tasksColl=null, settingsDoc=null, budgetDoc=null, leadsDoc=null, activityColl=null;
+let mTasks={}, legacyBase={};
+let budgetActuals={};     // Kostenblock-Key -> {ist?:number, forecast?:number}
+let leadCounts={};        // Datum(JJJJ-MM-TT) -> {a,b,c}  (nur Stückzahlen, keine personenbezogenen Daten)
+let userNS=null, myUserId=null;   // user-Capability: opake Team-ID des Betrachters
+let activity=[];          // [{id, ts, actorId, action, detail}] – Aktivitätsprotokoll (geteilt)
+let profileCache={};      // actorId -> Anzeigename (nur ids gespeichert, Namen zur Anzeige aufgelöst)
+
+function recompute(){ custom={}; Object.keys(legacyBase).forEach(id=>custom[id]=Object.assign({},legacyBase[id]));
+  Object.keys(mTasks).forEach(id=>custom[id]=Object.assign({},custom[id],mTasks[id])); }
+function loadLocal(){ try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s){ custom=s.custom||{}; team=s.team||[]; if(s.reminders) reminders=s.reminders; if(s.budget) budgetActuals=s.budget; if(s.leads) leadCounts=s.leads; } }catch(e){} }
+function saveLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify({custom,team,reminders,budget:budgetActuals,leads:leadCounts})); }catch(e){} }
+function setSaveHint(txt){ const el=document.getElementById("saveHint"); if(el) el.textContent="● "+txt; }
+
+async function initStore(){
+  loadLocal(); render();
+  try{ dbNS = (window.claude&&claude.use)? await claude.use("db") : null; }catch(e){ dbNS=null; }
+  if(!dbNS){ setSaveHint("Lokal gespeichert (nur dieses Gerät)"); return; }
+  try{
+    // Einmalige Übernahme evtl. vorhandener Alt-Status (v1)
+    try{ const leg=await dbNS.collection("overrides").get?.(); }catch(e){}
+    tasksColl=dbNS.collection("tasks");
+    tasksColl.onSnapshot(snap=>{ mTasks={}; (snap.docs||snap||[]).forEach(d=>{ const v=d.data?d.data():d; if(v&&v.id) mTasks[v.id]=v; }); recompute(); saveLocal(); render(); setSaveHint("Synchronisiert mit geteilter Datenbank"); });
+    settingsDoc=dbNS.doc("settings/general");
+    settingsDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v){ if(Array.isArray(v.team)) team=v.team; if(v.reminders&&Array.isArray(v.reminders.leadDays)) reminders=v.reminders; saveLocal(); render(); } });
+    budgetDoc=dbNS.doc("budget/actuals");
+    budgetDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v&&v.blocks){ budgetActuals=v.blocks; saveLocal(); render(); } });
+    leadsDoc=dbNS.doc("leads/counts");
+    leadsDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v&&v.days){ leadCounts=v.days; saveLocal(); render(); } });
+    // user-Capability: Betrachter-ID für das Aktivitätsprotokoll (nur id gespeichert, Name zur Anzeige aufgelöst).
+    try{ userNS = (window.claude&&claude.use)? await claude.use("user") : null; if(userNS&&userNS.id){ myUserId = await userNS.id(); } }catch(e){ userNS=null; }
+    activityColl=dbNS.collection("activity");
+    activityColl.onSnapshot(snap=>{
+      const arr=[]; (snap.docs||snap||[]).forEach(d=>{ const v=d.data?d.data():d; if(v&&v.id&&v.ts) arr.push(v); });
+      activity=arr.sort((a,b)=>b.ts-a.ts);
+      resolveActors([...new Set(activity.map(e=>e.actorId).filter(Boolean))]);
+      render();
+    });
+    setSaveHint("Verbunden – Änderungen für das Team sichtbar");
+  }catch(e){ dbNS=null; setSaveHint("Lokal gespeichert (nur dieses Gerät)"); }
+}
+async function saveTask(id,patch){ custom[id]=Object.assign({},custom[id],patch); mTasks[id]=Object.assign({id},custom[id]); saveLocal(); render();
+  if(tasksColl){ try{ await tasksColl.doc(id).set(Object.assign({id},custom[id],{updatedAt:Date.now()})); }catch(e){ setSaveHint("Nicht synchronisiert – lokal gesichert"); } } }
+// Archivieren statt Löschen: Aufgabe bleibt in der DB erhalten und ist wiederherstellbar.
+// Gilt für Seed- und eigene Aufgaben gleich (kein Hard-Delete). deleted:false räumt
+// evtl. vorhandene Alt-Tombstones (früheres „Löschen") mit auf.
+async function archiveTask(id,val){ return saveTask(id,{archived:!!val, deleted:false}); }
+async function saveSettings(){ saveLocal(); if(settingsDoc){ try{ await settingsDoc.set({team,reminders,updatedAt:Date.now()}); }catch(e){} } }
+async function saveBudget(){ saveLocal(); if(budgetDoc){ try{ await budgetDoc.set({blocks:budgetActuals,updatedAt:Date.now()}); }catch(e){ setSaveHint("Budget nur lokal gesichert"); } } }
+async function saveLeads(){ saveLocal(); if(leadsDoc){ try{ await leadsDoc.set({days:leadCounts,updatedAt:Date.now()}); }catch(e){ setSaveHint("Lead-Zähler nur lokal gesichert"); } } }
+async function bumpLead(date,grade,delta){ const c=Object.assign({a:0,b:0,c:0},leadCounts[date]); c[grade]=Math.max(0,(+c[grade]||0)+delta); leadCounts[date]=c; saveLeads(); render(); }
+
+/* Aktivitätsprotokoll: „wer hat wann was geändert". Nur opake Team-ID (actorId) speichern;
+   Namen werden über die user-Capability zur Anzeige aufgelöst. Ohne geteilte DB kein Log. */
+async function logActivity(action,detail){
+  if(!activityColl) return;
+  const entry={ id:"a"+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36), ts:Date.now(), actorId: myUserId||null, action, detail: detail!=null?String(detail):"" };
+  try{ await activityColl.doc(entry.id).set(entry); }catch(e){}
+}
+async function resolveActors(ids){
+  if(!userNS||!userNS.profiles) return;
+  const need=ids.filter(id=>id&&profileCache[id]===undefined);
+  if(!need.length) return;
+  try{ const ps=await userNS.profiles(need); need.forEach(id=>{ profileCache[id]=(ps[id]&&ps[id].name)||""; }); render(); }
+  catch(e){ need.forEach(id=>{ if(profileCache[id]===undefined) profileCache[id]=""; }); }
+}
+function actorName(id){ if(!id) return "System/lokal"; const n=profileCache[id]||""; const base=n||"Teammitglied"; return id===myUserId? base+" (ich)" : base; }
+function taskTitle(id){ const t=allTasks(true).concat(allTasks(false)).find(x=>x.id===id); return t?t.title:id; }
+
+/* ============================================================ MODELL ============================================================ */
+// inclArchived=false (Standard): nur aktive Aufgaben. true: nur archivierte
+// (inkl. Alt-Tombstones deleted:true, damit auch früher „gelöschte" wiederherstellbar sind).
+function allTasks(inclArchived){
+  const map={};
+  TASKS.forEach(s=>{ map[s.id]=Object.assign({status:"open"},s); });
+  Object.keys(custom).forEach(id=>{ const c=custom[id];
+    const base=map[id]||{id,cat:"steuerung",prio:"P2",owner:"David",title:"(neue Aufgabe)",note:"",flags:[],due:null,status:"open",custom:true};
+    map[id]=Object.assign({},base,c);
+  });
+  const isArch=x=>!!(x.archived||x.deleted);
+  const arr=Object.values(map);
+  return inclArchived ? arr.filter(isArch) : arr.filter(x=>!isArch(x));
+}
+function owners(){ const set=[...DEFAULT_OWNERS]; team.forEach(m=>{ if(m.name&&!set.includes(m.name)) set.push(m.name); }); return set; }
+// Offene (nicht erledigte) Blocker einer Aufgabe. Archivierte/entfernte Blocker gelten als aufgelöst.
+function unmetDeps(x){
+  if(!x.deps||!x.deps.length) return [];
+  const map=Object.fromEntries(allTasks(false).map(t=>[t.id,t]));
+  return x.deps.map(id=>map[id]).filter(b=>b&&b.status!=="done");
+}
+function progress(){ const a=allTasks(); const done=a.filter(x=>x.status==="done").length; return {done,total:a.length,pct:a.length?Math.round(done/a.length*100):0}; }
+
+/* ============================================================ HELFER ============================================================ */
+const TODAY=new Date(); TODAY.setHours(0,0,0,0);
+function daysBetween(a,b){ return Math.round((a-b)/86400000); }
+function parseD(s){ if(!s) return null; const p=s.split("-"); return new Date(+p[0],+p[1]-1,+p[2]); }
+function fmtD(s){ if(!s) return ""; return parseD(s).toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit"}); }
+function dueClass(s){ if(!s) return ""; const dd=daysBetween(parseD(s),TODAY); if(dd<0) return "over"; if(dd<=14) return "soon"; return ""; }
+function dueLabel(s){ if(!s) return "offen"; const dd=daysBetween(parseD(s),TODAY);
+  if(dd<0) return fmtD(s)+" · "+(-dd)+" T überfällig"; if(dd===0) return fmtD(s)+" · heute"; return fmtD(s)+" · in "+dd+" T"; }
+function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function initials(n){ return (n||"?").split(/[\s\/]+/).map(x=>x[0]).join("").slice(0,2).toUpperCase(); }
+
+/* ============================================================ TABS ============================================================ */
+const TABS=[
+ {id:"dashboard",label:"Dashboard"},{id:"aufgaben",label:"Aufgaben",count:true},
+ {id:"fristen",label:"Fristen"},{id:"budget",label:"Budget"},{id:"kpi",label:"Ziele & KPIs"},
+ {id:"leadzaehler",label:"Lead-Zähler"},
+ {id:"lessons",label:"Lessons Learned"},{id:"fakten",label:"Faktencheck"},
+ {id:"team",label:"Team & Zugriff"},{id:"protokoll",label:"Protokoll"},{id:"wissen",label:"Wissensbasis"},
+];
+let activeTab="dashboard", filterCat="all", filterPrio="all", filterOwner="all", filterQuery="", showArchived=false;
+
+function buildTabs(){
+  const bar=document.getElementById("tabbar"); bar.innerHTML="";
+  TABS.forEach(tb=>{ const b=document.createElement("button"); b.className="tab"; b.role="tab"; b.textContent=tb.label; b.dataset.tab=tb.id;
+    b.setAttribute("aria-selected",tb.id===activeTab);
+    if(tb.count){ const s=document.createElement("span"); s.className="badge"; s.id="openCount"; b.appendChild(s); }
+    b.onclick=()=>{ activeTab=tb.id; buildTabs(); render(); document.getElementById("panels").scrollIntoView({block:"start",behavior:"smooth"}); };
+    bar.appendChild(b); });
+}
+
+/* ============================================================ RENDER ============================================================ */
+function render(){
+  const cd=daysBetween(parseD(FAIR_START),TODAY);
+  document.getElementById("cdDays").textContent = cd>=0? cd : "läuft";
+  const pr=progress();
+  document.getElementById("ringPct").textContent=pr.pct+"%";
+  const circ=2*Math.PI*19;
+  document.getElementById("ringFg").setAttribute("stroke-dasharray",circ.toFixed(0));
+  document.getElementById("ringFg").setAttribute("stroke-dashoffset",(circ*(1-pr.pct/100)).toFixed(1));
+  const oc=document.getElementById("openCount"); if(oc) oc.textContent=pr.total-pr.done;
+
+  const p=document.getElementById("panels"); p.innerHTML="";
+  const sec=document.createElement("section"); sec.setAttribute("role","tabpanel"); sec.tabIndex=0;
+  const V={dashboard:viewDashboard,aufgaben:viewAufgaben,fristen:viewFristen,budget:viewBudget,kpi:viewKpi,leadzaehler:viewLeadZaehler,lessons:viewLessons,fakten:viewFakten,team:viewTeam,protokoll:viewProtokoll,wissen:viewWissen};
+  sec.innerHTML=(V[activeTab]||viewDashboard)(pr); p.appendChild(sec);
+  if(activeTab==="aufgaben") wireAufgaben();
+  if(activeTab==="team") wireTeam();
+  if(activeTab==="fristen") wireFristen();
+  if(activeTab==="budget") wireBudget();
+  if(activeTab==="leadzaehler") wireLeadZaehler();
+  if(activeTab==="protokoll") wireProtokoll();
+}
+
+function upcomingReminders(){
+  const maxLead=Math.max.apply(null,reminders.leadDays.concat([0]));
+  return allTasks().filter(x=>x.status!=="done"&&x.due).map(x=>({t:x,dd:daysBetween(parseD(x.due),TODAY)}))
+    .filter(o=>o.dd<=maxLead).sort((a,b)=>a.dd-b.dd);
+}
+
+function viewDashboard(pr){
+  const at=allTasks();
+  const overdue=at.filter(x=>x.status!=="done"&&x.due&&daysBetween(parseD(x.due),TODAY)<0);
+  const soon=at.filter(x=>x.status!=="done"&&x.due&&(d=>d>=0&&d<=14)(daysBetween(parseD(x.due),TODAY)));
+  const p0open=at.filter(x=>x.prio==="P0"&&x.status!=="done");
+  const blocked=at.filter(x=>x.status==="blocked");
+  const rows=CATS.map(c=>{ const ts=at.filter(x=>x.cat===c.id); if(!ts.length) return "";
+    const done=ts.filter(x=>x.status==="done").length; const ov=ts.some(x=>x.status!=="done"&&x.due&&daysBetween(parseD(x.due),TODAY)<0);
+    const pct=Math.round(done/ts.length*100); const st=ov?"r":pct>=80?"g":"y";
+    return `<tr><td><span class="catdot" style="background:${c.color}"></span> ${c.label}</td><td class="n num">${done}/${ts.length}</td><td class="n num">${pct}%</td><td><span class="st ${st}">${st==="r"?"Frist überfällig":st==="g"?"auf Kurs":"in Arbeit"}</span></td></tr>`;
+  }).join("");
+  const rem=upcomingReminders().slice(0,8).map(o=>{ const over=o.dd<0;
+    return `<li class="task"><div class="tbody"><span class="tt">${esc(o.t.title)}</span><div class="tmeta">
+      <span class="rem-thr ${over?'over':''}">${over? (-o.dd)+' T überfällig':'in '+o.dd+' T'}</span>
+      <span class="pill ${o.t.prio.toLowerCase()}">${o.t.prio}</span><span class="pill own">${esc(o.t.owner)}</span>
+      <span class="pill due">${fmtD(o.t.due)}</span></div></div></li>`; }).join("");
+
+  return `
+   <div class="alert"><span class="ic">⚠️</span><div><h3>Sofort prüfen: Innovationspreis-Frist</h3>
+     <p>Faktencheck nennt Einsendeschluss <strong>25.09.2026</strong>, die alte ToDo-Liste 31.10.2026. Umgehend beim Veranstalter verifizieren.</p></div></div>
+   <div class="alert warn"><span class="ic">📅</span><div><h3>Messedatum korrigiert</h3>
+     <p>InfraTech 2027 läuft <strong>12.–15. Januar 2027 (Di–Fr)</strong> – nicht 12.–14. Auf-/Abbauplan auf vier Messetage anpassen.</p></div></div>
+
+   <h2 class="sec" style="margin-top:var(--sp4)">Statusüberblick</h2>
+   <p class="lead">Stand ${TODAY.toLocaleDateString("de-DE")} · Messebeginn in ${daysBetween(parseD(FAIR_START),TODAY)} Tagen · Budgetrahmen 24.200–26.500 € brutto.</p>
+   <div class="strip">
+     <div class="kpi ${pr.pct>=50?'ok':''}"><div class="v num">${pr.pct}%</div><div class="k">Gesamtfortschritt</div><div class="sub">${pr.done} von ${pr.total} Aufgaben</div></div>
+     <div class="kpi ${overdue.length?'crit':'ok'}"><div class="v num">${overdue.length}</div><div class="k">Überfällig</div><div class="sub">Frist verstrichen</div></div>
+     <div class="kpi ${soon.length?'warn':''}"><div class="v num">${soon.length}</div><div class="k">Fällig ≤ 14 Tage</div><div class="sub">demnächst</div></div>
+     <div class="kpi ${p0open.length?'crit':'ok'}"><div class="v num">${p0open.length}</div><div class="k">P0 offen</div><div class="sub">kritisch/Frist</div></div>
+     <div class="kpi ${blocked.length?'warn':''}"><div class="v num">${blocked.length}</div><div class="k">Blockiert</div><div class="sub">wartet</div></div>
+   </div>
+   <div class="grid2">
+     <div class="card accentbar"><h3>Ampel je Bereich</h3>
+       <div class="tblwrap" style="box-shadow:none;border:0"><table><thead><tr><th>Bereich</th><th class="n">Erledigt</th><th class="n">%</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div></div>
+     <div class="card accentbar"><h3>Anstehende Erinnerungen</h3>
+       <p class="lead" style="margin-bottom:var(--sp2)">Fällig innerhalb ${Math.max.apply(null,reminders.leadDays)} Tagen. Push/E-Mail-Erinnerung übernimmt der Manager-Agent (montags).</p>
+       <ul class="tasklist">${rem||'<li>Keine anstehenden Fristen.</li>'}</ul></div>
+   </div>`;
+}
+
+function viewAufgaben(){
+  const catChips=`<button class="chip" data-fc="all" aria-pressed="${filterCat==='all'}">Alle Bereiche</button>`+
+    CATS.map(c=>`<button class="chip" data-fc="${c.id}" aria-pressed="${filterCat===c.id}">${c.label}</button>`).join("");
+  const prioChips=["all","P0","P1","P2"].map(pv=>`<button class="chip ${pv==='P0'?'p0':''}" data-fp="${pv}" aria-pressed="${filterPrio===pv}">${pv==='all'?'Alle Prios':pv}</button>`).join("");
+  // „Meine Aufgaben" per 1-Klick + je Teammitglied ein Klick (statt Dropdown).
+  const ownerChips=`<button class="chip star" data-fo="David" aria-pressed="${filterOwner==='David'}">★ Meine Aufgaben (David)</button>`+
+    `<button class="chip" data-fo="all" aria-pressed="${filterOwner==='all'}">Alle</button>`+
+    owners().filter(o=>o!=="David").map(o=>`<button class="chip" data-fo="${esc(o)}" aria-pressed="${filterOwner===o}">${esc(o)}</button>`).join("");
+  const archN=allTasks(true).length;
+
+  const list=filteredTasks();
+  const cats=CATS.filter(c=>list.some(x=>x.cat===c.id));
+  const groups=cats.map(c=>{ const ts=list.filter(x=>x.cat===c.id); const done=ts.filter(x=>x.status==="done").length;
+    return `<div class="catgroup"><div class="cathead"><span class="catdot" style="background:${c.color}"></span><h3>${c.label}</h3><span class="cnt num">${done}/${ts.length}</span></div>
+      <ul class="tasklist">${ts.map(taskRow).join("")}</ul></div>`; }).join("");
+  const emptyMsg = showArchived ? "Keine archivierten Aufgaben." : "Keine Aufgaben für diese Filter.";
+
+  return `
+   <div class="toolbar">
+     <button class="btn" id="addBtn">＋ Neue Aufgabe</button>
+     <button class="btn ghost" id="copyBtn">Stand als JSON kopieren</button>
+     <button class="btn ghost" id="csvTasksBtn" title="Aktuell gefilterte Aufgaben als CSV">CSV</button>
+     <button class="btn ghost" id="mdTasksBtn" title="Aktuell gefilterte Aufgaben als Markdown">Markdown</button>
+     <button class="btn ghost" id="archToggle" aria-pressed="${showArchived}">${showArchived?'Aktive anzeigen':'Archiv anzeigen'+(archN?` (${archN})`:'')}</button>
+     <span class="savehint" id="saveHint">● Lokal gespeichert</span>
+   </div>
+   <div class="filters"><input type="search" id="q" placeholder="Aufgaben durchsuchen…" value="${esc(filterQuery)}" aria-label="Aufgaben durchsuchen"></div>
+   <div class="filters"><div class="chipset" id="ownChips">${ownerChips}</div></div>
+   <div class="filters"><div class="chipset" id="catChips">${catChips}</div></div>
+   <div class="filters"><div class="chipset" id="prioChips">${prioChips}</div></div>
+   ${showArchived?'<p class="lead">Archivierte Aufgaben – über „Wiederherstellen" zurückholen. Nichts wird endgültig gelöscht.</p>':''}
+   ${groups||`<p class="lead">${emptyMsg}</p>`}`;
+}
+
+/* ---------- Aufgaben: Filter (geteilt mit Export) & Export CSV/Markdown ---------- */
+const STLABEL={open:"offen",in_progress:"in Arbeit",blocked:"blockiert",done:"erledigt"};
+function catIndex(id){ const i=CATS.findIndex(c=>c.id===id); return i<0?99:i; }
+function filteredTasks(){
+  let list=allTasks(showArchived).filter(x=>(filterCat==="all"||x.cat===filterCat)&&(filterPrio==="all"||x.prio===filterPrio)&&(filterOwner==="all"||x.owner===filterOwner));
+  if(filterQuery){ const q=filterQuery.toLowerCase(); list=list.filter(x=>(x.title+" "+(x.note||"")+" "+x.owner).toLowerCase().includes(q)); }
+  return list.slice().sort((a,b)=>catIndex(a.cat)-catIndex(b.cat));
+}
+function depTitles(x){ if(!x.deps||!x.deps.length) return [];
+  const map=Object.fromEntries(allTasks(true).concat(allTasks(false)).map(t=>[t.id,t]));
+  return x.deps.map(id=>map[id]?map[id].title:id); }
+function buildAufgabenCSV(){
+  const q=v=>{ v=(v==null?"":String(v)); return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const head=["Bereich","Titel","Priorität","Verantwortlich","Termin","Status","Blockiert durch","Notiz"];
+  const rows=filteredTasks().map(x=>[ (CATMAP[x.cat]?CATMAP[x.cat].label:x.cat), x.title, x.prio, x.owner,
+    x.due?fmtD(x.due):"", (STLABEL[x.status]||x.status), depTitles(x).join(" | "), x.note||"" ].map(q).join(";"));
+  return "﻿"+[head.map(q).join(";")].concat(rows).join("\r\n")+"\r\n";
+}
+function buildAufgabenMD(){
+  const list=filteredTasks();
+  const out=["# InfraTech 2027 – Aufgaben ("+(showArchived?"Archiv":"Aktiv")+", Stand "+TODAY.toLocaleDateString("de-DE")+")",""];
+  CATS.forEach(c=>{ const ts=list.filter(x=>x.cat===c.id); if(!ts.length) return;
+    out.push("## "+c.label);
+    ts.forEach(x=>{ const box=x.status==="done"?"[x]":"[ ]";
+      const meta="("+[x.prio,x.owner,x.due?fmtD(x.due):"kein Termin"].join(" · ")+")";
+      const st=(x.status!=="open"&&x.status!=="done")?" — _"+(STLABEL[x.status]||x.status)+"_":"";
+      out.push("- "+box+" "+meta+" "+x.title+st);
+      const dt=depTitles(x); if(dt.length) out.push("  - blockiert durch: "+dt.join("; "));
+      if(x.note) out.push("  - "+String(x.note).replace(/\s*\n+\s*/g," ")); });
+    out.push(""); });
+  return out.join("\n");
+}
+
+function taskRow(x){
+  const check = x.status==="done"?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>':'';
+  const flags=(x.flags||[]).map(f=> f==="fakt"?'<span class="pill flag">Fakt prüfen</span>': f==="recht"?'<span class="pill recht">Recht prüfen</span>':'').join("");
+  const isArch=!!(x.archived||x.deleted);
+  const blk=unmetDeps(x);
+  const blkPill=blk.length?`<span class="pill blocked" title="Wartet auf: ${esc(blk.map(b=>b.title).join(' · '))}">⛔ wartet auf ${blk.length}</span>`:'';
+  const nAtt=attachCount(x); const attPill=nAtt?`<span class="pill att" title="Anhänge/Links">📎 ${nAtt}</span>`:'';
+  const actions = isArch
+    ? `<button class="edit" data-restore="${x.id}" aria-label="Aufgabe wiederherstellen">Wiederherstellen</button>`
+    : `<button class="edit" data-edit="${x.id}" aria-label="Aufgabe bearbeiten">Bearbeiten</button>`;
+  return `<li class="task ${x.status==='done'?'done':''} ${isArch?'arch':''}" data-id="${x.id}">
+    <button class="cb" data-st="${x.status}" data-id="${x.id}" aria-label="Erledigt umschalten" title="Klick: erledigt/offen">${check}</button>
+    <div class="tbody"><span class="tt">${esc(x.title)}</span>
+      <div class="tmeta">
+        <span class="pill ${x.prio.toLowerCase()}">${x.prio}</span>
+        <span class="pill own">${esc(x.owner)}</span>
+        ${x.due?`<span class="pill due ${dueClass(x.due)}">${dueLabel(x.due)}</span>`:'<span class="pill due">Termin offen</span>'}
+        ${x.custom?'<span class="pill custom">eigene</span>':''}
+        ${blkPill}
+        ${attPill}
+        ${flags}
+        <select class="stsel" data-id="${x.id}" aria-label="Detailstatus">
+          ${["open","in_progress","blocked","done"].map(o=>`<option value="${o}" ${o===x.status?'selected':''}>${({open:'offen',in_progress:'in Arbeit',blocked:'blockiert',done:'erledigt'})[o]}</option>`).join("")}
+        </select>
+      </div>${x.note?`<div class="tnote">${esc(x.note)}</div>`:''}
+    </div>
+    ${actions}</li>`;
+}
+
+function wireAufgaben(){
+  document.querySelectorAll(".cb").forEach(b=>b.onclick=()=>{ const id=b.dataset.id; const cur=allTasks().find(x=>x.id===id); const ns=cur.status==="done"?"open":"done"; saveTask(id,{status:ns}); logActivity("Status", taskTitle(id)+" → "+(STLABEL[ns]||ns)); });
+  document.querySelectorAll(".stsel").forEach(s=>s.onchange=()=>{ saveTask(s.dataset.id,{status:s.value}); logActivity("Status", taskTitle(s.dataset.id)+" → "+(STLABEL[s.value]||s.value)); });
+  document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openTaskModal(b.dataset.edit));
+  document.querySelectorAll("[data-restore]").forEach(b=>b.onclick=()=>{ logActivity("Aufgabe wiederhergestellt", taskTitle(b.dataset.restore)); archiveTask(b.dataset.restore,false); });
+  document.querySelectorAll("#catChips .chip").forEach(c=>c.onclick=()=>{ filterCat=c.dataset.fc; render(); });
+  document.querySelectorAll("#prioChips .chip").forEach(c=>c.onclick=()=>{ filterPrio=c.dataset.fp; render(); });
+  document.querySelectorAll("#ownChips .chip").forEach(c=>c.onclick=()=>{ filterOwner=c.dataset.fo; render(); });
+  const at=document.getElementById("archToggle"); if(at) at.onclick=()=>{ showArchived=!showArchived; render(); };
+  const add=document.getElementById("addBtn"); if(add) add.onclick=()=>openTaskModal(null);
+  const q=document.getElementById("q"); if(q) q.oninput=()=>{ filterQuery=q.value; const pos=q.selectionStart; render(); const nq=document.getElementById("q"); if(nq){nq.focus();nq.setSelectionRange(pos,pos);} };
+  const cp=document.getElementById("copyBtn"); if(cp) cp.onclick=()=>{ const data={exported:new Date().toISOString(),progress:progress(),tasks:allTasks(),team,reminders};
+    navigator.clipboard?.writeText(JSON.stringify(data,null,2)).then(()=>{cp.textContent="Kopiert ✓"; setTimeout(()=>cp.textContent="Stand als JSON kopieren",1600);}); };
+  const cta=document.getElementById("csvTasksBtn"); if(cta) cta.onclick=async()=>{ const r=await offerFile("InfraTech2027-Aufgaben.csv","text/csv",buildAufgabenCSV()); flashBtn(cta,"CSV",r); };
+  const mta=document.getElementById("mdTasksBtn"); if(mta) mta.onclick=async()=>{ const r=await offerFile("InfraTech2027-Aufgaben.md","text/markdown",buildAufgabenMD()); flashBtn(mta,"Markdown",r); };
+}
+
+/* ---------- Anhänge & Links (assets-Capability für Datei-Uploads) ---------- */
+function safeUrl(u){ u=(u||"").trim(); return /^(https?:|mailto:)/i.test(u)? u : ""; }
+function guessAssetType(name){ const e=(String(name).split(".").pop()||"").toLowerCase();
+  return ({pdf:"application/pdf",png:"image/png",jpg:"image/jpeg",jpeg:"image/jpeg",gif:"image/gif",webp:"image/webp",svg:"image/svg+xml",
+    csv:"text/csv",md:"text/markdown",json:"application/json",txt:"text/plain"})[e]||""; }
+function attachCount(x){ return ((x.links||[]).length)+((x.attachments||[]).length); }
+function attachSectionHtml(x){
+  const links=(x.links||[]).map((l,i)=>`<div class="att-row"><a class="att-link" href="${esc(safeUrl(l.url)||'#')}" target="_blank" rel="noopener noreferrer">🔗 ${esc(l.label||l.url)}</a>
+    <button class="att-x" data-lx="${i}" aria-label="Link entfernen">×</button></div>`).join("");
+  const files=(x.attachments||[]).map(a=>`<div class="att-row"><a class="att-link" href="/_blob/${esc(a.id)}" target="_blank" rel="noopener noreferrer">📎 ${esc(a.name||a.id)}</a>
+    <button class="att-x" data-ax="${esc(a.id)}" aria-label="Anhang entfernen">×</button></div>`).join("");
+  return `<div class="field"><label>Anhänge &amp; Links</label>
+    <div class="att-list">${links}${files}${(links+files)?'':'<span class="att-empty">Noch keine Anhänge/Links.</span>'}</div>
+    <div class="att-add">
+      <input id="a_label" placeholder="Bezeichnung (z. B. Angebot Standbau)">
+      <input id="a_url" type="url" placeholder="https://…" inputmode="url">
+      <button class="btn ghost" id="a_addlink" type="button">Link</button>
+    </div>
+    <div class="att-add">
+      <input type="file" id="a_file" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,.svg,.csv,.md,.json,.txt">
+      <span class="att-hint" id="a_status"></span>
+    </div>
+    <small>Keine personenbezogenen Daten Dritter hochladen; bei Verträgen/Freigaben Rechtsabteilung prüfen. Max. 20 MB je Datei.</small></div>`;
+}
+
+/* ---------- Modal: Aufgabe anlegen/bearbeiten ---------- */
+function openTaskModal(id){
+  const x = id? allTasks().find(o=>o.id===id) : {title:"",cat:filterCat!=="all"?filterCat:"steuerung",prio:"P2",owner:"David",due:"",note:"",status:"open"};
+  const isNew=!id;
+  const catOpts=CATS.map(c=>`<option value="${c.id}" ${c.id===x.cat?'selected':''}>${c.label}</option>`).join("");
+  const prioOpts=["P0","P1","P2"].map(pv=>`<option value="${pv}" ${pv===x.prio?'selected':''}>${pv}</option>`).join("");
+  const ownerOpts=owners().map(o=>`<option value="${esc(o)}" ${o===x.owner?'selected':''}>${esc(o)}</option>`).join("");
+  const depsSel=new Set(x.deps||[]);
+  const depOpts=CATS.map(c=>{ const opts=allTasks(false).filter(t=>t.cat===c.id&&t.id!==x.id)
+      .map(t=>`<option value="${t.id}" ${depsSel.has(t.id)?'selected':''}>${esc(t.title)}</option>`).join("");
+    return opts?`<optgroup label="${esc(c.label)}">${opts}</optgroup>`:''; }).join("");
+  const root=document.getElementById("modalRoot");
+  root.innerHTML=`<div class="modal-bg" id="mbg"><div class="modal" role="dialog" aria-modal="true" aria-label="Aufgabe">
+    <h3>${isNew?'Neue Aufgabe':'Aufgabe bearbeiten'}</h3>
+    <div class="field"><label for="f_title">Titel</label><input id="f_title" value="${esc(x.title)}" placeholder="Was ist zu tun?"></div>
+    <div class="row2">
+      <div class="field"><label for="f_cat">Bereich</label><select id="f_cat">${catOpts}</select></div>
+      <div class="field"><label for="f_prio">Priorität</label><select id="f_prio">${prioOpts}</select></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="f_owner">Zuständig</label><select id="f_owner">${ownerOpts}</select></div>
+      <div class="field"><label for="f_due">Termin</label><input id="f_due" type="date" value="${x.due||''}"></div>
+    </div>
+    <div class="field"><label for="f_note">Notiz</label><textarea id="f_note" placeholder="Optionale Details">${esc(x.note||'')}</textarea></div>
+    <div class="field"><label for="f_deps">Blockiert durch (Abhängigkeiten)</label>
+      <select id="f_deps" multiple aria-label="Abhängigkeiten">${depOpts}</select>
+      <small>Mehrfachauswahl mit Strg/Cmd. Diese Aufgabe wartet, bis die gewählten Aufgaben erledigt sind.</small></div>
+    ${isNew?'':attachSectionHtml(x)}
+    <div class="modal-actions">
+      ${isNew?''
+        :(x.archived||x.deleted)
+          ? '<button class="btn ghost" id="f_restore" style="margin-right:auto">Wiederherstellen</button>'
+          : '<button class="btn ghost" id="f_archive" style="margin-right:auto">Archivieren</button>'}
+      <button class="btn ghost" id="f_cancel">Abbrechen</button>
+      <button class="btn" id="f_save">${isNew?'Anlegen':'Speichern'}</button>
+    </div></div></div>`;
+  const close=()=>root.innerHTML="";
+  document.getElementById("mbg").onclick=e=>{ if(e.target.id==="mbg") close(); };
+  document.getElementById("f_cancel").onclick=close;
+  const arch=document.getElementById("f_archive"); if(arch) arch.onclick=()=>{ logActivity("Aufgabe archiviert", taskTitle(id)); archiveTask(id,true); close(); };
+  const restore=document.getElementById("f_restore"); if(restore) restore.onclick=()=>{ logActivity("Aufgabe wiederhergestellt", taskTitle(id)); archiveTask(id,false); close(); };
+  document.getElementById("f_save").onclick=()=>{
+    const title=document.getElementById("f_title").value.trim(); if(!title){ document.getElementById("f_title").focus(); return; }
+    const deps=Array.from(document.getElementById("f_deps").selectedOptions).map(o=>o.value);
+    const patch={title,cat:document.getElementById("f_cat").value,prio:document.getElementById("f_prio").value,
+      owner:document.getElementById("f_owner").value,due:document.getElementById("f_due").value||null,note:document.getElementById("f_note").value.trim(),deps};
+    if(isNew){ const nid="u"+Date.now().toString(36); saveTask(nid,Object.assign({custom:true,status:"open",flags:[]},patch)); logActivity("Aufgabe angelegt", patch.title); }
+    else { saveTask(id,patch); logActivity("Aufgabe bearbeitet", patch.title); }
+    close();
+  };
+  if(!isNew){
+    const cur=()=>allTasks(true).concat(allTasks(false)).find(o=>o.id===id)||x;
+    const addlink=document.getElementById("a_addlink");
+    if(addlink) addlink.onclick=()=>{ const label=(document.getElementById("a_label").value||"").trim(); const url=safeUrl(document.getElementById("a_url").value);
+      if(!url){ const u=document.getElementById("a_url"); u.focus(); document.getElementById("a_status").textContent="Bitte gültige http(s)-/mailto-Adresse"; return; }
+      const links=((cur().links)||[]).concat([{label:label||url,url}]);
+      saveTask(id,{links}); logActivity("Link hinzugefügt", taskTitle(id)+": "+(label||url)); openTaskModal(id); };
+    const file=document.getElementById("a_file"); const st=document.getElementById("a_status");
+    if(file) file.onchange=async()=>{ const fobj=file.files&&file.files[0]; if(!fobj) return;
+      if(fobj.size>20*1024*1024){ if(st) st.textContent="Datei zu groß (max. 20 MB)"; return; }
+      let assets=null; try{ assets=(window.claude&&claude.use)?await claude.use("assets"):null; }catch(e){ assets=null; }
+      if(!assets){ if(st) st.textContent="Upload in dieser Ansicht nicht verfügbar (nur mit geteilter Datenbank)"; return; }
+      if(st) st.textContent="Lädt hoch …";
+      try{ const opt=fobj.type?undefined:{type:guessAssetType(fobj.name)}; const res=await assets.upload(fobj,opt);
+        const att=((cur().attachments)||[]).concat([{id:res.id,name:fobj.name,type:res.contentType}]);
+        await saveTask(id,{attachments:att}); logActivity("Anhang hinzugefügt", taskTitle(id)+": "+fobj.name); openTaskModal(id);
+      }catch(e){ if(st) st.textContent="Upload fehlgeschlagen"+(e&&e.code?(" ("+e.code+")"):""); } };
+    document.querySelectorAll("[data-lx]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.lx; const links=((cur().links)||[]).slice(); const rm=links.splice(i,1)[0];
+      saveTask(id,{links}); logActivity("Link entfernt", taskTitle(id)+(rm?": "+(rm.label||rm.url):"")); openTaskModal(id); });
+    document.querySelectorAll("[data-ax]").forEach(b=>b.onclick=async()=>{ const aid=b.dataset.ax; const atts=((cur().attachments)||[]).filter(a=>a.id!==aid);
+      await saveTask(id,{attachments:atts});
+      let assets=null; try{ assets=(window.claude&&claude.use)?await claude.use("assets"):null; }catch(e){}
+      if(assets){ try{ await assets.delete(aid); }catch(e){} }
+      logActivity("Anhang entfernt", taskTitle(id)); openTaskModal(id); });
+  }
+  setTimeout(()=>document.getElementById("f_title").focus(),30);
+}
+
+/* ---------- Team & Zugriff ---------- */
+function viewTeam(){
+  const members=team.length? team.map(m=>`<div class="member"><span class="av">${initials(m.name)}</span>
+    <div class="mn"><b>${esc(m.name)}</b><span>${esc(m.role||'—')}</span></div>
+    <button class="edit" data-delm="${m.id}">Entfernen</button></div>`).join("")
+    : '<p class="lead">Noch keine Teammitglieder erfasst. Füge unten welche hinzu – sie erscheinen dann als Zuständige in jeder Aufgabe.</p>';
+  return `
+   <h2 class="sec">Team &amp; Zugriff</h2>
+   <p class="lead">Verwalte hier das Messeteam. Erfasste Mitglieder stehen als Zuständige (Owner) für Aufgaben und im Filter zur Verfügung.</p>
+   <div class="alert info"><span class="ic">👥</span><div><h3>Team später zum Cockpit einladen</h3>
+     <p>Diese Liste ordnet Aufgaben zu. Um Kolleginnen und Kollegen echten <strong>Zugriff auf dieses Cockpit</strong> zu geben, nutze rechts oben das <strong>Teilen-Menü („Share")</strong> von Claude und füge sie hinzu – die geteilte Datenbank hält dann alle auf demselben Stand. Du kannst das jederzeit später tun.</p></div></div>
+   <div class="grid2">
+     <div class="card accentbar"><h3>Mitglieder (${team.length})</h3>${members}</div>
+     <div class="card accentbar"><h3>Mitglied hinzufügen</h3>
+       <div class="field"><label for="m_name">Name</label><input id="m_name" placeholder="z. B. Enrico"></div>
+       <div class="field"><label for="m_role">Rolle / Funktion</label><input id="m_role" placeholder="z. B. Standbau / Logistik"></div>
+       <button class="btn" id="m_add">Hinzufügen</button>
+       <h3 style="margin-top:var(--sp4)">Erinnerungen</h3>
+       <p class="lead" style="margin-bottom:var(--sp2)">Vorlaufzeiten (Tage vor Fälligkeit), zu denen erinnert wird. Zustellung per Push/E-Mail übernimmt der Manager-Agent.</p>
+       <div class="field"><label for="r_lead">Vorlauf in Tagen (kommagetrennt)</label><input id="r_lead" value="${reminders.leadDays.join(', ')}" inputmode="numeric"></div>
+       <button class="btn ghost" id="r_save">Erinnerungen speichern</button>
+     </div>
+   </div>`;
+}
+function wireTeam(){
+  document.querySelectorAll("[data-delm]").forEach(b=>b.onclick=()=>{ const m=team.find(x=>x.id===b.dataset.delm); team=team.filter(x=>x.id!==b.dataset.delm); saveSettings(); logActivity("Teammitglied entfernt", m?m.name:""); render(); });
+  const add=document.getElementById("m_add"); if(add) add.onclick=()=>{ const n=document.getElementById("m_name").value.trim(); if(!n) return;
+    team.push({id:"m"+Date.now().toString(36),name:n,role:document.getElementById("m_role").value.trim()}); saveSettings(); logActivity("Teammitglied hinzugefügt", n); render(); };
+  const rs=document.getElementById("r_save"); if(rs) rs.onclick=()=>{ const days=document.getElementById("r_lead").value.split(",").map(s=>parseInt(s.trim(),10)).filter(n=>!isNaN(n)&&n>=0).sort((a,b)=>b-a);
+    reminders={leadDays:days.length?days:[14,7,2]}; saveSettings(); render(); };
+}
+
+function viewFristen(){
+  const rows=DEADLINES.slice().sort((a,b)=>parseD(a.d)-parseD(b.d)).map(d=>{ const dd=daysBetween(parseD(d.d),TODAY);
+    const rest= dd<0?`${-dd} T vorbei`:dd===0?"heute":`in ${dd} T`;
+    return `<tr><td class="num">${fmtD(d.d)}</td><td>${esc(d.t)}</td><td class="num">${rest}</td><td><span class="st ${d.st}">${esc(d.s)}</span></td></tr>`; }).join("");
+  return `<h2 class="sec">Fristenmatrix</h2>
+   <p class="lead">Rot = für 2027 bestätigt · Gelb = Referenzwert 2026, offiziell für 2027 zu verifizieren · Grün = Messetermin. Größte Lektion 2026 (E2): eine zentrale Fristenmatrix verhindert Zuschläge.</p>
+   <div class="banner"><strong>Offen beim Veranstalter (infratech.nl / Ahoy):</strong> Anmeldeschluss, Standentwurf-Genehmigung, Standbau-/Abbauzeiten und VRS-/Slot-Zeitfenster 2027.</div>
+   <div class="toolbar">
+     <button class="btn" id="icsBtn">ICS (Kalender) exportieren</button>
+     <button class="btn ghost" id="csvBtn">CSV exportieren</button>
+     <span class="savehint" id="expHint">Alle Fristen als Kalender-Datei (.ics, ganztägige Termine) oder Tabelle (.csv).</span>
+   </div>
+   <div class="tblwrap"><table><thead><tr><th>Datum</th><th>Frist</th><th class="n">Rest</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* ---------- Fristen-Export (ICS / CSV) ---------- */
+const _TE = (typeof TextEncoder!=="undefined") ? new TextEncoder() : null;
+function utf8len(s){ return _TE ? _TE.encode(s).length : s.length; }
+function pad2(n){ return String(n).padStart(2,"0"); }
+function icsEsc(s){ return (s||"").replace(/[\\;,]/g,m=>"\\"+m).replace(/\r?\n/g,"\\n"); }
+function icsDate(s){ const d=parseD(s); return ""+d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate()); }
+function icsDateEnd(s){ const d=parseD(s); d.setDate(d.getDate()+1); return ""+d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate()); }
+function icsStamp(){ const d=new Date(); return ""+d.getUTCFullYear()+pad2(d.getUTCMonth()+1)+pad2(d.getUTCDate())+"T"+pad2(d.getUTCHours())+pad2(d.getUTCMinutes())+pad2(d.getUTCSeconds())+"Z"; }
+// Zeilenfaltung nach RFC 5545 (<=75 Oktett/Zeile), byteweise, ohne Zeichen zu zerteilen.
+function icsFold(line){ let out="",cur="",b=0; for(const ch of line){ const cb=utf8len(ch);
+  if(b+cb>73){ out+=(out?"\r\n ":"")+cur; cur=ch; b=cb; } else { cur+=ch; b+=cb; } } return out+(out?"\r\n ":"")+cur; }
+function fristenSorted(){ return DEADLINES.slice().sort((a,b)=>parseD(a.d)-parseD(b.d)); }
+
+function buildFristenICS(){
+  const stamp=icsStamp();
+  const lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Fraesdienst E. Feind//InfraTech 2027 Cockpit//DE",
+    "CALSCALE:GREGORIAN","METHOD:PUBLISH","X-WR-CALNAME:InfraTech 2027 – Fristen","X-WR-TIMEZONE:Europe/Amsterdam"];
+  fristenSorted().forEach((d,i)=>{
+    lines.push("BEGIN:VEVENT","UID:frist-"+icsDate(d.d)+"-"+i+"@feind-infratech2027","DTSTAMP:"+stamp,
+      "DTSTART;VALUE=DATE:"+icsDate(d.d),"DTEND;VALUE=DATE:"+icsDateEnd(d.d),
+      "SUMMARY:"+icsEsc("InfraTech 2027 – "+d.t),"DESCRIPTION:"+icsEsc(d.s),"TRANSP:TRANSPARENT","END:VEVENT");
+  });
+  lines.push("END:VCALENDAR");
+  return lines.map(icsFold).join("\r\n")+"\r\n";
+}
+function buildFristenCSV(){
+  const q=v=>{ v=(v==null?"":String(v)); return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const head=["Datum","Frist","Rest (Tage)","Status"];
+  const body=fristenSorted().map(d=>{ const dd=daysBetween(parseD(d.d),TODAY);
+    return [fmtD(d.d), d.t, (dd<0?("-"+(-dd)):(""+dd)), d.s].map(q).join(";"); });
+  return "﻿"+[head.map(q).join(";")].concat(body).join("\r\n")+"\r\n";
+}
+function copyText(t){ return (navigator.clipboard&&navigator.clipboard.writeText)? navigator.clipboard.writeText(t):Promise.reject(new Error("no clipboard")); }
+// Datei anbieten. Im Artefakt-Viewer liefert nur die downloads-Capability echte Dateien
+// (Allowlist u. a. csv, aber NICHT ics); außerhalb (Standalone-Browser) klassischer Blob-Download.
+async function offerFile(filename, mime, text){
+  let dl=null;
+  try{ dl=(window.claude&&claude.use)? await claude.use("downloads") : null; }catch(e){ dl=null; }
+  if(dl){
+    try{ await dl.save({filename, data:text}); return {ok:true, how:"saved"}; }
+    catch(e){ const code=e&&e.code;
+      if(code==="declined") return {ok:false, how:"declined"};
+      if(code==="rejected_extension"||code==="extension_not_enabled"){
+        try{ await copyText(text); return {ok:true, how:"clipboard"}; }catch(e2){ return {ok:false, how:"failed"}; } }
+      return {ok:false, how:"failed"}; }
+  }
+  try{
+    const blob=new Blob([text],{type:mime+";charset=utf-8"}); const url=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+    setTimeout(()=>{ try{URL.revokeObjectURL(url);}catch(e){} a.remove(); },800);
+    return {ok:true, how:"download"};
+  }catch(e){ try{ await copyText(text); return {ok:true, how:"clipboard"}; }catch(e2){ return {ok:false, how:"failed"}; } }
+}
+function flashBtn(btn, base, r){
+  btn.textContent = r.how==="clipboard" ? "In Zwischenablage ✓" : r.how==="declined" ? "Abgebrochen" : r.ok ? "Geladen ✓" : "Nicht möglich";
+  setTimeout(()=>{ btn.textContent=base; },2400);
+}
+function wireFristen(){
+  const ics=document.getElementById("icsBtn"), csv=document.getElementById("csvBtn"), hint=document.getElementById("expHint");
+  const baseHint = hint? hint.textContent : "";
+  if(ics) ics.onclick=async()=>{ const r=await offerFile("InfraTech2027-Fristen.ics","text/calendar",buildFristenICS());
+    flashBtn(ics,"ICS (Kalender) exportieren",r);
+    if(hint){ hint.textContent = r.how==="clipboard"
+      ? 'In dieser Ansicht wird der .ics-Inhalt in die Zwischenablage kopiert – als .ics-Datei speichern und in den Kalender importieren.'
+      : baseHint; } };
+  if(csv) csv.onclick=async()=>{ const r=await offerFile("InfraTech2027-Fristen.csv","text/csv",buildFristenCSV());
+    flashBtn(csv,"CSV exportieren",r); };
+}
+/* ---------- Budget: Plan vs. Ist (Forecast/Ist je Kostenblock, Ampel > 10 %) ---------- */
+function euroKey(p){ return String(p).toLowerCase().replace(/[äöü]/g,m=>({"ä":"ae","ö":"oe","ü":"ue"}[m])).replace(/ß/g,"ss").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); }
+function parseEuroRange(s){ const nums=(String(s||"").match(/\d[\d.]*/g)||[]).map(x=>parseInt(x.replace(/\./g,""),10)).filter(n=>!isNaN(n)); if(!nums.length) return null; return nums.length>=2? Math.round((nums[0]+nums[1])/2) : nums[0]; }
+function fmtEuro(n){ return (n==null||isNaN(n))?"—":Number(n).toLocaleString("de-DE")+" €"; }
+function blockForecast(b,key){ const a=budgetActuals[key]||{}; return (a.forecast!=null&&a.forecast!=="")? +a.forecast : parseEuroRange(b.z); }
+function blockIst(key){ const a=budgetActuals[key]||{}; return (a.ist!=null&&a.ist!=="")? +a.ist : null; }
+function budgetDev(forecast,ist){ if(ist==null||!forecast) return {cls:"",txt:"—"}; const d=(ist-forecast)/forecast; const pct=Math.round(d*100); const txt=(pct>0?"+":"")+pct+" %"; if(d>0.10) return {cls:"r",txt}; if(d>0) return {cls:"y",txt}; return {cls:"g",txt}; }
+
+function viewBudget(){
+  let sumF=0,sumI=0,sumFcmp=0,haveI=false;
+  const rows=BUDGET.map(b=>{ const key=euroKey(b.p); const f=blockForecast(b,key); const ist=blockIst(key);
+    if(f) sumF+=f; if(ist!=null){ sumI+=ist; if(f) sumFcmp+=f; haveI=true; }
+    const dv=budgetDev(f,ist);
+    const fVal = (budgetActuals[key]&&budgetActuals[key].forecast!=null) ? String(budgetActuals[key].forecast) : (f!=null?String(f):"");
+    const iVal = (budgetActuals[key]&&budgetActuals[key].ist!=null) ? String(budgetActuals[key].ist) : "";
+    return `<tr>
+      <td>${esc(b.p)}</td>
+      <td class="n num">${esc(b.z)} €</td>
+      <td class="n"><input class="numinput" inputmode="numeric" data-bk="${esc(key)}" data-bf="forecast" value="${esc(fVal)}" aria-label="Forecast ${esc(b.p)}"></td>
+      <td class="n"><input class="numinput" inputmode="numeric" data-bk="${esc(key)}" data-bf="ist" value="${esc(iVal)}" placeholder="—" aria-label="Ist ${esc(b.p)}"></td>
+      <td><span class="st ${dv.cls}">${dv.txt}</span></td>
+      <td>${esc(b.a)}</td></tr>`; }).join("");
+  const sdv=budgetDev(haveI?sumFcmp:null, haveI?sumI:null);
+  return `<h2 class="sec">Budget: Plan vs. Ist 2027</h2>
+   <p class="lead">Baseline 2026: <strong>21.023 € brutto</strong>. Planrahmen 2027: <strong>24.200–26.500 € brutto</strong>. Ziel: Abweichung ≤ 10 %.
+     Forecast ist mit dem Mittelwert des Planrahmens vorbelegt und überschreibbar; „Ist" eintragen, sobald Angebote/Rechnungen vorliegen (nur Zahl, € optional).
+     Ampel: grün = im/unter Plan · gelb = bis +10 % · rot = über +10 %. Bei vertraglichen Fragen Rechtsabteilung prüfen.</p>
+   <div class="tblwrap"><table><thead><tr><th>Kostenblock</th><th class="n">Planrahmen</th><th class="n">Forecast €</th><th class="n">Ist €</th><th>Abweichung</th><th>Annahme</th></tr></thead>
+   <tbody>${rows}
+   <tr class="total"><td>Gesamt</td><td class="n num">24.200–26.500 €</td><td class="n num">${fmtEuro(sumF)}</td><td class="n num">${haveI?fmtEuro(sumI):"—"}</td><td><span class="st ${sdv.cls}">${sdv.txt}</span></td><td>${haveI?'Abweichung nur über Blöcke mit Ist':'Ziel ≤ 10 %'}</td></tr>
+   </tbody></table></div>`;
+}
+function wireBudget(){
+  document.querySelectorAll(".numinput").forEach(inp=>{ inp.onchange=()=>{
+    const key=inp.dataset.bk, field=inp.dataset.bf;
+    const raw=(inp.value||"").replace(/[.\s€]/g,"");
+    const cur=Object.assign({}, budgetActuals[key]);
+    let val=null;
+    if(raw===""||isNaN(parseInt(raw,10))){ delete cur[field]; } else { val=parseInt(raw,10); cur[field]=val; }
+    if(Object.keys(cur).length) budgetActuals[key]=cur; else delete budgetActuals[key];
+    saveBudget(); const bl=BUDGET.find(x=>euroKey(x.p)===key); logActivity("Budget", (bl?bl.p:key)+" · "+(field==="ist"?"Ist":"Forecast")+" = "+(val==null?"—":fmtEuro(val))); render();
+  }; });
+}
+function viewKpi(){
+  const rows=KPIS.map(k=>`<tr><td>${esc(k.k)}</td><td>${esc(k.b)}</td><td><strong>${esc(k.z)}</strong></td><td>${esc(k.m)}</td></tr>`).join("");
+  return `<h2 class="sec">Ziele &amp; KPIs 2027</h2>
+   <p class="lead">Zielbild: qualifizierte Kontakte aus Kommunen, Straßenbau, Infrastruktur & Partnern; das Schleifverfahren erlebbar zeigen; ein steuerbarer Auftritt ohne Frist-, Liefer- oder Budgetüberraschungen.</p>
+   <div class="tblwrap"><table><thead><tr><th>KPI</th><th>Baseline 2026</th><th>Ziel 2027</th><th>Messmethode</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+/* ---------- Lead-Zähler (live, nur Stückzahlen – keine personenbezogenen Daten) ---------- */
+function fairDays(){ const out=[]; let d=parseD(FAIR_START); const end=parseD(FAIR_END);
+  while(d<=end){ out.push(d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate())); d=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1); } return out; }
+function isoToday(){ const d=new Date(); return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate()); }
+function dayCounts(date){ const c=leadCounts[date]||{}; return {a:+c.a||0,b:+c.b||0,c:+c.c||0}; }
+function leadsSum(){ let a=0,b=0,c=0; fairDays().forEach(d=>{ const x=dayCounts(d); a+=x.a;b+=x.b;c+=x.c; }); return {a,b,c,total:a+b+c}; }
+const LEADGRADE={a:"heiß",b:"warm",c:"Info"};
+
+function viewLeadZaehler(){
+  const days=fairDays(); const sum=leadsSum(); const target=300;
+  const pct=Math.min(100,Math.round(sum.total/target*100)); const today=isoToday();
+  const cards=days.map((d,i)=>{ const c=dayCounts(d); const t=c.a+c.b+c.c; const isToday=d===today;
+    const rows=["a","b","c"].map(g=>`<div class="lc-row">
+        <span class="lc-grade lc-${g}">${g.toUpperCase()} · ${LEADGRADE[g]}</span>
+        <button class="lc-btn" data-ld="${d}" data-lg="${g}" data-dl="-1" aria-label="Tag ${i+1} ${g.toUpperCase()} verringern">–</button>
+        <span class="lc-n num">${c[g]}</span>
+        <button class="lc-btn plus" data-ld="${d}" data-lg="${g}" data-dl="1" aria-label="Tag ${i+1} ${g.toUpperCase()} erhöhen">+</button>
+      </div>`).join("");
+    return `<div class="card leadcard ${isToday?'accentbar':''}">
+      <div class="lc-head"><h3>Tag ${i+1} · ${fmtD(d)}${isToday?' · heute':''}</h3><span class="lc-total num">${t}</span></div>
+      ${rows}</div>`; }).join("");
+  return `<h2 class="sec">Lead-Zähler (live)</h2>
+   <p class="lead">Tageszählung während der Messe (12.–15.01.2027) – nur Stückzahlen, <strong>keine personenbezogenen Daten</strong>.
+     Namen/Kontakte gehören ins Leadformular bzw. CRM. A = heißer Lead (nächster Schritt terminiert) · B = warm · C = Info/Streukontakt.</p>
+   <div class="strip">
+     <div class="kpi ${sum.total>=target?'ok':''}"><div class="v num">${sum.total}</div><div class="k">Leads gesamt</div><div class="sub">Ziel ≥ ${target}</div></div>
+     <div class="kpi ${pct>=100?'ok':''}"><div class="v num">${pct}%</div><div class="k">Zielerreichung</div><div class="sub">qualifizierte Leads</div></div>
+     <div class="kpi ok"><div class="v num">${sum.a}</div><div class="k">A · heiß</div><div class="sub">≤ 48 h nachfassen</div></div>
+     <div class="kpi warn"><div class="v num">${sum.b}</div><div class="k">B · warm</div><div class="sub">≤ 5 Tage</div></div>
+     <div class="kpi"><div class="v num">${sum.c}</div><div class="k">C · Info</div><div class="sub">Streukontakt</div></div>
+   </div>
+   <div class="grid2">${cards}</div>
+   <div class="toolbar" style="margin-top:var(--sp3)"><button class="btn ghost" id="leadCsvBtn">Zählung als CSV</button>
+     <span class="savehint">Zählstände werden geteilt gespeichert (sonst pro Gerät lokal).</span></div>`;
+}
+function wireLeadZaehler(){
+  document.querySelectorAll(".lc-btn").forEach(b=>b.onclick=()=>bumpLead(b.dataset.ld,b.dataset.lg,parseInt(b.dataset.dl,10)));
+  const cb=document.getElementById("leadCsvBtn"); if(cb) cb.onclick=async()=>{ const r=await offerFile("InfraTech2027-Leads.csv","text/csv",buildLeadsCSV()); flashBtn(cb,"Zählung als CSV",r); };
+}
+function buildLeadsCSV(){
+  const q=v=>{ v=(v==null?"":String(v)); return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const head=["Tag","Datum","A (heiß)","B (warm)","C (Info)","Gesamt"];
+  const body=fairDays().map((d,i)=>{ const c=dayCounts(d); return [String(i+1),fmtD(d),c.a,c.b,c.c,c.a+c.b+c.c].map(q).join(";"); });
+  const s=leadsSum(); body.push(["Gesamt","",s.a,s.b,s.c,s.total].map(q).join(";"));
+  return "﻿"+[head.map(q).join(";")].concat(body).join("\r\n")+"\r\n";
+}
+
+/* ---------- Aktivitätsprotokoll ---------- */
+function fmtDateTime(ts){ const d=new Date(ts); return d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit"})+" "+d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}); }
+function viewProtokoll(){
+  if(!activityColl && !activity.length){
+    return `<h2 class="sec">Aktivitätsprotokoll</h2>
+     <p class="lead">Das Protokoll erfasst Änderungen (Status, Aufgaben anlegen/bearbeiten/archivieren, Budget, Team) mit Team-Mitglied und Zeitpunkt.
+       Es benötigt die geteilte Datenbank – in dieser Ansicht ist sie nicht verbunden, daher wird nichts protokolliert.</p>`;
+  }
+  const list=activity.slice(0,200).map(e=>`<li class="task"><div class="tbody">
+      <span class="tt">${esc(e.action)}${e.detail?': '+esc(e.detail):''}</span>
+      <div class="tmeta"><span class="pill own">${esc(actorName(e.actorId))}</span>
+        <span class="pill due">${esc(fmtDateTime(e.ts))}</span></div></div></li>`).join("");
+  return `<h2 class="sec">Aktivitätsprotokoll</h2>
+   <p class="lead">Wer hat wann was geändert (neueste zuerst, max. 200 angezeigt). Gespeichert werden nur opake Team-IDs; Namen werden zur Anzeige aufgelöst.
+     Keine personenbezogenen Daten Dritter.${activity.length>200?(' Insgesamt '+activity.length+' Einträge.'):''}</p>
+   <div class="toolbar"><button class="btn ghost" id="logCsvBtn">Protokoll als CSV</button>
+     <span class="savehint">${activity.length} Einträge</span></div>
+   <ul class="tasklist">${list||'<li class="task"><div class="tbody"><span class="tt">Noch keine Aktivitäten erfasst.</span></div></li>'}</ul>`;
+}
+function wireProtokoll(){
+  const cb=document.getElementById("logCsvBtn"); if(cb) cb.onclick=async()=>{ const r=await offerFile("InfraTech2027-Protokoll.csv","text/csv",buildActivityCSV()); flashBtn(cb,"Protokoll als CSV",r); };
+}
+function buildActivityCSV(){
+  const q=v=>{ v=(v==null?"":String(v)); return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  const head=["Zeitpunkt","Wer","Aktion","Detail"];
+  const body=activity.map(e=>[fmtDateTime(e.ts), actorName(e.actorId), e.action, e.detail].map(q).join(";"));
+  return "﻿"+[head.map(q).join(";")].concat(body).join("\r\n")+"\r\n";
+}
+
+function viewLessons(){
+  const rows=LESSONS.map(l=>`<tr><td><strong>${l[0]}</strong></td><td>${esc(l[1])}</td><td>${l[2]}</td><td>${esc(l[3])}</td></tr>`).join("");
+  return `<h2 class="sec">Lessons Learned 2026 → Maßnahmen 2027</h2>
+   <p class="lead">Aus der Auswertung 2026 (ca. 350 Standbesucher / 8.146 Fachbesucher). Beibehalten: TV-/Exponat-Präsentation, leuchtendes Grinding-Schild, grüne Standgestaltung, Kaffee-Bar, praktische Giveaways.</p>
+   <div class="tblwrap"><table><thead><tr><th>ID</th><th>Erkenntnis</th><th>Impact</th><th>Maßnahme 2027</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function viewFakten(){
+  const rows=FACTS.map(f=>`<tr><td><strong>${esc(f[0])}</strong></td><td>${esc(f[1])}</td><td><span class="st ${f[2].includes('Bestätigt')?'g':f[2].includes('Korrektur')?'r':'y'}">${esc(f[2])}</span></td><td>${esc(f[3])}</td></tr>`).join("");
+  return `<h2 class="sec">Faktencheck Rotterdam Ahoy</h2>
+   <p class="lead">Verifizierung gegen offizielle Quellen (infratech.nl, ahoy.nl). Die „Fakt prüfen"-/„Recht prüfen"-Marker in der Aufgabenliste verweisen hierauf.</p>
+   <div class="tblwrap"><table><thead><tr><th>Thema</th><th>Befund</th><th>Status</th><th>Konsequenz</th></tr></thead><tbody>${rows}</tbody></table></div>
+   <details class="acc" style="margin-top:var(--sp3)"><summary>Empfohlene, tatsächlich Ahoy-nahe Hotels</summary><ul class="clean">
+     <li><strong>ibis Styles Rotterdam Ahoy</strong> – ~2 Gehminuten, einziges fußläufiges Haus (3,5★).</li>
+     <li><strong>ART Hotel Rotterdam</strong> – ~1,6 km, 4★ (renoviert).</li>
+     <li><strong>Van der Valk Ridderkerk</strong> – ~6 km, viel kostenloses Parken.</li>
+     <li><strong>Bastion Hotel Rotterdam Zuid</strong> – ~5 km, budgetfreundlich.</li></ul></details>`;
+}
+function viewWissen(){
+  const rows=SOURCES.map(s=>`<tr><td>${esc(s[0])}</td><td>${s[1]}</td><td>${esc(s[2])}</td></tr>`).join("");
+  return `<h2 class="sec">Wissensbasis 2026 (Manus-Export)</h2>
+   <p class="lead">Neun Originaldateien der InfraTech 2026 als Grundlage für 2027 (Drive 01_Inventar … 05_Dashboard). Die Leadliste bleibt aus Datenschutzgründen in der geschützten Originaldatei.</p>
+   <div class="tblwrap"><table><thead><tr><th>Datei</th><th>Typ</th><th>Nutzen 2027</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* ============================================================ THEME ============================================================ */
+(function theme(){
+  const btn=document.getElementById("themeBtn"); let cur=null; try{ cur=localStorage.getItem("feind_theme"); }catch(e){}
+  if(cur) document.documentElement.setAttribute("data-theme",cur);
+  btn.onclick=()=>{ const now=document.documentElement.getAttribute("data-theme");
+    const isDark= now? now==="dark" : matchMedia("(prefers-color-scheme:dark)").matches;
+    const next=isDark?"light":"dark"; document.documentElement.setAttribute("data-theme",next);
+    try{ localStorage.setItem("feind_theme",next); }catch(e){} };
+})();
+
+buildTabs();
+initStore();
+</script>
