@@ -15,118 +15,158 @@
 <!-- BUILD:JS vendor/xlsx.full.min.js --><script src="vendor/xlsx.full.min.js"></script>
 
 <style>
+  /* --- Fräsdienst-Feind Corporate Design (Tokens = einzige Quelle, vgl. branding/feind-ci.tokens.json) --- */
   :root{
-    --bg:#f4f6f8; --panel:#ffffff; --ink:#1f2933; --muted:#647084; --line:#e2e8f0;
-    --accent:#1a73e8; --grey:#9aa0a6; --yellow:#f59f00; --red:#e03131; --green:#12b886;
-    --shadow:0 1px 3px rgba(15,23,42,.08),0 1px 2px rgba(15,23,42,.06);
-    --radius:12px;
+    --surface:#ffffff; --surface-muted:#f5f9ef; --surface-inverse:#4a5757;
+    --ink:#3c5457; --ink-strong:#3a4747; --ink-muted:#728080; --ink-inverse:#ffffff;
+    --line:#e4ebdd;
+    --accent:#84bb20; --accent-text:#5e8a14; --on-accent:#33402a; --accent-soft:#eef7de;
+    --signal:#e3000b; --signal-text:#b8000a; --signal-soft:#fdecec;
+    --neutral:#9aa79a; --focus:#5e8a14;
+    --shadow:0 2px 10px rgba(66,78,78,.07), 0 1px 3px rgba(66,78,78,.05);
+    --shadow-hover:0 6px 20px rgba(66,78,78,.12), 0 2px 6px rgba(66,78,78,.08);
+    --radius:12px; --radius-input:8px; --radius-btn:10px; --radius-pill:999px;
+    --font-display:Exo,"Arial Black",Arial,sans-serif;
+    --font-sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    --overlay:rgba(31,37,37,.5);
+    /* Legacy-Aliasse (in JS/Inline-Styles referenziert) – lösen sich pro Theme neu auf */
+    --bg:var(--surface-muted); --panel:var(--surface); --muted:var(--ink-muted);
+    --grey:var(--neutral); --red:var(--signal); --green:var(--accent); --yellow:var(--accent);
+  }
+  /* Dunkles Theme: automatisch, außer explizit hell erzwungen … */
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --surface:#333e3e; --surface-muted:#3c4848; --surface-inverse:#273030;
+      --ink:#eaeeea; --ink-strong:#ffffff; --ink-muted:#c1c9c1; --ink-inverse:#ffffff;
+      --line:#54615f;
+      --accent:#95cc2c; --accent-text:#a6d84a; --on-accent:#26301c; --accent-soft:#39472a;
+      --signal:#e3000b; --signal-text:#ff9a9f; --signal-soft:#4a2020;
+      --neutral:#8f9c8f; --focus:#a6d84a;
+      --shadow:0 2px 10px rgba(0,0,0,.30); --shadow-hover:0 6px 22px rgba(0,0,0,.40); --overlay:rgba(0,0,0,.55);
+    }
+  }
+  /* … oder explizit dunkel erzwungen */
+  :root[data-theme="dark"]{
+    --surface:#333e3e; --surface-muted:#3c4848; --surface-inverse:#273030;
+    --ink:#eaeeea; --ink-strong:#ffffff; --ink-muted:#c1c9c1; --ink-inverse:#ffffff;
+    --line:#54615f;
+    --accent:#95cc2c; --accent-text:#a6d84a; --on-accent:#26301c; --accent-soft:#39472a;
+    --signal:#e3000b; --signal-text:#ff9a9f; --signal-soft:#4a2020;
+    --neutral:#8f9c8f; --focus:#a6d84a;
+    --shadow:0 2px 10px rgba(0,0,0,.30); --shadow-hover:0 6px 22px rgba(0,0,0,.40); --overlay:rgba(0,0,0,.55);
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{
-    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-family:var(--font-sans);
     background:var(--bg); color:var(--ink); font-size:15px; line-height:1.45;
   }
+  h1,h2,.kpi .value{font-family:var(--font-display)}
+  :focus-visible{outline:2px solid var(--focus); outline-offset:1px}
   header.app{
     position:sticky; top:0; z-index:1200; background:var(--panel);
-    border-bottom:1px solid var(--line); box-shadow:var(--shadow);
+    border-bottom:2px solid var(--accent); box-shadow:var(--shadow);
   }
   .bar{
-    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
-    max-width:1400px; margin:0 auto; padding:10px 16px;
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+    max-width:1400px; margin:0 auto; padding:8px 16px;
   }
-  .bar h1{font-size:18px; margin:0; display:flex; align-items:center; gap:8px}
+  .bar h1{font-size:18px; margin:0; display:flex; align-items:center; gap:8px; color:var(--ink-strong)}
   .bar h1 .dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
   .spacer{flex:1}
   .btn{
-    border:1px solid var(--line); background:#fff; color:var(--ink); cursor:pointer;
-    padding:7px 12px; border-radius:8px; font-size:14px; display:inline-flex; align-items:center; gap:6px;
+    border:1px solid var(--line); background:var(--surface); color:var(--ink); cursor:pointer;
+    padding:7px 12px; border-radius:var(--radius-btn); font-size:14px; display:inline-flex; align-items:center; gap:6px;
   }
-  .btn:hover{background:#f0f4f9}
-  .btn.primary{background:var(--accent); color:#fff; border-color:var(--accent)}
-  .btn.primary:hover{filter:brightness(.95)}
+  .btn{transition:background .15s, box-shadow .15s, transform .1s}
+  .btn:hover{background:var(--accent-soft); border-color:var(--accent); color:var(--accent-text); box-shadow:var(--shadow); transform:translateY(-1px)}
+  .btn.primary{background:var(--accent); color:var(--on-accent); border-color:var(--accent); font-weight:600}
+  .btn.primary:hover{filter:brightness(1.04); color:var(--on-accent); box-shadow:var(--shadow-hover); transform:translateY(-1px)}
   .btn[disabled]{opacity:.5; cursor:not-allowed}
   select,input[type=date],input[type=number],input[type=text]{
-    border:1px solid var(--line); border-radius:8px; padding:6px 8px; font-size:14px; background:#fff; color:var(--ink);
+    border:1px solid var(--line); border-radius:var(--radius-input); padding:6px 8px; font-size:14px; background:var(--surface); color:var(--ink);
   }
   main{max-width:1400px; margin:0 auto; padding:16px; display:grid; gap:16px}
 
   /* Drop-Zone / leerer Zustand */
   #drop{
-    border:2px dashed #cbd5e1; border-radius:var(--radius); background:var(--panel);
-    padding:44px 20px; text-align:center; color:var(--muted); cursor:pointer;
+    border:2px dashed var(--line); border-radius:var(--radius); background:var(--panel);
+    padding:40px 24px; text-align:center; color:var(--muted); cursor:pointer;
   }
-  #drop.drag{border-color:var(--accent); background:#eef4ff; color:var(--accent)}
-  #drop strong{color:var(--ink)}
+  #drop.drag{border-color:var(--accent); background:var(--accent-soft); color:var(--accent-text)}
+  #drop strong{color:var(--ink-strong)}
 
-  .kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px}
-  .kpi{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; box-shadow:var(--shadow)}
+  .kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:16px}
+  .kpi{background:var(--panel); border:1px solid var(--line); border-top:3px solid var(--accent); border-radius:var(--radius); padding:18px 18px 16px; box-shadow:var(--shadow); transition:box-shadow .18s, transform .12s}
+  .kpi:hover{box-shadow:var(--shadow-hover); transform:translateY(-2px)}
   .kpi .label{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em}
-  .kpi .value{font-size:26px; font-weight:700; margin-top:4px}
-  .kpi.alert .value{color:var(--red)}
+  .kpi .value{font-size:28px; font-weight:700; margin-top:6px; color:var(--ink-strong)}
+  .kpi.alert{border-top-color:var(--signal)}
+  .kpi.alert .value{color:var(--signal-text)}
 
   .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
-  .panel h2{font-size:14px; margin:0; padding:12px 16px; border-bottom:1px solid var(--line); color:var(--muted); text-transform:uppercase; letter-spacing:.04em}
+  .panel h2{font-size:14px; margin:0; padding:16px; border-bottom:1px solid var(--line); color:var(--muted); text-transform:uppercase; letter-spacing:.04em}
   .panel .body{padding:0}
 
-  #map{height:460px; width:100%}
+  #map{height:460px; width:100%; background:var(--surface-muted)}
   .leaflet-popup-content{font-size:13px}
 
   /* Filterleiste */
-  .filters{display:flex; gap:10px; flex-wrap:wrap; align-items:end; padding:12px 16px}
-  .filters .f{display:flex; flex-direction:column; gap:3px}
+  .filters{display:flex; gap:16px; flex-wrap:wrap; align-items:end; padding:16px}
+  .filters .f{display:flex; flex-direction:column; gap:4px}
   .filters .f label{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em}
   .chips{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
   .chip{display:inline-flex; align-items:center; gap:5px; font-size:13px; color:var(--muted)}
-  .legend{display:flex; gap:14px; flex-wrap:wrap; padding:8px 16px; font-size:12px; color:var(--muted); border-top:1px solid var(--line)}
-  .legend i{display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:5px; vertical-align:-1px}
+  .legend{display:flex; gap:16px; flex-wrap:wrap; padding:8px 16px; font-size:12px; color:var(--muted); border-top:1px solid var(--line)}
+  .legend i{display:inline-block; width:12px; height:12px; border-radius:2px; margin-right:5px; vertical-align:-1px}
 
   /* Zeitleiste */
-  #timeline{padding:10px 16px 16px}
+  #timeline{padding:8px 16px 16px}
   .tl-scale{display:flex; margin-left:78px; color:var(--muted); font-size:10px; user-select:none}
   .tl-scale span{flex:1; text-align:left}
   .tl-row{display:flex; align-items:center; gap:8px; margin-top:6px}
   .tl-day{width:70px; font-size:12px; color:var(--muted); text-align:right; flex:none}
-  .tl-track{position:relative; flex:1; height:22px; background:#f1f5f9; border-radius:5px; overflow:hidden}
-  .tl-trip{position:absolute; top:3px; height:16px; border-radius:4px; background:var(--accent); opacity:.85; cursor:pointer}
-  .tl-trip.night{background:#5f3dc4}
-  .tl-anom{position:absolute; top:0; width:2px; height:22px; background:var(--red)}
+  .tl-track{position:relative; flex:1; height:22px; background:var(--surface-muted); border-radius:var(--radius-input); overflow:hidden}
+  .tl-trip{position:absolute; top:3px; height:16px; border-radius:2px; background:var(--accent); opacity:.9; cursor:pointer}
+  .tl-trip.night{background:var(--surface-inverse); opacity:1}
+  .tl-anom{position:absolute; top:0; width:2px; height:22px; background:var(--signal)}
 
   /* Tabs & Tabellen */
-  .tabs{display:flex; gap:2px; padding:10px 16px 0; flex-wrap:wrap}
-  .tab{border:1px solid var(--line); border-bottom:none; background:#f8fafc; padding:7px 14px; border-radius:8px 8px 0 0; cursor:pointer; font-size:14px; color:var(--muted)}
-  .tab.active{background:#fff; color:var(--ink); font-weight:600}
+  .tabs{display:flex; gap:2px; padding:8px 16px 0; flex-wrap:wrap}
+  .tab{border:1px solid var(--line); border-bottom:none; background:var(--surface-muted); padding:7px 14px; border-radius:var(--radius-btn) var(--radius-btn) 0 0; cursor:pointer; font-size:14px; color:var(--muted)}
+  .tab.active{background:var(--surface); color:var(--ink-strong); font-weight:600; box-shadow:inset 0 3px 0 var(--accent)}
   .tabwrap{border-top:1px solid var(--line)}
+  #tab-report h3{border-left:3px solid var(--accent); padding-left:10px}
   table{width:100%; border-collapse:collapse; font-size:13px}
-  th,td{text-align:left; padding:8px 12px; border-bottom:1px solid var(--line); white-space:nowrap}
-  th{color:var(--muted); font-weight:600; position:sticky; top:0; background:#fff; cursor:pointer; user-select:none}
+  th,td{text-align:left; padding:8px 16px; border-bottom:1px solid var(--line); white-space:nowrap}
+  th{color:var(--muted); font-weight:600; position:sticky; top:0; background:var(--surface); cursor:pointer; user-select:none}
   tbody tr{cursor:pointer}
-  tbody tr:hover{background:#f5f9ff}
+  tbody tr:hover{background:var(--surface-muted)}
   .tblwrap{max-height:420px; overflow:auto}
-  .tag{display:inline-block; font-size:11px; padding:1px 7px; border-radius:999px; background:#eef2f7; color:var(--muted)}
-  .tag.night{background:#efe7ff; color:#5f3dc4}
-  .tag.red{background:#fde8e8; color:var(--red)}
-  .tag.yellow{background:#fff4e0; color:#a15c00}
+  .tag{display:inline-block; font-size:11px; padding:1px 9px; border-radius:var(--radius-pill); background:var(--surface-muted); color:var(--ink-muted)}
+  .tag.night{background:var(--surface-inverse); color:var(--ink-inverse)}
+  .tag.red{background:var(--signal-soft); color:var(--signal-text)}
+  .tag.yellow{background:var(--accent-soft); color:var(--accent-text)}
   td.num{text-align:right; font-variant-numeric:tabular-nums}
   .muted{color:var(--muted)}
   .cat-sel{font-size:12px; padding:3px 6px}
 
   /* Modal */
-  .modal-bg{position:fixed; inset:0; background:rgba(15,23,42,.45); display:none; align-items:center; justify-content:center; z-index:2000; padding:16px}
+  .modal-bg{position:fixed; inset:0; background:var(--overlay); display:none; align-items:center; justify-content:center; z-index:2000; padding:16px}
   .modal-bg.open{display:flex}
-  .modal{background:#fff; border-radius:var(--radius); max-width:640px; width:100%; max-height:88vh; overflow:auto; box-shadow:0 20px 60px rgba(0,0,0,.3)}
-  .modal h3{margin:0; padding:16px 18px; border-bottom:1px solid var(--line); font-size:16px; display:flex; align-items:center; gap:8px}
-  .modal .mbody{padding:16px 18px; display:grid; gap:14px}
-  .modal .mfoot{padding:14px 18px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:8px}
-  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .modal{background:var(--surface); border-radius:var(--radius); max-width:640px; width:100%; max-height:88vh; overflow:auto; box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  .modal h3{margin:0; padding:16px; border-bottom:1px solid var(--line); font-size:16px; display:flex; align-items:center; gap:8px; color:var(--ink-strong)}
+  .modal .mbody{padding:16px; display:grid; gap:16px}
+  .modal .mfoot{padding:16px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:8px}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:8px 16px}
   .field{display:flex; flex-direction:column; gap:4px}
   .field label{font-size:12px; color:var(--muted)}
-  .maprow{display:grid; grid-template-columns:1fr 90px 90px 70px 32px; gap:6px; align-items:center}
-  .note{font-size:12px; color:var(--muted); background:#f8fafc; border:1px solid var(--line); border-radius:8px; padding:10px 12px}
-  .banner{padding:10px 16px; font-size:13px; border-radius:8px; margin:0}
-  .banner.warn{background:#fff8e6; border:1px solid #ffe3a3; color:#8a5a00}
-  .banner.err{background:#fdecec; border:1px solid #f7c2c2; color:#a12020}
-  .banner.ok{background:#e9f8f0; border:1px solid #b7e6cd; color:#146c43}
+  .maprow{display:grid; grid-template-columns:1fr 90px 90px 70px 32px; gap:8px; align-items:center}
+  .note{font-size:12px; color:var(--muted); background:var(--surface-muted); border:1px solid var(--line); border-radius:var(--radius-input); padding:8px 16px}
+  .banner{padding:8px 16px; font-size:13px; border-radius:var(--radius-input); margin:0}
+  .banner.warn{background:var(--surface-muted); border:1px solid var(--line); border-left:3px solid var(--ink-strong); color:var(--ink-strong)}
+  .banner.err{background:var(--signal-soft); border:1px solid var(--signal); color:var(--signal-text)}
+  .banner.ok{background:var(--accent-soft); border:1px solid var(--accent); color:var(--accent-text)}
   #selftest-out{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; white-space:pre-wrap}
   .hidden{display:none !important}
 
@@ -138,8 +178,8 @@
   }
   @media print{
     header.app,#drop,.filters,.tabs,.btn,.leaflet-control-container{display:none !important}
-    body{background:#fff}
-    .panel{box-shadow:none; border-color:#ccc; break-inside:avoid}
+    body{background:var(--surface)}
+    .panel{box-shadow:none; border-color:var(--line); break-inside:avoid}
     #map{height:300px}
     .tblwrap{max-height:none; overflow:visible}
   }
@@ -160,7 +200,9 @@
       </select>
     </label>
     <button class="btn" id="btn-csv" disabled>⬇️ CSV</button>
+    <button class="btn" id="btn-logbook" disabled title="Fahrtenbuch als CSV (mit km-Stand-Spalten)">📒 Fahrtenbuch</button>
     <button class="btn" id="btn-print" disabled>🖨️ Druck/PDF</button>
+    <button class="btn" id="btn-theme" title="Design: automatisch / hell / dunkel">🌓 Auto</button>
     <button class="btn" id="btn-settings" title="Einstellungen">⚙️</button>
     <input type="file" id="file" accept=".csv,.xlsx,.xls,.txt" class="hidden">
   </div>
@@ -182,13 +224,13 @@
       <div class="body">
         <div id="map"></div>
         <div class="legend">
-          <span><i style="background:var(--accent)"></i>&lt;30</span>
-          <span><i style="background:var(--green)"></i>30–60</span>
-          <span><i style="background:var(--yellow)"></i>60–100</span>
-          <span><i style="background:var(--red)"></i>&gt;100 km/h</span>
-          <span style="margin-left:12px"><i style="background:var(--grey);border-radius:50%"></i>Stopp</span>
-          <span><i style="background:var(--yellow);border-radius:50%"></i>kurzer Stopp</span>
-          <span><i style="background:var(--red);border-radius:50%"></i>auffällig</span>
+          <span><i style="background:#b5d472"></i>&lt;30</span>
+          <span><i style="background:#84bb20"></i>30–60</span>
+          <span><i style="background:#5e8a14"></i>60–100</span>
+          <span><i style="background:var(--signal)"></i>&gt;100 km/h</span>
+          <span style="margin-left:16px"><i style="background:var(--neutral);border-radius:50%"></i>Stopp</span>
+          <span><i style="background:var(--accent);border-radius:50%"></i>kurzer Stopp</span>
+          <span><i style="background:var(--signal);border-radius:50%"></i>auffällig</span>
         </div>
       </div>
     </div>
@@ -224,11 +266,13 @@
         <div class="tab active" data-tab="trips">Fahrten</div>
         <div class="tab" data-tab="stops">Stopps</div>
         <div class="tab" data-tab="anoms">Auffälligkeiten</div>
+        <div class="tab" data-tab="report">Auswertung</div>
       </div>
       <div class="tabwrap">
         <div class="tblwrap" id="tab-trips"></div>
         <div class="tblwrap hidden" id="tab-stops"></div>
         <div class="tblwrap hidden" id="tab-anoms"></div>
+        <div class="hidden" id="tab-report"></div>
       </div>
     </div>
   </section>
@@ -266,7 +310,16 @@
         <div class="field"><label>Lange Standzeit ab (h)</label><input type="number" id="s-longStandH" step="1"></div>
         <div class="field"><label>Nachtfahrt von (Std.)</label><input type="number" id="s-nightStart" min="0" max="23"></div>
         <div class="field"><label>Nachtfahrt bis (Std.)</label><input type="number" id="s-nightEnd" min="0" max="23"></div>
+        <div class="field"><label>Kurzhalt von (s)</label><input type="number" id="s-microStopMinSec" step="1"></div>
+        <div class="field"><label>Kurzhalt bis (s)</label><input type="number" id="s-microStopMaxSec" step="1"></div>
       </div>
+      <div class="note">Kurzhalt = sehr kurzer Stillstand (Standard 15–50 s). Ob an Kreuzung/Ampel, lässt sich ohne Straßendaten nicht automatisch feststellen – die Liste dient der manuellen Prüfung.</div>
+
+      <h3 style="border:none;padding:6px 0 0;font-size:14px">📒 Fahrtenbuch</h3>
+      <div class="grid2">
+        <div class="field"><label>km-Stand Startwert (optional)</label><input type="number" id="s-odoStart" step="1" placeholder="z. B. 84250"></div>
+      </div>
+      <div class="note">Ist ein Startwert gesetzt, füllt der Fahrtenbuch-Export die km-Stände fortlaufend (Ende = Start + gefahrene km). Ohne Startwert bleiben die km-Stand-Spalten leer zum manuellen Nachtragen. <b>Hinweis:</b> GPS liefert keinen echten Tacho-Kilometerstand – für ein steuerlich anerkanntes Fahrtenbuch bitte Steuerberater prüfen.</div>
 
       <h3 style="border:none;padding:6px 0 0;font-size:14px">📍 Benannte Orte</h3>
       <div class="note">Benannte Orte (z. B. „Zuhause", „Arbeit") verhindern die Markierung „Lange Standzeit" und liefern Ortsnamen in Karte & Listen.</div>
@@ -395,12 +448,14 @@ GPS.util = (function(){
       return sourceTZ==='UTC' ? Date.UTC(y,mo-1,d,h,mi,se) : berlinWallToMs(y,mo,d,h,mi,se);
     }
   }
+  // Tempo-Skala im Feind-CI: Neutralgrau (steht) -> Grün-Abstufungen (fahren)
+  // -> Signalrot (zu schnell). Keine markenfremden Farben.
   function speedColor(v){
-    if(v<5) return '#9aa0a6';
-    if(v<30) return '#1a73e8';
-    if(v<60) return '#12b886';
-    if(v<100) return '#f59f00';
-    return '#e03131';
+    if(v<5) return '#999999';   // neutral (Stillstand)
+    if(v<30) return '#b5d472';  // helles Feind-Grün
+    if(v<60) return '#84bb20';  // Feind-Grün
+    if(v<100) return '#5e8a14'; // dunkles Feind-Grün (accent-text)
+    return '#e3000b';           // Signalrot (zu schnell)
   }
   return {haversine,berlinParts,berlinWallToMs,parseNum,parseAcc,parseTime,fmtDate,fmtTime,fmtDur,shortAddr,pad,speedColor};
 })();
@@ -420,7 +475,11 @@ GPS.store = (function(){
 GPS.defaults = {
   tripSpeed:5, stopSpeed:3, stopRadius:100, stopMinMin:10, shortStopMinMin:2,
   speedLimit:130, dataGapMin:15, jumpSpeed:250, longStandMin:12*60,
-  nightStart:23, nightEnd:5
+  nightStart:23, nightEnd:5,
+  // Kurzhalt: sehr kurzer Stillstand (Sekunden). Achtung: ob an Kreuzung/Ampel,
+  // lässt sich offline ohne Straßendaten nicht bestimmen – daher werden ALLE
+  // Kurzhalte in diesem Fenster gelistet, zur manuellen Beurteilung.
+  microStopMinSec:15, microStopMaxSec:50
 };
 
 /* -------------------------- normalizer --------------------------------- */
@@ -505,12 +564,15 @@ GPS.detector = (function(){
         // Center (Mittelwert)
         let cLat=0,cLon=0; for(let k=i;k<=j;k++){ cLat+=P[k].lat; cLon+=P[k].lon; }
         cLat/=(j-i+1); cLon/=(j-i+1);
+        const durSec=durMin*60;
         let type;
         if(durMin>=s.stopMinMin || ign) type='stop';
         else if(durMin>=s.shortStopMinMin) type='short';
         else type='micro';
+        // Kurzhalt-Kennzeichen: sehr kurzer Stillstand im konfigurierten Sekundenfenster
+        const kurzhalt = (type==='micro' && durSec>=s.microStopMinSec && durSec<=s.microStopMaxSec);
         let cAddr=null; for(let k=i;k<=j;k++){ if(P[k].addr){ cAddr=P[k].addr; break; } }
-        clusters.push({i,j,startT:P[i].t,endT:P[j].t,durMin,lat:cLat,lon:cLon,ignitionOff:ign,type,addr:cAddr});
+        clusters.push({i,j,startT:P[i].t,endT:P[j].t,durMin,durSec,lat:cLat,lon:cLon,ignitionOff:ign,type,kurzhalt,addr:cAddr});
         i=j+1;
       } else i++;
     }
@@ -523,6 +585,7 @@ GPS.detector = (function(){
 
     const longStops=clusters.filter(c=>c.type==='stop');
     const shortStops=clusters.filter(c=>c.type==='short');
+    const microStops=clusters.filter(c=>c.kurzhalt);
 
     // 5) Fahrten = Fahr-Spannen zwischen langen Stopps
     const trips=[];
@@ -584,6 +647,11 @@ GPS.detector = (function(){
     for(const c of longStops){
       if(c.durMin>=s.longStandMin && !c.place) anomalies.push({type:'Lange Standzeit',t:c.startT,lat:c.lat,lon:c.lon,detail:U.fmtDur(c.durMin)+' an unbenanntem Ort'});
     }
+    // Kurzhalte (15–50 s): als Auffälligkeit gelistet. Ob an Kreuzung/Ampel,
+    // ist offline ohne Straßendaten nicht bestimmbar -> zur manuellen Prüfung.
+    for(const c of microStops){
+      anomalies.push({type:'Kurzhalt',t:c.startT,lat:c.lat,lon:c.lon,detail:Math.round(c.durSec)+' s'+(c.addr?' · '+(U.shortAddr(c.addr)||''):'')+' (Kreuzung/Ampel bitte prüfen)'});
+    }
     anomalies.sort((x,y)=>x.t-y.t);
 
     const stats={
@@ -591,10 +659,11 @@ GPS.detector = (function(){
       driveMin:trips.reduce((a,t)=>a+t.durMin,0),
       stops:longStops.length,
       shortStops:shortStops.length,
+      microStops:microStops.length,
       anomalies:anomalies.length,
       points:n, jumps:segJump.filter(Boolean).length
     };
-    return {points:P, trips, stops:longStops, shortStops, anomalies, clusters, segJump, stats, settings:s};
+    return {points:P, trips, stops:longStops, shortStops, microStops, anomalies, clusters, segJump, stats, settings:s};
   }
   return {analyze};
 })();
@@ -713,7 +782,7 @@ GPS.importer = (function(){
     recompute();
     $('drop').classList.add('hidden');
     $('dash').classList.remove('hidden');
-    $('btn-csv').disabled=false; $('btn-print').disabled=false;
+    $('btn-csv').disabled=false; $('btn-logbook').disabled=false; $('btn-print').disabled=false;
     let msg='Import erfolgreich: '+points.length.toLocaleString('de-DE')+' Punkte';
     if(ignored) msg+=' · '+ignored.toLocaleString('de-DE')+' Zeilen ignoriert';
     if(!GPS.store.available) msg+=' · Hinweis: localStorage nicht verfügbar – Orte/Einstellungen werden nicht gespeichert';
@@ -781,7 +850,7 @@ GPS.importer = (function(){
   }
 
   /* ---------- Rendering ---------- */
-  function render(){ renderKpis(); renderMap(); renderTimeline(); renderTables(); }
+  function render(){ renderKpis(); renderMap(); renderTimeline(); renderTables(); renderReport(); }
 
   function renderKpis(){
     const trips=filteredTrips();
@@ -845,7 +914,7 @@ GPS.importer = (function(){
         if(c.type==='micro' || !inRangeTs(c.startT)) continue;
         const isLong=c.type==='stop';
         const longStand = isLong && c.durMin>=settings.longStandMin && !c.place;
-        const color = longStand ? '#e03131' : (isLong ? '#9aa0a6' : '#f59f00');
+        const color = longStand ? '#e3000b' : (isLong ? '#999999' : '#84bb20');
         const rad = Math.max(5, Math.min(22, 5+Math.log10(Math.max(2,c.durMin))*7));
         const p=U.berlinParts(c.startT);
         const m=L.circleMarker([c.lat,c.lon],{radius:rad,color:'#fff',weight:1.5,fillColor:color,fillOpacity:.85});
@@ -858,7 +927,7 @@ GPS.importer = (function(){
       for(const a of state.result.anomalies){
         if(!inRangeTs(a.t)) continue;
         const p=U.berlinParts(a.t);
-        const m=L.circleMarker([a.lat,a.lon],{radius:6,color:'#fff',weight:1.5,fillColor:'#e03131',fillOpacity:.9});
+        const m=L.circleMarker([a.lat,a.lon],{radius:6,color:'#fff',weight:1.5,fillColor:'#e3000b',fillOpacity:.9});
         m.bindPopup(`<b>${a.type}</b><br>${U.fmtDate(p)} ${U.fmtTime(p)}<br>${escHtml(a.detail||'')}`);
         m.addTo(anoms); bounds.push([a.lat,a.lon]);
       }
@@ -951,7 +1020,7 @@ GPS.importer = (function(){
       tr.addEventListener('click',e=>{ if(e.target.classList.contains('cat-sel')) return; const lat=+tr.dataset.lat,lon=+tr.dataset.lon; if(!isNaN(lat)) focusPoint(lat,lon); });
     });
     $('tab-trips').querySelectorAll('.cat-sel').forEach(sel=>{
-      sel.addEventListener('change',()=>{ setCat(+sel.dataset.ms, sel.value); renderKpis(); });
+      sel.addEventListener('change',()=>{ setCat(+sel.dataset.ms, sel.value); renderKpis(); renderReport(); });
       sel.addEventListener('click',e=>e.stopPropagation());
     });
 
@@ -976,12 +1045,117 @@ GPS.importer = (function(){
     const anoms=state.result.anomalies.filter(a=>inRangeTs(a.t));
     let ha='<table><thead><tr><th>Typ</th><th>Zeitpunkt</th><th>Detail</th></tr></thead><tbody>';
     if(!anoms.length) ha+='<tr><td colspan="3" class="muted">Keine Auffälligkeiten im Filter.</td></tr>';
-    for(const a of anoms){ const p=U.berlinParts(a.t); ha+=`<tr data-lat="${a.lat}" data-lon="${a.lon}"><td><span class="tag red">${a.type}</span></td><td>${U.fmtDate(p)} ${U.fmtTime(p)}</td><td>${escHtml(a.detail||'')}</td></tr>`; }
+    for(const a of anoms){ const p=U.berlinParts(a.t); const cls=a.type==='Kurzhalt'?'yellow':'red'; ha+=`<tr data-lat="${a.lat}" data-lon="${a.lon}"><td><span class="tag ${cls}">${a.type}</span></td><td>${U.fmtDate(p)} ${U.fmtTime(p)}</td><td>${escHtml(a.detail||'')}</td></tr>`; }
     ha+='</tbody></table>'; $('tab-anoms').innerHTML=ha;
     $('tab-anoms').querySelectorAll('tbody tr').forEach(tr=>tr.addEventListener('click',()=>{const lat=+tr.dataset.lat,lon=+tr.dataset.lon; if(!isNaN(lat))focusPoint(lat,lon);}));
   }
 
+  /* ---------- Auswertung (Report) ---------- */
+  function isoWeek(ms){
+    const p=U.berlinParts(ms);
+    const d=new Date(Date.UTC(p.y,p.mo-1,p.d));
+    const day=(d.getUTCDay()+6)%7;              // Mo=0
+    d.setUTCDate(d.getUTCDate()-day+3);          // Donnerstag der Woche
+    const isoYear=d.getUTCFullYear();
+    const firstThu=new Date(Date.UTC(isoYear,0,4));
+    const firstDay=(firstThu.getUTCDay()+6)%7;
+    firstThu.setUTCDate(firstThu.getUTCDate()-firstDay+3);
+    const week=1+Math.round((d-firstThu)/(7*86400000));
+    return {isoYear, week};
+  }
+  const MON=['','Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+  function renderReport(){
+    const el=$('tab-report');
+    const trips=filteredTrips();
+    if(!trips.length){ el.innerHTML='<div style="padding:16px" class="muted">Keine Fahrten im Filter.</div>'; return; }
+    const num=(v,dec=1)=>v.toLocaleString('de-DE',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+
+    // --- Fahrten-Statistik ---
+    const totKm=trips.reduce((a,t)=>a+t.km,0);
+    const totMin=trips.reduce((a,t)=>a+t.durMin,0);
+    const longestKm=trips.reduce((a,t)=>t.km>a.km?t:a,trips[0]);
+    const longestDur=trips.reduce((a,t)=>t.durMin>a.durMin?t:a,trips[0]);
+    const avgV = totMin>0 ? totKm/(totMin/60) : 0;
+    const anoms=state.result.anomalies.filter(a=>inRangeTs(a.t));
+    const cnt=type=>anoms.filter(a=>a.type===type).length;
+    const nightN=trips.filter(t=>t.night).length;
+
+    // --- km privat/beruflich ---
+    const byCat={beruflich:0,privat:0,'(ohne)':0};
+    for(const t of trips){ const c=catOf(t.startT)||'(ohne)'; byCat[c]=(byCat[c]||0)+t.km; }
+    const catPct=c=> totKm>0 ? (byCat[c]/totKm*100) : 0;
+
+    // --- Monats-/Wochenübersicht ---
+    const agg=(keyFn)=>{
+      const m={};
+      for(const t of trips){ const k=keyFn(t.startT); (m[k]=m[k]||{km:0,min:0,n:0,ber:0,pri:0}); const o=m[k]; o.km+=t.km;o.min+=t.durMin;o.n++; const c=catOf(t.startT); if(c==='beruflich')o.ber+=t.km; else if(c==='privat')o.pri+=t.km; }
+      return m;
+    };
+    const months=agg(ms=>{const p=U.berlinParts(ms); return p.y+'-'+U.pad(p.mo);});
+    const weeks=agg(ms=>{const w=isoWeek(ms); return w.isoYear+'-KW'+U.pad(w.week);});
+    const aggRows=(m,label)=>{
+      const keys=Object.keys(m).sort();
+      let h=`<table><thead><tr><th>${label}</th><th class="num">Fahrten</th><th class="num">km</th><th class="num">Fahrzeit</th><th class="num">berufl. km</th><th class="num">priv. km</th></tr></thead><tbody>`;
+      for(const k of keys){ const o=m[k]; let disp=k; const mm=k.match(/^(\d{4})-(\d{2})$/); if(mm) disp=MON[+mm[2]]+' '+mm[1]; else disp=k.replace('-',' '); h+=`<tr><td>${disp}</td><td class="num">${o.n}</td><td class="num">${num(o.km)}</td><td class="num">${U.fmtDur(o.min)}</td><td class="num">${num(o.ber)}</td><td class="num">${num(o.pri)}</td></tr>`; }
+      h+='</tbody></table>'; return h;
+    };
+
+    // --- Häufigste Ziele/Orte (aus Stopps: benannter Ort oder Adresse) ---
+    const placeMap={};
+    for(const c of state.result.clusters){
+      if(c.type==='micro' || !inRangeTs(c.startT)) continue;
+      const name=c.place||U.shortAddr(c.addr); if(!name) continue;
+      (placeMap[name]=placeMap[name]||{n:0,min:0}); placeMap[name].n++; placeMap[name].min+=c.durMin;
+    }
+    const topPlaces=Object.entries(placeMap).sort((a,b)=>b[1].n-a[1].n||b[1].min-a[1].min).slice(0,10);
+
+    const stat=(l,v)=>`<div class="kpi" style="box-shadow:none"><div class="label">${l}</div><div class="value" style="font-size:20px">${v}</div></div>`;
+    el.innerHTML = `
+      <div style="padding:14px 16px; display:grid; gap:18px">
+        <div>
+          <h3 style="margin:0 0 8px; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em">Fahrten-Statistik</h3>
+          <div class="kpis" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+            ${stat('Fahrten', trips.length)}
+            ${stat('Gesamt-km', num(totKm)+' km')}
+            ${stat('Ø je Fahrt', num(totKm/trips.length)+' km')}
+            ${stat('Ø-Tempo', Math.round(avgV)+' km/h')}
+            ${stat('Längste (km)', num(longestKm.km)+' km')}
+            ${stat('Längste (Zeit)', U.fmtDur(longestDur.durMin))}
+            ${stat('Nachtfahrten', nightN)}
+            ${stat('Tempo &gt; Limit', cnt('Tempo'))}
+            ${stat('Kurzhalte', cnt('Kurzhalt'))}
+          </div>
+        </div>
+        <div>
+          <h3 style="margin:0 0 8px; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em">km-Aufteilung privat / beruflich</h3>
+          <table><thead><tr><th>Kategorie</th><th class="num">km</th><th class="num">Anteil</th></tr></thead><tbody>
+            <tr><td>beruflich</td><td class="num">${num(byCat.beruflich||0)}</td><td class="num">${num(catPct('beruflich'))} %</td></tr>
+            <tr><td>privat</td><td class="num">${num(byCat.privat||0)}</td><td class="num">${num(catPct('privat'))} %</td></tr>
+            <tr><td class="muted">ohne Kategorie</td><td class="num">${num(byCat['(ohne)']||0)}</td><td class="num">${num(catPct('(ohne)'))} %</td></tr>
+          </tbody></table>
+        </div>
+        <div>
+          <h3 style="margin:0 0 8px; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em">Monatsübersicht</h3>
+          ${aggRows(months,'Monat')}
+        </div>
+        <div>
+          <h3 style="margin:0 0 8px; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em">Wochenübersicht</h3>
+          ${aggRows(weeks,'Woche')}
+        </div>
+        <div>
+          <h3 style="margin:0 0 8px; font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em">Häufigste Ziele / Orte</h3>
+          ${topPlaces.length ? `<table><thead><tr><th>Ort</th><th class="num">Besuche</th><th class="num">Gesamtdauer</th></tr></thead><tbody>${topPlaces.map(([n,o])=>`<tr><td>${escHtml(n)}</td><td class="num">${o.n}</td><td class="num">${U.fmtDur(o.min)}</td></tr>`).join('')}</tbody></table>` : '<div class="muted">Keine Ortsdaten (Adress-Spalte im Export nötig).</div>'}
+        </div>
+      </div>`;
+  }
+
   /* ---------- Export ---------- */
+  function downloadCsv(rows, filename){
+    const csv='﻿'+rows.map(r=>r.map(c=>{const s=String(c); return /[";\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(';')).join('\r\n');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  }
   function exportCsv(){
     const trips=filteredTrips();
     const rows=[['Datum','Start','Ziel','Start-Ort','Ziel-Ort','km','Dauer_min','Ø_kmh','Max_kmh','Nacht','Kategorie']];
@@ -989,23 +1163,39 @@ GPS.importer = (function(){
       const ps=U.berlinParts(tr.startT), pe=U.berlinParts(tr.endT);
       rows.push([U.fmtDate(ps),U.fmtTime(ps),U.fmtTime(pe),tr.startPlace||U.shortAddr(tr.startAddr)||'',tr.endPlace||U.shortAddr(tr.endAddr)||'',tr.km.toFixed(2).replace('.',','),Math.round(tr.durMin),Math.round(tr.avgSpeed),Math.round(tr.maxSpeed),tr.night?'ja':'nein',catOf(tr.startT)]);
     }
-    const csv='﻿'+rows.map(r=>r.map(c=>{const s=String(c); return /[";\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(';')).join('\r\n');
-    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='fahrten.csv'; a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    downloadCsv(rows,'fahrten.csv');
+  }
+  // Fahrtenbuch-CSV mit km-Stand-Spalten (fortlaufend ab optionalem Startwert)
+  function exportLogbook(){
+    const trips=filteredTrips().slice().sort((a,b)=>a.startT-b.startT);
+    const rows=[['Datum','Startzeit','Start-Adresse','Endzeit','Ziel-Adresse','gefahrene_km','km-Stand_Anfang','km-Stand_Ende','Zweck','Notiz']];
+    let odo = (settings.odoStart!=null && !isNaN(settings.odoStart)) ? settings.odoStart : null;
+    for(const tr of trips){
+      const ps=U.berlinParts(tr.startT), pe=U.berlinParts(tr.endT);
+      const start=tr.startPlace||U.shortAddr(tr.startAddr)||'';
+      const ziel =tr.endPlace||U.shortAddr(tr.endAddr)||'';
+      const km=tr.km;
+      let odoA='', odoE='';
+      if(odo!=null){ odoA=Math.round(odo); odo=odo+km; odoE=Math.round(odo); }
+      const zweck=catOf(tr.startT)||'';
+      rows.push([U.fmtDate(ps),U.fmtTime(ps),start,U.fmtTime(pe),ziel,km.toFixed(1).replace('.',','),odoA,odoE,zweck,'']);
+    }
+    downloadCsv(rows,'fahrtenbuch.csv');
   }
 
   /* ---------- Einstellungen-UI ---------- */
   function openSettings(){
-    for(const k of ['tripSpeed','stopSpeed','stopRadius','stopMinMin','shortStopMinMin','speedLimit','dataGapMin','jumpSpeed','nightStart','nightEnd']){ $('s-'+k).value=settings[k]; }
+    for(const k of ['tripSpeed','stopSpeed','stopRadius','stopMinMin','shortStopMinMin','speedLimit','dataGapMin','jumpSpeed','nightStart','nightEnd','microStopMinSec','microStopMaxSec']){ $('s-'+k).value=settings[k]; }
     $('s-longStandH').value=settings.longStandMin/60;
+    $('s-odoStart').value=(settings.odoStart!=null?settings.odoStart:'');
     renderPlacesList();
     $('selftest-out').textContent='';
     $('set-modal').classList.add('open');
   }
   function saveSettings(){
-    for(const k of ['tripSpeed','stopSpeed','stopRadius','stopMinMin','shortStopMinMin','speedLimit','dataGapMin','jumpSpeed','nightStart','nightEnd']){ const v=parseFloat($('s-'+k).value); if(!isNaN(v)) settings[k]=v; }
+    for(const k of ['tripSpeed','stopSpeed','stopRadius','stopMinMin','shortStopMinMin','speedLimit','dataGapMin','jumpSpeed','nightStart','nightEnd','microStopMinSec','microStopMaxSec']){ const v=parseFloat($('s-'+k).value); if(!isNaN(v)) settings[k]=v; }
     const lh=parseFloat($('s-longStandH').value); if(!isNaN(lh)) settings.longStandMin=lh*60;
+    const od=parseFloat($('s-odoStart').value); settings.odoStart=isNaN(od)?null:od;
     GPS.store.set('gpsdash.settings', settings);
     $('set-modal').classList.remove('open');
     recompute();
@@ -1040,15 +1230,21 @@ GPS.importer = (function(){
     $('tz').addEventListener('change',e=>{ state.sourceTZ=e.target.value; GPS.store.set('gpsdash.tz',state.sourceTZ); if(state.mapping && state.raw){ banner('warn','Zeitzone geändert – bitte Datei erneut laden, damit die Zeitstempel neu interpretiert werden.',false); } });
 
     $('btn-csv').addEventListener('click',exportCsv);
+    $('btn-logbook').addEventListener('click',exportLogbook);
     $('btn-print').addEventListener('click',()=>window.print());
     $('btn-settings').addEventListener('click',openSettings);
+    // Theme-Umschalter: automatisch -> hell -> dunkel
+    const THEMES=[['','🌓 Auto'],['light','☀️ Hell'],['dark','🌙 Dunkel']];
+    function applyTheme(v){ if(v) document.documentElement.setAttribute('data-theme',v); else document.documentElement.removeAttribute('data-theme'); const lbl=(THEMES.find(t=>t[0]===v)||THEMES[0])[1]; $('btn-theme').textContent=lbl; GPS.store.set('gpsdash.theme',v); if(state.map) setTimeout(()=>state.map.invalidateSize(),50); }
+    applyTheme(GPS.store.get('gpsdash.theme',''));
+    $('btn-theme').addEventListener('click',()=>{ const cur=document.documentElement.getAttribute('data-theme')||''; const i=THEMES.findIndex(t=>t[0]===cur); applyTheme(THEMES[(i+1)%THEMES.length][0]); });
 
     ['f-from','f-to','f-day','f-cat','e-trips','e-stops','e-anom'].forEach(id=>$(id).addEventListener('change',()=>{ if(state.result) render(); }));
     $('f-reset').addEventListener('click',()=>{ $('f-day').value=''; $('f-cat').value=''; setupFilterBounds(); if(state.result) render(); });
 
     document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); t.classList.add('active');
-      ['trips','stops','anoms'].forEach(n=>$('tab-'+n).classList.toggle('hidden', n!==t.dataset.tab));
+      ['trips','stops','anoms','report'].forEach(n=>$('tab-'+n).classList.toggle('hidden', n!==t.dataset.tab));
     }));
 
     $('set-cancel').addEventListener('click',()=>$('set-modal').classList.remove('open'));

@@ -52,3 +52,10 @@ Datenhaltung im Artefakt-Speicher (`db`), nicht im HTML:
 Der im HTML eingebettete Stand vom 14.09.2026 ist nur Notfall-Anzeige und
 Erstbefüllung. Neue Buchungen kommen über „Buchungen importieren“
 (`Datum;Von;Bis;Art`) in die Seite – dafür ist keine Änderung am Code nötig.
+
+## Arbeitsweise bei Entscheidungen
+Bei schwer umkehrbaren oder nach außen wirkenden Aktionen (PR mergen, Branch
+löschen, E-Mail senden, Veröffentlichen, Daten überschreiben) und bei
+mehrdeutigen Anweisungen: **immer zuerst nachfragen** und dabei klar sagen,
+welche Option in diesem Fall die beste ist und warum. Erst nach ausdrücklicher
+Bestätigung ausführen.
