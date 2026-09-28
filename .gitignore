@@ -29,3 +29,4 @@ output/*
 # Build-Artefakte
 build/
 dist/
+node_modules/

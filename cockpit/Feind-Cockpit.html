@@ -448,13 +448,15 @@ a{color:var(--ink-strong);text-decoration-color:var(--accent);text-decoration-th
 /* § 8 DRUCK & BEWEGUNG */
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 @media print{
-  :root{color-scheme:light}
+  /* Papier immer hell: Token-Werte des hellen CI-Sets (feind-ci.tokens.json → light) */
+  :root,:root[data-theme="dark"],:root:not([data-theme="light"]){color-scheme:light;--accent:#84bb20;--accent-text:#5e8a14;--on-accent:#424e4e;--signal:#e3000b;--signal-text:#b8000a;--surface:#ffffff;--surface-muted:#f2f4f4;--surface-inverse:#424e4e;--ink:#3c5457;--ink-strong:#424e4e;--ink-muted:#6b7575;--ink-inverse:#ffffff;--line:#d5dada;--warn:#b5730a;--warn-bg:#fbf1e0;--ok:#5e8a14;--ok-bg:#eef5e2;--crit:#b8000a;--crit-bg:#fbe7e8;--info-bg:#eef3f4;--page-bg:#ffffff;--cat-1:#424e4e;--cat-4:#6b7575}
   header.top,nav.topnav,nav.tabs,.toolbar,.tools,.filters,.mbar,.toast,.modal-bg,.btn,.edit,.stsel,.lc-btn,.skip,.geomap,.ai,.adm-bar,.adm-nav,.no-print{display:none!important}
-  body{background:#fff;color:#000;font-size:10.5pt}
+  body{background:var(--surface);color:var(--ink);font-size:10.5pt}
   main{padding:0}
-  .card,.tblwrap,.kpi,.banner,.alert,.ev-card,.trow{box-shadow:none;break-inside:avoid;border-color:#999}
+  .card,.tblwrap,.kpi,.banner,.alert,.ev-card,.trow,tr,.task{box-shadow:none;break-inside:avoid;border-color:var(--ink-muted)}
+  thead{display:table-header-group}
   .gantt-scroll{overflow:visible}.gantt{min-width:0}
-  a{color:#000;text-decoration:none}
+  a{color:var(--ink-strong);text-decoration:none}
   .print-head{display:block!important;margin-bottom:12pt;border-bottom:2pt solid var(--accent);padding-bottom:6pt}
   details{display:block}details>*{display:block}
 }
@@ -765,6 +767,17 @@ var FeindCore = (function () {
     });
     return { ops: ops, report: report, conflicts: conflicts };
   }
+  /* ---------- Notion-Zeilen (Ansicht „Dashboard-Feed") → Planformat ---------- */
+  var yes = function (v) { return v === true || v === '__YES__'; };
+  var unesc = function (v) { return str(v).replace(/\\([|~*_`\[\]\\#>+\-.!<])/g, '$1').replace(/\[([^\]]+)\]\((?:mailto:|https?:\/\/)[^)]+\)/g, '$1').trim(); };
+  function normPlanRows(kind, rows) {
+    rows = arr(rows).filter(function (r) { return r && typeof r === 'object'; });
+    if (kind === 'ap') return rows.map(function (a) { return { AP: unesc(a.AP), Name: unesc(a.Name), Bereich: str(a.Bereich), Status: str(a.Status), Statushinweis: unesc(a.Statushinweis || a.Status), Verantwortlich: unesc(a.Verantwortlich), start: str(a['date:Zeitraum:start']), end: str(a['date:Zeitraum:end']), Balken: str(a.Balken).replace(/\\\|/g, '|').replace(/\\~/g, '~'), zeitraum: unesc(a['Zeitraum Text']), Ergebnis: unesc(a.Ergebnis), Voraussetzung: unesc(a.Voraussetzung), 'Rechtsprüfung': yes(a['Rechtsprüfung']), Top: yes(a.Top), url: str(a.url), Sortierung: numOr(+a.Sortierung, 99) }; });
+    if (kind === 'ms') return rows.map(function (m) { return { datum: str(m['date:Datum:start']), ende: str(m['date:Datum:end']), text: unesc(m['Datum Text']), kw: str(m.KW), titel: unesc(m.Meilenstein), details: unesc(m.Details), status: str(m.Status), hinweis: unesc(m.Statushinweis || m.Status), verantwortlich: unesc(m.Verantwortlich), messe: yes(m.Messetag), url: str(m.url), sort: numOr(+m.Sortierung, 99) }; }).sort(function (a, b) { return a.sort - b.sort; });
+    if (kind === 'dec') return rows.map(function (d) { return { nr: numOr(+d.Nr, 0), titel: unesc(d.Entscheidung), text: unesc(d.Beschreibung), status: str(d.Status), beschluss: unesc(d.Beschluss), url: str(d.url) }; }).sort(function (a, b) { return a.nr - b.nr; });
+    if (kind === 'kpi') return rows.map(function (k) { return { groesse: unesc(k['Messgröße']), ziel: unesc(k.Ziel), basis: unesc(k.Ausgangswert), quelle: unesc(k.Quelle), ist: unesc(k.Ist), messe: yes(k.Messe), url: str(k.url), sort: numOr(+k.Sortierung, 99) }; }).sort(function (a, b) { return a.sort - b.sort; });
+    return [];
+  }
   /** Ops in Pakete zu ≤ 50 (ArtifactData-batch-Grenze). */
   function chunk(ops, n) { var out = []; for (var i = 0; i < ops.length; i += (n || 50)) out.push(ops.slice(i, i + (n || 50))); return out; }
 
@@ -776,7 +789,7 @@ var FeindCore = (function () {
     contentDate: contentDate, contentStale: contentStale, leadFollowup: leadFollowup, tenderAmpel: tenderAmpel,
     HOME_STATES: HOME_STATES, BUNDESLAENDER: BUNDESLAENDER, STATE_RING: STATE_RING, MAP_TILES: MAP_TILES, RING_COUNTRY: RING_COUNTRY, RING_UNKNOWN: RING_UNKNOWN, NEIGHBOUR_COUNTRIES: NEIGHBOUR_COUNTRIES,
     canonState: canonState, canonCountry: canonCountry, geoOf: geoOf, ringOf: ringOf,
-    planMigration: planMigration, chunk: chunk
+    planMigration: planMigration, chunk: chunk, normPlanRows: normPlanRows
   };
 })();
 if (typeof module !== 'undefined' && module.exports) module.exports = FeindCore;
@@ -1036,6 +1049,16 @@ const GIVEAWAY_SLOGANS = [
 ];
 let PLAN = { ap: [], ms: [], dec: [], kpi: [], stand: '' };
 try { PLAN = JSON.parse(document.getElementById('plan90').textContent); } catch (e) { /* Plan bleibt leer */ }
+const PLAN_SNAP = JSON.parse(JSON.stringify(PLAN));
+/* Notion-Live (mcp): Ansichten „Dashboard-Feed" im Notion-Marketing-Cockpit; Admin kann sie überschreiben. */
+const NOTION_SERVER = 'Notion', NOTION_TOOL = 'notion-query-data-sources';
+const NOTION_FEEDS = {
+  ap: 'https://app.notion.com/p/d8d00c3328364ec1b767823de4ec9b33?v=3d840f8bbabb818fb6ff000cd307bb49',
+  ms: 'https://app.notion.com/p/27ca39fed80743f995c352b4e31e5e58?v=3d840f8bbabb81119c64000cb6e12ccd',
+  dec: 'https://app.notion.com/p/1ee87ac6fddb4c6281a1bdf3173ae117?v=3d840f8bbabb81549159000c81c54d26',
+  kpi: 'https://app.notion.com/p/75d0b2f468f24b2ab896fd06af5c28f0?v=3d840f8bbabb813cafcc000c1d4b98b3'
+};
+const NOTION = { live: {}, err: {}, started: false, unsub: [] };
 
 /* ============================================================================
    § C ZUSTAND
@@ -1778,6 +1801,40 @@ function rRefs(items) {
     str(r.feedback) ? h('div', { class: 'small muted' }, 'Feedback: ' + str(r.feedback)) : null)))];
 }
 
+function notionState() {
+  const ok = Object.keys(NOTION.live), bad = Object.keys(NOTION.err), snap = 'Snapshot ' + (parseTs(PLAN_SNAP.stand) ? fmtTs(parseTs(PLAN_SNAP.stand)) : '–');
+  if (ok.length && !bad.length) return 'Live aus Notion · ' + fmtTs(new Date(Math.max(...ok.map(k => NOTION.live[k])))) + ' · prüft jede Minute';
+  if (!bad.length) return NOTION.started ? snap + ' · Notion wird abgefragt …' : snap + (cfg().features.notionLive === false ? ' · Live per Admin deaktiviert' : ' · Live nur in claude.ai mit Notion-Connector');
+  const c = NOTION.err[bad[0]];
+  const msg = { server_not_connected: 'Notion nicht verbunden (claude.ai → Einstellungen → Connectors)', needs_reauth: 'Notion-Verbindung abgelaufen – neu verbinden', not_in_manifest: 'Notion-Zugriff für diese Seite nicht freigegeben', not_granted: 'Notion-Zugriff nicht erteilt', blocked_by_policy: 'Notion durch Organisationsrichtlinie gesperrt', approval_required: 'Notion-Zugriff braucht Freigabe der Organisation', server_unavailable: 'Notion antwortet nicht – nächster Versuch in 1 Min.', tool_error: 'Notion-Ansicht liefert kein erwartetes Format' }[c] || 'Aktualisierung aus Notion fehlgeschlagen';
+  return (ok.length ? 'Teilweise live' : snap) + ' · ' + msg;
+}
+async function startNotionLive() {
+  if (NOTION.started || cfg().features.notionLive === false || !window.claude) return;
+  const mcp = await use('mcp'); if (!mcp || typeof mcp.watchTool !== 'function') return;
+  NOTION.started = true;
+  const feeds = Object.assign({}, NOTION_FEEDS), cf = cfg().notionFeeds || {};
+  Object.keys(feeds).forEach(k => { const u = str(cf[k]).trim(); if (/^https:\/\/(app\.|www\.)?notion\.(com|so)\//.test(u)) feeds[k] = u; });
+  const RETRACT = new Set(['needs_reauth', 'server_not_connected', 'blocked_by_policy', 'approval_required', 'not_in_manifest', 'not_granted', 'capability_disabled', 'capability_removed']);
+  Object.entries(feeds).forEach(([key, url]) => {
+    try {
+      NOTION.unsub.push(mcp.watchTool(NOTION_SERVER, NOTION_TOOL, { data: { mode: 'view', view_url: url, page_size: 100 } }, ev => {
+        if (ev.type === 'data') {
+          let pl = ev.result && ev.result.payload; if (typeof pl === 'string') { try { pl = JSON.parse(pl); } catch (e) { pl = null; } }
+          const rows = pl && Array.isArray(pl.results) ? C.normPlanRows(key, pl.results) : null;
+          if (rows && rows.length) { PLAN[key] = rows; delete NOTION.err[key]; NOTION.live[key] = (ev.result.cache && ev.result.cache.storedAt) || Date.now(); }
+          else NOTION.err[key] = 'tool_error';
+        } else {
+          const code = (ev.error && ev.error.code) || 'upstream_error'; NOTION.err[key] = code;
+          if (RETRACT.has(code)) { delete NOTION.live[key]; PLAN[key] = PLAN_SNAP[key]; }
+        }
+        scheduleRender();
+      }, { refetchInterval: 60000, cache: { staleTime: 30000 } }));
+    } catch (e) { NOTION.err[key] = 'capability_disabled'; }
+  });
+  scheduleRender();
+}
+
 /* ---------- 90-Tage-Plan: Gantt (KW38 → Messe), Meilensteine, Entscheidungen, Messgrößen ---------- */
 const PLAN_START = '2026-09-14', PLAN_WEEKS = 18; // KW38/2026 … KW3/2027 (Messe in Woche 18)
 const AREA_CLS = { 'Messe': 'a-messe', 'Website & Messung': 'a-web', 'Marke & Firmendaten': 'a-marke', 'Recruiting': 'a-rec', 'Content & Events': 'a-content' };
@@ -1796,7 +1853,7 @@ function renderPlan90(panel) {
   const WAVE = { 1: [1, 4], 2: [5, 8], 3: [9, 13] };
   const active = a => { if (!st.wave) return true; const [ws, we] = WAVE[st.wave]; return a.Top || segs(a).some(([x, y]) => x <= we && y >= ws); };
   const openDec = PLAN.dec.filter(d => d.status !== 'beschlossen');
-  panel.append(h('div', { class: 'panel-head' }, h('div', { class: 'ttl' }, h('h2', null, '90-Tage-Plan 2026 & InfraTech 2027'), h('span', { class: 'muted small' }, PLAN.quelle + ' · Stand ' + (parseTs(PLAN.stand) ? fmtTs(parseTs(PLAN.stand)) : '–'))),
+  panel.append(h('div', { class: 'panel-head' }, h('div', { class: 'ttl' }, h('h2', null, '90-Tage-Plan 2026 & InfraTech 2027'), h('span', { class: 'muted small', role: 'status', id: 'notion-state' }, notionState())),
     h('div', { class: 'right' }, h('a', { class: 'btn', href: safeUrl(PLAN.notionHub) || '#', target: '_blank', rel: 'noopener noreferrer' }, 'In Notion öffnen ↗'), h('button', { class: 'btn ghost', type: 'button', onclick: () => { try { window.print(); } catch (e) { /* egal */ } } }, 'Drucken / PDF'))));
   panel.append(h('div', { class: 'strip' },
     h('div', { class: 'kpi ok', html: '<div class="v num">' + Math.max(0, dayDiff(today0(), parseDay(FAIR_START))) + '</div><div class="k">Tage bis InfraTech</div><div class="sub">12.01.2027</div>' }),
@@ -2285,7 +2342,7 @@ function mergeCfg(c) {
     version: numOr(c.version, 0), defaultWorld: str(c.defaultWorld) || 'marketing', defaultTab: str(c.defaultTab) || 'copilot', modules: obj(c.modules),
     announcement: Object.assign({ active: false, level: 'info', text: '', until: '' }, obj(c.announcement)),
     links: arr(c.links).filter(l => l && typeof l === 'object').map(l => ({ label: str(l.label), url: str(l.url) })),
-    features: Object.assign({ aiBriefing: true, hintsExtra: true }, obj(c.features)),
+    features: Object.assign({ aiBriefing: true, hintsExtra: true, notionLive: true }, obj(c.features)), notionFeeds: obj(c.notionFeeds),
     thresholds: c.thresholds && typeof c.thresholds === 'object' ? c.thresholds : null,
     regions: Array.isArray(c.regions) ? c.regions.map(str).filter(Boolean) : null,
     roadmap: arr(c.roadmap).filter(r => r && typeof r === 'object').map(r => ({ text: str(r.text), done: !!r.done, at: str(r.at) })),
@@ -2431,10 +2488,13 @@ function secComms(e) {
 function secSources(e) {
   const f = e.features;
   return [h('div', { class: 'adm-grid' },
+    h('div', { class: 'adm-box' }, h('h3', null, 'Notion-Live (90-Tage-Plan)'), checkField('ft-notion', 'Live-Abfrage aus Notion (sonst eingebetteter Snapshot)', f.notionLive !== false, v => { f.notionLive = v; markDirty(); }),
+      h('p', { class: 'small muted' }, 'Leer = Standard-Ansicht. Nur Notion-Ansichtslinks (…?v=…). Wirkt nach dem nächsten Laden.'),
+      h('div', { class: 'adm-form' }, [['ap', 'Arbeitspakete'], ['ms', 'Meilensteine'], ['dec', 'GL-Entscheidungen'], ['kpi', 'Messgrößen']].map(([k, l]) => textField('nf-' + k, l, e.notionFeeds[k] || '', v => { e.notionFeeds[k] = v.trim(); if (!e.notionFeeds[k]) delete e.notionFeeds[k]; markDirty(); }, { type: 'url', wide: true, placeholder: NOTION_FEEDS[k] })))),
     h('div', { class: 'adm-box' }, h('h3', null, 'Funktionen'), checkField('ft-ai', 'KI-Briefings (Tagesbrief + Messe-Briefing) anbieten', f.aiBriefing !== false, v => { f.aiBriefing = v; markDirty(); }), checkField('ft-hints', 'Zusatzhinweise (abgelaufene Fristen, Referenzen ohne Freigabe)', f.hintsExtra !== false, v => { f.hintsExtra = v; markDirty(); })),
     h('div', { class: 'adm-box', style: 'grid-column:1/-1' }, h('h3', null, 'Datenzufluss (Referenz)'), h('div', { class: 'tblwrap' }, h('table', { class: 'data' }, h('thead', null, h('tr', null, h('th', null, 'Bereich'), h('th', null, 'Pfad'), h('th', null, 'Quelle / Skill'))),
       h('tbody', null, MKT_MODULES.filter(m => m.cols.length).map(m => h('tr', null, h('td', null, m.label), h('td', null, m.cols.map(c => h('code', { style: 'margin-right:4px' }, c))), h('td', null, h('code', null, m.skill)))),
-        [['Tagesbrief', 'briefings/<JJJJ-MM-TT>', 'tagesbrief / Copilot'], ['Messe-Briefing', 'briefings/<JJJJ-MM-TT>-messe', 'Copilot'], ['Sync-Stand', 'meta/sync', 'cockpit-sync'], ['InfraTech-Aufgaben', 'tasks/<id>', 'Cockpit'], ['Lead-Zähler', 'leads/counts', 'Cockpit (nur Zahlen)'], ['Team/Erinnerungen', 'settings/infratech', 'Cockpit'], ['Budget', 'budget/actuals', 'Cockpit'], ['Akquise', 'acquisition/plan', 'Cockpit'], ['Material', 'planning/materials', 'Cockpit'], ['Protokoll', 'activity/<id>', 'Cockpit (nur Konto-IDs)'], ['90-Tage-Plan', 'eingebetteter Notion-Snapshot', 'bei Republish aktualisieren']].map(r => h('tr', null, h('td', null, r[0]), h('td', null, h('code', null, r[1])), h('td', null, r[2])))))))) ];
+        [['Tagesbrief', 'briefings/<JJJJ-MM-TT>', 'tagesbrief / Copilot'], ['Messe-Briefing', 'briefings/<JJJJ-MM-TT>-messe', 'Copilot'], ['Sync-Stand', 'meta/sync', 'cockpit-sync'], ['InfraTech-Aufgaben', 'tasks/<id>', 'Cockpit'], ['Lead-Zähler', 'leads/counts', 'Cockpit (nur Zahlen)'], ['Team/Erinnerungen', 'settings/infratech', 'Cockpit'], ['Budget', 'budget/actuals', 'Cockpit'], ['Akquise', 'acquisition/plan', 'Cockpit'], ['Material', 'planning/materials', 'Cockpit'], ['Protokoll', 'activity/<id>', 'Cockpit (nur Konto-IDs)'], ['90-Tage-Plan', 'Notion live (mcp) · Fallback Snapshot', 'Connector „Notion“']].map(r => h('tr', null, h('td', null, r[0]), h('td', null, h('code', null, r[1])), h('td', null, r[2])))))))) ];
 }
 function secAccess() {
   const pend = S.requests.filter(r => r.status === 'offen'), done = S.requests.filter(r => r.status !== 'offen'), w = adminCanWrite();
@@ -2753,7 +2813,7 @@ async function init() {
   S.db = db; S.dbState = 'ok';
   subscribeMarketing(db); subscribeInfra(db); subscribeAdmin(db);
   // Start-Ansicht aus der Admin-Konfiguration, falls die Person noch nichts gewählt hat.
-  setTimeout(() => { if (!S.navChosen && S.cfgLive) { S.world = S.cfgLive.defaultWorld === 'infratech' ? 'infratech' : 'marketing'; S.tab.marketing = S.cfgLive.defaultTab || 'copilot'; } render(); }, 800);
+  setTimeout(() => { startNotionLive(); if (!S.navChosen && S.cfgLive) { S.world = S.cfgLive.defaultWorld === 'infratech' ? 'infratech' : 'marketing'; S.tab.marketing = S.cfgLive.defaultTab || 'copilot'; } render(); }, 800);
   render();
 }
 // Testhaken (nur lesend): E2E-Tests prüfen Zustand und Exportinhalte ohne Datei-Dialog.
