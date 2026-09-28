@@ -43,10 +43,16 @@ Grundlage für die verknüpfte Claude-Code-Session und den Manager-Agenten.
 - **Dienstleister-Status-Tracker** (Faktencheck-Tab): Status verifiziert/prüfen/streichen je Dienstleister mit Beleg/Notiz (vorbefüllt aus Faktencheck: Global Expo & LOCO verifiziert, Whimsical/LIVE Staffing prüfen, „ExproGloble" streichen). Bei Verträgen: Rechtsabteilung prüfen.
 - Speicherung geteilt in `planning/materials` (packing/giveaways/vendors), Seed als Erstbefüllung, lokaler Fallback.
 
+## Bereits umgesetzt (v3 – Paket „Marketing")
+- **Marketing-Tab** mit Copy-&-Paste-Vorlagen: LinkedIn-Posts (Vorab → Countdown → Live → Nachbericht) mit lokalen SEO-Bausteinen (Kaltfräsen, Straßenfräsen …), segmentierte Nachfassmail A-/B-Lead (kurz, klare CTA – E3) und **mehrsprachige Giveaway-Sprüche DE/EN/NL** (schließt Backlog #10). Platzhalter in [eckigen Klammern]; Kopieren/Download je Baustein. Rein im Cockpit, keine externen Konten.
+
+### Offen / später (mit David abgestimmt: erst nach Merge der 4 Pakete)
+- **Fristen → Google Calendar** als echte Termine pushen (Connector, Freigabe nötig).
+- **Deliverables als Dateien**: Nachfassmail .docx, Review-Deck .pptx, Kostenbaseline .xlsx, Budget-/Lead-Charts.
+
 ## Backlog (Vorschläge, priorisiert)
 
 ### P3 – Ausbau
-10. **Mehrsprachige Giveaway-Sprüche DE/EN/NL** direkt im Marketing-Tab.
 11. **Anbindung an Zeitplan/Meilensteine** (Gantt-Mini-Ansicht T-12M … T+14d).
 
 ## Technische Hinweise für die Weiterentwicklung
