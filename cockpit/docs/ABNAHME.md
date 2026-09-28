@@ -22,7 +22,7 @@ und Kap. 11 (Wellen 1–5). Die Prüfung ist automatisiert, soweit möglich: `np
 | 12 | Read-only-Banner | ✅ | E2E AK6/12 |
 | 13 | Auto/Hell/Dunkel | ✅ | E2E AK13, bleibt über Neuladen erhalten |
 | 14 | CI-Tokens korrekt | ✅ | E2E AK3/14; keine harten Farbwerte in Skript oder Markup |
-| 15 | Datei < 500 KB | ✅ | ca. 330 KB |
+| 15 | Datei < 500 KB | ✅ | 320 KB (319.835 Byte) |
 
 **14/15 bestanden, 1 mit dokumentierter CI-Ausnahme.**
 
