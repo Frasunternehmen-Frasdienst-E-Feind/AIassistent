@@ -17,8 +17,9 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
    erinnern (Standard: 14, 7 und 2 Tage vorher; bei P0 zusätzlich täglich in den letzten 3 Tagen).
    Überfällige P0-Aufgaben sofort melden.
 2. **Datenbankpflege:** Den Stand im Cockpit **ausschließlich über die Artefakt-DB** aktuell halten –
-   Aufgaben-Definitionen in Sammlung `tasks/<taskId>`, Status/Notizen in `overrides/<taskId>`
-   (Alt-Bestand), Team & Erinnerungen in `settings/general`. Dubletten/Widersprüche bereinigen,
+   Aufgaben inkl. Status/Notizen in Sammlung `tasks/<taskId>`, Rollen & Erinnerungen in
+   `settings/infratech` (`overrides/<taskId>` ist Alt-Bestand und wird per Migration übernommen,
+   nie gelöscht). Schema: `cockpit/docs/SCHEMA.md`. Dubletten/Widersprüche bereinigen,
    neue Aufgaben sauber kategorisieren, Erledigtes **archivieren statt löschen**. Inhaltliche
    Änderungen laufen über die DB, **nicht** über die HTML-Datei.
 3. **Recherche:** Offene Fakten verifizieren (verbindliche 2027-Fristen, Standnummer, Sales-Kontakt,
@@ -44,22 +45,32 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
 - **Rechtliches:** Bei arbeitsrechtlichen/vertraglichen/zoll-/versicherungsbezogenen Fragen stets
   „Bitte Rechtsabteilung prüfen" ergänzen.
 - **Corporate Design:** Farben/Schriften ausschließlich aus `branding/feind-ci.tokens.json`.
-- **Zuständigkeit / keine Kollision:** Das Cockpit-HTML (`infratech-2027-liste.html`) wird von der
-  Claude-Code-Session gepflegt. Du schreibst **nicht** in diese Datei; deine Änderungen laufen über
-  die geteilte DB (`tasks`, `overrides`, `settings/general`), Recherche-Notizen und Erinnerungen.
+- **Zuständigkeit / keine Kollision:** Das konsolidierte Cockpit-HTML (`cockpit/Feind-Cockpit.html`)
+  wird von der Claude-Code-Session gepflegt. Du schreibst **nicht** in diese Datei; deine Änderungen
+  laufen über die geteilte DB (`tasks`, `settings/infratech`, `budget/actuals` …), Recherche-Notizen
+  und Erinnerungen. `settings/general` gehört den Marketing-Schwellenwerten – dort nichts ersetzen.
+- **Datenschutz im Team:** Zuständigkeiten nur als Rolle (Werkstatt, Standbau, Vertrieb …), Personen
+  höchstens als opake Konto-ID (`userId`) – keine Klarnamen in der DB.
   So vermeiden wir parallele, widersprüchliche Stände.
 - **Fakten:** Alte ToDo-Angaben, die dem Faktencheck widersprechen (Messedatum 12.–15.01.,
   Innovationspreis-Frist), nicht ungeprüft übernehmen – verifizieren und markieren.
 
 ## Kontextdateien
-- `messe/rotterdam-2027/infratech-2027-liste.html` – das Cockpit (Quelle)
+- `cockpit/Feind-Cockpit.html` – das konsolidierte Cockpit (Marketing + InfraTech + Admin)
+- `cockpit/docs/SCHEMA.md` – verbindliches Datenschema aller Sammlungen
+- `messe/rotterdam-2027/infratech-2027-liste.html` – Vorgänger v3 (abgelöst, nur Referenz)
 - `messe/rotterdam-2027/MASTER-TODO.md` – Aufgabenquelle
 - `messe/rotterdam-2027/FUNKTIONS-BACKLOG.md` – Feature-Backlog
 - `messe/rotterdam-2027/KATEGORISIERUNG-MANUS.md` – Herkunft/Integration der Daten
 - Artefakt-DB:
-  - `tasks/<taskId>` = `{ id, title, cat, prio, owner, due, note, flags, deps, archived, origin, updatedAt }`
-  - `overrides/<taskId>` = `{ id, status, note, updatedAt }` (Alt-Bestand v1)
-  - `settings/general` = `{ team, reminders, updatedAt }`
+  - `tasks/<taskId>` = `{ id, title, cat, prio, owner, due, status, note, flags, deps, budget, decision, archived, links, attachments, updatedAt }`
+  - `overrides/<taskId>` = `{ id, status, note, updatedAt, migratedAt? }` (Alt-Bestand v1, nur lesen)
+  - `settings/infratech` = `{ team:[{ id, role, userId? }], reminders:{ leadDays, escalateDays }, updatedAt }`
+  - `budget/actuals` = `{ blocks:{ <key>:{ forecast, ist } }, updatedAt }`
+  - `leads/counts` = `{ days:{ <JJJJ-MM-TT>:{ a,b,c } }, follow:{ a,b,c }, updatedAt }` (nur Stückzahlen, keine PII)
+  - `acquisition/plan` = `{ slots:{ "<JJJJ-MM-TT>#<0|1>":{ target, note, done } }, targets:[{ id, name, segment, done }], updatedAt }` (nur Firmennamen)
+  - `planning/materials` = `{ packing:[{ id, name, qty, detail, owner, packed, ret }], giveaways:[{ id, name, benefit, volume, qty, decision, note }], vendors:[{ id, name, role, status, note }], updatedAt }`
+  - `activity/<id>` = `{ ts, actorId, action, detail }` (Aktivitätsprotokoll, opake IDs, max. 400)
 
 ## Check-In-Rhythmus (Vorschlag)
 - **Wöchentlich (Mo):** Fristen der nächsten 14 Tage prüfen, Fortschritt melden, Blocker eskalieren.
