@@ -42,7 +42,8 @@
   };
   const sample = async (prompt, opts) => { window.__lastPrompt = prompt; if (opts && opts.onText) opts.onText({ text: '{', delta: '{' }); return { text: JSON.stringify({ summary: 'Testbrief aus Mock.', items: [{ module: 'infratech', severity: 'kritisch', text: 'Test-Hinweis (s1).' }], weekPlan: [{ day: 'Mo', task: 'Test', module: 'infratech' }] }), truncated: false }; };
   const saved = []; const downloads = { async save(f) { saved.push(f); window.__downloads = saved; } };
-  const caps = { db, user, sample: cfg.sample ? sample : null, downloads, assets: null };
+  const mcp = cfg.notion ? { watchTool(server, tool, input, handler) { window.__mcpCalls = (window.__mcpCalls || []).concat([{ server, tool, input }]); const u = input.data.view_url; const key = Object.keys(cfg.notion).find(k => u.includes(cfg.notion[k].id)); setTimeout(() => handler(key ? { type: 'data', result: { payload: { results: cfg.notion[key].rows }, cache: { storedAt: Date.now(), revalidating: false } } } : { type: 'error', error: { code: 'server_not_connected' } }), 10); return () => {}; } } : null;
+  const caps = { db, user, sample: cfg.sample ? sample : null, downloads, assets: null, mcp };
   window.claude = { use: name => new Promise(res => setTimeout(() => res(caps[name] || null), 5)) };
   window.__mockStore = store;
 })();

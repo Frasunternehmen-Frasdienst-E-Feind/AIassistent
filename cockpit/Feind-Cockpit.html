@@ -2682,7 +2682,7 @@ function tabsFor(world) {
   if (world === 'infratech') return INFRA_TABS.map(x => ({ key: x.key, label: x.label, count: x.count ? infraTasks(false).filter(o => o.status !== 'done').length : null }));
   return isAdmin() && S.dbState === 'ok' ? ADMIN_SECS.map(([k, l]) => ({ key: k, label: l, count: k === 'access' ? S.requests.filter(r => r.status === 'offen').length || null : null })) : [{ key: 'status', label: 'Zugang' }];
 }
-function go(world, tab) { S.world = world; if (tab) S.tab[world] = tab; storeSet('feind_nav', JSON.stringify({ world: S.world, tab: S.tab })); try { history.replaceState(null, '', '#' + world + '/' + S.tab[world]); } catch (e) { /* egal */ } render(); const m = $('main'); if (m) m.focus({ preventScroll: true }); window.scrollTo({ top: 0 }); }
+function go(world, tab) { S.navChosen = true; S.world = world; if (tab) S.tab[world] = tab; storeSet('feind_nav', JSON.stringify({ world: S.world, tab: S.tab })); try { history.replaceState(null, '', '#' + world + '/' + S.tab[world]); } catch (e) { /* egal */ } render(); const m = $('main'); if (m) m.focus({ preventScroll: true }); window.scrollTo({ top: 0 }); }
 function tabButtons(barId, items, activeKey, cls, onpick, idPrefix) {
   const bar = $(barId); bar.replaceChildren();
   items.forEach(x => { const on = x.key === activeKey;
