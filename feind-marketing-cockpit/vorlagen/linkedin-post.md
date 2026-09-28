@@ -1,6 +1,6 @@
 # Vorlage: LinkedIn-Post (Unternehmensseite)
 
-Datei in `Marketing/Content/` mit Frontmatter nach `content-frontmatter.md`
+Datei in `02_Content & Kampagnen/` mit Frontmatter nach `content-frontmatter.md`
 (`channel: linkedin`). Veröffentlichung nur nach Freigabe und `/compliance-check`.
 
 ## Aufbau

@@ -48,15 +48,27 @@ eigenen Paletten, keine hart gesetzten Farbwerte im Markup. Kurzfassung:
 * Radien nahe 0 (Eingaben 2 px, Buttons 4 px), Abstände 4 / 8 / 16 / 24 / 40 / 64.
 * Immer helles und dunkles Theme ausliefern.
 
+## Ablage (maßgeblich: SharePoint)
+
+Maßgebliche Ablage ist die SharePoint-Bibliothek „Marketing“
+(https://fraesdienst.sharepoint.com/sites/Marketing, Bibliothek „Freigegebene Dokumente“,
+von David bestätigt am 28.09.2026). Zugriff über den Microsoft-365-Connector
+(`sharepoint_folder_search`, `read_resource` mit `file:///<driveId>/…`,
+`sharepoint_upload_file`). driveId der Bibliothek:
+`b!RY9s0opzT0Wy_hM3y3CeTA0fv5jcdIhHtleiwzvHVvjLgyLVAO7cQKjresK5GHp2`.
+Weitere Ordner: `01_Aufgabenlisten`, `04_Assets & CI`, `06_Reports & Analysen`,
+`99_Archive`; der Ordner `Allgemein` wird nur nach Freigabe durch David einbezogen.
+Alle Ordnerangaben im Plugin beziehen sich auf diese Bibliothek.
+
 ## Ordnerkonvention
 
 | Ordner | Inhalt | Skill |
 |---|---|---|
-| `Marketing/Content/` | Entwürfe und fertige Beiträge (Frontmatter nach `vorlagen/content-frontmatter.md`) | `content-pipeline` |
-| `Marketing/Events/` | Je Event ein Unterordner `JJJJ-MM-TT_kurzname/` mit Checkliste, Material, Nachbereitung | `event-planning` |
-| `Referenzen/` | Je Projekt ein Unterordner `JJJJ_region_kurzname/` mit Bericht, Fotos, Freigabe | `reference-library` |
-| `Marketing/Leads/` | Lead-Notizen ohne Personendaten, Messe-Listen nur anonymisiert | `lead-tracking` |
-| `Marketing/Ausschreibungen/` | Bewertungen und Fristenübersichten; Vergabeunterlagen selbst bleiben im Vertrieb | `tender-monitoring` |
+| `02_Content & Kampagnen/` | Entwürfe und fertige Beiträge (Frontmatter nach `vorlagen/content-frontmatter.md`) | `content-pipeline` |
+| `03_Events/` | Je Event ein Unterordner `JJJJ-MM-TT_kurzname/` mit Checkliste, Material, Nachbereitung | `event-planning` |
+| `05_Referenzen/` | Je Projekt ein Unterordner `JJJJ_region_kurzname/` mit Bericht, Fotos, Freigabe | `reference-library` |
+| `07_Leads/` | Lead-Notizen ohne Personendaten, Messe-Listen nur anonymisiert | `lead-tracking` |
+| `06_Reports & Analysen/Ausschreibungen/` | Bewertungen und Fristenübersichten; Vergabeunterlagen selbst bleiben im Vertrieb | `tender-monitoring` |
 
 Dateinamen: `JJJJ-MM-TT_thema_kanal.md`, Kleinbuchstaben, Bindestrich oder
 Unterstrich. Ablage wird vorgeschlagen; Verschieben, Umbenennen, Löschen erst nach

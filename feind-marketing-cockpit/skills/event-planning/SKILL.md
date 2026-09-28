@@ -15,7 +15,7 @@ Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 
 ## Eingaben und Datenquellen
 
-* Ordner `Marketing/Events/` im Arbeitsordner von David, je Event ein Unterordner
+* Ordner `03_Events/` der SharePoint-Bibliothek „Marketing“, je Event ein Unterordner
   `JJJJ-MM-TT_kurzname/` mit Checkliste, Material und Nachbereitung. Empfohlene
   Frontmatter der Checklisten-Datei:
   `title, type, date, endDate, location` – Checklisten stehen als Markdown-Aufgabenliste
@@ -42,8 +42,8 @@ followupStatus, source`
 3. Erzeuge die Checkliste aus der passenden Vorlage unten; streiche Punkte nur mit Begründung.
 4. Schreibe das Event per `ArtifactData set` (neu) oder `update` (Fortschritt, `done`-Werte,
    `leadsCaptured`, `followupStatus`). Mehrere Events in einem `ArtifactData batch`.
-5. Beim Einlesen von `Marketing/Events/`: Dateien abbilden, `source` = Dateipfad, danach
-   `ArtifactData update` auf `meta/sync`, Feld `events: { at, source: "Marketing/Events/" }`.
+5. Beim Einlesen von `03_Events/`: Dateien abbilden, `source` = Dateipfad, danach
+   `ArtifactData update` auf `meta/sync`, Feld `events: { at, source: "03_Events/" }`.
 6. Nach dem Event: Nachbereitung (siehe unten) starten.
 
 ## Checklisten-Vorlagen

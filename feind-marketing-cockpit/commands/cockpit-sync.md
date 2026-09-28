@@ -9,12 +9,12 @@ durch den zuständigen Skill:
 
 | Bereich | Skill | Quellen |
 |---|---|---|
-| content | `content-pipeline` | `Marketing/Content/` (Frontmatter nach `vorlagen/content-frontmatter.md`), Notion/ClickUp falls genutzt |
-| leads | `lead-tracking` | `Marketing/Leads/`, HubSpot (CRM, Connector noch nicht verbunden – bis dahin CSV-Export), Gmail (nur lesen) |
-| tenders | `tender-monitoring` | `Marketing/Ausschreibungen/`, Vergabeplattformen über Firecrawl/Parallel Search |
-| events | `event-planning` | `Marketing/Events/`, Google Calendar |
+| content | `content-pipeline` | `02_Content & Kampagnen/` (Frontmatter nach `vorlagen/content-frontmatter.md`), Notion/ClickUp falls genutzt |
+| leads | `lead-tracking` | `07_Leads/`, HubSpot (CRM, Connector noch nicht verbunden – bis dahin CSV-Export), Gmail (nur lesen) |
+| tenders | `tender-monitoring` | `06_Reports & Analysen/Ausschreibungen/`, Vergabeplattformen über Firecrawl/Parallel Search |
+| events | `event-planning` | `03_Events/`, Google Calendar |
 | seo | `seo-local` | Exporte von David; Search Console/GA4 nicht verbunden |
-| references | `reference-library` | `Referenzen/` |
+| references | `reference-library` | `05_Referenzen/` |
 
 Regeln:
 1. Vor dem Schreiben eine Übersicht zeigen: neu / geändert / unverändert je Bereich.

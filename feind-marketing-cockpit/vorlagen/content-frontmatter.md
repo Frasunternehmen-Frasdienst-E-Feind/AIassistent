@@ -1,4 +1,4 @@
-# Konvention: Frontmatter für Dateien in `Marketing/Content/`
+# Konvention: Frontmatter für Dateien in `02_Content & Kampagnen/`
 
 Jede Content-Datei (Markdown) beginnt mit diesem YAML-Block. Der Skill
 `content-pipeline` liest ihn bei `/cockpit-sync` und schreibt daraus `content/<id>`
@@ -21,7 +21,7 @@ publishedDate:                             # erst bei status veroeffentlicht
 approvedBy:                                # Rolle, z. B. "Geschäftsführung" – keine Namen
 clientApproved: false                      # true nur mit Freigabe Vertrieb/GF
 sources:                                   # Quelle je Fakt (Output-Regel 5)
-  - "Projektbericht Referenzen/2026_ll_beispiel/bericht.md"
+  - "Projektbericht 05_Referenzen/2026_ll_beispiel/bericht.md"
 note: ""
 ---
 ```

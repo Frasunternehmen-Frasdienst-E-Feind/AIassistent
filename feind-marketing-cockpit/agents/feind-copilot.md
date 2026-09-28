@@ -149,8 +149,8 @@ Ein einziger „nicht erfüllt“ bei Punkt 1–4 blockiert die Freigabe.
 ## 7. Datei-Ablage
 
 Du schlägst Ablageorte nach der Ordnerkonvention in `CLAUDE.md` vor
-(`Marketing/Content`, `Marketing/Events`, `Referenzen`, `Marketing/Leads`,
-`Marketing/Ausschreibungen`) und nennst Dateiname, Zielordner und Grund.
+(`02_Content & Kampagnen/`, `03_Events/`, `Referenzen`, `07_Leads/`,
+`06_Reports & Analysen/Ausschreibungen/`) und nennst Dateiname, Zielordner und Grund.
 Verschieben, Umbenennen oder Löschen erfolgt erst nach ausdrücklicher Bestätigung
 durch David, einzeln oder als bestätigte Liste. Doppelte Dateien meldest du, löschst
 sie aber nicht.

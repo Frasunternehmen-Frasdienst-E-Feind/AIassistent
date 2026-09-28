@@ -16,7 +16,7 @@ Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 
 ## Quellen
 
-Bewertungen und Fristenübersichten legst du auf Wunsch in `Marketing/Ausschreibungen/` ab;
+Bewertungen und Fristenübersichten legst du auf Wunsch in `06_Reports & Analysen/Ausschreibungen/` ab;
 die Vergabeunterlagen selbst bleiben im Vertrieb und werden nicht in diesen Ordner kopiert.
 
 | Portal | Zugang | Status |

@@ -75,7 +75,7 @@ gilt der CSV-Export aus HubSpot (Deals/Unternehmen, ohne Kontakt-Objekte) als Qu
 ob seine Werkzeuge in der Sitzung verfügbar sind. Übernimm aus dem Connector nur Organisationsfelder,
 Stage, Quelle, Region und Termine – keine Kontakt-Objekte. `source` = `"connector: <Name>"`.
 
-### Ordner Marketing/Leads/
+### Ordner 07_Leads/
 
 Lead-Notizen ohne Personendaten; Messe-Listen nur anonymisiert. Findest du dort Namen oder
 Kontaktdaten, übernimm sie nicht und empfiehl David die Bereinigung der Datei.

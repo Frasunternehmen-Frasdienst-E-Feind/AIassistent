@@ -1,6 +1,6 @@
 ---
 name: content-pipeline
-description: Steuert die Content-Pipeline des Marketing Cockpits (Idee, Entwurf, Review, Freigegeben, Veröffentlicht) aus Marketing/Content/ in den Artefakt-Speicher und schreibt B2B-Beiträge für LinkedIn, Website, Newsletter und Referenzberichte. Greift bei „LinkedIn-Post schreiben“, „Beitrag entwerfen“, „Content-Plan“, „Redaktionsplan“, „Saisonkalender“, „welche Beiträge hängen“, „Status auf freigegeben setzen“, „Content prüfen/freigeben“ oder „Content-Ordner einlesen“.
+description: Steuert die Content-Pipeline des Marketing Cockpits (Idee, Entwurf, Review, Freigegeben, Veröffentlicht) aus 02_Content & Kampagnen/ in den Artefakt-Speicher und schreibt B2B-Beiträge für LinkedIn, Website, Newsletter und Referenzberichte. Greift bei „LinkedIn-Post schreiben“, „Beitrag entwerfen“, „Content-Plan“, „Redaktionsplan“, „Saisonkalender“, „welche Beiträge hängen“, „Status auf freigegeben setzen“, „Content prüfen/freigeben“ oder „Content-Ordner einlesen“.
 ---
 
 # Content-Pipeline – Planung, Erstellung, Freigabe
@@ -16,7 +16,7 @@ Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 
 ## Eingaben und Datenquellen
 
-* Ordner `Marketing/Content/` (Markdown und DOCX) im Arbeitsordner von David.
+* Ordner `02_Content & Kampagnen/` (Markdown und DOCX) der SharePoint-Bibliothek „Marketing“ (maßgebliche Ablage, Zugriff über den Microsoft-365-Connector, siehe `CLAUDE.md` › Ablage).
 * Unternehmensfakten ausschließlich aus `kontext/unternehmen.md` (wird parallel von einem
   Kollegen erstellt). Fehlt ein Wert, frage David.
 * Projektfakten nur aus freigegebenen Referenzen (`references/<id>` mit Dateipfaden in
@@ -33,7 +33,7 @@ Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 * Rückschritt (z. B. `review` → `entwurf`) ist erlaubt; begründe ihn in `note`.
 * „Hängt“: Status `entwurf` und `statusSince` älter als `staleDraftDays`.
 
-## Frontmatter-Konvention für Marketing/Content/
+## Frontmatter-Konvention für 02_Content & Kampagnen/
 
 Maßgeblich ist die Vorlage `vorlagen/content-frontmatter.md` im Plugin; weicht sie von der
 folgenden Kurzfassung ab, gilt die Vorlage. Bei DOCX erwartest du die gleichen Angaben als
@@ -60,15 +60,15 @@ Fehlt Frontmatter, leite nur `title` (aus Dateiname oder erster Überschrift) ab
 ## Arbeitsablauf A – Ordner einlesen und spiegeln
 
 1. `ArtifactData list` auf `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`, collection `content` – bestehende IDs merken.
-2. Lies alle Dateien in `Marketing/Content/`. ID aus dem Dateinamen ohne Endung,
+2. Lies alle Dateien in `02_Content & Kampagnen/`. ID aus dem Dateinamen ohne Endung,
    kleinbuchstaben-mit-bindestrich, Umlaute ausgeschrieben.
 3. Bilde je Datei das Dokument `content/<id>` mit genau den Feldern
    `title, channel, status, region, projectType, plannedDate, publishedDate?, statusSince,
-   source, note?`. `source` = relativer Dateipfad, z. B. `Marketing/Content/2026-10-08_linkedin_deckenwechsel.md`.
+   source, note?`. `source` = relativer Dateipfad, z. B. `02_Content & Kampagnen/2026-10-08_linkedin_deckenwechsel.md`.
 4. Schreibe alle Änderungen in einem `ArtifactData batch` (`set` für neue, `update` für
    geänderte Dokumente).
 5. Aktualisiere `meta/sync` per `ArtifactData update` (collection `meta`, doc_id `sync`,
-   Feld `content: { at, source: "Marketing/Content/" }`).
+   Feld `content: { at, source: "02_Content & Kampagnen/" }`).
 6. Liste hängende Entwürfe und Beiträge ohne `plannedDate`.
 
 ## Arbeitsablauf B – LinkedIn-Post erstellen
@@ -87,7 +87,7 @@ Fehlt Frontmatter, leite nur `title` (aus Dateiname oder erster Überschrift) ab
    * höchstens 3 bis 5 fachliche Hashtags am Ende, z. B. `#Kaltfräsen #Straßenbau
      #Brandenburg`;
    * ein Handlungsaufruf ohne Preisangabe (Anfrage über fraesdienst-feind.de).
-4. Lege den Post als Markdown mit Frontmatter in `Marketing/Content/` ab (Status
+4. Lege den Post als Markdown mit Frontmatter in `02_Content & Kampagnen/` ab (Status
    `entwurf`), sofern David das wünscht, und schreibe `content/<id>` per `ArtifactData set`.
 5. Gib unter dem Text die Quellenliste aus (Datei und Abschnitt je Fakt).
 

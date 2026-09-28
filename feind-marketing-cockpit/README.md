@@ -55,7 +55,7 @@ Danach Cowork neu laden. Prüfen: Die Commands `/tagesbrief` usw. erscheinen, un
    `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd` in allen Dateien des Plugins (Agent, Commands,
    `kontext/datenmodell.md`, `geplante-aufgaben.md`).
 2. **`/cockpit-sync`** ausführen: legt `settings/general` mit Standardwerten an und
-   übernimmt vorhandene Dateien aus `Marketing/…` und `Referenzen/`. Vor dem
+   übernimmt vorhandene Dateien aus der SharePoint-Bibliothek „Marketing“. Vor dem
    Schreiben zeigt Claude eine Übersicht zur Bestätigung.
 3. **Connectors prüfen:** `connectors.md` durchgehen. Verbunden sind Gmail, Google
    Calendar, Google Drive, Dropbox, Notion, ClickUp, Firecrawl, Parallel Search,

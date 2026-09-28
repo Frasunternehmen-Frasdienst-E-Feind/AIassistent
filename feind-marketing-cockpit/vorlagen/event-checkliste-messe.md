@@ -35,4 +35,4 @@ Zeitangaben relativ zum Messebeginn (T).
 - Follow-up je Lead mit Vorlage `follow-up-lead.md` als Entwurf vorbereitet
 - `leadsCaptured` und `followupStatus` im Event gepflegt
 - Kosten-Nutzen-Notiz (Leads, Gespräche, Folgetermine) für Messeentscheidung Folgejahr
-- Fotos nur mit Einwilligung bzw. ohne erkennbare Personen in `Marketing/Events/` abgelegt
+- Fotos nur mit Einwilligung bzw. ohne erkennbare Personen in `03_Events/` abgelegt

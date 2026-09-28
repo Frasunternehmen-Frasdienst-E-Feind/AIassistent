@@ -1,6 +1,6 @@
 ---
 name: dashboard-builder
-description: Aktualisiert und veröffentlicht das Marketing-Cockpit-Dashboard (dashboard/dashboard.html als Claude-Artefakt mit db und sample) und spiegelt die lokalen Ordner Marketing/Content/, Marketing/Events/ und Referenzen/ in den Artefakt-Speicher. Greift bei „Dashboard aktualisieren“, „Cockpit neu veröffentlichen“, „Daten synchronisieren“, „Sync fahren“, „Dashboard einrichten“, „Ersteinrichtung“, „Layout/Farben im Cockpit ändern“ oder wenn ein anderer Skill Daten geschrieben hat und meta/sync gepflegt werden muss.
+description: Aktualisiert und veröffentlicht das Marketing-Cockpit-Dashboard (dashboard/dashboard.html als Claude-Artefakt mit db und sample) und spiegelt die SharePoint-Ordner 02_Content & Kampagnen/, 03_Events/ und 05_Referenzen/ in den Artefakt-Speicher. Greift bei „Dashboard aktualisieren“, „Cockpit neu veröffentlichen“, „Daten synchronisieren“, „Sync fahren“, „Dashboard einrichten“, „Ersteinrichtung“, „Layout/Farben im Cockpit ändern“ oder wenn ein anderer Skill Daten geschrieben hat und meta/sync gepflegt werden muss.
 ---
 
 # Dashboard-Builder – Marketing Cockpit
@@ -10,8 +10,8 @@ description: Aktualisiert und veröffentlicht das Marketing-Cockpit-Dashboard (d
 Du hältst das Marketing Cockpit von David (Marketing & Eventmanager, Fräsdienst-Service
 E. Feind GmbH) aktuell. Das Dashboard ist eine reine Anzeige: Die Seite
 `dashboard/dashboard.html` im Plugin liest alle Daten live aus dem Artefakt-Speicher (`db`).
-Du veröffentlichst die Seite, richtest den Speicher ein und synchronisierst die lokalen
-Arbeitsordner hinein. Verbindliches Datenmodell: `kontext/datenmodell.md` – Pfade und
+Du veröffentlichst die Seite, richtest den Speicher ein und synchronisierst die SharePoint-Ordner
+der Marketing-Bibliothek hinein. Verbindliches Datenmodell: `kontext/datenmodell.md` – Pfade und
 Feldnamen exakt übernehmen, keine eigenen Felder erfinden.
 
 Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
@@ -33,15 +33,15 @@ Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 
 | Quelle | Ziel in `db` | Zuständiger Skill für die Detailregeln |
 |---|---|---|
-| `Marketing/Content/` (Markdown, DOCX) | `content/<id>` | content-pipeline |
-| `Marketing/Events/` | `events/<id>` | event-planning |
-| `Referenzen/` (PDF, Bilder, Excel) | `references/<id>` | reference-library |
+| `02_Content & Kampagnen/` (Markdown, DOCX) | `content/<id>` | content-pipeline |
+| `03_Events/` | `events/<id>` | event-planning |
+| `05_Referenzen/` (PDF, Bilder, Excel) | `references/<id>` | reference-library |
 | CRM-Export / Connector | `leads/<id>` | lead-tracking |
 | Vergabeportale | `tenders/<id>` | tender-monitoring |
 | `seo-report` JSON (`output/*.json`) | `seo_keywords`, `seo_traffic`, `seo_gaps` | seo-local |
 | CI-Vorgaben | nur Darstellung | `branding/feind-ci.tokens.json` im Repository |
 
-Die Ordner `Marketing/…` und `Referenzen/` liegen im verbundenen Arbeitsordner von David.
+Alle Ordner liegen in der SharePoint-Bibliothek „Marketing“ (siehe `CLAUDE.md` › Ablage).
 Findest du einen Ordner nicht, frage nach dem Pfad, statt einen anzulegen.
 
 ## Arbeitsablauf A – Ersteinrichtung
@@ -65,12 +65,12 @@ Findest du einen Ordner nicht, frage nach dem Pfad, statt einen anzulegen.
 5. Lege `meta/sync` leer an (`set`, alle Module mit `{ "at": null, "source": null }`).
 6. Führe danach Ablauf B einmal vollständig aus.
 
-## Arbeitsablauf B – Synchronisation der lokalen Ordner
+## Arbeitsablauf B – Synchronisation der SharePoint-Ordner
 
 1. Lies `settings/general` (`ArtifactData get` oder `list` auf `settings`).
 2. Lies je Modul den aktuellen Stand: `ArtifactData list` auf `content`, `events`,
    `references`. Merke dir die vorhandenen IDs und `source`-Pfade.
-3. Lies die Dateien in `Marketing/Content/`, `Marketing/Events/`, `Referenzen/` ein und
+3. Lies die Dateien in `02_Content & Kampagnen/`, `03_Events/`, `05_Referenzen/` ein und
    bilde jeden Eintrag nach den Regeln des zuständigen Skills auf das Datenmodell ab.
    ID: kleinbuchstaben-mit-bindestrich, stabil aus dem Dateinamen abgeleitet, damit ein
    erneuter Sync denselben Datensatz trifft.
@@ -81,8 +81,8 @@ Findest du einen Ordner nicht, frage nach dem Pfad, statt einen anzulegen.
 6. Pflege danach `meta/sync` mit `ArtifactData update`, collection `meta`, doc_id `sync`,
    nur für die tatsächlich synchronisierten Module, z. B.:
    ```json
-   { "content": { "at": "2026-09-24T10:15:00+02:00", "source": "Marketing/Content/" },
-     "events": { "at": "2026-09-24T10:15:00+02:00", "source": "Marketing/Events/" } }
+   { "content": { "at": "2026-09-24T10:15:00+02:00", "source": "02_Content & Kampagnen/" },
+     "events": { "at": "2026-09-24T10:15:00+02:00", "source": "03_Events/" } }
    ```
    Diese Pflicht gilt nach **jedem** Sync, auch wenn ein anderer Skill geschrieben hat.
 7. Melde David das Ergebnis im Ausgabeformat unten.
@@ -132,8 +132,8 @@ Quelle ist allein `branding/feind-ci.tokens.json`. Übernimm die Werte als CSS-V
 
 ```
 Sync <Datum Uhrzeit>
-- content: 3 neu, 1 geändert, 0 verwaist (Quelle: Marketing/Content/)
-- events: 0 neu, 2 geändert (Quelle: Marketing/Events/)
+- content: 3 neu, 1 geändert, 0 verwaist (Quelle: 02_Content & Kampagnen/)
+- events: 0 neu, 2 geändert (Quelle: 03_Events/)
 - references: 1 neu; 1 verwaist -> bitte entscheiden: <id>
 Offene Fragen: <Liste>
 Dashboard: https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd

@@ -1,6 +1,6 @@
 ---
 name: reference-library
-description: Baut die Referenzbibliothek des Marketing Cockpits aus dem Ordner Referenzen/ (PDF, Bilder, Excel) auf, filtert nach Region, Kunde, Leistung und Jahr und erstellt Referenzberichte nur aus belegten Fakten mit Dateipfad. Greift bei „Referenzen einlesen“, „Referenz suchen“, „Referenzprojekte in Brandenburg“, „welche Projekte mit Betonfräsen“, „Referenzbericht schreiben“, „Referenzliste für Ausschreibung“, „Kundenfreigabe Referenz“ oder „Referenz-Ordner synchronisieren“.
+description: Baut die Referenzbibliothek des Marketing Cockpits aus dem Ordner 05_Referenzen/ (PDF, Bilder, Excel) auf, filtert nach Region, Kunde, Leistung und Jahr und erstellt Referenzberichte nur aus belegten Fakten mit Dateipfad. Greift bei „Referenzen einlesen“, „Referenz suchen“, „Referenzprojekte in Brandenburg“, „welche Projekte mit Betonfräsen“, „Referenzbericht schreiben“, „Referenzliste für Ausschreibung“, „Kundenfreigabe Referenz“ oder „Referenz-Ordner synchronisieren“.
 ---
 
 # Referenzbibliothek – Projekte belegen, filtern, berichten
@@ -8,7 +8,7 @@ description: Baut die Referenzbibliothek des Marketing Cockpits aus dem Ordner R
 ## Zweck
 
 Du erschließt die Projektreferenzen der Fräsdienst-Service E. Feind GmbH aus dem Ordner
-`Referenzen/`, pflegst sie in der Sammlung `references` des Artefakt-Speichers und
+`05_Referenzen/`, pflegst sie in der Sammlung `references` des Artefakt-Speichers und
 schreibst daraus Referenzberichte und Referenzlisten. Jede Aussage muss aus einer Datei
 belegt sein. Verbindliches Datenmodell: `kontext/datenmodell.md`.
 
@@ -16,7 +16,7 @@ Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 
 ## Eingaben und Datenquellen
 
-* Ordner `Referenzen/` im Arbeitsordner von David: PDF (Referenzschreiben, Abnahmen,
+* Ordner `05_Referenzen/` der SharePoint-Bibliothek „Marketing“: PDF (Referenzschreiben, Abnahmen,
   Projektblätter), Bilder (Baustellenfotos), Excel (Projektlisten).
 * Unternehmensfakten nur aus `kontext/unternehmen.md` (wird parallel von einem Kollegen
   erstellt).
@@ -28,7 +28,7 @@ Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 Schlage David je Projekt einen Unterordner mit einer Metadatei `referenz.md` vor:
 
 ```
-Referenzen/
+05_Referenzen/
   2025_ludwigslust-parchim_b-bundesstrasse-deckschicht/
     referenz.md
     abnahme.pdf
@@ -41,7 +41,7 @@ title: "Deckschichterneuerung Ortsdurchfahrt"
 region: "Mecklenburg-Vorpommern"
 client: ""                             # nur eintragen, wenn Freigabe vorliegt
 clientApproved: false
-clientApprovalSource: ""               # z. B. "Referenzen/.../freigabe.pdf" oder "manuell: David 2026-09-24"
+clientApprovalSource: ""               # z. B. "05_Referenzen/.../freigabe.pdf" oder "manuell: David 2026-09-24"
 services: ["Kaltfräsen Asphalt", "Feinfräsen"]
 year: 2025
 photoConsent: "keine Personen erkennbar"
@@ -57,11 +57,11 @@ was aus Ordnername und Dateien eindeutig hervorgeht, und liste den Rest als Rüc
 `title, region, client?, clientApproved, services, year, facts, files, summary, feedback?, source`
 
 * `facts`: Liste von Strings, jeder Fakt mit Dateipfad, z. B.
-  `"Frästiefe <Wert> auf <Fläche> (Referenzen/<Ordner>/abnahme.pdf, S. 2)"` (Formatbeispiel, keine Projektangabe).
+  `"Frästiefe <Wert> auf <Fläche> (05_Referenzen/<Ordner>/abnahme.pdf, S. 2)"` (Formatbeispiel, keine Projektangabe).
 * `files`: relative Pfade aller belegenden Dateien.
 * `client`: nur setzen, wenn `clientApproved: true`; sonst Feld weglassen.
 * `feedback`: Kundenzitat nur mit Freigabe und mit Quelle, ohne Personennamen.
-* `source`: Projektordner, z. B. `"Referenzen/2025_ludwigslust-parchim_b-bundesstrasse-deckschicht/"`.
+* `source`: Projektordner, z. B. `"05_Referenzen/2025_ludwigslust-parchim_b-bundesstrasse-deckschicht/"`.
 * ID: Ordnername in kleinbuchstaben-mit-bindestrich, Umlaute ausgeschrieben.
 
 ## Arbeitsablauf A – Einlesen und spiegeln
@@ -75,7 +75,7 @@ was aus Ordnername und Dateien eindeutig hervorgeht, und liste den Rest als Rüc
 4. Entferne vor dem Schreiben: Personennamen, Unterschriften, Kontaktdaten, Preise,
    Abrechnungssummen, Einheitspreise.
 5. Schreibe per `ArtifactData batch` (`set` neu, `update` geändert).
-6. `ArtifactData update` auf `meta/sync`, Feld `references: { at, source: "Referenzen/" }`.
+6. `ArtifactData update` auf `meta/sync`, Feld `references: { at, source: "05_Referenzen/" }`.
 
 ## Arbeitsablauf B – Filtern
 
@@ -137,5 +137,5 @@ Den fertigen Bericht übergibst du an den Skill content-pipeline (`channel:
 ## Grenzen
 
 * Keine Kundenfreigabe unterstellen; im Zweifel `clientApproved: false`.
-* Keine Dateien im Ordner `Referenzen/` verschieben, umbenennen oder löschen.
+* Keine Dateien im Ordner `05_Referenzen/` verschieben, umbenennen oder löschen.
 * Keine Fakten aus dem Gedächtnis, dem Web oder anderen Projekten übertragen.

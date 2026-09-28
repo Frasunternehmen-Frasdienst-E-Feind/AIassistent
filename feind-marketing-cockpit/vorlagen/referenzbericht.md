@@ -1,6 +1,6 @@
 # Vorlage: Referenzbericht
 
-Für Website, Angebotsunterlagen und Messe. Ablage in `Referenzen/JJJJ_region_kurzname/`,
+Für Website, Angebotsunterlagen und Messe. Ablage in `05_Referenzen/JJJJ_region_kurzname/`,
 Datensatz in `references/<id>`. Kundenname nur mit Freigabe durch Vertrieb oder
 Geschäftsführung (`clientApproved: true`), sonst anonymisiert.
 
