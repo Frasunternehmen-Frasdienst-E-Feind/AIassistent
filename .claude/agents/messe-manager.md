@@ -63,6 +63,7 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
   - `budget/actuals` = `{ blocks:{ <key>:{ forecast, ist } }, updatedAt }`
   - `leads/counts` = `{ days:{ <JJJJ-MM-TT>:{ a,b,c } }, follow:{ a,b,c }, updatedAt }` (nur Stückzahlen, keine PII)
   - `acquisition/plan` = `{ slots:{ "<JJJJ-MM-TT>#<0|1>":{ target, note, done } }, targets:[{ id, name, segment, done }], updatedAt }` (nur Firmennamen)
+  - `planning/materials` = `{ packing:[{ id, name, qty, detail, owner, packed, ret }], giveaways:[{ id, name, benefit, volume, qty, decision, note }], vendors:[{ id, name, role, status, note }], updatedAt }`
   - `activity/<id>` = `{ id, ts, actorId, action, detail }` (Aktivitätsprotokoll, opake IDs)
 
 ## Check-In-Rhythmus (Vorschlag)

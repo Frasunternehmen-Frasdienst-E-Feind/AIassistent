@@ -450,26 +450,67 @@ const SOURCES=[
  ["Nachfassmail 2026","DOCX","Vorlage – kürzen auf klare CTA"],
  ["Zusammenfassung Messe 2026","PPTX","Review-Deck als 2027-Kickoff-Basis"],
 ];
+// Erstbefüllung (Seed) – editierbar im Cockpit, Stand wird in der DB gehalten.
+const PACKING_SEED=[
+ {id:"pk1",name:"Werbemittel (Zollstöcke, Feuerzeuge, Kugelschreiber, Schlüsselbänder, Einkaufwagenlöser)",qty:"",detail:"Renner 2026",owner:"Team",packed:false,ret:false},
+ {id:"pk2",name:"Steine mit Aufkleber (Giveaway)",qty:"",detail:"kamen 2026 gut an",owner:"Team",packed:false,ret:false},
+ {id:"pk3",name:"Hemden & Namensschilder (eigene Farbe)",qty:"",detail:"Wiedererkennung",owner:"Team",packed:false,ret:false},
+ {id:"pk4",name:"Infobroschüren / Prospektständer",qty:"",detail:"DIN lang, beleuchtet",owner:"Team",packed:false,ret:false},
+ {id:"pk5",name:"Präsentation auf Stick + Cloud",qty:"1",detail:"Loop < 3 min",owner:"David",packed:false,ret:false},
+ {id:"pk6",name:"LED-Band, Aufsteller, Flyerspender (Magnet)",qty:"",detail:"",owner:"Team",packed:false,ret:false},
+ {id:"pk7",name:"Kabel/Verteiler, Kamera+Ladekabel, Tablet, Trittleiter",qty:"",detail:"",owner:"Team",packed:false,ret:false},
+ {id:"pk8",name:"Bargeld (3×25 €)",qty:"75 €",detail:"Wechselgeld",owner:"David",packed:false,ret:false},
+ {id:"pk9",name:"Reinigungsset, Müllsäcke, Feuchttücher, Staubsauger, Fugenmaterial",qty:"",detail:"",owner:"Team",packed:false,ret:false},
+ {id:"pk10",name:"Exponat: Schleifwelle",qty:"1",detail:"zentral – Aufbau via Steinmatte prüfen",owner:"Enrico",packed:false,ret:true},
+ {id:"pk11",name:"Exponat: Pflasterfläche / Steinmatte",qty:"",detail:"Aufbau vereinfachen",owner:"Enrico",packed:false,ret:true},
+ {id:"pk12",name:"Kaffeemaschine + Kapseln",qty:"",detail:"Sorten reduzieren",owner:"Team",packed:false,ret:true},
+ {id:"pk13",name:"Wasser / Milch / Zucker / Kekse",qty:"",detail:"Menge messen",owner:"Team",packed:false,ret:false},
+];
+const GIVEAWAY_SEED=[
+ {id:"gw1",name:"Zollstock mit Lasergravur",benefit:"hoch",volume:"klein",qty:"",decision:"mitnehmen",note:"Prio 1, Logo+QR+NL-Landingpage"},
+ {id:"gw2",name:"USB-Bauhelm",benefit:"hoch",volume:"klein",qty:"",decision:"mitnehmen",note:"Prio 2"},
+ {id:"gw3",name:"Warnweste",benefit:"mittel",volume:"mittel",qty:"",decision:"mitnehmen",note:"Prio 3"},
+ {id:"gw4",name:"Isolierbecher",benefit:"mittel",volume:"mittel",qty:"",decision:"mitnehmen",note:"Prio 4"},
+ {id:"gw5",name:"HARIBO",benefit:"mittel",volume:"klein",qty:"",decision:"mitnehmen",note:"Prio 5"},
+ {id:"gw6",name:"5-teiliger Kalender",benefit:"niedrig",volume:"gross",qty:"",decision:"streichen",note:"ineffizient (E7)"},
+ {id:"gw7",name:"Minz-Spender",benefit:"niedrig",volume:"klein",qty:"",decision:"streichen",note:"ineffizient (E7)"},
+ {id:"gw8",name:"Große Servietten",benefit:"niedrig",volume:"gross",qty:"",decision:"streichen",note:"ineffizient (E7)"},
+ {id:"gw9",name:"Wein",benefit:"niedrig",volume:"gross",qty:"",decision:"streichen",note:"2026 kaum getrunken (E7)"},
+];
+const VENDOR_SEED=[
+ {id:"vd1",name:"Global Expo Stand B.V.",role:"Standbau",status:"verifiziert",note:"Faktencheck bestätigt"},
+ {id:"vd2",name:"LOCO",role:"Standbau / Logistik",status:"verifiziert",note:"Faktencheck bestätigt"},
+ {id:"vd3",name:"DB Schenker",role:"Spedition (Vertragsspediteur)",status:"pruefen",note:"Liefer-Slot + Rücktransport buchen (E9)"},
+ {id:"vd4",name:"Whimsical Exhibits",role:"Standbau",status:"pruefen",note:"schwach belegt – KvK-Auszug + Referenzen einholen"},
+ {id:"vd5",name:"LIVE Event Staffing",role:"Personal vor Ort",status:"pruefen",note:"schwach belegt – prüfen"},
+ {id:"vd6",name:"ExproGloble",role:"—",status:"streichen",note:"nicht auffindbar – streichen"},
+];
+const BENEFITS=["hoch","mittel","niedrig"], VOLUMES=["klein","mittel","gross"], DECISIONS=["mitnehmen","optional","streichen"];
+const VENDOR_STATUS={verifiziert:"verifiziert",pruefen:"prüfen",streichen:"streichen"};
 
 /* ============================================================ ZUSTAND ============================================================ */
 const LS_KEY="feind_infratech2027_v2";
 let custom={};            // taskId -> {status?,note?,title?,cat?,prio?,owner?,due?,deleted?,custom?}
 let team=[];              // [{id,name,role}]
 let reminders={leadDays:[14,7,2], escalateDays:7};
-let dbNS=null, tasksColl=null, settingsDoc=null, budgetDoc=null, leadsDoc=null, activityColl=null, acqDoc=null;
+let dbNS=null, tasksColl=null, settingsDoc=null, budgetDoc=null, leadsDoc=null, activityColl=null, acqDoc=null, matDoc=null;
 let mTasks={}, legacyBase={};
 let budgetActuals={};     // Kostenblock-Key -> {ist?:number, forecast?:number}
 let leadCounts={};        // Datum(JJJJ-MM-TT) -> {a,b,c}  (nur Stückzahlen, keine personenbezogenen Daten)
 let leadFollow={a:0,b:0,c:0}; // Follow-up: wie viele A/B/C-Leads nachgefasst (E3, Ziel A ≥95 % <48 h) – nur Zahlen
 let acqPlan={slots:{},targets:[]}; // Akquise-Planer (E4): Slots je Messetag + Zielkundenliste (nur Firmennamen)
+let packing=null, giveaways=null, vendors=null; // null = eingebetteter Seed (Erstbefüllung); Array = bearbeiteter Stand aus DB
+function packingList(){ return packing || PACKING_SEED.map(x=>Object.assign({},x)); }
+function giveawayList(){ return giveaways || GIVEAWAY_SEED.map(x=>Object.assign({},x)); }
+function vendorList(){ return vendors || VENDOR_SEED.map(x=>Object.assign({},x)); }
 let userNS=null, myUserId=null;   // user-Capability: opake Team-ID des Betrachters
 let activity=[];          // [{id, ts, actorId, action, detail}] – Aktivitätsprotokoll (geteilt)
 let profileCache={};      // actorId -> Anzeigename (nur ids gespeichert, Namen zur Anzeige aufgelöst)
 
 function recompute(){ custom={}; Object.keys(legacyBase).forEach(id=>custom[id]=Object.assign({},legacyBase[id]));
   Object.keys(mTasks).forEach(id=>custom[id]=Object.assign({},custom[id],mTasks[id])); }
-function loadLocal(){ try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s){ custom=s.custom||{}; team=s.team||[]; if(s.reminders){ reminders=Object.assign({leadDays:[14,7,2],escalateDays:7},s.reminders); } if(s.budget) budgetActuals=s.budget; if(s.leads) leadCounts=s.leads; if(s.follow) leadFollow=Object.assign({a:0,b:0,c:0},s.follow); if(s.acq) acqPlan=Object.assign({slots:{},targets:[]},s.acq); } }catch(e){} }
-function saveLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify({custom,team,reminders,budget:budgetActuals,leads:leadCounts,follow:leadFollow,acq:acqPlan})); }catch(e){} }
+function loadLocal(){ try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s){ custom=s.custom||{}; team=s.team||[]; if(s.reminders){ reminders=Object.assign({leadDays:[14,7,2],escalateDays:7},s.reminders); } if(s.budget) budgetActuals=s.budget; if(s.leads) leadCounts=s.leads; if(s.follow) leadFollow=Object.assign({a:0,b:0,c:0},s.follow); if(s.acq) acqPlan=Object.assign({slots:{},targets:[]},s.acq); if(Array.isArray(s.packing)) packing=s.packing; if(Array.isArray(s.giveaways)) giveaways=s.giveaways; if(Array.isArray(s.vendors)) vendors=s.vendors; } }catch(e){} }
+function saveLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify({custom,team,reminders,budget:budgetActuals,leads:leadCounts,follow:leadFollow,acq:acqPlan,packing,giveaways,vendors})); }catch(e){} }
 function setSaveHint(txt){ const el=document.getElementById("saveHint"); if(el) el.textContent="● "+txt; }
 
 async function initStore(){
@@ -489,6 +530,8 @@ async function initStore(){
     leadsDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v){ if(v.days) leadCounts=v.days; if(v.follow) leadFollow=Object.assign({a:0,b:0,c:0},v.follow); saveLocal(); render(); } });
     acqDoc=dbNS.doc("acquisition/plan");
     acqDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v){ acqPlan={slots:v.slots||{},targets:Array.isArray(v.targets)?v.targets:[]}; saveLocal(); render(); } });
+    matDoc=dbNS.doc("planning/materials");
+    matDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v){ if(Array.isArray(v.packing)) packing=v.packing; if(Array.isArray(v.giveaways)) giveaways=v.giveaways; if(Array.isArray(v.vendors)) vendors=v.vendors; saveLocal(); render(); } });
     // user-Capability: Betrachter-ID für das Aktivitätsprotokoll (nur id gespeichert, Name zur Anzeige aufgelöst).
     try{ userNS = (window.claude&&claude.use)? await claude.use("user") : null; if(userNS&&userNS.id){ myUserId = await userNS.id(); } }catch(e){ userNS=null; }
     activityColl=dbNS.collection("activity");
@@ -514,6 +557,9 @@ async function bumpLead(date,grade,delta){ const c=Object.assign({a:0,b:0,c:0},l
 // Follow-up-Zähler (E3): nachgefasste A/B/C-Leads, gedeckelt auf die erfasste Gesamtzahl je Qualität.
 async function bumpFollow(grade,delta){ const s=leadsSum(); const max=+s[grade]||0; leadFollow=Object.assign({a:0,b:0,c:0},leadFollow); leadFollow[grade]=Math.max(0,Math.min(max,(+leadFollow[grade]||0)+delta)); saveLeads(); render(); }
 async function saveAcq(){ saveLocal(); if(acqDoc){ try{ await acqDoc.set({slots:acqPlan.slots,targets:acqPlan.targets,updatedAt:Date.now()}); }catch(e){ setSaveHint("Akquise-Plan nur lokal gesichert"); } } }
+// Packliste/Giveaways/Dienstleister: bei erster Bearbeitung Seed materialisieren, dann geteilt speichern.
+async function saveMaterials(){ if(packing===null) packing=packingList(); if(giveaways===null) giveaways=giveawayList(); if(vendors===null) vendors=vendorList();
+  saveLocal(); if(matDoc){ try{ await matDoc.set({packing,giveaways,vendors,updatedAt:Date.now()}); }catch(e){ setSaveHint("Material-Plan nur lokal gesichert"); } } }
 
 /* Aktivitätsprotokoll: „wer hat wann was geändert". Nur opake Team-ID (actorId) speichern;
    Namen werden über die user-Capability zur Anzeige aufgelöst. Ohne geteilte DB kein Log. */
@@ -575,6 +621,7 @@ const TABS=[
  {id:"dashboard",label:"Dashboard"},{id:"aufgaben",label:"Aufgaben",count:true},
  {id:"fristen",label:"Fristen"},{id:"budget",label:"Budget"},{id:"kpi",label:"Ziele & KPIs"},
  {id:"leadzaehler",label:"Lead-Zähler"},{id:"akquise",label:"Akquise-Planer"},
+ {id:"packen",label:"Packen & Material"},
  {id:"lessons",label:"Lessons Learned"},{id:"fakten",label:"Faktencheck"},
  {id:"team",label:"Team & Zugriff"},{id:"protokoll",label:"Protokoll"},{id:"wissen",label:"Wissensbasis"},
 ];
@@ -602,7 +649,7 @@ function render(){
 
   const p=document.getElementById("panels"); p.innerHTML="";
   const sec=document.createElement("section"); sec.setAttribute("role","tabpanel"); sec.tabIndex=0;
-  const V={dashboard:viewDashboard,aufgaben:viewAufgaben,fristen:viewFristen,budget:viewBudget,kpi:viewKpi,leadzaehler:viewLeadZaehler,akquise:viewAkquise,lessons:viewLessons,fakten:viewFakten,team:viewTeam,protokoll:viewProtokoll,wissen:viewWissen};
+  const V={dashboard:viewDashboard,aufgaben:viewAufgaben,fristen:viewFristen,budget:viewBudget,kpi:viewKpi,leadzaehler:viewLeadZaehler,akquise:viewAkquise,packen:viewPacken,lessons:viewLessons,fakten:viewFakten,team:viewTeam,protokoll:viewProtokoll,wissen:viewWissen};
   sec.innerHTML=(V[activeTab]||viewDashboard)(pr); p.appendChild(sec);
   if(activeTab==="dashboard") wireDashboard();
   if(activeTab==="aufgaben") wireAufgaben();
@@ -611,6 +658,8 @@ function render(){
   if(activeTab==="budget") wireBudget();
   if(activeTab==="leadzaehler") wireLeadZaehler();
   if(activeTab==="akquise") wireAkquise();
+  if(activeTab==="packen") wirePacken();
+  if(activeTab==="fakten") wireFakten();
   if(activeTab==="protokoll") wireProtokoll();
 }
 
@@ -1223,6 +1272,68 @@ function buildActivityCSV(){
   return csvDoc(head,body);
 }
 
+/* ---------- Packen & Material: Packliste, Giveaway-Bewertung (E7) ---------- */
+function matStateSet(kind,list){ if(kind==="pk") packing=list; else if(kind==="gw") giveaways=list; else vendors=list; }
+function matList(kind){ return kind==="pk"?packingList():kind==="gw"?giveawayList():vendorList(); }
+function updItem(kind,id,patch){ const list=matList(kind).map(x=>Object.assign({},x)); const i=list.findIndex(x=>x.id===id); if(i<0) return; list[i]=Object.assign({},list[i],patch); matStateSet(kind,list); saveMaterials(); render(); }
+function delItem(kind,id){ matStateSet(kind, matList(kind).filter(x=>x.id!==id)); saveMaterials(); logActivity(kind==="pk"?"Packliste":kind==="gw"?"Giveaway":"Dienstleister","Eintrag entfernt"); render(); }
+function addItem(kind){ const id=(kind+Date.now().toString(36)); const list=matList(kind).map(x=>Object.assign({},x));
+  if(kind==="pk") list.push({id,name:"",qty:"",detail:"",owner:"Team",packed:false,ret:false});
+  else if(kind==="gw") list.push({id,name:"",benefit:"mittel",volume:"mittel",qty:"",decision:"optional",note:""});
+  else list.push({id,name:"",role:"",status:"pruefen",note:""});
+  matStateSet(kind,list); saveMaterials(); render(); }
+
+function selOpts(arr,cur){ return arr.map(o=>`<option value="${o}" ${o===cur?'selected':''}>${o}</option>`).join(""); }
+function viewPacken(){
+  const pk=packingList(), gw=giveawayList();
+  const packed=pk.filter(x=>x.packed).length; const mit=gw.filter(x=>x.decision==="mitnehmen").length; const str=gw.filter(x=>x.decision==="streichen").length;
+  const pkRows=pk.map(x=>`<tr>
+    <td><button class="cb" data-pkchk="${x.id}" data-fld="packed" data-st="${x.packed?'done':'open'}" aria-label="Gepackt umschalten">${x.packed?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>':''}</button></td>
+    <td><input class="acq-in" data-pk="${x.id}" data-pf="name" value="${esc(x.name)}" placeholder="Bezeichnung"></td>
+    <td><input class="acq-in" style="width:80px" data-pk="${x.id}" data-pf="qty" value="${esc(x.qty)}" placeholder="Menge"></td>
+    <td><input class="acq-in" data-pk="${x.id}" data-pf="detail" value="${esc(x.detail)}" placeholder="Gewicht / Maß / Hinweis"></td>
+    <td><input class="acq-in" style="width:120px" data-pk="${x.id}" data-pf="owner" value="${esc(x.owner)}" placeholder="Owner"></td>
+    <td style="text-align:center"><button class="cb" data-pkchk="${x.id}" data-fld="ret" data-st="${x.ret?'done':'open'}" aria-label="Rücktransport umschalten">${x.ret?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>':''}</button></td>
+    <td><button class="att-x" data-pkdel="${x.id}" aria-label="Zeile entfernen">×</button></td></tr>`).join("");
+  const gwRows=gw.map(x=>{ const dcls=x.decision==="mitnehmen"?"g":x.decision==="streichen"?"r":"y";
+    return `<tr>
+    <td><input class="acq-in" data-gw="${x.id}" data-gf="name" value="${esc(x.name)}" placeholder="Artikel"></td>
+    <td><select class="stsel" data-gw="${x.id}" data-gf="benefit">${selOpts(BENEFITS,x.benefit)}</select></td>
+    <td><select class="stsel" data-gw="${x.id}" data-gf="volume">${selOpts(VOLUMES,x.volume)}</select></td>
+    <td><input class="acq-in" style="width:80px" data-gw="${x.id}" data-gf="qty" value="${esc(x.qty)}" placeholder="Menge"></td>
+    <td><select class="stsel" data-gw="${x.id}" data-gf="decision">${selOpts(DECISIONS,x.decision)}</select> <span class="st ${dcls}">${x.decision}</span></td>
+    <td><input class="acq-in" data-gw="${x.id}" data-gf="note" value="${esc(x.note)}" placeholder="Notiz"></td>
+    <td><button class="att-x" data-gwdel="${x.id}" aria-label="Zeile entfernen">×</button></td></tr>`; }).join("");
+  return `<h2 class="sec">Packen &amp; Material</h2>
+   <p class="lead">Operative Packliste (Menge, Gewicht/Maß, Owner, gepackt, Rücktransport) und Giveaway-Standardisierung nach Nutzen &amp; Transportvolumen (Lektion E7). Änderungen werden geteilt gespeichert; der eingebettete Stand ist Erstbefüllung.</p>
+   <div class="strip">
+     <div class="kpi ${packed>=pk.length&&pk.length?'ok':''}"><div class="v num">${packed}/${pk.length}</div><div class="k">Packliste gepackt</div><div class="sub">Fortschritt</div></div>
+     <div class="kpi ok"><div class="v num">${mit}</div><div class="k">Giveaways mitnehmen</div><div class="sub">standardisiert</div></div>
+     <div class="kpi ${str?'warn':''}"><div class="v num">${str}</div><div class="k">gestrichen</div><div class="sub">Ballast reduziert (E7)</div></div>
+   </div>
+   <div class="toolbar"><button class="btn" id="pkAdd">＋ Packlisten-Eintrag</button><button class="btn ghost" id="pkCsv">Packliste als CSV</button></div>
+   <h3 style="margin:var(--sp3) 0 var(--sp2)">Packliste</h3>
+   <div class="tblwrap"><table><thead><tr><th style="width:34px">✓</th><th>Bezeichnung</th><th>Menge</th><th>Gewicht/Maß</th><th>Owner</th><th style="width:44px">Rück</th><th style="width:34px"></th></tr></thead><tbody>${pkRows}</tbody></table></div>
+   <div class="toolbar" style="margin-top:var(--sp4)"><button class="btn" id="gwAdd">＋ Giveaway</button></div>
+   <h3 style="margin:var(--sp1) 0 var(--sp2)">Giveaway-Bewertung (Nutzen × Transportvolumen)</h3>
+   <div class="tblwrap"><table><thead><tr><th>Artikel</th><th>Nutzen</th><th>Volumen</th><th>Menge</th><th>Entscheidung</th><th>Notiz</th><th style="width:34px"></th></tr></thead><tbody>${gwRows}</tbody></table></div>`;
+}
+function wirePacken(){
+  document.querySelectorAll(".acq-in[data-pk]").forEach(i=>i.onchange=()=>updItem("pk",i.dataset.pk,{[i.dataset.pf]:i.value.trim()}));
+  document.querySelectorAll("[data-pkchk]").forEach(b=>b.onclick=()=>{ const cur=matList("pk").find(x=>x.id===b.dataset.pkchk)||{}; updItem("pk",b.dataset.pkchk,{[b.dataset.fld]:!cur[b.dataset.fld]}); });
+  document.querySelectorAll("[data-pkdel]").forEach(b=>b.onclick=()=>delItem("pk",b.dataset.pkdel));
+  document.querySelectorAll(".acq-in[data-gw],.stsel[data-gw]").forEach(i=>i.onchange=()=>updItem("gw",i.dataset.gw,{[i.dataset.gf]:i.value}));
+  document.querySelectorAll("[data-gwdel]").forEach(b=>b.onclick=()=>delItem("gw",b.dataset.gwdel));
+  const pa=document.getElementById("pkAdd"); if(pa) pa.onclick=()=>addItem("pk");
+  const ga=document.getElementById("gwAdd"); if(ga) ga.onclick=()=>addItem("gw");
+  const pc=document.getElementById("pkCsv"); if(pc) pc.onclick=async()=>{ const r=await offerFile("InfraTech2027-Packliste.csv","text/csv",buildPackingCSV()); flashBtn(pc,"Packliste als CSV",r); };
+}
+function buildPackingCSV(){
+  const head=["Bezeichnung","Menge","Gewicht/Maß","Owner","Gepackt","Rücktransport"];
+  const rows=packingList().map(x=>[x.name,x.qty,x.detail,x.owner,x.packed?"ja":"nein",x.ret?"ja":"nein"]);
+  return csvDoc(head,rows);
+}
+
 function viewLessons(){
   const rows=LESSONS.map(l=>`<tr><td><strong>${l[0]}</strong></td><td>${esc(l[1])}</td><td>${l[2]}</td><td>${esc(l[3])}</td></tr>`).join("");
   return `<h2 class="sec">Lessons Learned 2026 → Maßnahmen 2027</h2>
@@ -1238,7 +1349,28 @@ function viewFakten(){
      <li><strong>ibis Styles Rotterdam Ahoy</strong> – ~2 Gehminuten, einziges fußläufiges Haus (3,5★).</li>
      <li><strong>ART Hotel Rotterdam</strong> – ~1,6 km, 4★ (renoviert).</li>
      <li><strong>Van der Valk Ridderkerk</strong> – ~6 km, viel kostenloses Parken.</li>
-     <li><strong>Bastion Hotel Rotterdam Zuid</strong> – ~5 km, budgetfreundlich.</li></ul></details>`;
+     <li><strong>Bastion Hotel Rotterdam Zuid</strong> – ~5 km, budgetfreundlich.</li></ul></details>
+   ${viewVendors()}`;
+}
+/* ---------- Dienstleister-Status-Tracker (Faktencheck-„Prüfen"-Punkte) ---------- */
+function viewVendors(){
+  const vd=vendorList();
+  const rows=vd.map(x=>{ const scls=x.status==="verifiziert"?"g":x.status==="streichen"?"r":"y";
+    return `<tr>
+      <td><input class="acq-in" data-vd="${x.id}" data-vf="name" value="${esc(x.name)}" placeholder="Dienstleister"></td>
+      <td><input class="acq-in" data-vd="${x.id}" data-vf="role" value="${esc(x.role)}" placeholder="Rolle"></td>
+      <td><select class="stsel" data-vd="${x.id}" data-vf="status">${Object.keys(VENDOR_STATUS).map(k=>`<option value="${k}" ${k===x.status?'selected':''}>${VENDOR_STATUS[k]}</option>`).join("")}</select> <span class="st ${scls}">${VENDOR_STATUS[x.status]||x.status}</span></td>
+      <td><input class="acq-in" data-vd="${x.id}" data-vf="note" value="${esc(x.note)}" placeholder="Beleg / Notiz"></td>
+      <td><button class="att-x" data-vddel="${x.id}" aria-label="Zeile entfernen">×</button></td></tr>`; }).join("");
+  return `<h2 class="sec" style="margin-top:var(--sp5)">Dienstleister-Status</h2>
+   <p class="lead">Verifizierungsstand der Dienstleister (Lektion: „ExproGloble" nicht auffindbar → streichen; schwach belegte prüfen: KvK-Auszug + Referenzen). Bei Verträgen: <strong>Bitte Rechtsabteilung prüfen.</strong></p>
+   <div class="toolbar"><button class="btn" id="vdAdd">＋ Dienstleister</button></div>
+   <div class="tblwrap"><table><thead><tr><th>Dienstleister</th><th>Rolle</th><th>Status</th><th>Beleg / Notiz</th><th style="width:34px"></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function wireFakten(){
+  document.querySelectorAll(".acq-in[data-vd],.stsel[data-vd]").forEach(i=>i.onchange=()=>updItem("vd",i.dataset.vd,{[i.dataset.vf]:i.value}));
+  document.querySelectorAll("[data-vddel]").forEach(b=>b.onclick=()=>delItem("vd",b.dataset.vddel));
+  const va=document.getElementById("vdAdd"); if(va) va.onclick=()=>addItem("vd");
 }
 function viewWissen(){
   const rows=SOURCES.map(s=>`<tr><td>${esc(s[0])}</td><td>${s[1]}</td><td>${esc(s[2])}</td></tr>`).join("");

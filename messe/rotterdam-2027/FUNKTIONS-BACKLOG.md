@@ -37,6 +37,12 @@ Grundlage für die verknüpfte Claude-Code-Session und den Manager-Agenten.
 - **Agenda „nächste 14 Tage"** (Dashboard): vereint überfällige + kommende Meilensteine **und** Aufgaben-Termine (aus derselben Fristen-Quelle) in einer Liste mit Typ-Kennzeichnung.
 - **Statusbericht-Onepager**: Dashboard-Button erzeugt einen kompakten Markdown-Statusbericht (Fortschritt, überfällig/P0/blockiert, nächste Fristen, Budget-Abweichung, Leads/Follow-up, kritisch offene P0) zum Download; deckt den früheren P3-Punkt „Wochenreport" inhaltlich ab. Zusätzlich „Drucken / PDF" mit Druck-Layout (@media print).
 
+## Bereits umgesetzt (v3 – Paket „Packen & Material / Partner")
+- **Packliste-Modul** (Tab „Packen & Material"): editierbare Packliste mit Bezeichnung, Menge, Gewicht/Maß, Owner, „gepackt" und „Rücktransport" (aus der Masterliste vorbefüllt); CSV-Export; Fortschritts-KPI.
+- **Giveaway-Standardisierung (E7)**: Bewertung je Artikel nach Nutzen × Transportvolumen mit Entscheidung mitnehmen/optional/streichen (Prio-Liste vorbefüllt: Zollstock, USB-Bauhelm, Warnweste, Isolierbecher, HARIBO; gestrichen: Kalender, Minzspender, Servietten, Wein).
+- **Dienstleister-Status-Tracker** (Faktencheck-Tab): Status verifiziert/prüfen/streichen je Dienstleister mit Beleg/Notiz (vorbefüllt aus Faktencheck: Global Expo & LOCO verifiziert, Whimsical/LIVE Staffing prüfen, „ExproGloble" streichen). Bei Verträgen: Rechtsabteilung prüfen.
+- Speicherung geteilt in `planning/materials` (packing/giveaways/vendors), Seed als Erstbefüllung, lokaler Fallback.
+
 ## Backlog (Vorschläge, priorisiert)
 
 ### P3 – Ausbau
