@@ -20,3 +20,18 @@ jobs:
           mkdir -p /tmp/elsewhere && cd /tmp/elsewhere
           SEO_REPORTING_CONFIG="$GITHUB_WORKSPACE/config.example.yaml" seo-report monthly --demo --as-of 2026-09-01
           test -f output/monthly_2026-08-01_2026-08-31_demo.md
+
+  cockpit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Unit-Tests Feind Cockpit (FeindCore)
+        run: node --test cockpit/test/*.test.mjs
+      - name: Migrationsplan gegen Live-Fixture (Dry-Run)
+        run: |
+          node -e "import('./cockpit/test/fixtures/live-2026-09-28.mjs').then(m=>{const fs=require('fs');for(const k of ['target','a2','a3'])fs.writeFileSync('/tmp/'+k+'.json',JSON.stringify(m.default[k]));})"
+          node cockpit/tools/migrate.mjs --target /tmp/target.json --a2 /tmp/a2.json --a3 /tmp/a3.json | tee /tmp/plan.txt
+          grep -q "0 Löschungen" /tmp/plan.txt
