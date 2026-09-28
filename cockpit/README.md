@@ -142,12 +142,11 @@ zu höchstens 50 Schreibvorgängen für `ArtifactData batch`. Eingaben: Cockpit-
 
 Der Skill `/cockpit-sync` liest die Zieladresse aus diesem Abschnitt. Ist sie leer, schreibt er nichts.
 
-## Bekannte Entscheidungen offen
+## Entscheidungen
 
-- [ ] **CI-Ausnahme Primär-Buttons:** Anthrazit `#424e4e` auf Grün `#84bb20` erreicht 3,74:1
-      (unter 4,5:1 für Normaltext). Ausnahme bestätigen oder Gestaltung ändern. Entscheidung: _…_
-- [ ] **Ziel-Artefakt für Go-Live:** neues Artefakt oder eines der Altartefakte A1–A4
-      aktualisieren. Entscheidung: _…_
+- [x] **Primär-Buttons:** Schrift in `on-accent-strong` `#1f2525` auf Grün (6,9:1). Entschieden 28.09.2026.
+- [x] **Ziel-Artefakt für Go-Live:** InfraTech-Artefakt A4 (4zX58mseXB9vbspN8xAzJ2) wird aktualisiert.
+      Entschieden 28.09.2026.
 - [ ] **Führende Quelle Team-Aufgaben:** Google Sheet oder Cockpit. Entscheidung: _…_
 - [ ] **Innovationspreis-Teilaufgaben i2–i5:** Status klären (übernommen ist nur `overrides/i1`
       „Innovationspreis eingereicht“). Entscheidung: _…_

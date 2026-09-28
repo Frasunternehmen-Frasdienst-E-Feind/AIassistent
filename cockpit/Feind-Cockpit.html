@@ -11,7 +11,7 @@
    ============================================================================ */
 :root{
   color-scheme:light;
-  --accent:#84bb20; --accent-text:#5e8a14; --on-accent:#424e4e;
+  --accent:#84bb20; --accent-text:#5e8a14; --on-accent:#424e4e; --on-accent-strong:#1f2525;
   --signal:#e3000b; --signal-text:#b8000a;
   --surface:#ffffff; --surface-muted:#f2f4f4; --surface-inverse:#424e4e;
   --ink:#3c5457; --ink-strong:#424e4e; --ink-muted:#6b7575; --ink-inverse:#ffffff; --ink-inverse-muted:#b8bfbf;
@@ -29,7 +29,7 @@
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   color-scheme:dark;
-  --accent:#84bb20; --accent-text:#84bb20; --on-accent:#424e4e;
+  --accent:#84bb20; --accent-text:#84bb20; --on-accent:#424e4e; --on-accent-strong:#1f2525;
   --signal:#e3000b; --signal-text:#ff9a9f;
   --surface:#2e3737; --surface-muted:#384242; --surface-inverse:#1f2525;
   --ink:#e7ecec; --ink-strong:#ffffff; --ink-muted:#b8bfbf; --ink-inverse:#ffffff; --ink-inverse-muted:#b8bfbf;
@@ -41,7 +41,7 @@
 }}
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --accent:#84bb20; --accent-text:#84bb20; --on-accent:#424e4e;
+  --accent:#84bb20; --accent-text:#84bb20; --on-accent:#424e4e; --on-accent-strong:#1f2525;
   --signal:#e3000b; --signal-text:#ff9a9f;
   --surface:#2e3737; --surface-muted:#384242; --surface-inverse:#1f2525;
   --ink:#e7ecec; --ink-strong:#ffffff; --ink-muted:#b8bfbf; --ink-inverse:#ffffff; --ink-inverse-muted:#b8bfbf;
@@ -69,7 +69,7 @@ a{color:var(--accent-text)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 [hidden]{display:none!important}
 code,.path{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;background:var(--surface-muted);border:1px solid var(--line);padding:0 4px;word-break:break-all}
-.skip{position:absolute;left:-999px;top:0;background:var(--accent);color:var(--on-accent);padding:var(--s2) var(--s3);z-index:60;font-weight:700}
+.skip{position:absolute;left:-999px;top:0;background:var(--accent);color:var(--on-accent-strong);padding:var(--s2) var(--s3);z-index:60;font-weight:700}
 .skip:focus{left:var(--s2)}
 
 /* § 3 KOPF & NAVIGATION */
@@ -153,7 +153,7 @@ button.chip.star[aria-pressed="true"]{color:var(--on-accent)}
 .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink-strong);border-radius:var(--r-btn);padding:6px 12px;min-height:34px;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--font-sans);text-decoration:none}
 .btn:hover{border-color:var(--ink-muted)}
 .btn:disabled{opacity:.55;cursor:not-allowed}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:700}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent-strong);font-weight:700}
 .btn.ghost{background:transparent}
 .btn.danger{background:transparent;border-color:var(--signal);color:var(--signal-text)}
 .btn.confirm{background:var(--signal);border-color:var(--signal);color:var(--ink-inverse);font-weight:700}
@@ -372,7 +372,7 @@ details.chk summary{cursor:pointer;font-size:14px;color:var(--ink-strong);paddin
 .lc-grade.lc-a{color:var(--ok)}.lc-grade.lc-b{color:var(--warn)}
 .lc-n{min-width:2.2em;text-align:center;font-family:var(--font-display);font-weight:800;font-size:18px;color:var(--ink-strong);font-variant-numeric:tabular-nums}
 .lc-btn{width:44px;height:44px;flex:0 0 auto;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink-strong);font-size:20px;font-weight:700;cursor:pointer;line-height:1;display:grid;place-items:center}
-.lc-btn.plus{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.lc-btn.plus{background:var(--accent);color:var(--on-accent-strong);border-color:var(--accent)}
 .member{display:flex;align-items:center;gap:var(--s2);padding:var(--s2) 0;border-bottom:1px solid var(--line)}
 .member:last-child{border-bottom:0}
 .member .av{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-family:var(--font-display);font-weight:800;font-size:12px;flex:0 0 auto}
@@ -434,7 +434,8 @@ details.chk summary{cursor:pointer;font-size:14px;color:var(--ink-strong);paddin
 /* § 2a KONTRAST (WCAG AA, axe-geprüft) – nur vorhandene Tokens:
    · Auf grauen/farbigen Flächen trägt Text die Fließtextfarbe statt ink-muted (4,29:1 → ≥ 7:1).
    · Grün-/Orange-Töne nur als Fläche, Rahmen oder Unterstreichung; Text darauf in Anthrazit.
-   · Kleine Kennzeichen auf Grün nutzen accent-soft (hell) statt Vollton: #424e4e auf #84bb20 hat nur 3,74:1. */
+   · Kleine Kennzeichen auf Grün nutzen accent-soft (hell) statt Vollton: #424e4e auf #84bb20 hat nur 3,74:1.
+   · Schrift auf vollem Grün (Primär-Buttons, Plus, Skip-Link): on-accent-strong #1f2525 (6,9:1), Freigabe David 28.09.2026. */
 .col,.geomap,.empty,.req,.sync .it,table.data th,.cal .dh,.cal .d.out,.pill,.agenda-k,.chip,.tab .badge,.alert,.kv th,.st,.rem-thr,.mk-pre,details.acc,.doc-list,.adm-nav,.banner{--ink-muted:var(--ink)}
 a{color:var(--ink-strong);text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:2px}
 .up{color:var(--ink-strong)}
@@ -449,7 +450,7 @@ a{color:var(--ink-strong);text-decoration-color:var(--accent);text-decoration-th
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 @media print{
   /* Papier immer hell: Token-Werte des hellen CI-Sets (feind-ci.tokens.json → light) */
-  :root,:root[data-theme="dark"],:root:not([data-theme="light"]){color-scheme:light;--accent:#84bb20;--accent-text:#5e8a14;--on-accent:#424e4e;--signal:#e3000b;--signal-text:#b8000a;--surface:#ffffff;--surface-muted:#f2f4f4;--surface-inverse:#424e4e;--ink:#3c5457;--ink-strong:#424e4e;--ink-muted:#6b7575;--ink-inverse:#ffffff;--line:#d5dada;--warn:#b5730a;--warn-bg:#fbf1e0;--ok:#5e8a14;--ok-bg:#eef5e2;--crit:#b8000a;--crit-bg:#fbe7e8;--info-bg:#eef3f4;--page-bg:#ffffff;--cat-1:#424e4e;--cat-4:#6b7575}
+  :root,:root[data-theme="dark"],:root:not([data-theme="light"]){color-scheme:light;--accent:#84bb20;--accent-text:#5e8a14;--on-accent:#424e4e;--on-accent-strong:#1f2525;--signal:#e3000b;--signal-text:#b8000a;--surface:#ffffff;--surface-muted:#f2f4f4;--surface-inverse:#424e4e;--ink:#3c5457;--ink-strong:#424e4e;--ink-muted:#6b7575;--ink-inverse:#ffffff;--line:#d5dada;--warn:#b5730a;--warn-bg:#fbf1e0;--ok:#5e8a14;--ok-bg:#eef5e2;--crit:#b8000a;--crit-bg:#fbe7e8;--info-bg:#eef3f4;--page-bg:#ffffff;--cat-1:#424e4e;--cat-4:#6b7575}
   header.top,nav.topnav,nav.tabs,.toolbar,.tools,.filters,.mbar,.toast,.modal-bg,.btn,.edit,.stsel,.lc-btn,.skip,.geomap,.ai,.adm-bar,.adm-nav,.no-print{display:none!important}
   body{background:var(--surface);color:var(--ink);font-size:10.5pt}
   main{padding:0}

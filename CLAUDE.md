@@ -12,6 +12,8 @@ im Markup hart setzen.
 
 * Grün `#84bb20` ist Akzent- und Flächenfarbe. Auf Grün steht Anthrazit
   `#424e4e`, nie Weiß.
+  Schrift auf vollem Grün (Buttons) in `on-accent-strong` `#1f2525` (6,9:1),
+  weil `#424e4e` auf Grün nur 3,74:1 erreicht.
 * Grün nie als Textfarbe auf hellem Grund (2,3:1) – dort `accent-text` `#5e8a14`.
 * Rot `#e3000b` ausschließlich als Signal (Fehler, Fehlbuchung, Minus), nie als
   Schmuckfarbe und auf dunklem Grund nur als Fläche.

@@ -129,7 +129,7 @@ test('AK7 · mkt_leads und leads/counts sind getrennt', async ({ page }) => {
   expect(st.mkt.organisation).toBe('Stadt Testhausen');
 });
 
-test('AK8 · Barrierefreiheit (axe WCAG A/AA) in beiden Themes – einzige Ausnahme: CI-Primärbutton', async ({ page }) => {
+test('AK8 · Barrierefreiheit (axe WCAG A/AA) in beiden Themes – ohne Ausnahme', async ({ page }) => {
   test.setTimeout(240000);
   await open(page);
   const found = [];
@@ -140,8 +140,8 @@ test('AK8 · Barrierefreiheit (axe WCAG A/AA) in beiden Themes – einzige Ausna
       for (const id of await page.$$eval('#modulebar-wrap button', bs => bs.map(b => b.id))) {
         await page.click('#' + id); await page.addScriptTag({ path: AXE });
         const v = await page.evaluate(async () => (await window.axe.run(document, { runOnly: ['wcag2a', 'wcag2aa'] })).violations
-          .flatMap(x => x.nodes.map(n => ({ id: x.id, t: n.target.join(' '), primary: !!document.querySelector(n.target.join(' '))?.closest('.btn.primary') }))));
-        v.filter(x => !(x.id === 'color-contrast' && x.primary)).forEach(x => found.push(theme + ' ' + id + ' ' + x.id + ' ' + x.t));
+          .flatMap(x => x.nodes.map(n => ({ id: x.id, t: n.target.join(' ') }))));
+        v.forEach(x => found.push(theme + ' ' + id + ' ' + x.id + ' ' + x.t));
       }
     }
   }
