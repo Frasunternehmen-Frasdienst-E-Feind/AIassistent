@@ -4,6 +4,9 @@ Erzeugt ausfüllbare PDF-Formulare für das Messeprojekt **InfraTech 2027 (Rotte
 Stand 5.209)** in **NL, DE, EN, PL** – im Corporate Design aus
 `branding/feind-ci.tokens.json`.
 
+**NL (Niederländisch) ist reguläre Messesprache** und wird – wie DE, EN und PL – bei jedem
+Lauf ohne `--langs` standardmäßig mit erzeugt (Reihenfolge: nl, de, en, pl).
+
 Jede Position hat: Kontrollkästchen (erledigt) · Status-Dropdown (Vorbelegung „Offen“) ·
 festes Notizfeld (Freitext + Link, max. 250 Zeichen). Zusätzlich: Steuerungsleiste mit den
 kritischen Blockern und eine Sektion „Blinde Flecken“.
