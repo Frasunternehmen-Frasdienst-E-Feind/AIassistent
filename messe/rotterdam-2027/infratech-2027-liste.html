@@ -211,6 +211,12 @@
   .att-add input:not([type=file]){flex:1 1 120px;min-width:100px;padding:6px 8px;border:1px solid var(--line);border-radius:var(--r-input);background:var(--surface);color:var(--ink);font-size:13px;font-family:var(--sans)}
   .att-add input[type=file]{font-size:12px;color:var(--ink-muted);flex:1 1 100%}
   .att-hint{font-size:12px;color:var(--ink-muted)}
+  .acq-slot{border:1px solid var(--line);border-radius:var(--r-btn);padding:var(--sp2);margin-top:var(--sp2)}
+  .acq-slot.done{background:var(--ok-bg);border-color:var(--ok)}
+  .acq-slot-head{display:flex;align-items:center;gap:var(--sp2);margin-bottom:6px}
+  .acq-slot-head b{font-size:13px;color:var(--ink-strong)}
+  .acq-in{width:100%;padding:6px 8px;margin-top:4px;border:1px solid var(--line);border-radius:var(--r-input);background:var(--surface);color:var(--ink);font-size:13px;font-family:var(--sans)}
+  .acq-in:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
   .pill.att{background:var(--info-bg);color:var(--ink-muted);text-transform:none}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp2)}
   .modal-actions{display:flex;gap:var(--sp2);justify-content:flex-end;margin-top:var(--sp3);flex-wrap:wrap}
@@ -428,19 +434,21 @@ const SOURCES=[
 const LS_KEY="feind_infratech2027_v2";
 let custom={};            // taskId -> {status?,note?,title?,cat?,prio?,owner?,due?,deleted?,custom?}
 let team=[];              // [{id,name,role}]
-let reminders={leadDays:[14,7,2]};
-let dbNS=null, tasksColl=null, settingsDoc=null, budgetDoc=null, leadsDoc=null, activityColl=null;
+let reminders={leadDays:[14,7,2], escalateDays:7};
+let dbNS=null, tasksColl=null, settingsDoc=null, budgetDoc=null, leadsDoc=null, activityColl=null, acqDoc=null;
 let mTasks={}, legacyBase={};
 let budgetActuals={};     // Kostenblock-Key -> {ist?:number, forecast?:number}
 let leadCounts={};        // Datum(JJJJ-MM-TT) -> {a,b,c}  (nur Stückzahlen, keine personenbezogenen Daten)
+let leadFollow={a:0,b:0,c:0}; // Follow-up: wie viele A/B/C-Leads nachgefasst (E3, Ziel A ≥95 % <48 h) – nur Zahlen
+let acqPlan={slots:{},targets:[]}; // Akquise-Planer (E4): Slots je Messetag + Zielkundenliste (nur Firmennamen)
 let userNS=null, myUserId=null;   // user-Capability: opake Team-ID des Betrachters
 let activity=[];          // [{id, ts, actorId, action, detail}] – Aktivitätsprotokoll (geteilt)
 let profileCache={};      // actorId -> Anzeigename (nur ids gespeichert, Namen zur Anzeige aufgelöst)
 
 function recompute(){ custom={}; Object.keys(legacyBase).forEach(id=>custom[id]=Object.assign({},legacyBase[id]));
   Object.keys(mTasks).forEach(id=>custom[id]=Object.assign({},custom[id],mTasks[id])); }
-function loadLocal(){ try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s){ custom=s.custom||{}; team=s.team||[]; if(s.reminders) reminders=s.reminders; if(s.budget) budgetActuals=s.budget; if(s.leads) leadCounts=s.leads; } }catch(e){} }
-function saveLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify({custom,team,reminders,budget:budgetActuals,leads:leadCounts})); }catch(e){} }
+function loadLocal(){ try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s){ custom=s.custom||{}; team=s.team||[]; if(s.reminders){ reminders=Object.assign({leadDays:[14,7,2],escalateDays:7},s.reminders); } if(s.budget) budgetActuals=s.budget; if(s.leads) leadCounts=s.leads; if(s.follow) leadFollow=Object.assign({a:0,b:0,c:0},s.follow); if(s.acq) acqPlan=Object.assign({slots:{},targets:[]},s.acq); } }catch(e){} }
+function saveLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify({custom,team,reminders,budget:budgetActuals,leads:leadCounts,follow:leadFollow,acq:acqPlan})); }catch(e){} }
 function setSaveHint(txt){ const el=document.getElementById("saveHint"); if(el) el.textContent="● "+txt; }
 
 async function initStore(){
@@ -457,7 +465,9 @@ async function initStore(){
     budgetDoc=dbNS.doc("budget/actuals");
     budgetDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v&&v.blocks){ budgetActuals=v.blocks; saveLocal(); render(); } });
     leadsDoc=dbNS.doc("leads/counts");
-    leadsDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v&&v.days){ leadCounts=v.days; saveLocal(); render(); } });
+    leadsDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v){ if(v.days) leadCounts=v.days; if(v.follow) leadFollow=Object.assign({a:0,b:0,c:0},v.follow); saveLocal(); render(); } });
+    acqDoc=dbNS.doc("acquisition/plan");
+    acqDoc.onSnapshot(d=>{ const v=d&&(d.data?d.data():d); if(v){ acqPlan={slots:v.slots||{},targets:Array.isArray(v.targets)?v.targets:[]}; saveLocal(); render(); } });
     // user-Capability: Betrachter-ID für das Aktivitätsprotokoll (nur id gespeichert, Name zur Anzeige aufgelöst).
     try{ userNS = (window.claude&&claude.use)? await claude.use("user") : null; if(userNS&&userNS.id){ myUserId = await userNS.id(); } }catch(e){ userNS=null; }
     activityColl=dbNS.collection("activity");
@@ -478,8 +488,11 @@ async function saveTask(id,patch){ custom[id]=Object.assign({},custom[id],patch)
 async function archiveTask(id,val){ return saveTask(id,{archived:!!val, deleted:false}); }
 async function saveSettings(){ saveLocal(); if(settingsDoc){ try{ await settingsDoc.set({team,reminders,updatedAt:Date.now()}); }catch(e){} } }
 async function saveBudget(){ saveLocal(); if(budgetDoc){ try{ await budgetDoc.set({blocks:budgetActuals,updatedAt:Date.now()}); }catch(e){ setSaveHint("Budget nur lokal gesichert"); } } }
-async function saveLeads(){ saveLocal(); if(leadsDoc){ try{ await leadsDoc.set({days:leadCounts,updatedAt:Date.now()}); }catch(e){ setSaveHint("Lead-Zähler nur lokal gesichert"); } } }
+async function saveLeads(){ saveLocal(); if(leadsDoc){ try{ await leadsDoc.set({days:leadCounts,follow:leadFollow,updatedAt:Date.now()}); }catch(e){ setSaveHint("Lead-Zähler nur lokal gesichert"); } } }
 async function bumpLead(date,grade,delta){ const c=Object.assign({a:0,b:0,c:0},leadCounts[date]); c[grade]=Math.max(0,(+c[grade]||0)+delta); leadCounts[date]=c; saveLeads(); render(); }
+// Follow-up-Zähler (E3): nachgefasste A/B/C-Leads, gedeckelt auf die erfasste Gesamtzahl je Qualität.
+async function bumpFollow(grade,delta){ const s=leadsSum(); const max=+s[grade]||0; leadFollow=Object.assign({a:0,b:0,c:0},leadFollow); leadFollow[grade]=Math.max(0,Math.min(max,(+leadFollow[grade]||0)+delta)); saveLeads(); render(); }
+async function saveAcq(){ saveLocal(); if(acqDoc){ try{ await acqDoc.set({slots:acqPlan.slots,targets:acqPlan.targets,updatedAt:Date.now()}); }catch(e){ setSaveHint("Akquise-Plan nur lokal gesichert"); } } }
 
 /* Aktivitätsprotokoll: „wer hat wann was geändert". Nur opake Team-ID (actorId) speichern;
    Namen werden über die user-Capability zur Anzeige aufgelöst. Ohne geteilte DB kein Log. */
@@ -531,12 +544,16 @@ function dueLabel(s){ if(!s) return "offen"; const dd=daysBetween(parseD(s),TODA
   if(dd<0) return fmtD(s)+" · "+(-dd)+" T überfällig"; if(dd===0) return fmtD(s)+" · heute"; return fmtD(s)+" · in "+dd+" T"; }
 function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 function initials(n){ return (n||"?").split(/[\s\/]+/).map(x=>x[0]).join("").slice(0,2).toUpperCase(); }
+// Einheitlicher CSV-Baustein (UTF-8-BOM, Semikolon, CRLF – Excel-kompatibel).
+// Ersetzt das früher 4× duplizierte Quoting je Export.
+function csvCell(v){ v=(v==null?"":String(v)); return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
+function csvDoc(head,rows){ return "﻿"+[head].concat(rows).map(r=>r.map(csvCell).join(";")).join("\r\n")+"\r\n"; }
 
 /* ============================================================ TABS ============================================================ */
 const TABS=[
  {id:"dashboard",label:"Dashboard"},{id:"aufgaben",label:"Aufgaben",count:true},
  {id:"fristen",label:"Fristen"},{id:"budget",label:"Budget"},{id:"kpi",label:"Ziele & KPIs"},
- {id:"leadzaehler",label:"Lead-Zähler"},
+ {id:"leadzaehler",label:"Lead-Zähler"},{id:"akquise",label:"Akquise-Planer"},
  {id:"lessons",label:"Lessons Learned"},{id:"fakten",label:"Faktencheck"},
  {id:"team",label:"Team & Zugriff"},{id:"protokoll",label:"Protokoll"},{id:"wissen",label:"Wissensbasis"},
 ];
@@ -564,13 +581,14 @@ function render(){
 
   const p=document.getElementById("panels"); p.innerHTML="";
   const sec=document.createElement("section"); sec.setAttribute("role","tabpanel"); sec.tabIndex=0;
-  const V={dashboard:viewDashboard,aufgaben:viewAufgaben,fristen:viewFristen,budget:viewBudget,kpi:viewKpi,leadzaehler:viewLeadZaehler,lessons:viewLessons,fakten:viewFakten,team:viewTeam,protokoll:viewProtokoll,wissen:viewWissen};
+  const V={dashboard:viewDashboard,aufgaben:viewAufgaben,fristen:viewFristen,budget:viewBudget,kpi:viewKpi,leadzaehler:viewLeadZaehler,akquise:viewAkquise,lessons:viewLessons,fakten:viewFakten,team:viewTeam,protokoll:viewProtokoll,wissen:viewWissen};
   sec.innerHTML=(V[activeTab]||viewDashboard)(pr); p.appendChild(sec);
   if(activeTab==="aufgaben") wireAufgaben();
   if(activeTab==="team") wireTeam();
   if(activeTab==="fristen") wireFristen();
   if(activeTab==="budget") wireBudget();
   if(activeTab==="leadzaehler") wireLeadZaehler();
+  if(activeTab==="akquise") wireAkquise();
   if(activeTab==="protokoll") wireProtokoll();
 }
 
@@ -667,11 +685,10 @@ function depTitles(x){ if(!x.deps||!x.deps.length) return [];
   const map=Object.fromEntries(allTasks(true).concat(allTasks(false)).map(t=>[t.id,t]));
   return x.deps.map(id=>map[id]?map[id].title:id); }
 function buildAufgabenCSV(){
-  const q=v=>{ v=(v==null?"":String(v)); return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
   const head=["Bereich","Titel","Priorität","Verantwortlich","Termin","Status","Blockiert durch","Notiz"];
   const rows=filteredTasks().map(x=>[ (CATMAP[x.cat]?CATMAP[x.cat].label:x.cat), x.title, x.prio, x.owner,
-    x.due?fmtD(x.due):"", (STLABEL[x.status]||x.status), depTitles(x).join(" | "), x.note||"" ].map(q).join(";"));
-  return "﻿"+[head.map(q).join(";")].concat(rows).join("\r\n")+"\r\n";
+    x.due?fmtD(x.due):"", (STLABEL[x.status]||x.status), depTitles(x).join(" | "), x.note||"" ]);
+  return csvDoc(head,rows);
 }
 function buildAufgabenMD(){
   const list=filteredTasks();
@@ -857,6 +874,8 @@ function viewTeam(){
        <h3 style="margin-top:var(--sp4)">Erinnerungen</h3>
        <p class="lead" style="margin-bottom:var(--sp2)">Vorlaufzeiten (Tage vor Fälligkeit), zu denen erinnert wird. Zustellung per Push/E-Mail übernimmt der Manager-Agent.</p>
        <div class="field"><label for="r_lead">Vorlauf in Tagen (kommagetrennt)</label><input id="r_lead" value="${reminders.leadDays.join(', ')}" inputmode="numeric"></div>
+       <div class="field"><label for="r_esk">Eskalationsvorlauf (Tage vor Frist)</label><input id="r_esk" value="${reminders.escalateDays||7}" inputmode="numeric">
+         <small>Ab wann eine Frist in der Fristenmatrix als „eskalieren" markiert wird (E2).</small></div>
        <button class="btn ghost" id="r_save">Erinnerungen speichern</button>
      </div>
    </div>`;
@@ -866,22 +885,35 @@ function wireTeam(){
   const add=document.getElementById("m_add"); if(add) add.onclick=()=>{ const n=document.getElementById("m_name").value.trim(); if(!n) return;
     team.push({id:"m"+Date.now().toString(36),name:n,role:document.getElementById("m_role").value.trim()}); saveSettings(); logActivity("Teammitglied hinzugefügt", n); render(); };
   const rs=document.getElementById("r_save"); if(rs) rs.onclick=()=>{ const days=document.getElementById("r_lead").value.split(",").map(s=>parseInt(s.trim(),10)).filter(n=>!isNaN(n)&&n>=0).sort((a,b)=>b-a);
-    reminders={leadDays:days.length?days:[14,7,2]}; saveSettings(); render(); };
+    const esk=parseInt((document.getElementById("r_esk")||{}).value,10);
+    reminders={leadDays:days.length?days:[14,7,2], escalateDays:(!isNaN(esk)&&esk>=0)?esk:7}; saveSettings(); render(); };
 }
 
 function viewFristen(){
-  const rows=DEADLINES.slice().sort((a,b)=>parseD(a.d)-parseD(b.d)).map(d=>{ const dd=daysBetween(parseD(d.d),TODAY);
+  const escDays=reminders.escalateDays||7;
+  const rows=allDeadlines().map(d=>{ const dd=daysBetween(parseD(d.d),TODAY);
     const rest= dd<0?`${-dd} T vorbei`:dd===0?"heute":`in ${dd} T`;
-    return `<tr><td class="num">${fmtD(d.d)}</td><td>${esc(d.t)}</td><td class="num">${rest}</td><td><span class="st ${d.st}">${esc(d.s)}</span></td></tr>`; }).join("");
+    const restCls= dd<0?"over":dd<=escDays?"soon":"";
+    // Eskalation (E2): Vorlauffenster vor Fälligkeit; überfällige zählen ebenfalls als eskalationsbedürftig.
+    const esk = (dd>=0 && dd<=escDays) || dd<0;
+    return `<tr>
+      <td class="num">${fmtD(d.d)}</td>
+      <td>${esc(d.t)}${d.kind==="Aufgabe"?' <span class="pill '+d.prio.toLowerCase()+'">'+d.prio+'</span>':''}</td>
+      <td>${esc(d.owner)}</td>
+      <td>${esk?'<span class="rem-thr '+(dd<0?'over':'')+'">⚠ eskalieren</span> ':''}<span class="pill due">−${escDays} T: ${esc(shiftD(d.d,-escDays))}</span></td>
+      <td class="num"><span class="pill due ${restCls}">${rest}</span></td>
+      <td><span class="st ${d.st}">${esc(d.s)}</span></td></tr>`; }).join("");
+  const nTask=allDeadlines().filter(d=>d.kind==="Aufgabe").length;
   return `<h2 class="sec">Fristenmatrix</h2>
-   <p class="lead">Rot = für 2027 bestätigt · Gelb = Referenzwert 2026, offiziell für 2027 zu verifizieren · Grün = Messetermin. Größte Lektion 2026 (E2): eine zentrale Fristenmatrix verhindert Zuschläge.</p>
+   <p class="lead">Eine Quelle: feste Meilensteine <strong>und</strong> alle offenen Aufgaben-Termine (${nTask}) zusammengeführt, nach Datum sortiert.
+     Rot = für 2027 bestätigt/kritisch · Gelb = Referenz 2026, zu verifizieren · Grün = Messetermin. Eskalationsvorlauf: <strong>${escDays} Tage</strong> (im Team-Tab änderbar). Lektion E2: zentrale Matrix mit Owner + Eskalationsdatum verhindert Zuschläge.</p>
    <div class="banner"><strong>Offen beim Veranstalter (infratech.nl / Ahoy):</strong> Anmeldeschluss, Standentwurf-Genehmigung, Standbau-/Abbauzeiten und VRS-/Slot-Zeitfenster 2027.</div>
    <div class="toolbar">
      <button class="btn" id="icsBtn">ICS (Kalender) exportieren</button>
      <button class="btn ghost" id="csvBtn">CSV exportieren</button>
-     <span class="savehint" id="expHint">Alle Fristen als Kalender-Datei (.ics, ganztägige Termine) oder Tabelle (.csv).</span>
+     <span class="savehint" id="expHint">Meilensteine + Aufgaben-Termine als Kalender-Datei (.ics, ganztägige Termine) oder Tabelle (.csv).</span>
    </div>
-   <div class="tblwrap"><table><thead><tr><th>Datum</th><th>Frist</th><th class="n">Rest</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+   <div class="tblwrap"><table><thead><tr><th>Datum</th><th>Frist</th><th>Owner</th><th>Eskalation</th><th class="n">Rest</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
 /* ---------- Fristen-Export (ICS / CSV) ---------- */
@@ -895,26 +927,36 @@ function icsStamp(){ const d=new Date(); return ""+d.getUTCFullYear()+pad2(d.get
 // Zeilenfaltung nach RFC 5545 (<=75 Oktett/Zeile), byteweise, ohne Zeichen zu zerteilen.
 function icsFold(line){ let out="",cur="",b=0; for(const ch of line){ const cb=utf8len(ch);
   if(b+cb>73){ out+=(out?"\r\n ":"")+cur; cur=ch; b=cb; } else { cur+=ch; b+=cb; } } return out+(out?"\r\n ":"")+cur; }
-function fristenSorted(){ return DEADLINES.slice().sort((a,b)=>parseD(a.d)-parseD(b.d)); }
+// Datum um n Tage verschieben (n<0 = früher), formatiert wie fmtD.
+function shiftD(dstr,n){ const d=parseD(dstr); if(!d) return ""; d.setDate(d.getDate()+n); const iso=d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate()); return fmtD(iso); }
+// Einzige Fristen-Quelle: feste Meilensteine (DEADLINES) + offene Aufgaben-Termine, nach Datum sortiert.
+function allDeadlines(){
+  const out=DEADLINES.map(d=>({d:d.d,t:d.t,s:d.s,st:d.st,owner:"—",kind:"Meilenstein"}));
+  allTasks(false).forEach(x=>{ if(x.due && x.status!=="done"){
+    out.push({d:x.due, t:x.title, s:(STLABEL[x.status]||x.status), st:(x.prio==="P0"?"r":x.prio==="P1"?"y":"g"),
+      owner:x.owner||"—", kind:"Aufgabe", prio:x.prio}); } });
+  return out.sort((a,b)=>parseD(a.d)-parseD(b.d));
+}
 
 function buildFristenICS(){
   const stamp=icsStamp();
   const lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Fraesdienst E. Feind//InfraTech 2027 Cockpit//DE",
     "CALSCALE:GREGORIAN","METHOD:PUBLISH","X-WR-CALNAME:InfraTech 2027 – Fristen","X-WR-TIMEZONE:Europe/Amsterdam"];
-  fristenSorted().forEach((d,i)=>{
+  allDeadlines().forEach((d,i)=>{
+    const desc=(d.kind==="Aufgabe"?("Aufgabe · "+(d.owner||"—")+" · "+d.prio+" · "):"Meilenstein · ")+d.s;
     lines.push("BEGIN:VEVENT","UID:frist-"+icsDate(d.d)+"-"+i+"@feind-infratech2027","DTSTAMP:"+stamp,
       "DTSTART;VALUE=DATE:"+icsDate(d.d),"DTEND;VALUE=DATE:"+icsDateEnd(d.d),
-      "SUMMARY:"+icsEsc("InfraTech 2027 – "+d.t),"DESCRIPTION:"+icsEsc(d.s),"TRANSP:TRANSPARENT","END:VEVENT");
+      "SUMMARY:"+icsEsc("InfraTech 2027 – "+d.t),"DESCRIPTION:"+icsEsc(desc),"TRANSP:TRANSPARENT","END:VEVENT");
   });
   lines.push("END:VCALENDAR");
   return lines.map(icsFold).join("\r\n")+"\r\n";
 }
 function buildFristenCSV(){
-  const q=v=>{ v=(v==null?"":String(v)); return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
-  const head=["Datum","Frist","Rest (Tage)","Status"];
-  const body=fristenSorted().map(d=>{ const dd=daysBetween(parseD(d.d),TODAY);
-    return [fmtD(d.d), d.t, (dd<0?("-"+(-dd)):(""+dd)), d.s].map(q).join(";"); });
-  return "﻿"+[head.map(q).join(";")].concat(body).join("\r\n")+"\r\n";
+  const escDays=reminders.escalateDays||7;
+  const head=["Datum","Frist","Typ","Owner","Eskalation ab","Rest (Tage)","Status"];
+  const body=allDeadlines().map(d=>{ const dd=daysBetween(parseD(d.d),TODAY);
+    return [fmtD(d.d), d.t, d.kind, d.owner, shiftD(d.d,-escDays), (dd<0?("-"+(-dd)):(""+dd)), d.s]; });
+  return csvDoc(head,body);
 }
 function copyText(t){ return (navigator.clipboard&&navigator.clipboard.writeText)? navigator.clipboard.writeText(t):Promise.reject(new Error("no clipboard")); }
 // Datei anbieten. Im Artefakt-Viewer liefert nur die downloads-Capability echte Dateien
@@ -1012,6 +1054,7 @@ const LEADGRADE={a:"heiß",b:"warm",c:"Info"};
 function viewLeadZaehler(){
   const days=fairDays(); const sum=leadsSum(); const target=300;
   const pct=Math.min(100,Math.round(sum.total/target*100)); const today=isoToday();
+  const faPct=sum.a?Math.round((+leadFollow.a||0)/sum.a*100):0;
   const cards=days.map((d,i)=>{ const c=dayCounts(d); const t=c.a+c.b+c.c; const isToday=d===today;
     const rows=["a","b","c"].map(g=>`<div class="lc-row">
         <span class="lc-grade lc-${g}">${g.toUpperCase()} · ${LEADGRADE[g]}</span>
@@ -1031,21 +1074,95 @@ function viewLeadZaehler(){
      <div class="kpi ok"><div class="v num">${sum.a}</div><div class="k">A · heiß</div><div class="sub">≤ 48 h nachfassen</div></div>
      <div class="kpi warn"><div class="v num">${sum.b}</div><div class="k">B · warm</div><div class="sub">≤ 5 Tage</div></div>
      <div class="kpi"><div class="v num">${sum.c}</div><div class="k">C · Info</div><div class="sub">Streukontakt</div></div>
+     <div class="kpi ${faPct>=95?'ok':(sum.a?'crit':'')}"><div class="v num">${sum.a?faPct+'%':'—'}</div><div class="k">Follow-up A</div><div class="sub">Ziel ≥ 95 % (&lt;48 h)</div></div>
    </div>
    <div class="grid2">${cards}</div>
+   <div class="card accentbar" style="margin-top:var(--sp3)"><h3>Follow-up-Status (E3) – nachgefasste Leads</h3>
+     <p class="lead" style="margin-bottom:var(--sp2)">Pflege hier, wie viele der erfassten Leads bereits nachgefasst wurden – nur Zahlen, keine Namen.
+       A-Leads &lt;48 h, B-Leads &lt;5 Arbeitstage. Offen = erfasst − nachgefasst.</p>
+     ${["a","b","c"].map(g=>{ const tot=sum[g]; const done=+leadFollow[g]||0; const open=Math.max(0,tot-done); const pctG=tot?Math.round(done/tot*100):0;
+       return `<div class="lc-row">
+         <span class="lc-grade lc-${g}">${g.toUpperCase()} · ${LEADGRADE[g]}</span>
+         <span class="pill due">erfasst ${tot}</span>
+         <span class="pill ${open&&g==='a'?'p0':(open?'p1':'p2')}">offen ${open}</span>
+         <span class="pill own">${pctG}%</span>
+         <button class="lc-btn" data-fg="${g}" data-dl="-1" aria-label="${g.toUpperCase()} nachgefasst verringern">–</button>
+         <span class="lc-n num">${done}</span>
+         <button class="lc-btn plus" data-fg="${g}" data-dl="1" aria-label="${g.toUpperCase()} nachgefasst erhöhen">+</button>
+       </div>`; }).join("")}
+   </div>
    <div class="toolbar" style="margin-top:var(--sp3)"><button class="btn ghost" id="leadCsvBtn">Zählung als CSV</button>
      <span class="savehint">Zählstände werden geteilt gespeichert (sonst pro Gerät lokal).</span></div>`;
 }
 function wireLeadZaehler(){
-  document.querySelectorAll(".lc-btn").forEach(b=>b.onclick=()=>bumpLead(b.dataset.ld,b.dataset.lg,parseInt(b.dataset.dl,10)));
+  document.querySelectorAll(".lc-btn[data-ld]").forEach(b=>b.onclick=()=>bumpLead(b.dataset.ld,b.dataset.lg,parseInt(b.dataset.dl,10)));
+  document.querySelectorAll(".lc-btn[data-fg]").forEach(b=>b.onclick=()=>bumpFollow(b.dataset.fg,parseInt(b.dataset.dl,10)));
   const cb=document.getElementById("leadCsvBtn"); if(cb) cb.onclick=async()=>{ const r=await offerFile("InfraTech2027-Leads.csv","text/csv",buildLeadsCSV()); flashBtn(cb,"Zählung als CSV",r); };
 }
 function buildLeadsCSV(){
-  const q=v=>{ v=(v==null?"":String(v)); return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
   const head=["Tag","Datum","A (heiß)","B (warm)","C (Info)","Gesamt"];
-  const body=fairDays().map((d,i)=>{ const c=dayCounts(d); return [String(i+1),fmtD(d),c.a,c.b,c.c,c.a+c.b+c.c].map(q).join(";"); });
-  const s=leadsSum(); body.push(["Gesamt","",s.a,s.b,s.c,s.total].map(q).join(";"));
-  return "﻿"+[head.map(q).join(";")].concat(body).join("\r\n")+"\r\n";
+  const body=fairDays().map((d,i)=>{ const c=dayCounts(d); return [String(i+1),fmtD(d),c.a,c.b,c.c,c.a+c.b+c.c]; });
+  const s=leadsSum(); body.push(["Gesamt","",s.a,s.b,s.c,s.total]);
+  body.push([]);
+  body.push(["Follow-up","","A (heiß)","B (warm)","C (Info)","Quote A"]);
+  const fq = s.a? Math.round(leadFollow.a/s.a*100)+" %" : "—";
+  body.push(["nachgefasst","",leadFollow.a||0,leadFollow.b||0,leadFollow.c||0,fq]);
+  return csvDoc(head,body);
+}
+
+/* ---------- Akquise-Planer (E4): 2 Slots/Messetag + Zielkundenliste, nur Firmennamen ---------- */
+function acqSlot(date,idx){ return Object.assign({target:"",note:"",done:false}, acqPlan.slots[date+"#"+idx]); }
+async function setAcqSlot(date,idx,patch,doRender){ const k=date+"#"+idx; acqPlan.slots[k]=Object.assign({target:"",note:"",done:false},acqPlan.slots[k],patch); saveAcq(); if(doRender!==false) render(); }
+async function addTarget(name,segment){ if(!name) return; acqPlan.targets.push({id:"z"+Date.now().toString(36),name,segment:segment||"",done:false}); saveAcq(); render(); }
+async function delTarget(id){ acqPlan.targets=acqPlan.targets.filter(t=>t.id!==id); saveAcq(); render(); }
+async function toggleTarget(id){ const t=acqPlan.targets.find(x=>x.id===id); if(t){ t.done=!t.done; saveAcq(); render(); } }
+function acqStats(){ const days=fairDays(); let slots=0,filled=0,done=0; days.forEach(d=>{ for(let i=0;i<2;i++){ slots++; const s=acqSlot(d,i); if((s.target||"").trim())filled++; if(s.done)done++; } });
+  const tTot=acqPlan.targets.length, tDone=acqPlan.targets.filter(t=>t.done).length; return {slots,filled,done,tTot,tDone}; }
+
+function viewAkquise(){
+  const days=fairDays(); const st=acqStats();
+  const dayCards=days.map((d,di)=>{ const slots=[0,1].map(i=>{ const s=acqSlot(d,i);
+    return `<div class="acq-slot ${s.done?'done':''}">
+      <div class="acq-slot-head">
+        <button class="cb" data-asdone="${d}" data-asi="${i}" data-st="${s.done?'done':'open'}" aria-label="Slot erledigt umschalten">${s.done?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>':''}</button>
+        <b>Slot ${i+1}</b></div>
+      <input class="acq-in" data-as="${d}" data-asi="${i}" data-af="target" value="${esc(s.target)}" placeholder="Zielkunde / Firma (kein Ansprechpartner)">
+      <input class="acq-in" data-as="${d}" data-asi="${i}" data-af="note" value="${esc(s.note)}" placeholder="Ziel / Notiz (z. B. Standbesuch vereinbaren)">
+    </div>`; }).join("");
+    return `<div class="card ${d===isoToday()?'accentbar':''}"><h3>Tag ${di+1} · ${fmtD(d)}${d===isoToday()?' · heute':''}</h3>${slots}</div>`; }).join("");
+
+  const targetRows = acqPlan.targets.length? acqPlan.targets.map(t=>`<div class="member">
+      <button class="cb" data-tgt="${t.id}" data-st="${t.done?'done':'open'}" aria-label="Angesprochen umschalten">${t.done?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>':''}</button>
+      <div class="mn"><b>${esc(t.name)}</b><span>${esc(t.segment||'—')}${t.done?' · angesprochen':''}</span></div>
+      <button class="edit" data-deltgt="${t.id}">Entfernen</button></div>`).join("")
+    : '<p class="lead">Noch keine Zielkunden erfasst. Firmennamen (z. B. „Stadt Rotterdam – Stadsbeheer") eintragen – keine Ansprechpartner/Kontaktdaten.</p>';
+
+  return `<h2 class="sec">Akquise-Planer</h2>
+   <p class="lead">Lektion E4: 2026 fand Ansprache fast nur am Stand statt. Plane <strong>2 aktive Akquise-Slots je Messetag</strong> außerhalb des Standes und führe eine Zielkundenliste.
+     <strong>Datenschutz:</strong> nur Firmen/Institutionen, keine personenbezogenen Kontaktdaten Dritter.</p>
+   <div class="strip">
+     <div class="kpi ${st.filled>=st.slots?'ok':''}"><div class="v num">${st.filled}/${st.slots}</div><div class="k">Slots belegt</div><div class="sub">2 je Messetag</div></div>
+     <div class="kpi ${st.done?'ok':''}"><div class="v num">${st.done}</div><div class="k">Slots erledigt</div><div class="sub">durchgeführt</div></div>
+     <div class="kpi"><div class="v num">${st.tTot}</div><div class="k">Zielkunden</div><div class="sub">auf der Liste</div></div>
+     <div class="kpi ${st.tDone?'ok':''}"><div class="v num">${st.tDone}</div><div class="k">angesprochen</div><div class="sub">Zielkunden</div></div>
+   </div>
+   <div class="grid2">${dayCards}</div>
+   <div class="card accentbar" style="margin-top:var(--sp3)"><h3>Zielkundenliste (${st.tTot})</h3>
+     <div class="att-add">
+       <input id="tg_name" placeholder="Firma / Institution (z. B. Provincie Zuid-Holland)">
+       <input id="tg_seg" placeholder="Segment (Kommune, Straßenbau, Partner …)">
+       <button class="btn" id="tg_add" type="button">Hinzufügen</button>
+     </div>
+     <div style="margin-top:var(--sp2)">${targetRows}</div>
+     <small style="display:block;margin-top:var(--sp2);color:var(--ink-muted)">Nur Firmennamen/Segmente. Personenbezogene Kontaktdaten gehören ins CRM, nicht ins Cockpit.</small></div>`;
+}
+function wireAkquise(){
+  document.querySelectorAll(".acq-in").forEach(inp=>inp.onchange=()=>setAcqSlot(inp.dataset.as,+inp.dataset.asi,{[inp.dataset.af]:inp.value.trim()},false));
+  document.querySelectorAll("[data-asdone]").forEach(b=>b.onclick=()=>{ const s=acqSlot(b.dataset.asdone,+b.dataset.asi); setAcqSlot(b.dataset.asdone,+b.dataset.asi,{done:!s.done}); });
+  document.querySelectorAll("[data-tgt]").forEach(b=>b.onclick=()=>toggleTarget(b.dataset.tgt));
+  document.querySelectorAll("[data-deltgt]").forEach(b=>b.onclick=()=>delTarget(b.dataset.deltgt));
+  const add=document.getElementById("tg_add"); if(add) add.onclick=()=>{ const n=(document.getElementById("tg_name").value||"").trim(); if(!n){document.getElementById("tg_name").focus();return;}
+    addTarget(n,(document.getElementById("tg_seg").value||"").trim()); };
 }
 
 /* ---------- Aktivitätsprotokoll ---------- */
@@ -1071,10 +1188,9 @@ function wireProtokoll(){
   const cb=document.getElementById("logCsvBtn"); if(cb) cb.onclick=async()=>{ const r=await offerFile("InfraTech2027-Protokoll.csv","text/csv",buildActivityCSV()); flashBtn(cb,"Protokoll als CSV",r); };
 }
 function buildActivityCSV(){
-  const q=v=>{ v=(v==null?"":String(v)); return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
   const head=["Zeitpunkt","Wer","Aktion","Detail"];
-  const body=activity.map(e=>[fmtDateTime(e.ts), actorName(e.actorId), e.action, e.detail].map(q).join(";"));
-  return "﻿"+[head.map(q).join(";")].concat(body).join("\r\n")+"\r\n";
+  const body=activity.map(e=>[fmtDateTime(e.ts), actorName(e.actorId), e.action, e.detail]);
+  return csvDoc(head,body);
 }
 
 function viewLessons(){
