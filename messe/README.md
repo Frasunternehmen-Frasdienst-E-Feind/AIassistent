@@ -13,9 +13,14 @@ kritischen Blockern und eine Sektion „Blinde Flecken“.
 
 ## Nutzung
 
+Aktuell verfügbare Dokumenttypen: **`todo`** (ToDo-Brennglas), **`agenda`** (Standdienst- & Ablaufplan).
+
 ```bash
 # alle Sprachen (nl, de, en, pl), Dokument "todo":
 python messe/generate.py
+
+# Ablaufplan (agenda) in allen Sprachen:
+python messe/generate.py --doc agenda
 
 # nur einzelne Sprachen:
 python messe/generate.py --langs de,en

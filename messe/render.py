@@ -172,7 +172,12 @@ def render_document(content, out_path, branding_path):
     # ---- Deckkopf
     c.setFillColor(INK_STRONG); c.rect(0, PAGE_H - 96, PAGE_W, 96, stroke=0, fill=1)
     c.setFillColor(ACCENT); c.rect(0, PAGE_H - 100, PAGE_W, 4, stroke=0, fill=1)
-    c.setFont(F_DISP, 20); c.setFillColor(INK_INV); c.drawString(ML, PAGE_H - 42, S["title"])
+    # Titel automatisch verkleinern, damit er nicht in den Chip laeuft
+    title_maxw = (PAGE_W - MR - 130) - ML - 12
+    title_fs = 20
+    while title_fs > 12 and stringWidth(S["title"], F_DISP, title_fs) > title_maxw:
+        title_fs -= 0.5
+    c.setFont(F_DISP, title_fs); c.setFillColor(INK_INV); c.drawString(ML, PAGE_H - 42, S["title"])
     c.setFont(F_TXT, 10); c.setFillColor(HexColor("#d3dada")); c.drawString(ML, PAGE_H - 58, S["event"])
     c.setFillColor(ACCENT); c.roundRect(PAGE_W - MR - 130, PAGE_H - 52, 130, 18, 3, stroke=0, fill=1)
     c.setFillColor(ON_ACCENT); c.setFont(F_TXTB, 8); c.drawCentredString(PAGE_W - MR - 65, PAGE_H - 46, S["chip"])
