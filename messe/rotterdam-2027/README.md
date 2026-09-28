@@ -3,6 +3,10 @@
 Zentrale, konsolidierte Planung für den Messeauftritt der Fräsdienst-Service E. Feind GmbH
 auf der **InfraTech 2027, Rotterdam Ahoy, 12.–15. Januar 2027**.
 
+> **Hinweis (28.09.2026):** Das InfraTech-Cockpit ist im konsolidierten **Feind Cockpit** aufgegangen
+> (`cockpit/Feind-Cockpit.html`, Welt „InfraTech 2027“). `infratech-2027-liste.html` bleibt als Referenz v3
+> erhalten und wird nicht weiterentwickelt. Schema: `cockpit/docs/SCHEMA.md`.
+
 ## Inhalt dieses Ordners
 
 | Datei | Zweck |
