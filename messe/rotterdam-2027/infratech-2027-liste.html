@@ -233,7 +233,27 @@
   .chip.star{border-color:var(--accent);color:var(--accent-text);font-weight:700}
   .chip.star[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
   .task.arch{opacity:.62}
+  /* Globale Suche */
+  #srchResults{max-height:52vh;overflow:auto;margin-top:var(--sp1)}
+  .srch-item{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--sp2);width:100%;text-align:left;
+    background:var(--surface);border:0;border-bottom:1px solid var(--line);padding:9px 4px;cursor:pointer;font-family:var(--sans)}
+  .srch-item:hover{background:var(--surface-muted)}
+  .srch-g{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--on-accent);
+    background:var(--accent);border-radius:20px;padding:2px 8px;flex:0 0 auto}
+  .srch-t{font-size:13.5px;color:var(--ink-strong);font-weight:600;flex:1 1 60%}
+  .srch-sub{font-size:12px;color:var(--ink-muted);flex:1 1 100%}
+  .agenda-k{font-size:10.5px;font-weight:700;text-transform:uppercase;padding:2px 7px;border-radius:20px;
+    background:var(--info-bg);color:var(--ink-muted);flex:0 0 auto}
+  .agenda-k.ms{background:var(--surface-muted)}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  /* Druck/PDF: nur Tokens (Theme des Nutzers; für Papier ggf. auf Hell umschalten). */
+  @media print{
+    header.top,nav.tabs,.toolbar,.tbtn,.edit,.btn,.filters,.stsel,.cb,.lc-btn{display:none!important}
+    body{background:var(--surface);color:var(--ink);font-size:11pt}
+    main{padding:0}
+    .card,.tblwrap,.kpi{box-shadow:none;border-color:var(--ink-muted);break-inside:avoid}
+    a{color:var(--ink);text-decoration:none}
+  }
 </style>
 
 <header class="top">
@@ -255,6 +275,7 @@
         </svg>
         <span class="pct num" id="ringPct">0%</span>
       </div>
+      <button class="tbtn" id="searchBtn" title="Alles durchsuchen" aria-label="Cockpit durchsuchen">🔍</button>
       <button class="tbtn" id="themeBtn" title="Hell/Dunkel umschalten" aria-label="Theme umschalten">◐</button>
     </div>
   </div>
@@ -583,6 +604,7 @@ function render(){
   const sec=document.createElement("section"); sec.setAttribute("role","tabpanel"); sec.tabIndex=0;
   const V={dashboard:viewDashboard,aufgaben:viewAufgaben,fristen:viewFristen,budget:viewBudget,kpi:viewKpi,leadzaehler:viewLeadZaehler,akquise:viewAkquise,lessons:viewLessons,fakten:viewFakten,team:viewTeam,protokoll:viewProtokoll,wissen:viewWissen};
   sec.innerHTML=(V[activeTab]||viewDashboard)(pr); p.appendChild(sec);
+  if(activeTab==="dashboard") wireDashboard();
   if(activeTab==="aufgaben") wireAufgaben();
   if(activeTab==="team") wireTeam();
   if(activeTab==="fristen") wireFristen();
@@ -592,10 +614,9 @@ function render(){
   if(activeTab==="protokoll") wireProtokoll();
 }
 
-function upcomingReminders(){
-  const maxLead=Math.max.apply(null,reminders.leadDays.concat([0]));
-  return allTasks().filter(x=>x.status!=="done"&&x.due).map(x=>({t:x,dd:daysBetween(parseD(x.due),TODAY)}))
-    .filter(o=>o.dd<=maxLead).sort((a,b)=>a.dd-b.dd);
+function wireDashboard(){
+  const rb=document.getElementById("reportBtn"); if(rb) rb.onclick=async()=>{ const r=await offerFile("InfraTech2027-Statusbericht.md","text/markdown",buildStatusReportMD()); flashBtn(rb,"Statusbericht (Markdown)",r); };
+  const pb=document.getElementById("printBtn"); if(pb) pb.onclick=()=>{ try{ window.print(); }catch(e){} };
 }
 
 function viewDashboard(pr){
@@ -609,13 +630,22 @@ function viewDashboard(pr){
     const pct=Math.round(done/ts.length*100); const st=ov?"r":pct>=80?"g":"y";
     return `<tr><td><span class="catdot" style="background:${c.color}"></span> ${c.label}</td><td class="n num">${done}/${ts.length}</td><td class="n num">${pct}%</td><td><span class="st ${st}">${st==="r"?"Frist überfällig":st==="g"?"auf Kurs":"in Arbeit"}</span></td></tr>`;
   }).join("");
-  const rem=upcomingReminders().slice(0,8).map(o=>{ const over=o.dd<0;
-    return `<li class="task"><div class="tbody"><span class="tt">${esc(o.t.title)}</span><div class="tmeta">
-      <span class="rem-thr ${over?'over':''}">${over? (-o.dd)+' T überfällig':'in '+o.dd+' T'}</span>
-      <span class="pill ${o.t.prio.toLowerCase()}">${o.t.prio}</span><span class="pill own">${esc(o.t.owner)}</span>
-      <span class="pill due">${fmtD(o.t.due)}</span></div></div></li>`; }).join("");
+  // Vereinte 14-Tage-Agenda: Meilensteine + Aufgaben-Termine (aktuell überfällige + kommende).
+  const agenda=allDeadlines().map(d=>({d,dd:daysBetween(parseD(d.d),TODAY)}))
+    .filter(o=>o.dd>=-14&&o.dd<=14).sort((a,b)=>a.dd-b.dd).slice(0,12);
+  const rem=agenda.map(o=>{ const over=o.dd<0;
+    return `<li class="task"><div class="tbody"><span class="tt">${esc(o.d.t)}</span><div class="tmeta">
+      <span class="agenda-k ${o.d.kind==='Meilenstein'?'ms':''}">${o.d.kind}</span>
+      <span class="rem-thr ${over?'over':''}">${over? (-o.dd)+' T überfällig':o.dd===0?'heute':'in '+o.dd+' T'}</span>
+      ${o.d.prio?`<span class="pill ${o.d.prio.toLowerCase()}">${o.d.prio}</span>`:''}
+      <span class="pill own">${esc(o.d.owner)}</span>
+      <span class="pill due">${fmtD(o.d.d)}</span></div></div></li>`; }).join("");
 
   return `
+   <div class="toolbar">
+     <button class="btn ghost" id="reportBtn" title="Statusbericht als Markdown">Statusbericht (Markdown)</button>
+     <button class="btn ghost" id="printBtn" title="Druckansicht / als PDF speichern">Drucken / PDF</button>
+   </div>
    <div class="alert"><span class="ic">⚠️</span><div><h3>Sofort prüfen: Innovationspreis-Frist</h3>
      <p>Faktencheck nennt Einsendeschluss <strong>25.09.2026</strong>, die alte ToDo-Liste 31.10.2026. Umgehend beim Veranstalter verifizieren.</p></div></div>
    <div class="alert warn"><span class="ic">📅</span><div><h3>Messedatum korrigiert</h3>
@@ -633,9 +663,9 @@ function viewDashboard(pr){
    <div class="grid2">
      <div class="card accentbar"><h3>Ampel je Bereich</h3>
        <div class="tblwrap" style="box-shadow:none;border:0"><table><thead><tr><th>Bereich</th><th class="n">Erledigt</th><th class="n">%</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div></div>
-     <div class="card accentbar"><h3>Anstehende Erinnerungen</h3>
-       <p class="lead" style="margin-bottom:var(--sp2)">Fällig innerhalb ${Math.max.apply(null,reminders.leadDays)} Tagen. Push/E-Mail-Erinnerung übernimmt der Manager-Agent (montags).</p>
-       <ul class="tasklist">${rem||'<li>Keine anstehenden Fristen.</li>'}</ul></div>
+     <div class="card accentbar"><h3>Agenda – nächste 14 Tage</h3>
+       <p class="lead" style="margin-bottom:var(--sp2)">Meilensteine <strong>und</strong> Aufgaben-Termine vereint (überfällige + kommende). Push/E-Mail-Erinnerung übernimmt der Manager-Agent (montags).</p>
+       <ul class="tasklist">${rem||'<li>Keine Fristen in den nächsten 14 Tagen.</li>'}</ul></div>
    </div>`;
 }
 
@@ -1227,6 +1257,87 @@ function viewWissen(){
     try{ localStorage.setItem("feind_theme",next); }catch(e){} };
 })();
 
+/* ============================================================ GLOBALE SUCHE ============================================================ */
+// Durchsucht alle Datenquellen (Aufgaben, Fristen, KPIs, Budget, Lessons, Faktencheck,
+// Wissensbasis, Team, Zielkunden) und springt per Klick in den passenden Tab.
+function searchAll(term){
+  const q=(term||"").trim().toLowerCase(); if(!q) return [];
+  const res=[];
+  const seen=new Set();
+  allTasks(false).concat(allTasks(true)).forEach(x=>{ const key="t"+x.id; if(seen.has(key))return;
+    if((x.title+" "+(x.note||"")+" "+x.owner).toLowerCase().includes(q)){ seen.add(key); res.push({g:"Aufgabe",t:x.title,sub:(CATMAP[x.cat]?CATMAP[x.cat].label:x.cat)+" · "+x.owner,tab:"aufgaben",q:term}); } });
+  allDeadlines().forEach(d=>{ if((d.t+" "+d.s).toLowerCase().includes(q)) res.push({g:"Frist",t:d.t,sub:fmtD(d.d)+" · "+d.owner,tab:"fristen"}); });
+  KPIS.forEach(k=>{ if((k.k+" "+k.z+" "+k.m).toLowerCase().includes(q)) res.push({g:"KPI",t:k.k,sub:"Ziel "+k.z,tab:"kpi"}); });
+  BUDGET.forEach(b=>{ if((b.p+" "+b.a).toLowerCase().includes(q)) res.push({g:"Budget",t:b.p,sub:b.a,tab:"budget"}); });
+  LESSONS.forEach(l=>{ if((l[1]+" "+l[3]).toLowerCase().includes(q)) res.push({g:"Lessons",t:l[0]+": "+l[1],sub:l[3],tab:"lessons"}); });
+  FACTS.forEach(f=>{ if((f[0]+" "+f[1]+" "+f[3]).toLowerCase().includes(q)) res.push({g:"Faktencheck",t:f[0],sub:f[1],tab:"fakten"}); });
+  SOURCES.forEach(s=>{ if((s[0]+" "+s[2]).toLowerCase().includes(q)) res.push({g:"Wissensbasis",t:s[0],sub:s[2],tab:"wissen"}); });
+  team.forEach(m=>{ if((m.name+" "+(m.role||"")).toLowerCase().includes(q)) res.push({g:"Team",t:m.name,sub:m.role||"",tab:"team"}); });
+  (acqPlan.targets||[]).forEach(z=>{ if((z.name+" "+(z.segment||"")).toLowerCase().includes(q)) res.push({g:"Zielkunde",t:z.name,sub:z.segment||"",tab:"akquise"}); });
+  return res;
+}
+function renderSearchResults(term){
+  const box=document.getElementById("srchResults"); if(!box) return;
+  const r=searchAll(term);
+  if(!term.trim()){ box.innerHTML='<p class="lead">Suchbegriff eingeben – durchsucht Aufgaben, Fristen, KPIs, Budget, Lessons, Faktencheck, Wissensbasis, Team und Zielkunden.</p>'; return; }
+  if(!r.length){ box.innerHTML='<p class="lead">Keine Treffer für „'+esc(term)+'".</p>'; return; }
+  box.innerHTML='<p class="lead">'+r.length+' Treffer</p>'+r.slice(0,60).map((x,i)=>`<button class="srch-item" data-si="${i}" data-tab="${x.tab}"${x.q?` data-q="${esc(x.q)}"`:''}>
+      <span class="srch-g">${esc(x.g)}</span><span class="srch-t">${esc(x.t)}</span>${x.sub?`<span class="srch-sub">${esc(x.sub)}</span>`:''}</button>`).join("");
+  box.querySelectorAll(".srch-item").forEach(b=>b.onclick=()=>{ activeTab=b.dataset.tab; if(b.dataset.q!=null){ filterQuery=b.dataset.q; filterCat="all"; filterPrio="all"; filterOwner="all"; showArchived=false; }
+    document.getElementById("modalRoot").innerHTML=""; buildTabs(); render(); });
+}
+function openSearch(){
+  const root=document.getElementById("modalRoot");
+  root.innerHTML=`<div class="modal-bg" id="sbg"><div class="modal" role="dialog" aria-modal="true" aria-label="Suche">
+    <h3>Cockpit durchsuchen</h3>
+    <div class="field"><input id="srchInput" type="search" placeholder="Suchen … (z. B. Zoll, Standbau, Innovationspreis)" autocomplete="off"></div>
+    <div id="srchResults"></div>
+    <div class="modal-actions"><button class="btn ghost" id="srchClose">Schließen</button></div>
+  </div></div>`;
+  const close=()=>root.innerHTML="";
+  document.getElementById("sbg").onclick=e=>{ if(e.target.id==="sbg") close(); };
+  document.getElementById("srchClose").onclick=close;
+  const inp=document.getElementById("srchInput");
+  inp.oninput=()=>renderSearchResults(inp.value);
+  renderSearchResults("");
+  setTimeout(()=>inp.focus(),30);
+}
+function wireGlobalSearch(){ const b=document.getElementById("searchBtn"); if(b) b.onclick=openSearch; }
+
+/* ============================================================ STATUSBERICHT (Onepager) ============================================================ */
+function buildStatusReportMD(){
+  const at=allTasks(); const pr=progress();
+  const overdue=at.filter(x=>x.status!=="done"&&x.due&&daysBetween(parseD(x.due),TODAY)<0);
+  const soon=at.filter(x=>x.status!=="done"&&x.due&&(d=>d>=0&&d<=14)(daysBetween(parseD(x.due),TODAY)));
+  const p0open=at.filter(x=>x.prio==="P0"&&x.status!=="done");
+  const blocked=at.filter(x=>x.status==="blocked");
+  const cd=daysBetween(parseD(FAIR_START),TODAY);
+  const next=allDeadlines().filter(d=>{ const dd=daysBetween(parseD(d.d),TODAY); return dd>=-3&&dd<=14; });
+  // Budget
+  let sumF=0,sumI=0,sumFcmp=0,haveI=false;
+  BUDGET.forEach(b=>{ const key=euroKey(b.p); const f=blockForecast(b,key); const ist=blockIst(key); if(f)sumF+=f; if(ist!=null){sumI+=ist; if(f)sumFcmp+=f; haveI=true;} });
+  const bdev=budgetDev(haveI?sumFcmp:null,haveI?sumI:null);
+  const ls=leadsSum(); const faPct=ls.a?Math.round((+leadFollow.a||0)/ls.a*100):0;
+  const out=[];
+  out.push("# InfraTech 2027 – Statusbericht");
+  out.push("Stand "+TODAY.toLocaleDateString("de-DE")+" · Messebeginn "+(cd>=0?("in "+cd+" Tagen"):"läuft")+" (12.–15.01.2027, Rotterdam Ahoy)","");
+  out.push("## Fortschritt");
+  out.push("- Gesamt: **"+pr.pct+" %** ("+pr.done+"/"+pr.total+" Aufgaben)");
+  out.push("- Überfällig: **"+overdue.length+"** · Fällig ≤ 14 Tage: **"+soon.length+"** · P0 offen: **"+p0open.length+"** · Blockiert: **"+blocked.length+"**","");
+  out.push("## Nächste Fristen (bis 14 Tage)");
+  if(next.length) next.forEach(d=>{ const dd=daysBetween(parseD(d.d),TODAY); out.push("- "+fmtD(d.d)+" · "+d.t+" ("+d.owner+", "+(dd<0?(-dd)+" T überfällig":dd===0?"heute":"in "+dd+" T")+")"); });
+  else out.push("- Keine Fristen in den nächsten 14 Tagen.");
+  out.push("");
+  out.push("## Budget");
+  out.push("- Forecast gesamt: "+fmtEuro(sumF)+(haveI?(" · Ist: "+fmtEuro(sumI)+" · Abweichung: "+bdev.txt):" · Ist: noch offen")+" (Ziel ≤ 10 %)","");
+  if(ls.total){ out.push("## Leads");
+    out.push("- Gesamt: "+ls.total+" (A "+ls.a+" · B "+ls.b+" · C "+ls.c+") · Follow-up A: "+faPct+" % (Ziel ≥ 95 %)",""); }
+  if(p0open.length){ out.push("## Kritisch offen (P0)"); p0open.slice(0,10).forEach(x=>out.push("- "+x.title+" ("+x.owner+(x.due?", "+fmtD(x.due):"")+")")); out.push(""); }
+  out.push("_Automatisch aus dem InfraTech 2027 Cockpit erzeugt._");
+  return out.join("\n");
+}
+
+wireGlobalSearch();
 buildTabs();
 initStore();
 </script>
