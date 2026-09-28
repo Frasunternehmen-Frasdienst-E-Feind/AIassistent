@@ -134,11 +134,12 @@ zu höchstens 50 Schreibvorgängen für `ArtifactData batch`. Eingaben: Cockpit-
 
 ## Live-Artefakt
 
-**Noch nicht veröffentlicht – Adresse nach Go-Live hier eintragen.**
-
-- Adresse: _…_
-- Veröffentlicht am: _…_
-- Capabilities geprüft: _…_
+- Adresse: https://claude.ai/artifact/4zX58mseXB9vbspN8xAzJ2 (ersetzt das bisherige InfraTech-2027-Cockpit A4)
+- Veröffentlicht am: 28.09.2026 (Version 13, Laufzeitvertrag 0.2.61)
+- Capabilities geprüft: 28.09.2026 – Lesen als Contributor ok, Schreiben unter `admin/*` als Contributor
+  abgewiesen, Notion-View liefert `results` wie erwartet
+- Migration: 28.09.2026, 3 Schreibvorgänge, 0 Löschungen (`tasks/i1` aus `overrides/i1`,
+  `overrides/i1` markiert, `events/infratech-2027` aus A2)
 
 Der Skill `/cockpit-sync` liest die Zieladresse aus diesem Abschnitt. Ist sie leer, schreibt er nichts.
 
@@ -147,6 +148,7 @@ Der Skill `/cockpit-sync` liest die Zieladresse aus diesem Abschnitt. Ist sie le
 - [x] **Primär-Buttons:** Schrift in `on-accent-strong` `#1f2525` auf Grün (6,9:1). Entschieden 28.09.2026.
 - [x] **Ziel-Artefakt für Go-Live:** InfraTech-Artefakt A4 (4zX58mseXB9vbspN8xAzJ2) wird aktualisiert.
       Entschieden 28.09.2026.
-- [ ] **Führende Quelle Team-Aufgaben:** Google Sheet oder Cockpit. Entscheidung: _…_
+- [x] **Live-Migration:** ausgeführt 28.09.2026 (siehe oben).
+- [ ] **Führende Quelle Team-Aufgaben:** Vorschlag David: Notion. Konzept offen. Entscheidung: _…_
 - [ ] **Innovationspreis-Teilaufgaben i2–i5:** Status klären (übernommen ist nur `overrides/i1`
       „Innovationspreis eingereicht“). Entscheidung: _…_
