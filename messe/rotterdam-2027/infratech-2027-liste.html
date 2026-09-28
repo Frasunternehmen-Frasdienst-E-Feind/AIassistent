@@ -217,6 +217,9 @@
   .acq-slot-head b{font-size:13px;color:var(--ink-strong)}
   .acq-in{width:100%;padding:6px 8px;margin-top:4px;border:1px solid var(--line);border-radius:var(--r-input);background:var(--surface);color:var(--ink);font-size:13px;font-family:var(--sans)}
   .acq-in:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+  .mk-pre{white-space:pre-wrap;font-family:var(--sans);font-size:13px;color:var(--ink);background:var(--surface-muted);
+    border:1px solid var(--line);border-radius:var(--r-input);padding:var(--sp2);margin-top:var(--sp2)}
+  .mk-sub{font-size:13px;color:var(--ink-muted);margin-top:var(--sp1)}
   .pill.att{background:var(--info-bg);color:var(--ink-muted);text-transform:none}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp2)}
   .modal-actions{display:flex;gap:var(--sp2);justify-content:flex-end;margin-top:var(--sp3);flex-wrap:wrap}
@@ -487,6 +490,27 @@ const VENDOR_SEED=[
 ];
 const BENEFITS=["hoch","mittel","niedrig"], VOLUMES=["klein","mittel","gross"], DECISIONS=["mitnehmen","optional","streichen"];
 const VENDOR_STATUS={verifiziert:"verifiziert",pruefen:"prüfen",streichen:"streichen"};
+// Marketing-Vorlagen (Copy & Paste). Platzhalter in [eckigen Klammern] vor dem Posten ersetzen.
+// SEO-Bausteine mit lokalem/fachlichem Fokus (Fräsdienst E. Feind: Kaltfräsen im Straßenbau).
+const SEO_TERMS=["Kaltfräsen","Straßenfräsen","Asphaltfräsen","Fräsdienst Brandenburg","Straßenbau Spreewald","Betonfräsen","Baugrundsanierung"];
+const HASHTAGS="#InfraTech2027 #Kaltfräsen #Straßenbau #Fräsdienst #Tiefbau #RotterdamAhoy #Infrastruktur";
+const LINKEDIN_POSTS=[
+ {phase:"Vorab (Dez.)",title:"Save the Date",text:"Wir sind dabei: InfraTech 2027, Rotterdam Ahoy, 12.–15. Januar 2027.\n\nAls Spezialist für Kaltfräsen im Straßenbau zeigen wir unser Schleif-/Fräsverfahren live am Stand [Halle/Stand]. Von der Asphaltfräsung bis zur Baugrundsanierung – lernen Sie, wie wir Straßenbauprojekte schneller und sauberer machen.\n\nVereinbaren Sie jetzt einen Termin am Stand: [Link/QR]\n\n"+HASHTAGS},
+ {phase:"Countdown (Jan.)",title:"Einladung + Terminvereinbarung",text:"Noch [X] Tage bis zur InfraTech 2027! 🚧\n\nTreffen Sie unser Team vom 12.–15. Januar in Rotterdam Ahoy, Stand [Halle/Stand]. Wir zeigen Kaltfräsen, Straßenfräsen und Baugrundsanierung aus der Praxis – und beraten zu Ihrem konkreten Projekt.\n\n👉 Terminwunsch? Kommentar oder Nachricht genügt.\n\n"+HASHTAGS},
+ {phase:"Live (Messetag)",title:"Live vom Stand",text:"Tag [1] auf der InfraTech 2027! Unser Grinding-Verfahren live zu sehen – kommen Sie an Stand [Halle/Stand] vorbei, Kaffee steht bereit. ☕\n\nHeute besonders spannend für Kommunen und Straßenbauunternehmen: [Thema des Tages].\n\n"+HASHTAGS},
+ {phase:"Nachbericht",title:"Danke + Follow-up",text:"Danke für vier starke Messetage auf der InfraTech 2027! 🙌\n\nEs war großartig, so viele Bauunternehmen, Kommunen und Partner am Stand zu begrüßen. Wir melden uns in den nächsten Tagen persönlich – wer nicht warten möchte: [Kontakt/Link].\n\n"+HASHTAGS},
+];
+const MAILS=[
+ {seg:"A-Lead (heiß, < 48 h)",subject:"Ihr Gespräch mit Fräsdienst E. Feind auf der InfraTech 2027",text:"Guten Tag [Name],\n\nvielen Dank für das Gespräch an unserem Stand auf der InfraTech 2027. Wie besprochen zu [Thema/Projekt]:\n\n• [konkreter nächster Schritt / Angebot]\n• Vorschlag Termin: [Datum/Uhrzeit] – passt Ihnen das?\n\nBei Fragen bin ich direkt erreichbar. Ich freue mich auf die Zusammenarbeit.\n\nBeste Grüße\n[Ihr Name]\nFräsdienst-Service E. Feind GmbH"},
+ {seg:"B-Lead (warm, < 5 Arbeitstage)",subject:"Kaltfräsen für Ihr Projekt – Unterlagen von der InfraTech 2027",text:"Guten Tag [Name],\n\nschön, dass wir uns auf der InfraTech 2027 kennengelernt haben. Anbei die versprochenen Informationen zu unseren Leistungen im Kaltfräsen und in der Baugrundsanierung.\n\nWenn ein konkretes Projekt ansteht, erstellen wir Ihnen gern ein unverbindliches Angebot – melden Sie sich einfach.\n\nBeste Grüße\n[Ihr Name]\nFräsdienst-Service E. Feind GmbH"},
+];
+// Mehrsprachige Giveaway-Sprüche (DE/EN/NL) – kurz, mit Logo/QR-Idee. NL für das Rotterdam-Publikum.
+const GIVEAWAY_SLOGANS=[
+ {item:"Zollstock",de:"Wir messen Straßenbau in Millimetern.",en:"We measure road construction to the millimetre.",nl:"Wij meten wegenbouw tot op de millimeter."},
+ {item:"USB-Bauhelm",de:"Sicher gespeichert – wie auf unseren Baustellen.",en:"Safely stored – just like on our sites.",nl:"Veilig opgeslagen – net als op onze bouwplaatsen."},
+ {item:"Warnweste",de:"Sichtbar besser im Straßenbau.",en:"Visibly better in road construction.",nl:"Zichtbaar beter in de wegenbouw."},
+ {item:"Isolierbecher",de:"Hält Ihren Kaffee heiß – wir halten Termine.",en:"Keeps your coffee hot – we keep deadlines.",nl:"Houdt uw koffie warm – wij houden ons aan afspraken."},
+];
 
 /* ============================================================ ZUSTAND ============================================================ */
 const LS_KEY="feind_infratech2027_v2";
@@ -621,7 +645,7 @@ const TABS=[
  {id:"dashboard",label:"Dashboard"},{id:"aufgaben",label:"Aufgaben",count:true},
  {id:"fristen",label:"Fristen"},{id:"budget",label:"Budget"},{id:"kpi",label:"Ziele & KPIs"},
  {id:"leadzaehler",label:"Lead-Zähler"},{id:"akquise",label:"Akquise-Planer"},
- {id:"packen",label:"Packen & Material"},
+ {id:"packen",label:"Packen & Material"},{id:"marketing",label:"Marketing"},
  {id:"lessons",label:"Lessons Learned"},{id:"fakten",label:"Faktencheck"},
  {id:"team",label:"Team & Zugriff"},{id:"protokoll",label:"Protokoll"},{id:"wissen",label:"Wissensbasis"},
 ];
@@ -649,7 +673,7 @@ function render(){
 
   const p=document.getElementById("panels"); p.innerHTML="";
   const sec=document.createElement("section"); sec.setAttribute("role","tabpanel"); sec.tabIndex=0;
-  const V={dashboard:viewDashboard,aufgaben:viewAufgaben,fristen:viewFristen,budget:viewBudget,kpi:viewKpi,leadzaehler:viewLeadZaehler,akquise:viewAkquise,packen:viewPacken,lessons:viewLessons,fakten:viewFakten,team:viewTeam,protokoll:viewProtokoll,wissen:viewWissen};
+  const V={dashboard:viewDashboard,aufgaben:viewAufgaben,fristen:viewFristen,budget:viewBudget,kpi:viewKpi,leadzaehler:viewLeadZaehler,akquise:viewAkquise,packen:viewPacken,marketing:viewMarketing,lessons:viewLessons,fakten:viewFakten,team:viewTeam,protokoll:viewProtokoll,wissen:viewWissen};
   sec.innerHTML=(V[activeTab]||viewDashboard)(pr); p.appendChild(sec);
   if(activeTab==="dashboard") wireDashboard();
   if(activeTab==="aufgaben") wireAufgaben();
@@ -659,6 +683,7 @@ function render(){
   if(activeTab==="leadzaehler") wireLeadZaehler();
   if(activeTab==="akquise") wireAkquise();
   if(activeTab==="packen") wirePacken();
+  if(activeTab==="marketing") wireMarketing();
   if(activeTab==="fakten") wireFakten();
   if(activeTab==="protokoll") wireProtokoll();
 }
@@ -1332,6 +1357,40 @@ function buildPackingCSV(){
   const head=["Bezeichnung","Menge","Gewicht/Maß","Owner","Gepackt","Rücktransport"];
   const rows=packingList().map(x=>[x.name,x.qty,x.detail,x.owner,x.packed?"ja":"nein",x.ret?"ja":"nein"]);
   return csvDoc(head,rows);
+}
+
+/* ---------- Marketing: Copy-&-Paste-Vorlagen (LinkedIn, Nachfassmail, Giveaway-Sprüche DE/EN/NL) ---------- */
+function viewMarketing(){
+  const posts=LINKEDIN_POSTS.map((p,i)=>`<div class="card accentbar">
+    <div class="lc-head"><span class="agenda-k">${esc(p.phase)}</span><h3 style="flex:1">${esc(p.title)}</h3>
+      <button class="btn ghost" data-cl="${i}">Kopieren</button></div>
+    <div class="mk-pre">${esc(p.text)}</div></div>`).join("");
+  const mails=MAILS.map((m,i)=>`<div class="card accentbar">
+    <div class="lc-head"><h3 style="flex:1">${esc(m.seg)}</h3><button class="btn ghost" data-cm="${i}">Kopieren</button></div>
+    <div class="mk-sub"><strong>Betreff:</strong> ${esc(m.subject)}</div>
+    <div class="mk-pre">${esc(m.text)}</div></div>`).join("");
+  const slog=GIVEAWAY_SLOGANS.map((g,i)=>`<tr>
+    <td><strong>${esc(g.item)}</strong></td>
+    <td>${esc(g.de)}<br><button class="att-x" style="width:auto;padding:0 6px" data-cg="${i}" data-lang="de" aria-label="DE kopieren">DE ⧉</button></td>
+    <td>${esc(g.en)}<br><button class="att-x" style="width:auto;padding:0 6px" data-cg="${i}" data-lang="en" aria-label="EN kopieren">EN ⧉</button></td>
+    <td>${esc(g.nl)}<br><button class="att-x" style="width:auto;padding:0 6px" data-cg="${i}" data-lang="nl" aria-label="NL kopieren">NL ⧉</button></td></tr>`).join("");
+  return `<h2 class="sec">Marketing – Vorlagen</h2>
+   <p class="lead">Sofort nutzbare Bausteine für den Messeauftritt. Platzhalter in [eckigen Klammern] vor dem Posten/Versenden ersetzen. 2026 gab es keine Vorab-/Live-Bewerbung (Lektion mk1) – das schließen diese Vorlagen.</p>
+   <div class="banner"><strong>SEO-Bausteine (lokal/fachlich):</strong> ${SEO_TERMS.map(esc).join(" · ")}. In LinkedIn-Text, Landingpage-Titel und Bild-Alt-Texte einbauen.</div>
+   <h3 style="margin:var(--sp3) 0 var(--sp2)">LinkedIn-Posts (Vorab → Live → Nachbericht)</h3>
+   <div class="grid2">${posts}</div>
+   <h3 style="margin:var(--sp4) 0 var(--sp2)">Nachfassmail (segmentiert, kurz, klare CTA – Lektion E3)</h3>
+   <div class="grid2">${mails}</div>
+   <p class="lead" style="margin-top:var(--sp2)">Datenschutz: personenbezogene Kontaktdaten nur im CRM/Leadformular, nicht im Cockpit. Bei rechtlichen Formulierungen (z. B. Werbeeinwilligung) Rechtsabteilung prüfen.</p>
+   <h3 style="margin:var(--sp4) 0 var(--sp2)">Giveaway-Sprüche DE/EN/NL</h3>
+   <p class="lead" style="margin-bottom:var(--sp2)">Kurz, mit Logo + QR + NL-Landingpage. NL für das Rotterdam-Publikum.</p>
+   <div class="tblwrap"><table><thead><tr><th>Giveaway</th><th>Deutsch</th><th>English</th><th>Nederlands</th></tr></thead><tbody>${slog}</tbody></table></div>`;
+}
+function wireMarketing(){
+  document.querySelectorAll("[data-cl]").forEach(b=>b.onclick=async()=>{ const r=await offerFile("LinkedIn-Post.txt","text/plain",LINKEDIN_POSTS[+b.dataset.cl].text); flashBtn(b,"Kopieren",r); });
+  document.querySelectorAll("[data-cm]").forEach(b=>b.onclick=async()=>{ const m=MAILS[+b.dataset.cm]; const r=await offerFile("Nachfassmail.txt","text/plain","Betreff: "+m.subject+"\n\n"+m.text); flashBtn(b,"Kopieren",r); });
+  document.querySelectorAll("[data-cg]").forEach(b=>b.onclick=async()=>{ const g=GIVEAWAY_SLOGANS[+b.dataset.cg]; const txt=g[b.dataset.lang]||"";
+    try{ await copyText(txt); b.textContent="✓"; setTimeout(()=>{ b.textContent=b.dataset.lang.toUpperCase()+" ⧉"; },1500); }catch(e){ b.textContent="?"; } });
 }
 
 function viewLessons(){
