@@ -74,3 +74,7 @@ löschen, E-Mail senden, Veröffentlichen, Daten überschreiben) und bei
 mehrdeutigen Anweisungen: **immer zuerst nachfragen** und dabei klar sagen,
 welche Option in diesem Fall die beste ist und warum. Erst nach ausdrücklicher
 Bestätigung ausführen.
+
+Auswahlmöglichkeiten (Optionen, Varianten, Rückfragen) immer **zum Anklicken**
+ausgeben (Multiple-Choice-Abfrage), nicht nur als Text – die empfohlene Option
+steht zuerst und ist als „(Empfohlen)“ markiert.
