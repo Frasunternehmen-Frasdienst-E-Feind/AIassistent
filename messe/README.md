@@ -13,7 +13,7 @@ kritischen Blockern und eine Sektion „Blinde Flecken“.
 
 ## Nutzung
 
-Aktuell verfügbare Dokumenttypen: **`todo`** (ToDo-Brennglas), **`agenda`** (Standdienst- & Ablaufplan), **`followup`** (Lead-Nachfass- & Nachbereitungsbogen).
+Aktuell verfügbare Dokumenttypen: **`todo`** (ToDo-Brennglas), **`agenda`** (Standdienst- & Ablaufplan), **`followup`** (Lead-Nachfass- & Nachbereitungsbogen), **`briefing`** (Dienstleister-Briefing Standbau).
 
 ```bash
 # alle Sprachen (nl, de, en, pl), Dokument "todo":

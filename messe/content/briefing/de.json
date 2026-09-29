@@ -1,0 +1,88 @@
+{
+ "code": "DE",
+ "file": "Briefing_Rotterdam_2027_DE.pdf",
+ "title": "Dienstleister-Briefing Standbau Rotterdam 2027",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Stand 5.209 · Di 12.–Fr 15. Januar 2027",
+ "chip": "Briefing",
+ "src": "Ausfüllbares Dienstleister-Briefing · Quelle: Projekt-Hub · Stand 29.09.2026",
+ "intern": "Zur Weitergabe an Dienstleister · Konditionen vertraulich.",
+ "basis": "Basis: Projekt-Hub (Termine, Standbau) + Feind Corporate Design",
+ "howto": "So funktioniert das Briefing",
+ "howto_lines": [
+  "1)  Kästchen abhaken = geliefert/vereinbart.   2)  Status-Dropdown rechts: Offen / Angefragt / Angeboten / Vereinbart / Entfällt.",
+  "3)  Notizfeld je Position – Angebot, Preis, Termin, Ansprechpartner, Link (max. 250 Zeichen).",
+  "Angebote bis 16.10.2026 (lt. Projekt-Hub). Standmaße/Bauhöhe/Bodenlast gegen Ahoy-Portal bestätigen.",
+  "CI-Vorgaben verbindlich (Farben/Logo/Schrift). Ausfüllen & Drucken in jedem PDF-Viewer."
+ ],
+ "legend_label": "Legende:",
+ "legend": [["ok", "vereinbart"], ["warn", "Angebot / zu klären"], ["none", "offen"], ["no", "nicht benötigt"], ["add", "Vorgabe / Pflicht"]],
+ "blocker_title": "Eckdaten (verbindlich)",
+ "blockers": [
+  ["Aussteller", "Fräsdienst-Service E. Feind GmbH"],
+  ["Messe/Ort", "InfraTech 2027 · Rotterdam Ahoy · Stand 5.209"],
+  ["Termine", "Di 12.–Fr 15.01.2027 · Aufbau ab 07.01.2027"],
+  ["Angebotsfrist", "bis 16.10.2026 (lt. Projekt-Hub)"],
+  ["CI-Vorgaben", "Farben/Logo lt. Feind Corporate Design"]
+ ],
+ "blocker_note": "Standgröße, Bauhöhe und Bodenlast final gegen das Ahoy-Ausstellerportal bestätigen. Angebote bis 16.10.2026 (Projekt-Hub).",
+ "status": ["Offen", "Angefragt", "Angeboten", "Vereinbart", "Entfällt"],
+ "status_def": "Offen",
+ "tt_status": "Status: Offen / Angefragt / Angeboten / Vereinbart / Entfällt",
+ "tt_note": "Angebot, Preis, Termin, Ansprechpartner, Link – max. 250 Zeichen",
+ "tt_done": "Geliefert/vereinbart abhaken",
+ "blind_banner": "Hinweise & Nachweise",
+ "blind_sub": "Ergänzende Anforderungen an den Dienstleister. Rechtliches ist markiert.",
+ "dp_title": "Datenschutz & Recht",
+ "dp": [
+  "• Dieses Briefing enthält keine personenbezogenen Daten Dritter; Ansprechpartner nur bei Bedarf im Notizfeld ergänzen.",
+  "• Foto-/Video-/Referenznutzung des Standbaus nur nach vorheriger Freigabe.",
+  "• Bei Vertrag, Haftung, Storno, Versicherung oder USt/Reverse-Charge (NL): bitte Rechtsabteilung prüfen."
+ ],
+ "src_title": "Quellen & Arbeitsflächen",
+ "links": ["Master · Messe Rotterdam 2027 (Notion)", "ToDo-Liste Rotterdam 2027 (Notion)", "Aufgaben-Tracker (ClickUp)", "InfraTech-Handbuch 2027 V1.3 (PDF)"],
+ "link_urls": ["https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db", "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a", "https://app.clickup.com/90122021025/v/l/li/901222034862", "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stand 5.209  ·  Stand 29.09.2026",
+ "page": "Seite",
+ "cont": "Fortsetzung",
+ "brand": "BRIEFING · Rotterdam 2027",
+ "slim": "Briefing Rotterdam 2027",
+ "sections": [
+  ["Projekt & Standrahmen", [
+   ["warn", "Standgröße/Maße Stand 5.209 bestätigen (Ahoy-Ausstellerliste)"],
+   ["warn", "Bauhöhe & Bodenlast lt. Ahoy-Richtlinien klären"],
+   ["none", "Standtyp (Reihe/Eck/Kopf) & offene Seiten angeben"]
+  ]],
+  ["Leistungsumfang Standbau", [
+   ["none", "Bodenbelag inkl. Verlegung"],
+   ["none", "Wände/Blende + Rückwand"],
+   ["add", "Grafik/Branding lt. Feind CI (Grün #84bb20, Anthrazit #424e4e, Logo, Schrift)"],
+   ["none", "Beleuchtung (Spots/LED)"],
+   ["none", "Lager/Kabine abschließbar"],
+   ["none", "Möblierung (Theke, Stehtische, Hocker, Prospekthalter)"]
+  ]],
+  ["Technik & Anschlüsse", [
+   ["warn", "Stromanschluss/Leistung angeben (Exponate Schleiftechnik)"],
+   ["none", "Internet/LAN am Stand"],
+   ["none", "Rigging/Abhängung (falls Traverse/Banner)"],
+   ["warn", "Wasser/Druckluft für Exponate prüfen"]
+  ]],
+  ["Auf-/Abbau & Logistik", [
+   ["none", "Aufbau ab 07.01.2027 – Termin/Slot koordinieren"],
+   ["none", "Anlieferung/Einfahrt Ahoy (Zeitfenster, Zufahrt)"],
+   ["none", "Abbau nach Fr 15.01. – Rückbau & Entsorgung"]
+  ]],
+  ["Angebot & Konditionen", [
+   ["warn", "Detailliertes Leistungsverzeichnis + Einzelpreise"],
+   ["warn", "Optionen/Alternativen ausweisen"],
+   ["add", "Versicherung/Haftung & Storno-Bedingungen angeben – Rechtsabteilung prüfen"],
+   ["add", "USt/Reverse-Charge (NL-Leistung) klären – Steuerberater/Rechtsabteilung"]
+  ]]
+ ],
+ "blind": [
+  ["Hinweise & Nachweise", [
+   ["add", "CI-Manual/Logo-Dateien werden gestellt – Farbtreue #84bb20 sicherstellen"],
+   ["add", "Nachweise: Handelsregister/KvK & Referenzen beifügen"],
+   ["add", "Ansprechpartner & Erreichbarkeit im Notizfeld eintragen"]
+  ]]
+ ]
+}

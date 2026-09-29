@@ -72,6 +72,7 @@ def render_document(content, out_path, branding_path):
     S = content
     L = load_tokens(branding_path)
     ACCENT = HexColor(L["accent"]); ACCENT_TEXT = HexColor(L["accent-text"]); ON_ACCENT = HexColor(L["on-accent"])
+    ON_ACCENT_STRONG = HexColor(L.get("on-accent-strong", L["on-accent"]))  # Text auf Vollgruen (6,9:1)
     SIGNAL = HexColor(L["signal"]); SURFACE = HexColor(L["surface"]); SURFACE_MUT = HexColor(L["surface-muted"])
     INK = HexColor(L["ink"]); INK_STRONG = HexColor(L["ink-strong"]); INK_MUTED = HexColor(L["ink-muted"])
     INK_INV = HexColor(L["ink-inverse"]); LINE = HexColor(L["line"])
@@ -180,7 +181,7 @@ def render_document(content, out_path, branding_path):
     c.setFont(F_DISP, title_fs); c.setFillColor(INK_INV); c.drawString(ML, PAGE_H - 42, S["title"])
     c.setFont(F_TXT, 10); c.setFillColor(HexColor("#d3dada")); c.drawString(ML, PAGE_H - 58, S["event"])
     c.setFillColor(ACCENT); c.roundRect(PAGE_W - MR - 130, PAGE_H - 52, 130, 18, 3, stroke=0, fill=1)
-    c.setFillColor(ON_ACCENT); c.setFont(F_TXTB, 8); c.drawCentredString(PAGE_W - MR - 65, PAGE_H - 46, S["chip"])
+    c.setFillColor(ON_ACCENT_STRONG); c.setFont(F_TXTB, 8); c.drawCentredString(PAGE_W - MR - 65, PAGE_H - 46, S["chip"])
     c.setFont(F_TXT, 8); c.setFillColor(HexColor("#aab4b4")); c.drawString(ML, PAGE_H - 74, S["src"])
     c.setFillColor(HexColor("#ff9a9f")); c.setFont(F_TXTB, 8); c.drawString(ML, PAGE_H - 86, S["intern"])
     c.setFont(F_TXT, 8); c.setFillColor(HexColor("#8f9a9a")); c.drawRightString(PAGE_W - MR, PAGE_H - 86, S["basis"])
@@ -229,7 +230,7 @@ def render_document(content, out_path, branding_path):
     # ---- Blinde Flecken
     new_page(S["blind_banner"])
     c.setFillColor(ACCENT); c.roundRect(ML, st["y"] - 2, CW, 20, 3, stroke=0, fill=1)
-    c.setFillColor(ON_ACCENT); c.setFont(F_DISP, 11); c.drawString(ML + 8, st["y"] + 4, S["blind_banner"])
+    c.setFillColor(ON_ACCENT_STRONG); c.setFont(F_DISP, 11); c.drawString(ML + 8, st["y"] + 4, S["blind_banner"])
     st["y"] -= 26
     c.setFont(F_TXTI, 7.8); c.setFillColor(INK_MUTED); c.drawString(ML, st["y"], S["blind_sub"]); st["y"] -= 16
     for title, items in S["blind"]:

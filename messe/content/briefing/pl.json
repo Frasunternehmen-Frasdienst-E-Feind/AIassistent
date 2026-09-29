@@ -1,0 +1,88 @@
+{
+ "code": "PL",
+ "file": "Briefing_Rotterdam_2027_PL.pdf",
+ "title": "Briefing dla wykonawcy stoiska Rotterdam 2027",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Stoisko 5.209 · wt. 12 – pt. 15 stycznia 2027",
+ "chip": "Briefing",
+ "src": "Formularz briefingu do wypełnienia · Źródło: Hub projektu · stan 29.09.2026",
+ "intern": "Do przekazania wykonawcom · warunki poufne.",
+ "basis": "Podstawa: Hub projektu (terminy, budowa stoiska) + Feind Corporate Design",
+ "howto": "Jak korzystać z briefingu",
+ "howto_lines": [
+  "1)  Zaznacz pole = dostarczone/uzgodnione.   2)  Lista statusów po prawej: Otwarte / Zapytanie / Oferta / Uzgodnione / Niepotrzebne.",
+  "3)  Pole notatki przy pozycji – oferta, cena, termin, osoba kontaktowa, link (maks. 250 znaków).",
+  "Oferty do 16.10.2026 (wg Hubu projektu). Wymiary/wysokość zabudowy/obciążenie podłogi potwierdzić przez portal Ahoy.",
+  "Wytyczne CI wiążące (kolory/logo/czcionka). Wypełnianie i druk w każdej przeglądarce PDF."
+ ],
+ "legend_label": "Legenda:",
+ "legend": [["ok", "uzgodnione"], ["warn", "oferta / do wyjaśnienia"], ["none", "otwarte"], ["no", "niepotrzebne"], ["add", "wymóg / obowiązkowe"]],
+ "blocker_title": "Dane kluczowe (wiążące)",
+ "blockers": [
+  ["Wystawca", "Fräsdienst-Service E. Feind GmbH"],
+  ["Targi/miejsce", "InfraTech 2027 · Rotterdam Ahoy · Stoisko 5.209"],
+  ["Terminy", "wt. 12 – pt. 15.01.2027 · montaż od 07.01.2027"],
+  ["Termin oferty", "do 16.10.2026 (wg Hubu projektu)"],
+  ["Wytyczne CI", "kolory/logo wg Feind Corporate Design"]
+ ],
+ "blocker_note": "Wielkość stoiska, wysokość zabudowy i obciążenie podłogi ostatecznie potwierdzić przez portal wystawcy Ahoy. Oferty do 16.10.2026 (Hub projektu).",
+ "status": ["Otwarte", "Zapytanie", "Oferta", "Uzgodnione", "Niepotrzebne"],
+ "status_def": "Otwarte",
+ "tt_status": "Status: Otwarte / Zapytanie / Oferta / Uzgodnione / Niepotrzebne",
+ "tt_note": "Oferta, cena, termin, osoba kontaktowa, link – maks. 250 znaków",
+ "tt_done": "Zaznacz gdy dostarczone/uzgodnione",
+ "blind_banner": "Wskazówki & dokumenty",
+ "blind_sub": "Dodatkowe wymagania wobec wykonawcy. Kwestie prawne oznaczono.",
+ "dp_title": "Ochrona danych i kwestie prawne",
+ "dp": [
+  "• Briefing nie zawiera danych osobowych osób trzecich; osoby kontaktowe dodawać tylko w razie potrzeby w polu notatki.",
+  "• Wykorzystanie foto/wideo/referencji stoiska tylko po wcześniejszej zgodzie.",
+  "• W sprawach umowy, odpowiedzialności, anulowania, ubezpieczenia lub VAT/odwrotnego obciążenia (NL): proszę o kontrolę działu prawnego."
+ ],
+ "src_title": "Źródła i przestrzenie robocze",
+ "links": ["Master · Targi Rotterdam 2027 (Notion)", "Lista zadań Rotterdam 2027 (Notion)", "Tracker zadań (ClickUp)", "Podręcznik InfraTech 2027 V1.3 (PDF)"],
+ "link_urls": ["https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db", "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a", "https://app.clickup.com/90122021025/v/l/li/901222034862", "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stoisko 5.209  ·  stan 29.09.2026",
+ "page": "Strona",
+ "cont": "c.d.",
+ "brand": "BRIEFING · Rotterdam 2027",
+ "slim": "Briefing Rotterdam 2027",
+ "sections": [
+  ["Projekt & ramy stoiska", [
+   ["warn", "Potwierdzić wielkość/wymiary stoiska 5.209 (lista wystawców Ahoy)"],
+   ["warn", "Wyjaśnić wysokość zabudowy & obciążenie podłogi wg wytycznych Ahoy"],
+   ["none", "Podać typ stoiska (rząd/narożne/czołowe) & otwarte boki"]
+  ]],
+  ["Zakres budowy stoiska", [
+   ["none", "Wykładzina wraz z ułożeniem"],
+   ["none", "Ściany/fryz + ściana tylna"],
+   ["add", "Grafika/branding wg Feind CI (zielony #84bb20, antracyt #424e4e, logo, czcionka)"],
+   ["none", "Oświetlenie (spoty/LED)"],
+   ["none", "Zamykany magazyn/kabina"],
+   ["none", "Umeblowanie (lada, stoliki barowe, hokery, stojaki na ulotki)"]
+  ]],
+  ["Technika & przyłącza", [
+   ["warn", "Podać przyłącze/moc prądu (eksponaty techniki frezowania)"],
+   ["none", "Internet/LAN na stoisku"],
+   ["none", "Rigging/podwieszenie (jeśli kratownica/baner)"],
+   ["warn", "Sprawdzić wodę/sprężone powietrze dla eksponatów"]
+  ]],
+  ["Montaż/demontaż & logistyka", [
+   ["none", "Montaż od 07.01.2027 – uzgodnić termin/slot"],
+   ["none", "Dostawa/wjazd Ahoy (okno czasowe, dojazd)"],
+   ["none", "Demontaż po pt. 15.01. – rozbiórka & utylizacja"]
+  ]],
+  ["Oferta & warunki", [
+   ["warn", "Szczegółowy kosztorys + ceny jednostkowe"],
+   ["warn", "Wskazać opcje/alternatywy"],
+   ["add", "Podać ubezpieczenie/odpowiedzialność & warunki anulowania – kontrola działu prawnego"],
+   ["add", "Wyjaśnić VAT/odwrotne obciążenie (usługa NL) – doradca podatkowy/dział prawny"]
+  ]]
+ ],
+ "blind": [
+  ["Wskazówki & dokumenty", [
+   ["add", "Manual CI/pliki logo zostaną dostarczone – zapewnić wierność koloru #84bb20"],
+   ["add", "Dokumenty: rejestr handlowy/KvK & referencje dołączyć"],
+   ["add", "Wpisać osobę kontaktową & dostępność w polu notatki"]
+  ]]
+ ]
+}
