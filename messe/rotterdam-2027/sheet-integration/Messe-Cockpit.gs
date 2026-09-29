@@ -32,7 +32,7 @@ function messeTasks_() {
   return [
     {a:'2027-Handbuch, Standnummer & Portalzugänge bei Rotterdam Ahoy anfordern/bestätigen', p:'Hoch', off:-102, n:'Voraussetzung für alle weiteren Fristen.'},
     {a:'Buchungsstatus Stand 5.209 (Rotterdam) intern klären – ggf. bereits angemeldet?', p:'Hoch', off:-110, n:'Ausstellerliste infratech.nl führt Feind unter Stand 5.209; Portal zeigt nur Essen 2028 → Login/Konto prüfen. Quelle: Notion-Hub.'},
-    {a:'Projektleitung/Owner InfraTech 2027 benennen (Geschäftsführung)', p:'Hoch', off:-120, n:'Blocker – entscheidet Budget/Team/Hotel. Quelle: ClickUp/Notion.'},
+    {a:'Projektleitung/Owner InfraTech 2027 benennen (Geschäftsführung)', p:'Hoch', off:-120, s:'Erledigt', n:'Erledigt 29.09.2026: Owner = David Halko (Marketing Manager).'},
     {a:'ILB-Förderung „Markt International" prüfen – VOR jeder neuen Anmeldung (Anmeldung = Vorhabenbeginn)', p:'Mittel', off:-115, n:'Details unbestätigt; keine Förderberatung. Quelle: Notion-Hub.'},
     {a:'DSV-VRS Anliefer-Slots buchen (fairs.rotterdam@dsv.com); keine eigenen Stapler', p:'Hoch', off:-8, n:'Offizieller Logistikkontakt Ahoy 2027. Quelle: Handbuch V1.3.'},
     {a:'Dienstleister-Registerauszug/Referenzen (Whimsical Exhibits, LIVE Event Staffing) vor Kontakt einfordern', p:'Mittel', off:-67, n:'Nur belegte Anbieter beauftragen (Global Expo/LOCO verifiziert).'},
@@ -40,7 +40,7 @@ function messeTasks_() {
     {a:'Verbindliche 2027-Fristenmatrix mit Ahoy verifizieren (Standentwurf, Anmeldeschluss, VRS/Slot, Auf-/Abbau)', p:'Hoch', off:-95, n:'2027 offiziell noch nicht publiziert – Fakt prüfen.'},
     {a:'Offizielle 2027-Sales-Kontaktperson bei infratech.nl erfragen', p:'Mittel', off:-102, n:'k.vlot@ahoy.nl laut Faktencheck unbestätigt.'},
     {a:'Budget-Forecast (24.200–26.500 € brutto) + Freigabegrenzen einrichten', p:'Mittel', off:-81, n:'Ziel: max. 10 % Abweichung. Bei Vertragsfragen Rechtsabteilung prüfen.'},
-    {a:'Innovationspreis-Einsendung abschließen', p:'Hoch', off:-109, n:'FRIST PRÜFEN: Faktencheck 25.09.2026 vs. alte ToDo 31.10.2026.'},
+    {a:'Innovationspreis-Einsendung abschließen', p:'Hoch', off:-109, s:'Erledigt', n:'Fristgerecht eingereicht (Frist 25.09.2026) – warten auf Rückmeldung des Veranstalters.'},
     {a:'Flächenentscheidung: 25 m² vs. größer/offener Eckstand', p:'Hoch', off:-88, n:'2026 zu eng für Vorher/Nachher-Demo.'},
     {a:'Standbau-Partner bestätigen (Global Expo Stand B.V./LOCO verifiziert; weitere prüfen)', p:'Mittel', off:-67},
     {a:'Standentwurf (Individualstand) bei Ahoy einreichen', p:'Hoch', off:-58, n:'Offizielle 2027-Frist: 15.11.2026 (Handbuch V1.3, verifiziert).'},
@@ -212,7 +212,7 @@ function messeAufgabenImportieren() {
     put('id','MK-'+('000'+maxNum).slice(-3));
     put('thema',THEMA); put('unterthema',UNTERTHEMA); put('aufgabe',t.a);
     put('prio',t.p||'Mittel'); put('verantwortlich',VERANTWORTLICH); put('vertretung',VERTRETUNG);
-    put('faellig',faellig); put('status','Offen'); put('notiz',t.n||'');
+    put('faellig',faellig); put('status',t.s||'Offen'); put('notiz',t.n||'');
     put('geaendertAm',new Date()); put('geaendertVon','Messe-Cockpit (Import)');
     neu.push(row);
   });
