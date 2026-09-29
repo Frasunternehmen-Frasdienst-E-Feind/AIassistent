@@ -87,7 +87,7 @@ Datum;Wochentag;Kommen;Gehen;Ist;Pause;Soll;Saldo;Status
 2026-09-10;Do;06:58;16:53;9,53;0,38;8,00;1,53;vollständig
 2026-09-14;Mo;06:48;;7,82;0,33;8,00;-0,18;offen
 2026-09-15;Di;;;;;0,00;0,00;keine Buchung
-Summe;;;;17,35;0,71;16,00;1,35;
+Summe;;;;17,35;0,72;16,00;1,35;
 ```
 
 ### Abnahme
