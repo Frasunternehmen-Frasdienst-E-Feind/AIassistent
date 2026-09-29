@@ -1,0 +1,84 @@
+{
+ "code": "EN",
+ "file": "Followup_Rotterdam_2027_EN.pdf",
+ "title": "Lead Follow-up & Wrap-up Sheet Rotterdam 2027",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Booth 5.209 · Tue 12–Fri 15 January 2027",
+ "chip": "Follow-up",
+ "src": "Fillable follow-up sheet · Source: Project Hub + To-Do focus sheet · as of 28 Sep 2026",
+ "intern": "INTERNAL / confidential – contains team names, do not publish.",
+ "basis": "Base: Project Hub (wrap-up) + lead process (EPIC-06)",
+ "howto": "How to use this follow-up sheet",
+ "howto_lines": [
+  "1)  Tick the box = done.   2)  Status dropdown on the right: Open / In progress / Done / Waiting / N/A.",
+  "3)  Note field per item – lead/company, owner, date, link (max. 250 characters).",
+  "Deadlines are guide values (48 h / 1 week); follow-up round from 29 Jan 2027 per Project Hub.",
+  "Default “Open”. Mind GDPR: import leads to CRM only with consent. Prints in any PDF viewer."
+ ],
+ "legend_label": "Legend:",
+ "legend": [["ok", "done / confirmed"], ["warn", "urgent / mind deadline"], ["none", "open / to do"], ["no", "dropped"], ["add", "note"]],
+ "blocker_title": "Follow-up deadlines (guide values)",
+ "blockers": [
+  ["Fair ends", "Fri 15 Jan 2027 – start follow-up after"],
+  ["Thank-you/first contact", "within 48 h (recommended)"],
+  ["Quotes/details", "within 1 week (recommended)"],
+  ["Follow-up round", "from 29 Jan 2027 (per Project Hub)"],
+  ["ROI/success review", "as lessons learned 2027"]
+ ],
+ "blocker_note": "48 h and 1 week are recommendations/guide values. Binding from Project Hub: follow-up round from 29 Jan 2027. Confirm deadlines before sending.",
+ "status": ["Open", "In progress", "Done", "Waiting", "N/A"],
+ "status_def": "Open",
+ "tt_status": "Status: Open / In progress / Done / Waiting / N/A",
+ "tt_note": "Lead/company, owner, date, link – max. 250 characters",
+ "tt_done": "Tick when done",
+ "blind_banner": "Notes & GDPR",
+ "blind_sub": "Additional wrap-up notes. Legal items are flagged.",
+ "dp_title": "Data protection & legal",
+ "dp": [
+  "• Internal working document with team names – keep confidential, do not share with external parties/exhibitors.",
+  "• Lead capture, photo/video at the stand and CRM import only with consent/GDPR notice.",
+  "• For contractual, tax or employment-law questions: please have legal review."
+ ],
+ "src_title": "Sources & workspaces",
+ "links": ["Master · Rotterdam 2027 fair (Notion)", "Rotterdam 2027 To-Do list (Notion)", "Task tracker (ClickUp)", "InfraTech handbook 2027 V1.3 (PDF)"],
+ "link_urls": ["https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db", "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a", "https://app.clickup.com/90122021025/v/l/li/901222034862", "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Booth 5.209  ·  As of 28 Sep 2026",
+ "page": "Page",
+ "cont": "continued",
+ "brand": "FOLLOW-UP · Rotterdam 2027",
+ "slim": "Rotterdam 2027 Follow-up",
+ "sections": [
+  ["Lead capture & qualification", [
+   ["none", "Consolidate all leads from the digital conversation-note form"],
+   ["none", "Digitise business cards/contacts & de-duplicate"],
+   ["none", "Prioritise leads (A/B/C by potential)"],
+   ["none", "Assign an owner per lead (in the note field)"]
+  ]],
+  ["Immediate follow-up (within 48 h)", [
+   ["warn", "Thank-you/first-contact email to all relevant leads"],
+   ["none", "Deliver individual promises made at the stand (documents, samples)"],
+   ["none", "Schedule sales meetings"]
+  ]],
+  ["Quote & sales (within 1 week)", [
+   ["none", "Send quotes/detailed information"],
+   ["none", "Set reminders/follow-up dates"],
+   ["none", "Call hot leads to follow up"]
+  ]],
+  ["CRM & data hygiene (GDPR)", [
+   ["warn", "Import leads to CRM GDPR-compliant (consent checked) – legal to review"],
+   ["none", "Document source/consent & retention period"],
+   ["none", "Ensure opt-out/unsubscribe"]
+  ]],
+  ["Review & lessons learned", [
+   ["none", "Analyse lead volume & quality (KPIs)"],
+   ["none", "Determine cost vs. return / ROI"],
+   ["none", "Document lessons learned 2027 (for the next fair)"]
+  ]]
+ ],
+ "blind": [
+  ["Notes & GDPR", [
+   ["add", "Use photo/video content only with consent (GDPR) – legal to review"],
+   ["add", "Keep follow-up texts ready in all languages (NL/DE/EN/PL)"],
+   ["add", "Collect stand-team feedback (short debrief)"]
+  ]]
+ ]
+}
