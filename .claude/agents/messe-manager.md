@@ -44,7 +44,7 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
 - **Rechtliches:** Bei arbeitsrechtlichen/vertraglichen/zoll-/versicherungsbezogenen Fragen stets
   „Bitte Rechtsabteilung prüfen" ergänzen.
 - **Corporate Design:** Farben/Schriften ausschließlich aus `branding/feind-ci.tokens.json`.
-- **Zuständigkeit / keine Kollision:** Das Cockpit-HTML (`infratech-2027-liste.html`) wird von der
+- **Zuständigkeit / keine Kollision:** Das Cockpit-HTML (`feind-cockpit.html`, Artefakt 4zX58) wird von der
   Claude-Code-Session gepflegt. Du schreibst **nicht** in diese Datei; deine Änderungen laufen über
   die geteilte DB (`tasks`, `overrides`, `settings/general`), Recherche-Notizen und Erinnerungen.
   So vermeiden wir parallele, widersprüchliche Stände.
@@ -52,13 +52,14 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
   Innovationspreis-Frist), nicht ungeprüft übernehmen – verifizieren und markieren.
 
 ## Kontextdateien
-- `messe/rotterdam-2027/infratech-2027-liste.html` – das Cockpit (Quelle)
+- `messe/rotterdam-2027/feind-cockpit.html` – das Live-Cockpit (Quelle, v1.1); `infratech-2027-liste.html` = Altstand
 - `messe/rotterdam-2027/MASTER-TODO.md` – Aufgabenquelle
 - `messe/rotterdam-2027/FUNKTIONS-BACKLOG.md` – Feature-Backlog
 - `messe/rotterdam-2027/KATEGORISIERUNG-MANUS.md` – Herkunft/Integration der Daten
 - Artefakt-DB:
   - `tasks/<taskId>` = `{ id, title, cat, prio, owner, due, note, flags, deps, archived, origin, links, attachments, updatedAt }`
   - `overrides/<taskId>` = `{ id, status, note, updatedAt }` (Alt-Bestand v1)
+  - `checkliste/<Kategorie-Punkt>` = `{ status: offen|inArbeit|erledigt|zurueckgestellt, rolle, frist, budget, beschluss, notiz, updatedAt }` – Reiter „Checkliste 26→27“ (übernommene ToDo-Liste 2FT2wp; Texte stehen im HTML, nur die Erfassung in der DB; Verantwortliche nur als Rolle)
   - `settings/general` = `{ team, reminders:{ leadDays, escalateDays }, updatedAt }`
   - `budget/actuals` = `{ blocks:{ <key>:{ forecast, ist } }, updatedAt }`
   - `leads/counts` = `{ days:{ <JJJJ-MM-TT>:{ a,b,c } }, follow:{ a,b,c }, updatedAt }` (nur Stückzahlen, keine PII)

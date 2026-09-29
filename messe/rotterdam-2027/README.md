@@ -7,7 +7,8 @@ auf der **InfraTech 2027, Rotterdam Ahoy, 12.–15. Januar 2027**.
 
 | Datei | Zweck |
 |---|---|
-| `infratech-2027-liste.html` | **Interaktives Cockpit** (Artefakt-Quelle). Aufgaben, Fristen, Budget, KPIs, Lessons Learned, Faktencheck, Wissensbasis. Kategorisiert, filterbar, mit Fortschritt und Terminwarnungen. |
+| `feind-cockpit.html` | **Aktuelle Quelle des Live-Cockpits** („Feind Cockpit“ v1.1: Marketing · InfraTech 2027 · Admin) inkl. Reiter **„Checkliste 26→27“** (übernommene ToDo-Liste, 64 Punkte). |
+| `infratech-2027-liste.html` | Vorgängerstand des Cockpits (v2, Altstand – nicht mehr live). Aufgaben, Fristen, Budget, KPIs, Lessons Learned, Faktencheck, Wissensbasis. Kategorisiert, filterbar, mit Fortschritt und Terminwarnungen. |
 | `MASTER-TODO.md` | Vollständige, kategorisierte Aufgabenliste als versionierbarer Text (Grundlage des Cockpits). |
 | `KATEGORISIERUNG-MANUS.md` | Kategorisierung der MANUS-Export-Inhalte + Plan, wie sie die ToDo-Liste ergänzen. |
 | `FUNKTIONS-BACKLOG.md` | Backlog neuer Funktionen/Installationen für die Weiterentwicklung des Cockpits. |
@@ -21,7 +22,7 @@ Einstieg/Überblick über das Gesamtsystem: **`SYSTEM-UEBERSICHT.md`**.
 ## Live-Cockpit
 
 - Artefakt: https://claude.ai/artifact/4zX58mseXB9vbspN8xAzJ2 (privat – nur für Berechtigte)
-- Datenhaltung: geteilte Artefakt-Datenbank (`db`), Sammlung `overrides/<taskId>` = `{ status, note }`.
+- Datenhaltung: geteilte Artefakt-Datenbank (`db`): `tasks/<id>` (Aufgaben), `checkliste/<Kategorie-Punkt>` = `{ status, rolle, frist, budget, beschluss, notiz }` (Checkliste 26→27), Alt-Bestand `overrides/<taskId>`.
   Fällt die Datenbank aus, speichert die Seite pro Gerät lokal (localStorage).
 - Der eingebettete Aufgabenstand im HTML ist Erstbefüllung und Notfall-Anzeige.
 
@@ -32,7 +33,8 @@ Farben, Schriften, Radien und Abstände stammen aus `../../branding/feind-ci.tok
 
 ## Wichtige, offene Punkte (Stand der Erstellung)
 
-1. **Innovationspreis-Frist:** Faktencheck nennt **25.09.2026**, alte ToDo nannte 31.10.2026 → beim Veranstalter verifizieren.
+1. **Innovationspreis:** fristgerecht eingereicht (Frist 25.09.2026) – Rückmeldung des Veranstalters abwarten.
+   **Owner/Projektleitung 2027:** David Halko (Marketing Manager).
 2. **Messedatum:** offiziell **12.–15.01.2027** (nicht 12.–14.) → Auf-/Abbauplan auf vier Messetage anpassen.
 3. **Verbindliche 2027-Fristen** (Anmeldung, Standentwurf, VRS/Slot) bei infratech.nl / Ahoy anfordern.
 4. **Datenschutz:** Personenbezogene Kontaktdaten Dritter (Leadliste 2026) werden **nicht** in Cockpit
