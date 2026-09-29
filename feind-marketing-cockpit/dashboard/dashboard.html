@@ -210,6 +210,17 @@ details.chk summary{cursor:pointer;font-size:14px;color:var(--ink-strong);paddin
 .chk-group label{display:flex;gap:var(--s2);align-items:flex-start;font-size:14px;padding:3px 0;cursor:pointer}
 .chk-group input{margin-top:3px;width:16px;height:16px;accent-color:var(--accent);flex:none}
 .chk-group input:disabled + span{color:var(--ink)}
+/* KPI-Leiste */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s2)}
+@media (max-width:900px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);padding:12px var(--s3);display:flex;flex-direction:column;gap:2px;text-align:left;cursor:pointer;font:inherit;color:inherit;min-width:0}
+.kpi:hover{border-color:var(--ink-muted);border-top-color:var(--accent)}
+.kpi .kv{font-family:var(--font-display);font-size:28px;line-height:1.15;color:var(--ink-strong);font-variant-numeric:tabular-nums}
+.kpi .ks{font-size:12.5px;color:var(--ink-muted);overflow-wrap:anywhere}
+.kpi.alert{border-top-color:var(--signal)}
+.ev-overall{display:grid;grid-template-columns:1fr 4.5ch;gap:var(--s2);align-items:center;font-size:12.5px}
+.ev-next{font-size:13.5px;color:var(--ink)}
+.ev-next b{color:var(--ink-strong)}
 .post{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s3);align-items:center;font-size:14px;border-top:1px solid var(--line);padding-top:var(--s2)}
 
 /* SEO */
@@ -286,6 +297,7 @@ table.data td.r,table.data th.r{text-align:right;font-variant-numeric:tabular-nu
 <div class="wrap">
   <div id="banner-slot"></div>
   <main>
+    <section class="kpis" id="kpis" aria-label="Kennzahlen"></section>
     <section class="copilot" aria-labelledby="copilot-h" id="copilot"></section>
     <section aria-label="Module">
       <div class="tabs" role="tablist" aria-label="Module" id="tabs"></div>
@@ -979,7 +991,19 @@ function rLeads(items) {
     const k = str(l.landkreis) || 'ohne Angabe'; byLk[k] = (byLk[k] || 0) + 1;
   }
   const lkTop = Object.fromEntries(Object.entries(byLk).sort((a, b) => b[1] - a[1]).slice(0, 10));
+  const recent = items.slice().sort((a, b) => (parseTs(b.createdAt) || 0) - (parseTs(a.createdAt) || 0)).slice(0, 5);
+  const stageLbl = Object.fromEntries(LEAD_STAGES);
+  const recentTbl = h('div', { class: 'tbl-wrap' }, h('table', { class: 'data' },
+    h('caption', { class: 'sr' }, 'Aktuelle Leads'),
+    h('thead', null, h('tr', null, ['Eingang', 'Organisation', 'Leistung', 'Kanal', 'Status'].map(x => h('th', { scope: 'col' }, x)))),
+    h('tbody', null, recent.map(l => h('tr', null,
+      h('td', { class: 'num' }, fmtDs(parseTs(l.createdAt))),
+      h('td', null, h('b', null, str(l.organisation) || '–')),
+      h('td', null, str(l.service) || '–'),
+      h('td', null, LEAD_CHANNELS[l.channel] || str(l.channel) || '–'),
+      h('td', null, stageLbl[l.stage] || str(l.stage) || '–'))))));
   return [tools,
+    h('div', { class: 'section' }, h('h3', null, 'Aktuelle Leads'), recentTbl),
     h('div', { class: 'section' }, h('h3', null, 'Pipeline: Neu → Qualifiziert → Angebot → Verhandlung → Gewonnen / Verloren'), kanban),
     h('div', { class: 'section' }, h('div', { class: 'grid3' },
       h('div', null, h('h3', { style: 'margin-bottom:8px' }, 'Leads nach Kanal'), barList(byCh, 'Leads nach Kanal')),
@@ -1069,6 +1093,10 @@ function eventCard(e, past) {
           h('h3', { style: 'font-size:17px;margin-top:2px' }, str(e.title) || '(ohne Titel)'),
           h('div', { class: 'muted small' }, [EVENT_TYPES[e.type] || str(e.type), str(e.location)].filter(Boolean).join(' · '))),
         days != null ? h('span', { class: 'chip soft' }, days > 0 ? 'in ' + tageText(days) : days === 0 ? 'heute' : 'vor ' + tageText(-days)) : null),
+      cl.length ? (() => { const pct = Math.round(done / cl.length * 100);
+        return h('div', { class: 'ev-overall' }, h('div', { class: 'ptrack', role: 'progressbar', 'aria-label': 'Gesamtfortschritt', 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': pct }, h('span', { class: 'pfill', style: `width:${pct}%` })), h('span', { class: 'num' }, pct + ' %')); })() : null,
+      (() => { const nx = str(e.nextStep) || str((cl.find(c => !c.done) || {}).item);
+        return nx ? h('div', { class: 'ev-next' }, h('b', null, 'Nächster Schritt: '), nx) : null; })(),
       cl.length ? progress : h('p', { class: 'muted small' }, 'Keine Checkliste hinterlegt.'),
       cl.length ? det : null,
       h('div', { class: 'post' }, h('span', { class: 'label' }, 'Nachbereitung'),
@@ -1222,8 +1250,38 @@ function scheduleRender() {
   if (rafPending) return; rafPending = true;
   requestAnimationFrame(() => { rafPending = false; renderAll(); });
 }
+function renderKpis() {
+  const root = $('kpis'); root.replaceChildren();
+  const t = today0(), now = Date.now(), ok = S.dbState === 'ok';
+  const openT = S.data.tenders.filter(x => matchRegion(x) && tenderOpen(x)).filter(x => { const d = parseDay(x.deadline); return d && d >= t; })
+    .sort((a, b) => parseDay(a.deadline) - parseDay(b.deadline));
+  const nextT = openT[0], nextA = nextT ? tenderAmpel(nextT) : null;
+  const leads = S.data.leads.filter(matchRegion);
+  const new30 = leads.filter(l => { const c = parseTs(l.createdAt); return c && now - c.getTime() <= 30 * 864e5; });
+  const qual = leads.filter(l => l.stage === 'qualifiziert').length;
+  const upEv = S.data.events.filter(e => { const end = parseDay(e.endDate) || parseDay(e.date); return end && end >= t; })
+    .sort((a, b) => (parseDay(a.date) || 0) - (parseDay(b.date) || 0));
+  const ev0 = upEv[0], cl0 = ev0 ? arr(ev0.checklist).filter(c => c && typeof c === 'object') : [];
+  const evPct = cl0.length ? Math.round(cl0.filter(c => c.done).length / cl0.length * 100) : null;
+  const inWork = S.data.content.filter(c => matchRegion(c) && ['entwurf', 'review', 'freigegeben'].includes(c.status));
+  const review = inWork.filter(c => c.status === 'review').length;
+  const tiles = [
+    { mod: 'tenders', label: 'Offene Ausschreibungen', v: openT.length, alert: nextA && nextA.level === 'red',
+      sub: nextT ? 'Nächste Frist ' + fmtDs(parseDay(nextT.deadline)) + ' · ' + str(nextT.title) : 'keine offene Frist' },
+    { mod: 'leads', label: 'Neue Leads (30 Tage)', v: new30.length, sub: qual + ' qualifiziert · ' + leads.length + ' gesamt' },
+    { mod: 'events', label: 'Anstehende Events', v: upEv.length,
+      sub: ev0 ? str(ev0.title) + (evPct != null ? ' · ' + evPct + ' % erledigt' : '') : 'kein Event geplant' },
+    { mod: 'content', label: 'Content in Arbeit', v: inWork.length, sub: review + ' im Review' },
+  ];
+  for (const k of tiles) {
+    root.append(h('button', { type: 'button', class: 'kpi' + (k.alert ? ' alert' : ''), onclick: () => selectTab(k.mod, true), 'aria-label': k.label + ': ' + (ok ? k.v : 'keine Daten') + '. ' + k.sub },
+      h('span', { class: 'label' }, k.label),
+      h('span', { class: 'kv' }, ok ? String(k.v) : '–'),
+      h('span', { class: 'ks' }, ok ? k.sub : 'Live-Daten nicht geladen')));
+  }
+}
 function renderAll() {
-  renderHeader(); renderBanner(); renderCopilot();
+  renderHeader(); renderBanner(); renderKpis(); renderCopilot();
   for (const m of MODULES) renderModule(m.key);
 }
 
