@@ -7,7 +7,7 @@ Erstelle mit dem Subagenten `feind-copilot` den Wochenplan für $ARGUMENTS
 (ohne Angabe: laufende Woche, Montag bis Freitag).
 
 1. Grundlage aus `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd` (`ArtifactData`): Fristen in `tenders`, fällige
-   Follow-ups in `leads`, `content.plannedDate`, `events` mit offenen Checklistenpunkten.
+   Follow-ups in `mkt_leads`, `content.plannedDate`, `events` mit offenen Checklistenpunkten.
 2. Falls Google Calendar verbunden ist: feste Termine lesend berücksichtigen.
 3. Saisonkalender des Copiloten beachten; höchstens drei Marketing-Aufgaben pro Tag,
    Fristen zuerst.

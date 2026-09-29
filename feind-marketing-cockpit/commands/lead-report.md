@@ -6,7 +6,7 @@ argument-hint: "[Zeitraum, z. B. 'letzte 7 Tage' oder '2026-09']"
 Erstelle mit dem Skill `lead-tracking` einen Lead-Report für $ARGUMENTS
 (ohne Angabe: letzte 7 Tage, Vergleich mit dem Schnitt der 4 Wochen davor).
 
-Inhalt, ausschließlich aus `leads/*` in `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`:
+Inhalt, ausschließlich aus `mkt_leads/*` in `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`:
 * Neue Leads, qualifizierte Leads, gewonnen/verloren im Zeitraum
 * Verteilung nach `channel`, `orgType`, `region`
 * Pipeline je `stage` (optional `valueBand`, keine Beträge)
@@ -14,4 +14,4 @@ Inhalt, ausschließlich aus `leads/*` in `https://claude.ai/artifact/TfuzbGaWokU
 * Anomalie „Lead-Einbruch“ nach Regel des `feind-copilot`
 
 Organisationen nennen, keine Personen. Jede Kennzahl mit Quelle (`source`, Datenstand
-aus `meta/sync`). Ergebnis als Punkt `module: "leads"` ins Briefing des Tages schreiben.
+aus `meta/sync`). Ergebnis als Punkt `module: "mkt_leads"` ins Briefing des Tages schreiben.

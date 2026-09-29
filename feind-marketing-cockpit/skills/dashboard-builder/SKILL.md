@@ -36,7 +36,7 @@ Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 | `02_Content & Kampagnen/` (Markdown, DOCX) | `content/<id>` | content-pipeline |
 | `03_Events/` | `events/<id>` | event-planning |
 | `05_Referenzen/` (PDF, Bilder, Excel) | `references/<id>` | reference-library |
-| CRM-Export / Connector | `leads/<id>` | lead-tracking |
+| CRM-Export / Connector | `mkt_leads/<id>` | lead-tracking |
 | Vergabeportale | `tenders/<id>` | tender-monitoring |
 | `seo-report` JSON (`output/*.json`) | `seo_keywords`, `seo_traffic`, `seo_gaps` | seo-local |
 | CI-Vorgaben | nur Darstellung | `branding/feind-ci.tokens.json` im Repository |

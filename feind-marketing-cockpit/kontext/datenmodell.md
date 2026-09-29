@@ -10,13 +10,16 @@ Grundregeln
 * **Keine personenbezogenen Daten**: keine Namen, E-Mail-Adressen oder Telefonnummern
   von Ansprechpartnern. Firmen/Behörden als Organisation ja, Personen nein.
 * **Keine Preise/Kalkulationen** (nur optional `valueBand`: "<10k" | "10-50k" | "50-150k" | ">150k").
+  Ausnahme: interne Messeausgaben als Summen je Kostenblock in `budget/actuals` (Skill messe-budget).
+  Umsatzdaten sind nicht Teil des Cockpits.
 * Jeder Datensatz trägt `source` (Datei, Connector oder "manuell: David") – Output-Regel 5.
 * Kundennamen in `references` nur mit `clientApproved: true` anzeigen.
 
 | Pfad | Felder |
 |---|---|
 | `content/<id>` | `title, channel ("linkedin"\|"website"\|"newsletter"\|"referenzbericht"), status ("idee"\|"entwurf"\|"review"\|"freigegeben"\|"veroeffentlicht"), region, projectType, plannedDate, publishedDate?, statusSince, source, note?` |
-| `leads/<id>` | `organisation, orgType ("bauunternehmen"\|"kommune"\|"behoerde"\|"ingenieurbuero"\|"sonstige"), stage ("neu"\|"qualifiziert"\|"angebot"\|"verhandlung"\|"gewonnen"\|"verloren"), channel ("website"\|"linkedin"\|"empfehlung"\|"ausschreibung"\|"messe"\|"telefon"), region, landkreis, service, valueBand?, createdAt, lastContact, nextAction, nextActionDate, source` |
+| `mkt_leads/<id>` | `organisation, orgType ("bauunternehmen"\|"kommune"\|"behoerde"\|"ingenieurbuero"\|"sonstige"), stage ("neu"\|"qualifiziert"\|"angebot"\|"verhandlung"\|"gewonnen"\|"verloren"), channel ("website"\|"linkedin"\|"empfehlung"\|"ausschreibung"\|"messe"\|"telefon"), region, landkreis, service, valueBand?, createdAt, lastContact, nextAction, nextActionDate, source` |
+| `leads/counts` | Nur Stückzahlen des InfraTech-Lead-Zählers: `{ days: { "JJJJ-MM-TT": {a, b, c} }, updatedAt }`. Marketing-Leads gehören nicht unter `leads/`. |
 | `tenders/<id>` | `title, authority, cpv: [string], region, deadline, portal, url, fit ("passt"\|"pruefen"\|"passt_nicht"), fitReason, status ("neu"\|"in_pruefung"\|"angebot"\|"abgegeben"\|"verworfen"), statusNote?, foundAt, source` |
 | `events/<id>` | `title, type ("messe"\|"tag_der_offenen_tuer"\|"baustellenbesichtigung"\|"sonstiges"), date, endDate?, location, checklist: [{area ("sicherheit"\|"ansprechpartner"\|"materialien"\|"verkehrssicherung"\|"logistik"\|"budget"\|"marketing"\|"nachbereitung"), item, done: bool}], nextStep?, leadsCaptured: number, followupStatus ("offen"\|"laeuft"\|"erledigt"), source` |
 | `seo_keywords/<id>` | `keyword, region, position, previousPosition?, url, clicks, impressions, checkedAt, source` |
@@ -24,7 +27,8 @@ Grundregeln
 | `seo_gaps/<id>` | `topic, service, region, reason, priority ("hoch"\|"mittel"\|"niedrig"), source` |
 | `references/<id>` | `title, region, client?, clientApproved: bool, services: [string], year, facts: [string], files: [string], summary, feedback?, source` |
 | `briefings/<JJJJ-MM-TT>` | `date, summary, items: [{module, severity ("info"\|"warnung"\|"kritisch"), text}], weekPlan?: [{day, task, module}], generatedBy ("copilot"\|"dashboard"), createdAt` |
-| `meta/sync` | `{ content: {at, source}, leads: {…}, tenders: {…}, events: {…}, seo: {…}, references: {…} }` |
+| `budget/actuals` | `{ blocks: { <Schlüssel>: { ist?: number, forecast?: number } }, updatedAt }` – Euro brutto, ganze Zahlen; Schlüssel: `messestand-standbau`, `technik-strom-tv-parken-muell`, `logistik-spedition`, `hotel-aufbaupersonal`, `catering-geschirr`, `werbemittel-print`, `reserve` |
+| `meta/sync` | `{ content: {at, source}, leads: {…}, tenders: {…}, events: {…}, seo: {…}, references: {…}, budget: {…} }` (Schlüssel `leads` bezeichnet den Bereich, die Daten liegen in `mkt_leads`) |
 | `settings/general` | `staleDraftDays: 14, followupDays: 5, tenderRedDays: 3, tenderYellowDays: 7, regions: [string]` |
 
 Schwellen (aus `settings/general`, Standardwerte oben)

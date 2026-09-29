@@ -31,7 +31,7 @@ Zeitangaben relativ zum Messebeginn (T).
 - Freigeländestand: Absperrung des Exponats und Besucherwege gekennzeichnet
 
 ## nachbereitung
-- Leads innerhalb von 2 Werktagen im Cockpit erfasst (`leads/*`, `channel: "messe"`), ohne Personendaten
+- Leads innerhalb von 2 Werktagen im Cockpit erfasst (`mkt_leads/*`, `channel: "messe"`), ohne Personendaten
 - Follow-up je Lead mit Vorlage `follow-up-lead.md` als Entwurf vorbereitet
 - `leadsCaptured` und `followupStatus` im Event gepflegt
 - Kosten-Nutzen-Notiz (Leads, Gespräche, Folgetermine) für Messeentscheidung Folgejahr

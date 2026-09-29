@@ -29,7 +29,7 @@ briefings/<heutiges Datum>. Nichts versenden oder veröffentlichen.
 
 * **Name:** Feind Cockpit – Follow-ups
 * **Zeitplan:** täglich 08:00 (Vorschlag: Montag bis Freitag)
-* **Ergebnisablage:** Punkte `module: "leads"` in `briefings/<JJJJ-MM-TT>`; E-Mail-Entwürfe in Gmail (nicht gesendet)
+* **Ergebnisablage:** Punkte `module: "mkt_leads"` in `briefings/<JJJJ-MM-TT>`; E-Mail-Entwürfe in Gmail (nicht gesendet)
 
 Prompt zum Einfügen:
 
@@ -63,7 +63,7 @@ Ergebnis ins heutige Briefing.
 
 * **Name:** Feind Cockpit – Lead-Report
 * **Zeitplan:** sonntags 18:00
-* **Ergebnisablage:** Punkte `module: "leads"` in `briefings/<JJJJ-MM-TT>` (Datum Sonntag), Wochenplan der Folgewoche im Briefing des Montags
+* **Ergebnisablage:** Punkte `module: "mkt_leads"` in `briefings/<JJJJ-MM-TT>` (Datum Sonntag), Wochenplan der Folgewoche im Briefing des Montags
 
 Prompt zum Einfügen:
 

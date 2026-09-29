@@ -22,7 +22,7 @@ Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
   (`- [ ]` / `- [x]`) unter Überschriften, die den Bereichen entsprechen.
 * Unternehmensfakten (Standorte, Maschinen für Vorführungen, Versicherungen) nur aus
   `kontext/unternehmen.md` (wird parallel von einem Kollegen erstellt). Fehlt etwas, frage David.
-* Leads aus Events gehen in `leads` (Skill lead-tracking, `channel: "messe"` bzw. passend).
+* Leads aus Events gehen in `mkt_leads` (Skill lead-tracking, `channel: "messe"` bzw. passend).
 
 ## Datensatz `events/<id>`
 
@@ -98,7 +98,7 @@ Ansprechpartner werden nur als **Rollen** geführt, nie mit Namen.
 
 ## Nachbereitung
 
-1. Leads erfassen: Kontaktwünsche als `leads/<id>` über den Skill lead-tracking anlegen
+1. Leads erfassen: Kontaktwünsche als `mkt_leads/<id>` über den Skill lead-tracking anlegen
    (nur Organisation, keine Namen oder Kontaktdaten in `db`). `leadsCaptured` am Event
    per `update` setzen.
 2. `followupStatus` auf `laeuft` setzen, wenn die ersten Mails raus sind; `erledigt`, wenn

@@ -26,9 +26,9 @@ feind-marketing-cockpit/
 │   ├── content-performance.md      /content-performance
 │   ├── compliance-check.md         /compliance-check
 │   └── cockpit-sync.md             /cockpit-sync
-├── skills/                         7 Fach-Skills
+├── skills/                         8 Fach-Skills
 │   ├── dashboard-builder/  content-pipeline/  lead-tracking/  tender-monitoring/
-│   └── event-planning/  seo-local/  reference-library/
+│   └── event-planning/  seo-local/  reference-library/  messe-budget/
 ├── dashboard/dashboard.html        das Cockpit (Artefakt mit Datenspeicher)
 ├── kontext/
 │   ├── datenmodell.md              Aufbau der Daten im Cockpit
@@ -100,7 +100,7 @@ Ausgangswerte in der ersten Woche erfassen, dann monatlich vergleichen.
 | Kennzahl | Messung | Quelle |
 |---|---|---|
 | Zeit pro LinkedIn-Post | Minuten von Idee bis Freigabe, von David notiert | manuell: David |
-| Qualifizierte Leads pro Monat | Leads mit Stage ab `qualifiziert` | `leads/*` |
+| Qualifizierte Leads pro Monat | Leads mit Stage ab `qualifiziert` | `mkt_leads/*` |
 | Geprüfte Ausschreibungen pro Woche | `tenders/*` mit `foundAt` in der Woche und Fit-Bewertung | `tenders/*` |
-| Reaktionszeit auf Leads | Tage zwischen `createdAt` und erstem Kontakt; Ziel unter `followupDays` | `leads/*` |
+| Reaktionszeit auf Leads | Tage zwischen `createdAt` und erstem Kontakt; Ziel unter `followupDays` | `mkt_leads/*` |
 | Feedback nach 1 Woche | Kurze Rückmeldung von David: Was hilft, was stört, was fehlt | manuell: David |

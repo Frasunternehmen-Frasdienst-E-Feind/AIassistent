@@ -1,7 +1,7 @@
 # Vorlage: Follow-up-E-Mail an einen Lead
 
 Nur als Entwurf erzeugen (z. B. Gmail-Entwurf); Versand ausschließlich durch David.
-Platzhalter in `<…>` werden aus dem Gespräch bzw. `leads/<id>` gefüllt. Namen und
+Platzhalter in `<…>` werden aus dem Gespräch bzw. `mkt_leads/<id>` gefüllt. Namen und
 Kontaktdaten der Person stehen nur im E-Mail-Programm, nie im Cockpit.
 
 ---
@@ -34,4 +34,4 @@ Fräsdienst-Service E. Feind GmbH
 Prüfpunkte vor Freigabe:
 - Keine Preise oder Kalkulationen in der E-Mail (Angebot kommt vom Vertrieb)
 - Keine Zusagen zu Terminen oder Kapazitäten ohne Rücksprache mit Disposition
-- Nach Versand `lastContact`, `nextAction`, `nextActionDate` in `leads/<id>` aktualisieren
+- Nach Versand `lastContact`, `nextAction`, `nextActionDate` in `mkt_leads/<id>` aktualisieren

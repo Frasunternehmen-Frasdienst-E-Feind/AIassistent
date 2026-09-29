@@ -7,7 +7,7 @@ description: Pflegt die Lead-Pipeline des Marketing Cockpits (Kanban neu, qualif
 
 ## Zweck
 
-Du führst die Lead-Pipeline der Fräsdienst-Service E. Feind GmbH in der Sammlung `leads`
+Du führst die Lead-Pipeline der Fräsdienst-Service E. Feind GmbH in der Sammlung `mkt_leads`
 des Artefakt-Speichers. Du importierst, qualifizierst und erinnerst an Follow-ups. Die
 Anzeige übernimmt das Dashboard; du schreibst nur Daten. Verbindliches Datenmodell:
 `kontext/datenmodell.md`.
@@ -25,7 +25,7 @@ Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 
 `neu` → `qualifiziert` → `angebot` → `verhandlung` → `gewonnen` | `verloren`
 
-Pflichtfelder je `leads/<id>`: `organisation, orgType, stage, channel, region, landkreis,
+Pflichtfelder je `mkt_leads/<id>`: `organisation, orgType, stage, channel, region, landkreis,
 service, createdAt, lastContact, nextAction, nextActionDate, source`, optional `valueBand`.
 
 * `orgType`: `bauunternehmen`, `kommune`, `behoerde`, `ingenieurbuero`, `sonstige`
@@ -54,7 +54,7 @@ für das Cockpit optionale Spalten rechts daneben:
 
 Abbildung auf das Datenmodell:
 
-| CSV | `leads/<id>` | Regel |
+| CSV | `mkt_leads/<id>` | Regel |
 |---|---|---|
 | `created_at` | `createdAt` | `03.08.2026` → `2026-08-03` |
 | `source` | `channel` | Website-Formular → `website`, Telefon → `telefon`, Messe → `messe`, Empfehlung → `empfehlung`, LinkedIn → `linkedin`, Ausschreibung → `ausschreibung`; E-Mail und Unbekanntes → nicht raten, David fragen (kein passender Enum-Wert) |
@@ -89,7 +89,7 @@ bekommen `channel` `ausschreibung` bzw. `messe`.
 ## Arbeitsablauf
 
 1. `ArtifactData get` auf `settings/general` → `followupDays` (Standard 5), `regions`.
-2. `ArtifactData list` auf collection `leads` → bestehende IDs und Stages.
+2. `ArtifactData list` auf collection `mkt_leads` → bestehende IDs und Stages.
 3. Quelle einlesen (CSV, Connector oder Chat) und nach obiger Tabelle abbilden.
 4. Datenschutz-Check (siehe unten); abgewiesene Felder protokollieren, nicht speichern.
 5. Qualifizieren (siehe Kriterien); Stage nur ändern, wenn David oder die Quelle es belegt.

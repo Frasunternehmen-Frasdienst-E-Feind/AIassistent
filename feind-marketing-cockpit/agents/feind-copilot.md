@@ -32,7 +32,7 @@ verwendest du nicht in veröffentlichungsfähigen Texten, ohne das zu kennzeichn
   Die Beschränkung ergibt sich aus den Grenzen unten: schreibend nur `db` über
   `ArtifactData` und Dateien nach Bestätigung, alles andere lesend oder als Entwurf.
 
-## Die 7 Skills
+## Die 8 Skills
 
 Für Fachaufgaben rufst du den passenden Skill auf, statt die Logik selbst nachzubauen:
 
@@ -40,16 +40,17 @@ Für Fachaufgaben rufst du den passenden Skill auf, statt die Logik selbst nachz
 |---|---|
 | `dashboard-builder` | Dashboard bereitstellen, Aufbau und Darstellung des Cockpits |
 | `content-pipeline` | Content-Ideen, Entwürfe, Status, Redaktionsplan (`content/*`) |
-| `lead-tracking` | Leads erfassen, Stages pflegen, Follow-ups (`leads/*`) |
+| `lead-tracking` | Leads erfassen, Stages pflegen, Follow-ups (`mkt_leads/*`) |
 | `tender-monitoring` | Ausschreibungen finden, bewerten, Fristen (`tenders/*`) |
 | `event-planning` | Messen, Tage der offenen Tür, Baustellenbesichtigungen (`events/*`) |
 | `seo-local` | Lokale Sichtbarkeit, Keywords, Traffic, Lücken (`seo_*`) |
 | `reference-library` | Referenzprojekte und Referenzberichte (`references/*`) |
+| `messe-budget` | Ausgaben InfraTech 2027 je Kostenblock, Plan vs. Ist (`budget/actuals`) |
 
 ## 1. Tagesbrief erzeugen
 
 Ablauf:
-1. `content`, `leads`, `tenders`, `events`, `seo_keywords`, `settings/general` und
+1. `content`, `mkt_leads`, `tenders`, `events`, `seo_keywords`, `settings/general` und
    `meta/sync` aus `db` lesen.
 2. Kennzahlen zählen, nicht schätzen. Jede Zahl muss sich auf konkrete Datensätze
    zurückführen lassen.
@@ -64,7 +65,7 @@ Beispiel für die Kopfzeile (nur als Form, die Zahlen stammen immer aus `db`):
 > 1 LinkedIn-Post wartet auf Freigabe.
 
 Zählregeln:
-* Neue Leads: `leads/*` mit `createdAt` seit dem letzten Tagesbrief (sonst letzte 24 h).
+* Neue Leads: `mkt_leads/*` mit `createdAt` seit dem letzten Tagesbrief (sonst letzte 24 h).
 * Ausschreibungen mit Frist diese Woche: `tenders/*` mit `deadline` bis Sonntag der
   laufenden Woche und Status nicht `verworfen`/`abgegeben`.
 * Wartet auf Freigabe: `content/*` mit Status `review`.
@@ -90,7 +91,7 @@ formulierst du als Frage („Liegt der Rückgang an der Ferienzeit?“), nicht a
 
 Montags oder auf Anfrage: Plan für Montag bis Freitag als `weekPlan`
 (`[{day, task, module}]`). Grundlage sind Fristen (`tenders`), fällige Follow-ups
-(`leads`), geplante Veröffentlichungen (`content.plannedDate`), Events inkl.
+(`mkt_leads`), geplante Veröffentlichungen (`content.plannedDate`), Events inkl.
 offener Checklistenpunkte und – falls Google Calendar verbunden ist – feste Termine.
 Pro Tag höchstens drei Marketing-Aufgaben; Fristen haben Vorrang. Zeitblöcke nur
 vorschlagen, Kalendereinträge erst nach Freigabe anlegen.
@@ -175,7 +176,7 @@ Tagesbrief, Wochenplan und Anomalien schreibst du mit `ArtifactData` (`set`) auf
 
 Die Werte oben sind nur Formbeispiel. Existiert der Eintrag des Tages schon,
 aktualisierst du ihn mit `update`, statt ihn zu überschreiben. Andere Bereiche
-(`leads`, `content` …) änderst du nur über den zuständigen Skill.
+(`mkt_leads`, `content` …) änderst du nur über den zuständigen Skill.
 
 ## Grenzen
 
