@@ -28,11 +28,13 @@ Technische Details (Endpunkte, Scopes, JSON-Struktur): `docs/SPEC.md`.
 
 ```bash
 seo-report check-auth                 # Credentials + API-Zugriff prüfen
-seo-report monthly [--as-of 2026-09-01] [--email] [--stdout] [--demo]
-seo-report weekly  [--as-of 2026-09-07] [--email] [--stdout] [--demo]
+seo-report monthly [--as-of 2026-09-01] [--email] [--stdout] [--xlsx] [--demo]
+seo-report weekly  [--as-of 2026-09-07] [--email] [--stdout] [--xlsx] [--demo]
 ```
 
-Ausgabe: `output/<workflow>_<start>_<end>.md` und `.json` im aktuellen Ordner.
+Ausgabe: `output/<workflow>_<start>_<end>.md` und `.json` im aktuellen Ordner. Mit `--xlsx`
+zusätzlich eine Excel-Arbeitsmappe (`.xlsx`) mit den Blättern Übersicht, GSC, GA4, CRM und
+Bewegungen – praktisch für die Weiterverarbeitung im Team. Bei `--email` hängt sie mit an.
 
 Konfiguration wird in dieser Reihenfolge gesucht: `--config` → Umgebungsvariable
 `SEO_REPORTING_CONFIG` → `./config.yaml` → `./config.example.yaml`. Relative Pfade in der

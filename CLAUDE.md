@@ -12,6 +12,8 @@ im Markup hart setzen.
 
 * Grün `#84bb20` ist Akzent- und Flächenfarbe. Auf Grün steht Anthrazit
   `#424e4e`, nie Weiß.
+  Schrift auf vollem Grün (Buttons) in `on-accent-strong` `#1f2525` (6,9:1),
+  weil `#424e4e` auf Grün nur 3,74:1 erreicht.
 * Grün nie als Textfarbe auf hellem Grund (2,3:1) – dort `accent-text` `#5e8a14`.
 * Rot `#e3000b` ausschließlich als Signal (Fehler, Fehlbuchung, Minus), nie als
   Schmuckfarbe und auf dunklem Grund nur als Fläche.
@@ -52,3 +54,25 @@ Datenhaltung im Artefakt-Speicher (`db`), nicht im HTML:
 Der im HTML eingebettete Stand vom 14.09.2026 ist nur Notfall-Anzeige und
 Erstbefüllung. Neue Buchungen kommen über „Buchungen importieren“
 (`Datum;Von;Bis;Art`) in die Seite – dafür ist keine Änderung am Code nötig.
+
+## Neue Funktionen: Planungs-Skills vorschlagen
+Wenn David eine neue Funktion planen oder umsetzen lassen will (auch im
+Arbeitszeitkonto), vor dem Coden prüfen und aktiv vorschlagen, ob ein
+Skill aus „Skills For Real Engineers“ (Matt Pocock) vorgeschaltet werden
+sollte:
+
+* `grill-me` – wenn Anforderung, Randfälle oder Fachregeln unklar sind.
+* `to-spec` – wenn die Funktion mehrere Teile hat oder Datenmodell bzw.
+  Artefakt-Speicher (`db`) berührt.
+* `to-tickets` – wenn die Spec in mehrere Arbeitsschritte zerfällt.
+
+Nur vorschlagen, nicht ungefragt ausführen. Ist das Plugin in der Sitzung
+nicht aktiv, darauf hinweisen und die Installation anbieten. Bei
+Kleinständerungen (Tippfehler, Farbwert, Einzeiler) entfällt der Vorschlag.
+
+## Arbeitsweise bei Entscheidungen
+Bei schwer umkehrbaren oder nach außen wirkenden Aktionen (PR mergen, Branch
+löschen, E-Mail senden, Veröffentlichen, Daten überschreiben) und bei
+mehrdeutigen Anweisungen: **immer zuerst nachfragen** und dabei klar sagen,
+welche Option in diesem Fall die beste ist und warum. Erst nach ausdrücklicher
+Bestätigung ausführen.

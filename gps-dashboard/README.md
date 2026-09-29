@@ -33,7 +33,18 @@ aber Strecke, Marker und **alle Auswertungen, Kennzahlen und Listen funktioniere
 - **Ortsnamen:** Enthält der Export eine Adress-/`Position`-Spalte, werden die Adressen
   automatisch als Ort in Popups und Listen angezeigt (benannte Orte haben Vorrang).
 - **Filter:** Zeitraum, Tag, Kategorie, Ereignistyp
-- **Export:** CSV der Fahrtenliste, Druck-/PDF-Ansicht
+- **Auswertung (Tab):** Fahrten-Statistik (Ø/längste Fahrt, Ø-Tempo, Nachtfahrten, Tempo- und
+  Kurzhalt-Zähler), km-Aufteilung privat/beruflich, Monats- und Wochenübersicht,
+  häufigste Ziele/Orte.
+- **Kurzhalte (15–50 s):** sehr kurze Stillstände werden als Auffälligkeit gelistet.
+  **Hinweis:** ob ein Kurzhalt an einer Kreuzung/Ampel liegt, lässt sich offline ohne
+  Straßendaten nicht automatisch bestimmen – die Liste dient der manuellen Prüfung
+  (Zeit + Adresse werden angezeigt). Fenster im Zahnrad-Menü einstellbar.
+- **Export:** CSV der Fahrtenliste · **Fahrtenbuch-CSV** (Datum, Start/Ziel mit Adresse,
+  gefahrene km, km-Stand Anfang/Ende, Zweck, Notiz) · Druck-/PDF-Ansicht.
+  km-Stand wird ab einem optionalen Startwert (Zahnrad → Fahrtenbuch) fortlaufend gefüllt,
+  sonst bleiben die Spalten zum manuellen Nachtragen leer. **GPS liefert keinen echten
+  Tacho-Kilometerstand – für ein steuerlich anerkanntes Fahrtenbuch bitte Steuerberater prüfen.**
 
 ## Erkennungsregeln
 
@@ -66,6 +77,25 @@ nicht vorhanden, Tempo).
   Stopp-Erkennung genutzt.
 - **Fahrtenbuch:** liefert nur eine Arbeitsgrundlage. Für ein steuerlich anerkanntes
   Fahrtenbuch gelten eigene Anforderungen – **bitte Steuerberater prüfen.**
+
+## Corporate Design
+
+Das Dashboard nutzt das Fräsdienst-Feind-CI aus `branding/feind-ci.tokens.json`
+(Grün `#84bb20` als Akzent-/Flächenfarbe mit Anthrazit-Text, `accent-text` `#5e8a14`
+für Text auf hellem Grund, Rot `#e3000b` nur als Signal, Schrift Exo/Helvetica).
+Farben sind ausschließlich als CSS-Tokens definiert. **Hell- und Dunkel-Theme** werden
+mitgeliefert (automatisch nach Systemeinstellung; oben rechts auf **Auto / Hell / Dunkel**
+umschaltbar).
+
+Für ein helleres, freundlicheres Erscheinungsbild weicht das Dashboard bewusst in einem
+Punkt von den strikten CI-Tokens ab: **größere Eckradien** (Karten ~12 px, Buttons ~10 px)
+statt der 0/2/4 px des Tokensets, dazu weichere Schatten, ein warm-heller Hintergrund und
+grüne Akzente (Header-Linie, KPI-Akzentbalken, aktiver Tab). Farbwerte und Kontrastregeln
+der CI bleiben unverändert.
+
+Die Tempo-Einfärbung der Karte ist eine funktionale Datenskala im CI-Rahmen
+(Neutralgrau → Grün-Abstufungen → Signalrot); es werden keine markenfremden Farben
+verwendet.
 
 ## Offline-Build (für Entwickler)
 

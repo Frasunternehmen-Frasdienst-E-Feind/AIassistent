@@ -29,6 +29,9 @@ output/*
 # Build-Artefakte
 build/
 dist/
+node_modules/
+test-results/
+playwright-report/
 
 # Messe-Generator: versionierte Inhalte & Vorlagen wieder einschließen
 # (das globale *.json oben würde sie sonst ausschließen)
