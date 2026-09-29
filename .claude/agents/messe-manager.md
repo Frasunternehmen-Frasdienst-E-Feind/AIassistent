@@ -57,9 +57,14 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
 - `messe/rotterdam-2027/FUNKTIONS-BACKLOG.md` – Feature-Backlog
 - `messe/rotterdam-2027/KATEGORISIERUNG-MANUS.md` – Herkunft/Integration der Daten
 - Artefakt-DB:
-  - `tasks/<taskId>` = `{ id, title, cat, prio, owner, due, note, flags, deps, archived, origin, updatedAt }`
+  - `tasks/<taskId>` = `{ id, title, cat, prio, owner, due, note, flags, deps, archived, origin, links, attachments, updatedAt }`
   - `overrides/<taskId>` = `{ id, status, note, updatedAt }` (Alt-Bestand v1)
-  - `settings/general` = `{ team, reminders, updatedAt }`
+  - `settings/general` = `{ team, reminders:{ leadDays, escalateDays }, updatedAt }`
+  - `budget/actuals` = `{ blocks:{ <key>:{ forecast, ist } }, updatedAt }`
+  - `leads/counts` = `{ days:{ <JJJJ-MM-TT>:{ a,b,c } }, follow:{ a,b,c }, updatedAt }` (nur Stückzahlen, keine PII)
+  - `acquisition/plan` = `{ slots:{ "<JJJJ-MM-TT>#<0|1>":{ target, note, done } }, targets:[{ id, name, segment, done }], updatedAt }` (nur Firmennamen)
+  - `planning/materials` = `{ packing:[{ id, name, qty, detail, owner, packed, ret }], giveaways:[{ id, name, benefit, volume, qty, decision, note }], vendors:[{ id, name, role, status, note }], updatedAt }`
+  - `activity/<id>` = `{ id, ts, actorId, action, detail }` (Aktivitätsprotokoll, opake IDs)
 
 ## Check-In-Rhythmus (Vorschlag)
 - **Wöchentlich (Mo):** Fristen der nächsten 14 Tage prüfen, Fortschritt melden, Blocker eskalieren.
