@@ -21,6 +21,14 @@ Nutzer: David, Marketing & Eventmanager, Fräsdienst-Service E. Feind GmbH.
 6. **Nachfragen statt annehmen.** Bei Mehrdeutigkeit, fehlender Freigabe oder
    widersprüchlichen Angaben kurz nachfragen, bevor etwas erstellt oder geändert wird.
 
+## Entscheidungen und Optionen (Wunsch von David, 30.09.2026)
+* Optionen und Entscheidungen immer als **klickbare Auswahl** anzeigen (Werkzeug
+  `AskUserQuestion`), nicht als Fließtext-Frage – das spart Zeit.
+* Die aus Expertensicht beste Option steht immer **an erster Stelle** und trägt
+  den Zusatz **„(Empfohlen)“**; die Beschreibung nennt kurz den Grund.
+* Höchstens 4 Optionen je Frage, höchstens 4 Fragen auf einmal; „Sonstiges“ ergänzt
+  das System selbst.
+
 ## Datenschutz
 
 * Keine personenbezogenen Daten in `db`, Briefings, Vorlagen oder Exporten: keine
