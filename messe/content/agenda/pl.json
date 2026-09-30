@@ -4,14 +4,14 @@
  "title": "Dyżury i harmonogram Rotterdam 2027",
  "event": "InfraTech 2027 · Rotterdam Ahoy · Stoisko 5.209 · wt. 12 – pt. 15 stycznia 2027",
  "chip": "Harmonogram",
- "src": "Harmonogram do wypełnienia · Źródło: Hub projektu + lista zadań · stan 28.09.2026",
+ "src": "Harmonogram do wypełnienia · Źródło: Hub projektu + lista zadań · stan 30.09.2026",
  "intern": "WEWNĘTRZNE / poufne – zawiera nazwiska zespołu, nie publikować.",
  "basis": "Podstawa: Hub projektu (terminy, montaż) + podręcznik InfraTech 2027",
  "howto": "Jak korzystać z harmonogramu",
  "howto_lines": [
   "1)  Zaznacz pole = zrobione.   2)  Lista statusów po prawej: Otwarte / Potwierdzone / W toku / Zrobione / Nie dotyczy.",
   "3)  Pole notatki przy pozycji – godzina, nazwiska, miejsce, link (maks. 250 znaków).",
-  "Godziny kluczowe z Hubu/podręcznika; dokładne godziny otwarcia/montażu/demontażu potwierdzić przed drukiem.",
+  "Otwarcie wt–czw 10:00–18:00, pt 10:00–16:00 (wg podręcznika – potwierdzić przed drukiem); sloty montażu/demontażu przez portal Ahoy.",
   "Domyślnie „Otwarte”; nazwiska dyżurów wpisać w polu notatki. Druk w każdej przeglądarce PDF."
  ],
  "legend_label": "Legenda:",
@@ -48,19 +48,19 @@
    "Rotterdam Ahoy, Ahoyweg 10 · Stoisko 5.209"
   ],
   [
-   "Montaż",
-   "od śr. 7 stycznia 2027 (wg Hubu projektu)"
+   "Godziny otwarcia",
+   "wt–czw 10:00–18:00 · pt 10:00–16:00 (wg podręcznika – potwierdzić)"
   ],
   [
-   "Godziny otwarcia",
-   "potwierdzić wg podręcznika InfraTech"
+   "Montaż",
+   "od śr. 7 stycznia 2027 – slot wg portalu Ahoy"
   ],
   [
    "Demontaż",
-   "po zamknięciu pt. 15.01 – godziny wg podręcznika"
+   "pt. 15.01 od 16:00 (po zamknięciu) – slot wg portalu Ahoy"
   ]
  ],
- "blocker_note": "Godziny z Hubu/podręcznika. Dokładne godziny otwarcia, montażu i demontażu potwierdzić przed drukiem.",
+ "blocker_note": "Otwarcie wt–czw 10:00–18:00, pt 10:00–16:00 (wg podręcznika – potwierdzić przed drukiem). Sloty czasowe montażu i demontażu rezerwować przez portal wystawcy Ahoy.",
  "status": [
   "Otwarte",
   "Potwierdzone",
@@ -93,7 +93,7 @@
   "https://app.clickup.com/90122021025/v/l/li/901222034862",
   "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"
  ],
- "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stoisko 5.209  ·  Stan 28.09.2026",
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stoisko 5.209  ·  Stan 30.09.2026",
  "page": "Strona",
  "cont": "c.d.",
  "brand": "HARMONOGRAM · Rotterdam 2027",
@@ -128,12 +128,12 @@
    "Przebieg dnia targowego (codziennie wt–pt)",
    [
     [
-     "none",
-     "Zespół na stoisku przed otwarciem – krótki briefing, ekspres włączony"
+     "ok",
+     "Zespół na stoisku od 09:00 (1 h przed otwarciem) – krótki briefing, ekspres włączony"
     ],
     [
-     "none",
-     "Otwarcie: zaczepianie na hali targowej (nie tylko przy stoisku)"
+     "ok",
+     "Otwarcie 10:00: zaczepianie na hali targowej (nie tylko przy stoisku)"
     ],
     [
      "none",
@@ -141,24 +141,36 @@
     ],
     [
      "warn",
-     "Południowa rotacja obsady stoiska – przerwy wg czasu pracy"
+     "Zmiana dyżuru/rotacja ~14:00 – przerwy wg czasu pracy (>6 h: 30 min)"
     ],
     [
      "none",
-     "Koniec dnia: zabezpieczyć leady, uzupełnić materiały i gadżety"
+     "Koniec dnia od zamknięcia (wt–czw 18:00, pt 16:00): zabezpieczyć leady, uzupełnić materiały i gadżety"
     ]
    ]
   ],
   [
-   "Dyżury na stoisku (nazwiska w polu notatki)",
+   "Dyżury na stoisku · model 2 zmian (nazwiska w polu notatki)",
    [
     [
-     "none",
-     "Zmiana poranna (przed otwarciem–południe) – wpisać obsadę"
+     "ok",
+     "Zespół na stoisku od 09:00 – krótki briefing (1 h przed otwarciem 10:00)"
     ],
     [
      "none",
-     "Zmiana późniejsza (południe–zamknięcie) – wpisać obsadę"
+     "Zmiana poranna 09:00–14:00 – wpisać obsadę"
+    ],
+    [
+     "ok",
+     "Przekazanie 13:45–14:00 – omówić leady i bieżące rozmowy"
+    ],
+    [
+     "none",
+     "Zmiana późniejsza 13:45 do zamknięcia +30 min (wt–czw do 18:30, pt do 16:30) – wpisać obsadę"
+    ],
+    [
+     "add",
+     "Piątek krótszy (zamknięcie 16:00): zmianę ewentualnie przyspieszyć na ~13:00"
     ],
     [
      "none",
@@ -184,7 +196,7 @@
    ]
   ],
   [
-   "Demontaż (pt. 15.01 po zamknięciu)",
+   "Demontaż (pt. 15.01 od 16:00 po zamknięciu)",
    [
     [
      "none",

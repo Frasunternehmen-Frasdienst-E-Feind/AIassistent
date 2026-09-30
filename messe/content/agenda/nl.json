@@ -4,14 +4,14 @@
  "title": "Standdienst- & Draaiboek Rotterdam 2027",
  "event": "InfraTech 2027 · Rotterdam Ahoy · Stand 5.209 · di 12 – vr 15 januari 2027",
  "chip": "Draaiboek",
- "src": "Invulbaar draaiboek · Bron: Projecthub + focusdocument taken · per 28-09-2026",
+ "src": "Invulbaar draaiboek · Bron: Projecthub + focusdocument taken · per 30-09-2026",
  "intern": "INTERN / vertrouwelijk – bevat teamnamen, niet publiceren.",
  "basis": "Basis: Projecthub (data, opbouw) + InfraTech-handboek 2027",
  "howto": "Zo werkt het draaiboek",
  "howto_lines": [
   "1)  Vakje aanvinken = klaar.   2)  Statuslijst rechts: Open / Bevestigd / Loopt / Klaar / N.v.t.",
   "3)  Notitieveld per punt – tijd, namen, locatie, link (max. 250 tekens).",
-  "Kerntijden uit Projecthub/handboek; exacte openings-/opbouw-/afbouwtijden vóór het printen bevestigen.",
+  "Opening di–do 10:00–18:00, vr 10:00–16:00 (volgens handboek – vóór printen bevestigen); op-/afbouwslots via Ahoy-portaal.",
   "Standaard „Open”; standdienst-namen in het notitieveld invullen. Print in elke pdf-viewer."
  ],
  "legend_label": "Legenda:",
@@ -48,19 +48,19 @@
    "Rotterdam Ahoy, Ahoyweg 10 · Stand 5.209"
   ],
   [
-   "Opbouw",
-   "vanaf wo 7 jan 2027 (volgens Projecthub)"
+   "Openingstijden",
+   "di–do 10:00–18:00 · vr 10:00–16:00 (volgens handboek – bevestigen)"
   ],
   [
-   "Openingstijden",
-   "bevestigen volgens InfraTech-handboek"
+   "Opbouw",
+   "vanaf wo 7 jan 2027 – slot volgens Ahoy-portaal"
   ],
   [
    "Afbouw",
-   "na sluiting vr 15 jan – tijden volgens handboek"
+   "vr 15 jan vanaf 16:00 (na sluiting) – slot volgens Ahoy-portaal"
   ]
  ],
- "blocker_note": "Tijden uit Projecthub/handboek. Exacte openings-, opbouw- en afbouwtijden vóór het printen definitief bevestigen.",
+ "blocker_note": "Opening di–do 10:00–18:00, vr 10:00–16:00 (volgens handboek – vóór het printen definitief bevestigen). Op- en afbouwtijdslots via het Ahoy-exposantenportaal boeken.",
  "status": [
   "Open",
   "Bevestigd",
@@ -93,7 +93,7 @@
   "https://app.clickup.com/90122021025/v/l/li/901222034862",
   "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"
  ],
- "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stand 5.209  ·  Per 28-09-2026",
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stand 5.209  ·  Per 30-09-2026",
  "page": "Pagina",
  "cont": "vervolg",
  "brand": "DRAAIBOEK · Rotterdam 2027",
@@ -128,12 +128,12 @@
    "Beursdag-verloop (dagelijks di–vr)",
    [
     [
-     "none",
-     "Standteam vóór opening aanwezig – korte briefing, koffie aan"
+     "ok",
+     "Team vanaf 09:00 aanwezig (1 u vóór opening) – korte briefing, koffie aan"
     ],
     [
-     "none",
-     "Opening: aanspreken op de beursvloer starten (niet alleen bij de stand)"
+     "ok",
+     "Opening 10:00: aanspreken op de beursvloer starten (niet alleen bij de stand)"
     ],
     [
      "none",
@@ -141,24 +141,36 @@
     ],
     [
      "warn",
-     "Middagrotatie standbezetting – pauzes volgens arbeidstijd"
+     "Dienstwissel/rotatie ~14:00 – pauzes volgens arbeidstijd (>6 u: 30 min)"
     ],
     [
      "none",
-     "Einde dag: leads veiligstellen, materiaal & weggevers aanvullen"
+     "Einde dag vanaf sluiting (di–do 18:00, vr 16:00): leads veiligstellen, materiaal & weggevers aanvullen"
     ]
    ]
   ],
   [
-   "Standdienst-diensten (namen in het notitieveld)",
+   "Standdienst-diensten · 2-diensten-model (namen in het notitieveld)",
    [
     [
-     "none",
-     "Vroege dienst (vóór opening–middag) – bezetting invullen"
+     "ok",
+     "Team aanwezig vanaf 09:00 – korte briefing (1 u vóór opening 10:00)"
     ],
     [
      "none",
-     "Late dienst (middag–sluiting) – bezetting invullen"
+     "Vroege dienst 09:00–14:00 – bezetting invullen"
+    ],
+    [
+     "ok",
+     "Overdracht 13:45–14:00 – leads & lopende gesprekken briefen"
+    ],
+    [
+     "none",
+     "Late dienst 13:45 tot sluiting +30 min (di–do tot 18:30, vr tot 16:30) – bezetting invullen"
+    ],
+    [
+     "add",
+     "Vrijdag korter (sluiting 16:00): dienstwissel eventueel naar ~13:00 vervroegen"
     ],
     [
      "none",
@@ -184,7 +196,7 @@
    ]
   ],
   [
-   "Afbouw (vr 15 jan na sluiting)",
+   "Afbouw (vr 15 jan vanaf 16:00 na sluiting)",
    [
     [
      "none",
