@@ -209,17 +209,33 @@ img, svg { max-width: 100%; }
 .worldtab[aria-selected="true"] { background: var(--ground); color: var(--ink-strong); border-top-color: var(--accent); }
 .worldtab .cnt { font-family: var(--font-sans); font-size: 11px; margin-left: 6px; padding: 0 6px; border: 1px solid currentColor; }
 
-/* Modul-Reiter */
-.tabbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--ground); padding-top: var(--s3); }
-.tabs { display: flex; flex-wrap: wrap; gap: 4px; align-items: flex-end; border-bottom: 2px solid var(--line); }
-.tab { background: var(--panel); border: 1px solid var(--line); border-bottom: 4px solid transparent; margin-bottom: -2px; padding: 9px 14px; cursor: pointer; color: var(--ink); font-size: 14px; font-weight: 600; line-height: 1.2; display: inline-flex; gap: 6px; align-items: center; white-space: nowrap; }
+/* Modul-Reiter: eine Zeile, horizontal scrollbar (Desktop und Mobil), klebt beim Scrollen oben */
+.tabbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--ground); padding-top: var(--s2); }
+.tabs-wrap { position: relative; display: flex; align-items: flex-end; border-bottom: 2px solid var(--line); }
+.tabs { display: flex; flex-wrap: nowrap; gap: 4px; align-items: flex-end; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: none; flex: 1; min-width: 0; margin-bottom: -2px; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs-wrap.fade-l .tabs { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 32px); mask-image: linear-gradient(to right, transparent 0, #000 32px); }
+.tabs-wrap.fade-r .tabs { -webkit-mask-image: linear-gradient(to left, transparent 0, #000 32px); mask-image: linear-gradient(to left, transparent 0, #000 32px); }
+.tabs-wrap.fade-l.fade-r .tabs { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%); }
+.tabs-nav { flex: none; align-self: stretch; width: 32px; border: 0; background: var(--ground); color: var(--ink-strong); cursor: pointer; font-size: 20px; line-height: 1; display: none; }
+.tabs-nav:hover { color: var(--accent-ink); }
+.tabs-wrap.fade-l .tabs-nav.prev, .tabs-wrap.fade-r .tabs-nav.next { display: block; }
+@media (pointer: coarse) { .tabs-wrap .tabs-nav { display: none !important; } }
+.tab { flex: none; scroll-snap-align: start; background: var(--panel); border: 1px solid var(--line); border-bottom: 4px solid transparent; padding: 9px 14px; min-height: 44px; cursor: pointer; color: var(--ink); font-size: 14px; font-weight: 600; line-height: 1.2; display: inline-flex; gap: 6px; align-items: center; white-space: nowrap; }
 .tab:hover { color: var(--ink-strong); border-color: var(--ink-muted); }
 .tab[aria-selected="true"] { background: var(--accent-soft); border-bottom-color: var(--accent); color: var(--ink-strong); font-weight: 700; }
 .tab .cnt { font-size: 12px; background: var(--raised); border: 1px solid var(--line); padding: 0 6px; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink-strong); }
 @media (max-width: 640px) {
-  .tabs { display: grid; grid-template-columns: 1fr 1fr; }
-  .tab { justify-content: space-between; white-space: normal; }
-  .tabbar { position: static; }
+  .tab { padding: 8px 12px; font-size: 13.5px; }
+  .topnav { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .topnav::-webkit-scrollbar { display: none; }
+  .worldtab { flex: none; padding: 9px 14px 11px; font-size: 14px; }
+  .top-row { padding-block: var(--s2); gap: var(--s2); }
+  .brand-sub, #densityBtn { display: none; }
+  .brand h1 { font-size: 19px; }
+  .countdown b { font-size: 24px; }
+  .ring, .ring svg { width: 38px; height: 38px; }
+  .store-state { font-size: 11px; padding: 2px 7px; }
 }
 
 /* ---------- Banner ---------- */
@@ -927,9 +943,13 @@ label.check input { margin-top: 3px; }
     <button class="worldtab" type="button" role="tab" id="wt-admin" data-world="admin" aria-controls="world-admin" aria-selected="false">Admin</button>
   </nav>
 </header>
-<div class="wrap tabbar">
-  <div id="bannerSlot" class="banner-slot" aria-live="polite"></div>
-  <div class="tabs" id="moduleTabs" role="tablist" aria-label="Module"></div>
+<div class="wrap"><div id="bannerSlot" class="banner-slot" aria-live="polite"></div></div>
+<div class="tabbar">
+  <div class="wrap tabs-wrap" id="tabsWrap">
+    <button class="tabs-nav prev" type="button" id="tabsPrev" tabindex="-1" aria-label="Weitere Module links anzeigen">‹</button>
+    <div class="tabs" id="moduleTabs" role="tablist" aria-label="Module"></div>
+    <button class="tabs-nav next" type="button" id="tabsNext" tabindex="-1" aria-label="Weitere Module rechts anzeigen">›</button>
+  </div>
 </div>
 <main id="main" class="wrap" tabindex="-1">
   <div class="print-head" id="printHead">Feind Cockpit</div>
@@ -2995,6 +3015,7 @@ label.check input { margin-top: 3px; }
     for (const w of WORLDS) {
       $('world-' + w).hidden = w !== world;
       $('wt-' + w).setAttribute('aria-selected', String(w === world));
+      $('wt-' + w).tabIndex = w === world ? 0 : -1;
     }
     const hash = '#' + world + '-' + key;
     if (location.hash !== hash) { try { history.replaceState(null, '', hash); } catch (e) { /* Rahmen erlaubt es evtl. nicht */ } }
@@ -3026,11 +3047,54 @@ label.check input { margin-top: 3px; }
       try { cnt = def.count ? def.count() : null; } catch (e) { cnt = null; }
       bar.append(h('button', {
         class: 'tab', type: 'button', role: 'tab', id: 'tab-' + world + '-' + key,
-        'aria-selected': String(selected), 'aria-controls': 'panel-' + world + '-' + key,
+        'aria-selected': String(selected), 'aria-controls': 'panel-' + world + '-' + key, tabindex: selected ? '0' : '-1',
         onclick: () => navigate(world, key, { focusTab: true })
       }, app.iconFor ? app.ico(app.iconFor('module', key, 'go')) : null, moduleLabel(world, key), cnt != null && cnt !== '' ? h('span', { class: 'cnt', text: String(cnt) }) : null));
     }
     if (focusId && $(focusId) && bar.contains($(focusId))) $(focusId).focus();
+    initTabNav();
+    const cur = $('tab-' + world + '-' + S.tab[world]);
+    if (cur) {
+      const bl = bar.getBoundingClientRect(), cl = cur.getBoundingClientRect();
+      if (cl.left < bl.left + 24 || cl.right > bl.right - 24) bar.scrollLeft += (cl.left + cl.width / 2) - (bl.left + bl.width / 2);
+    }
+    updateTabFade();
+  }
+  // Reiterleiste: Überlauf-Kanten, Pfeilknöpfe (Maus) und Tastatur nach WAI-ARIA (Pfeile, Pos1, Ende).
+  function updateTabFade() {
+    const bar = $('moduleTabs'), wrap = $('tabsWrap');
+    if (!bar || !wrap) return;
+    wrap.classList.toggle('fade-l', bar.scrollLeft > 2);
+    wrap.classList.toggle('fade-r', bar.scrollLeft + bar.clientWidth < bar.scrollWidth - 2);
+  }
+  function rovingKeys(container, selector, activate) {
+    container.addEventListener('keydown', e => {
+      const items = Array.from(container.querySelectorAll(selector));
+      const i = items.indexOf(document.activeElement);
+      if (i < 0) return;
+      let n = null;
+      if (e.key === 'ArrowRight') n = (i + 1) % items.length;
+      else if (e.key === 'ArrowLeft') n = (i - 1 + items.length) % items.length;
+      else if (e.key === 'Home') n = 0;
+      else if (e.key === 'End') n = items.length - 1;
+      if (n == null) return;
+      e.preventDefault();
+      activate(items[n]);
+    });
+  }
+  let tabNavReady = false;
+  function initTabNav() {
+    if (tabNavReady) return;
+    tabNavReady = true;
+    const bar = $('moduleTabs');
+    bar.addEventListener('scroll', updateTabFade, { passive: true });
+    window.addEventListener('resize', updateTabFade);
+    const step = dir => bar.scrollBy({ left: dir * Math.max(160, bar.clientWidth * 0.6), behavior: 'smooth' });
+    $('tabsPrev').addEventListener('click', () => step(-1));
+    $('tabsNext').addEventListener('click', () => step(1));
+    rovingKeys(bar, '.tab', el => el.click());
+    const worlds = document.querySelector('.topnav');
+    if (worlds) rovingKeys(worlds, '.worldtab', el => { el.click(); el.focus(); });
   }
 
   function captureFocus() {

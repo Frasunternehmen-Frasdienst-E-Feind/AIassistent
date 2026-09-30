@@ -29,6 +29,13 @@ Nutzer: David, Marketing & Eventmanager, Fräsdienst-Service E. Feind GmbH.
 * Höchstens 4 Optionen je Frage, höchstens 4 Fragen auf einmal; „Sonstiges“ ergänzt
   das System selbst.
 
+## Qualität: abschließender Testlauf (Wunsch von David, 30.09.2026)
+* Änderungen am Cockpit erst **global planen** (alle Welten und Module prüfen, die
+  betroffen sind), dann umsetzen.
+* Vor jeder Ergebnismeldung läuft der Abschlusstest `node dashboard/test/smoke.cjs`
+  (jedes Modul, Desktop/Tablet/Handy, hell/dunkel: JS-Fehler, seitlicher Überlauf,
+  Reiterleiste, Tastatur). Nur mit „OK“ in allen Zeilen wird veröffentlicht.
+
 ## Datenschutz
 
 * Keine personenbezogenen Daten in `db`, Briefings, Vorlagen oder Exporten: keine
