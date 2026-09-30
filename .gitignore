@@ -26,6 +26,11 @@ data/crm/*
 output/*
 !output/.gitkeep
 
+# Deep-Research-Deliverables (liegen im Arbeitsverzeichnis, damit die App sie
+# öffnen kann; sind Session-Ergebnisse, keine Repo-Quellen)
+research_notes/
+reports/
+
 # Build-Artefakte
 build/
 dist/
