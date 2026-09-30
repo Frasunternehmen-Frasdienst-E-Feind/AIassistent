@@ -545,6 +545,30 @@ button.kpi:hover { border-color: var(--ink-muted); }
 @media (max-width: 560px) { .task { grid-template-columns: auto 1fr; } .task .acts { grid-column: 2; } }
 .task.rem { grid-template-columns: 1fr; }
 .field.grow { flex: 1 1 220px; }
+.it-actions { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
+.it-more { position: relative; }
+.it-more > summary { list-style: none; }
+.it-more > summary::-webkit-details-marker { display: none; }
+.it-more-menu { position: absolute; right: 0; top: calc(100% + 4px); z-index: 6; min-width: 220px; display: flex; flex-direction: column; gap: 4px; padding: var(--s2); background: var(--panel); border: 1px solid var(--line); box-shadow: 0 8px 24px var(--shadow); }
+.it-more-menu .btn { justify-content: flex-start; width: 100%; }
+.it-filters { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); gap: var(--s2) var(--s3); align-items: end; margin-bottom: var(--s2); }
+.it-filters select, .it-filters input { width: 100%; }
+@media (max-width: 900px) { .it-filters { grid-template-columns: 1fr 1fr; } .it-search { grid-column: 1 / -1; } }
+@media (max-width: 480px) { .it-filters { grid-template-columns: 1fr; } .it-more-menu { left: 0; right: auto; } }
+.it-summary { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); align-items: baseline; font-size: 13.5px; color: var(--ink-muted); margin-bottom: var(--s3); }
+.it-summary b { color: var(--ink-strong); }
+.it-groups { display: flex; flex-direction: column; gap: var(--s2); }
+.it-cat { border: 1px solid var(--line); background: var(--surface); }
+.it-cat > summary { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); padding: 10px 12px; cursor: pointer; list-style: none; min-height: 44px; }
+.it-cat > summary::-webkit-details-marker { display: none; }
+.it-cat > summary::before { content: ""; width: 8px; height: 8px; border-right: 2px solid var(--ink-muted); border-bottom: 2px solid var(--ink-muted); transform: rotate(-45deg); transition: transform .12s ease; flex: none; }
+.it-cat[open] > summary::before { transform: rotate(45deg); }
+.it-cat[open] > summary { border-bottom: 1px solid var(--line); }
+.it-cat-t { font-family: var(--font-display); font-weight: 700; color: var(--ink-strong); flex: 1 1 160px; min-width: 0; }
+.it-cat-p { display: inline-flex; align-items: center; gap: var(--s2); font-size: 13px; color: var(--ink-strong); }
+.it-cat-p .ptrack { width: 80px; }
+.it-cat .tasklist { padding: 0 12px; }
+@media (max-width: 480px) { .it-cat-p .ptrack { width: 48px; } }
 .att-list { display: flex; flex-direction: column; gap: 4px; }
 .att-row { display: flex; justify-content: space-between; gap: var(--s2); align-items: center; font-size: 13.5px; }
 .att-add { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
@@ -4947,44 +4971,67 @@ label.check input { margin-top: 3px; }
       })) : null,
       h('button', { class: 'btn small', type: 'button', onclick: () => { ui.cat = r.cats[0]; ui.prio = 'all'; ui.owner = 'all'; ui.q = ''; ui.archived = false; app.go('infratech', 'aufgaben'); } }, r.open));
   };
+  // Aufgaben: eine schlanke Werkzeugleiste, Filter als Auswahllisten, Bereiche aufklappbar (Überarbeitung 30.09.2026).
+  const openCats = S.ui.itOpen = S.ui.itOpen || new Set();
+  function filtersActive() { return ui.cat !== 'all' || ui.prio !== 'all' || ui.owner !== 'all' || !!ui.q.trim(); }
+  function resetFilters() { ui.cat = 'all'; ui.prio = 'all'; ui.owner = 'all'; ui.q = ''; rerender(); }
   app.module('infratech', 'aufgaben', {
     count: () => app.tasks().filter(M.isOpen).length,
     render() {
       const list = filtered();
+      const all = ui.archived ? archivedTasks() : app.tasks();
       const nArch = archivedTasks().length;
+      const t0 = today();
       app.resolveProfiles(peopleIds());
       const owners = Array.from(new Set(app.tasks().map(t => t.owner).filter(Boolean)));
-      const q = h('input', { type: 'search', id: 'it-q', value: ui.q, placeholder: 'Titel, Notiz, Beschluss …' });
+      const q = h('input', { type: 'search', id: 'it-q', value: ui.q, placeholder: 'Aufgabe suchen …', 'aria-label': 'Aufgaben durchsuchen' });
       q.addEventListener('input', () => { ui.q = q.value; rerender(); });
+      const sel = (id, label, opts, val, set) => h('div', { class: 'field' }, h('label', { for: id, text: label }), app.dropdown(id, opts, val, v => { set(v); rerender(); }));
+      const catCount = id => app.tasks().filter(t => t.cat === id && M.isOpen(t)).length;
+      const filterBar = h('div', { class: 'it-filters', role: 'group', 'aria-label': 'Aufgaben filtern' },
+        h('div', { class: 'field it-search' }, h('label', { for: 'it-q', text: 'Suche' }), q),
+        sel('it-cat', 'Bereich', [['all', 'Alle Bereiche']].concat(D.CATS.map(c => [c.id, c.label + ' (' + catCount(c.id) + ' offen)'])), ui.cat, v => { ui.cat = v; if (v !== 'all') openCats.add(v); }),
+        sel('it-prio', 'Priorität', [['all', 'Alle'], ['P0', 'P0 · kritisch'], ['P1', 'P1 · wichtig'], ['P2', 'P2 · normal']], ui.prio, v => { ui.prio = v; }),
+        sel('it-owner', 'Zuständig', [['all', 'Alle']].concat(owners.map(o => [o, ownerLabel(o)])), ui.owner, v => { ui.owner = v; }));
+      const more = h('details', { class: 'it-more' }, h('summary', { class: 'btn ghost' }, 'Mehr'),
+        h('div', { class: 'it-more-menu' },
+          app.exportButton('Als CSV', 'InfraTech2027-Aufgaben.csv', 'text/csv', () => M.buildTasksCsv(filtered(), D.CATS, exportOwner), 'it-csv'),
+          app.exportButton('Als Markdown', 'InfraTech2027-Aufgaben.md', 'text/markdown', () => M.buildTasksMd(filtered(), D.CATS, exportOwner, 'InfraTech 2027 – Aufgaben (' + (ui.archived ? 'Archiv' : 'aktiv') + ')', new Date()), 'it-md'),
+          h('button', { class: 'btn ghost', type: 'button', id: 'it-arch', 'aria-pressed': String(ui.archived), onclick: () => { ui.archived = !ui.archived; rerender(); } },
+            ui.archived ? 'Aktive Aufgaben zeigen' : 'Archiv zeigen' + (nArch ? ' (' + nArch + ')' : ''))));
+      const actions = h('div', { class: 'it-actions' },
+        h('button', { class: 'btn primary', type: 'button', disabled: ro(), onclick: () => openTaskModal(null) }, icon('plus'), 'Neue Aufgabe'),
+        app.startMeeting ? h('button', { class: 'btn', type: 'button', id: 'it-meeting', disabled: ro(), onclick: () => app.startMeeting() }, icon('cal'), ((S.data.meetings || []).some(m => m.status === 'offen') ? 'Meeting fortsetzen' : 'Meeting starten')) : null,
+        more);
+      const summary = h('div', { class: 'it-summary', role: 'status' },
+        h('span', {}, h('b', { class: 'num', text: String(list.length) }), ' von ' + all.length + (ui.archived ? ' archivierten Aufgaben' : ' Aufgaben')),
+        filtersActive() ? h('button', { class: 'linkbtn', type: 'button', onclick: resetFilters }, 'Filter zurücksetzen') : null);
+      const isOver = t => M.isOpen(t) && t.due && H.dayDiff(t0, H.parseDay(t.due)) < 0;
+      const isSoon = t => M.isOpen(t) && t.due && (d => d >= 0 && d <= 14)(H.dayDiff(t0, H.parseDay(t.due)));
+      const expandAll = filtersActive() || list.length <= 12;
       const groups = D.CATS.filter(c => list.some(t => t.cat === c.id)).map(c => {
         const ts = list.filter(t => t.cat === c.id), done = ts.filter(t => t.status === 'done').length;
-        return h('div', { class: 'catgroup' },
-          h('div', { class: 'cathead' }, h('span', { class: 'catdot tone-' + c.tone, 'aria-hidden': 'true' }), app.ico(app.iconFor('cat', c.id, 'liste')), h('h3', { text: c.label }), h('span', { class: 'cnt num', text: done + '/' + ts.length })),
+        const over = ts.filter(isOver).length, soon = ts.filter(isSoon).length;
+        const pct = ts.length ? Math.round(done / ts.length * 100) : 0;
+        const det = h('details', { class: 'it-cat', open: expandAll || openCats.has(c.id) || over > 0 },
+          h('summary', {},
+            h('span', { class: 'catdot tone-' + c.tone, 'aria-hidden': 'true' }), app.ico(app.iconFor('cat', c.id, 'liste')),
+            h('span', { class: 'it-cat-t', text: c.label }),
+            over ? h('span', { class: 'pill over', text: over + ' überfällig' }) : soon ? h('span', { class: 'pill soon', text: soon + ' bald fällig' }) : null,
+            h('span', { class: 'it-cat-p', 'aria-label': done + ' von ' + ts.length + ' erledigt' },
+              h('span', { class: 'ptrack', 'aria-hidden': 'true' }, h('span', { class: 'pfill', style: 'width:' + pct + '%' })),
+              h('span', { class: 'num', text: done + '/' + ts.length }))),
           h('ul', { class: 'tasklist' }, ts.map(taskRow)));
+        det.addEventListener('toggle', () => { if (det.open) openCats.add(c.id); else openCats.delete(c.id); });
+        return det;
       });
-      const scope = ui.archived ? 'Archiv' : 'aktiv';
       return [
-        panelHead('Aufgaben', list.length + (ui.archived ? ' im Archiv' : ' angezeigt')),
-        h('div', { class: 'tools' },
-          h('button', { class: 'btn primary', type: 'button', disabled: ro(), onclick: () => openTaskModal(null) }, icon('plus'), 'Neue Aufgabe'),
-          app.startMeeting ? h('button', { class: 'btn', type: 'button', id: 'it-meeting', disabled: ro(), onclick: () => app.startMeeting() }, icon('cal'), ((S.data.meetings || []).some(m => m.status === 'offen') ? 'Meeting fortsetzen' : 'Meeting starten'), h('span', { class: 'kbd', style: 'margin-left:2px', text: 'm' })) : null,
-          app.exportButton('CSV', 'InfraTech2027-Aufgaben.csv', 'text/csv', () => M.buildTasksCsv(filtered(), D.CATS, exportOwner), 'it-csv'),
-          app.exportButton('Markdown', 'InfraTech2027-Aufgaben.md', 'text/markdown', () => M.buildTasksMd(filtered(), D.CATS, exportOwner, 'InfraTech 2027 – Aufgaben (' + scope + ')', new Date()), 'it-md'),
-          h('button', { class: 'btn ghost', type: 'button', id: 'it-arch', 'aria-pressed': String(ui.archived), onclick: () => { ui.archived = !ui.archived; rerender(); } },
-            ui.archived ? 'Aktive anzeigen' : 'Archiv anzeigen' + (nArch ? ' (' + nArch + ')' : '')),
-          h('div', { class: 'field grow' }, h('label', { for: 'it-q', text: 'Aufgaben durchsuchen' }), q)),
-        h('div', { class: 'stack' },
-          h('div', { class: 'chipset', role: 'group', 'aria-label': 'Nach Zuständigkeit filtern' },
-            fchip('Alle Zuständigen', ui.owner === 'all', () => { ui.owner = 'all'; rerender(); }),
-            owners.map(o => fchip(ownerLabel(o), ui.owner === o, () => { ui.owner = o; rerender(); }))),
-          h('div', { class: 'chipset', role: 'group', 'aria-label': 'Nach Bereich filtern' },
-            fchip('Alle Bereiche', ui.cat === 'all', () => { ui.cat = 'all'; rerender(); }),
-            D.CATS.map(c => { const b = fchip(c.label, ui.cat === c.id, () => { ui.cat = c.id; rerender(); }); b.prepend(app.ico(app.iconFor('cat', c.id, 'liste')), ' '); return b; })),
-          h('div', { class: 'chipset', role: 'group', 'aria-label': 'Nach Priorität filtern' },
-            fchip('Alle Prios', ui.prio === 'all', () => { ui.prio = 'all'; rerender(); }),
-            ['P0', 'P1', 'P2'].map(p => fchip(p, ui.prio === p, () => { ui.prio = p; rerender(); })))),
-        ui.archived ? h('p', { class: 'muted', text: 'Archivierte Aufgaben lassen sich wiederherstellen. Nichts wird endgültig gelöscht.' }) : null,
-        h('div', { class: 'section' }, groups.length ? groups : h('p', { class: 'muted', text: ui.archived ? 'Keine archivierten Aufgaben.' : 'Keine Aufgaben für diese Filter.' }))
+        panelHead('Aufgaben', null, actions),
+        filterBar,
+        summary,
+        ui.archived ? h('p', { class: 'muted small', text: 'Archivierte Aufgaben lassen sich wiederherstellen. Nichts wird endgültig gelöscht.' }) : null,
+        groups.length ? h('div', { class: 'it-groups' }, groups) : h('div', { class: 'empty' }, ui.archived ? 'Keine archivierten Aufgaben.' : 'Keine Aufgaben für diese Filter. ',
+          filtersActive() ? h('button', { class: 'linkbtn', type: 'button', onclick: resetFilters }, 'Filter zurücksetzen') : null)
       ];
     }
   });
