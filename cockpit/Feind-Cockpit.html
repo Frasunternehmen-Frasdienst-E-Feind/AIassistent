@@ -865,7 +865,7 @@ const OWNER_ROLES = ['David', 'Team', 'Werkstatt', 'Standbau', 'Logistik', 'Vert
 function t(id, cat, prio, due, owner, title, note, flags) { return { id, cat, prio, due, owner, title, note: note || '', flags: flags || [] }; }
 const TASKS_SEED = [
   t('s1', 'steuerung', 'P0', '2026-10-02', 'David', '2027-Handbuch, Standnummer & Portalzugänge bei Rotterdam Ahoy anfordern/bestätigen', 'Voraussetzung für alle weiteren Fristen. Notion nennt Stand 5.209 (Ausstellerliste) – bestätigen.'),
-  t('s2', 'steuerung', 'P0', '2026-10-09', 'David', 'Verbindliche 2027-Fristenmatrix mit Ahoy verifizieren', 'Notion (18.09.): Fristen lt. Handbuch 2027 belegt, Standentwurf 15.11. – restliche Fristen (Katalog, Webshop, Teppich/Möbel) noch Referenz 2026.', ['fakt']),
+  t('s2', 'steuerung', 'P0', '2026-10-09', 'David', 'Verbindliche 2027-Fristenmatrix mit Ahoy verifizieren', 'Notion (18.09.): Fristen lt. Handbuch 2027 belegt, Standentwurf (Individualstand) 15.11. – restliche Fristen (Katalog, Webshop, Teppich/Möbel) noch Referenz 2026.', ['fakt']),
   t('s3', 'steuerung', 'P1', '2026-10-02', 'David', 'Offizielle 2027-Sales-Kontaktperson bei infratech.nl erfragen', 'Nur Funktionsadressen (@ahoy.nl / info@infratech.nl) im Cockpit führen.', ['fakt']),
   t('s4', 'steuerung', 'P2', '2026-10-16', 'David', 'Rechtsform des Vertragspartners (Rotterdam Ahoy N.V.?) prüfen', 'Gegen die 2027-Teilnahmevereinbarung abgleichen. Bitte Rechtsabteilung prüfen.', ['recht']),
   t('s5', 'steuerung', 'P1', null, 'David', 'Verträge/Bestellungen mit Belegnr., Betrag, Frist, Kündigungs- & Lieferbedingung archivieren', 'Laufend – zentrale Ablage.'),
@@ -880,7 +880,7 @@ const TASKS_SEED = [
   t('b1', 'standbau', 'P0', '2026-10-16', 'David', 'Flächenentscheidung: 25 m² vs. größer/offen/modular', '2026 war 25 m² zu eng (E1). Notion-Ziel: 12–20 m² – Widerspruch mit GL klären.'),
   t('b2', 'standbau', 'P1', '2026-10-16', 'David', 'Messebau-Angebote einholen und Partner bestätigen', 'Verifiziert: Global Expo Stand B.V., LOCO (Anfragen ab 28.09., Angebote bis 16.10.). Registerauszug vor Beauftragung.', ['fakt']),
   t('b3', 'standbau', 'P1', '2026-10-30', 'David', 'Layout: Besucherweg, Gesprächszone, Lager, Kaffee-Bar, Fluchtwege', ''),
-  t('b4', 'standbau', 'P0', '2026-11-13', 'David', 'Standdesign/technische Abweichungen genehmigen lassen', 'Standentwurf-Frist 15.11.2026 lt. Handbuch 2027 (Notion-Meilenstein); Referenz 2026 war 21.11.', ['fakt']),
+  t('b4', 'standbau', 'P0', '2026-11-13', 'David', 'Standdesign/technische Abweichungen genehmigen lassen', 'Individualstand: Entwurf bis 15.11.2026 bei Ahoy einreichen (Aussteller-Handbuch 2027 V1.3, belegt). Standtyp Individualstand bestätigt 30.09.2026.'),
   t('b5', 'standbau', 'P1', '2026-11-06', 'David', 'Druckdaten freigeben (Rückwand, Leistungsübersicht, Flyer NL/EN/DE, QR auf /anfrage/)', 'Notion-Meilenstein 06.11. – braucht AP3 (Website /anfrage/). Claim „Präzision bewegt Zukunft." vorher entscheiden (GL 6).'),
   t('b6', 'standbau', 'P1', '2027-01-06', 'David', 'Möbelpaket, Teppichfarbe & Namensblende wählen', 'Referenz 2026: Teppich/Möbel 06.01. – 2027 verifizieren.', ['fakt']),
   t('b7', 'standbau', 'P1', '2026-12-01', 'David', 'Stromanschluss & Steckdosen bestätigen', '2026 ausreichend.'),
@@ -946,7 +946,7 @@ const DEADLINES = [
   { d: '2026-09-25', t: 'Innovationspreis – Einsendung', s: 'Frist 2027 bestätigt (Faktencheck)', st: 'r', ref: 'i1' },
   { d: '2026-10-02', t: 'GL: Ziele, Budget, Zielmarkt freigeben', s: 'Notion-Meilenstein', st: 'r' },
   { d: '2026-10-16', t: 'Messebau-Angebote liegen vor', s: 'Notion-Meilenstein', st: 'y' },
-  { d: '2026-11-15', t: 'Standentwurf-Genehmigung (Stand > 2,75 m)', s: 'Handbuch 2027 lt. Notion – bestätigen (Referenz 2026: 21.11.)', st: 'r' },
+  { d: '2026-11-15', t: 'Entwurf Individualstand bei Ahoy einreichen', s: 'Aussteller-Handbuch 2027 V1.3 – belegt', st: 'r' },
   { d: '2026-11-21', t: 'Katalog-Firmendaten + Produkte/Dienstleistungen', s: 'Referenz 2026 – 2027 verifizieren', st: 'y' },
   { d: '2026-12-01', t: 'Bestellungen im Webshop vor Zuschlagsfrist', s: 'Referenz 2026 – 2027 verifizieren', st: 'y' },
   { d: '2026-12-12', t: 'Namensblende, Teppichfarbe & Grafikdatei an Standbauer', s: 'Referenz 2026 – 2027 verifizieren', st: 'y' },
@@ -980,7 +980,7 @@ const LESSONS = [
 const FACTS = [
   ['Messedatum', '12.–15. Januar 2027 (Di–Fr), Rotterdam Ahoy', 'Bestätigt', 'Auf-/Abbauplan an 4 Messetage anpassen.'],
   ['Innovationspreis', 'Einsendung vóór 25.09.2026', 'Bestätigt', 'Status steht in Aufgabe i1 (Tab Aufgaben) – Alte ToDo-Frist 31.10. ist hinfällig.'],
-  ['Standentwurf', 'Frist 15.11.2026 lt. Handbuch 2027 (Notion)', 'Prüfen', 'Referenz 2026 war 21.11. – schriftlich bestätigen lassen.'],
+  ['Standentwurf', 'Entwurf Individualstand bis 15.11.2026 (Aussteller-Handbuch 2027 V1.3)', 'Bestätigt', 'Gilt, weil Feind einen Individualstand baut (Entscheidung 30.09.2026). Referenz 2026 (21.11.) ist hinfällig.'],
   ['Hotels', 'Nur ibis Styles Rotterdam Ahoy fußläufig (~2 min)', 'Korrektur', 'Hilton/Postillion WTC/DoubleTree ~5 km Zentrum.'],
   ['Kennzahlen', '500 Aussteller / >23.000 Besucher', 'Fortschreibung', '2025-Werte, keine testierte 2027-Prognose.'],
   ['Dienstleister', 'Global Expo Stand B.V. & LOCO verifiziert', 'Prüfen', 'Whimsical Exhibits & LIVE Event Staffing schwach belegt; „ExproGloble" streichen.'],
@@ -2019,7 +2019,7 @@ function viewDashboard() {
   const openDec = PLAN.dec.filter(d => d.status !== 'beschlossen');
   return `<div class="toolbar"><button class="btn" id="reportBtn" type="button">Statusbericht (Markdown)</button><button class="btn ghost" id="printBtn" type="button">Drucken / PDF</button></div>
     ${innovationAlert()}
-    <div class="alert warn"><span class="ic" aria-hidden="true">📅</span><div><h3>Messedatum: 12.–15. Januar 2027 (Di–Fr)</h3><p>Nicht 12.–14.: Auf-/Abbauplan auf vier Messetage auslegen. Standentwurf-Frist lt. Handbuch 2027: <strong>15.11.2026</strong> (bestätigen).</p></div></div>
+    <div class="alert warn"><span class="ic" aria-hidden="true">📅</span><div><h3>Messedatum: 12.–15. Januar 2027 (Di–Fr)</h3><p>Nicht 12.–14.: Auf-/Abbauplan auf vier Messetage auslegen. Entwurf Individualstand lt. Handbuch 2027 V1.3: <strong>15.11.2026</strong>.</p></div></div>
     ${openDec.length ? `<div class="alert info"><span class="ic" aria-hidden="true">🏛️</span><div><h3>${openDec.length} GL-Entscheidungen offen – darunter „${esc(openDec[0].titel)}"</h3><p>Budgetrahmen Messe 24.200–26.500 € ist nicht freigegeben (Marketing-Scan sieht 500 € vor). <button class="linkbtn" type="button" id="goPlan">Zum 90-Tage-Plan</button></p></div></div>` : ''}
     <h2 class="sec" style="margin-top:var(--s4)">Statusüberblick</h2>
     <p class="lead">Stand ${fmtD(t0)} · Messebeginn in ${Math.max(0, dayDiff(t0, parseDay(FAIR_START)))} Tagen · Budgetrahmen 24.200–26.500 € brutto (Freigabe offen).</p>
@@ -2156,7 +2156,7 @@ function viewFristen() {
       <td class="r"><span class="pill due ${d.done ? '' : dd < 0 ? 'over' : dd <= escDays ? 'soon' : ''}">${dd < 0 ? (-dd) + ' T vorbei' : dd === 0 ? 'heute' : 'in ' + dd + ' T'}</span></td><td><span class="st ${d.st}">${esc(d.s)}</span></td></tr>`; }).join('');
   return `<h2 class="sec">Fristenmatrix</h2>
     <p class="lead">Eine Quelle: Meilensteine <strong>und</strong> offene Aufgaben-Termine (${dl.filter(d => d.kind === 'Aufgabe').length}). Rot = bestätigt/kritisch · Gelb = Referenz 2026, verifizieren · Grün = Messe/erledigt. Eskalationsvorlauf ${escDays} Tage (Team-Tab).</p>
-    <div class="banner"><div><strong>Offen beim Veranstalter:</strong> Anmeldeschluss, Standbau-/Abbauzeiten, VRS-/Slot-Zeitfenster 2027. Standentwurf 15.11. schriftlich bestätigen lassen.</div></div>
+    <div class="banner"><div><strong>Offen beim Veranstalter:</strong> Anmeldeschluss, Standbau-/Abbauzeiten, VRS-/Slot-Zeitfenster 2027.</div></div>
     <div class="toolbar" style="margin-top:var(--s3)"><button class="btn primary" id="icsBtn" type="button">ICS (Kalender) exportieren</button><button class="btn ghost" id="csvBtn" type="button">CSV exportieren</button><span class="savehint">Ganztägige Termine; im Artefakt ggf. über die Zwischenablage.</span></div>
     <div class="tblwrap"><table class="data"><thead><tr><th scope="col">Datum</th><th scope="col">Frist</th><th scope="col">Owner</th><th scope="col">Eskalation</th><th scope="col" class="r">Rest</th><th scope="col">Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }

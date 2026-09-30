@@ -48,7 +48,7 @@ und Kap. 11 (Wellen 1–5). Die Prüfung ist automatisiert, soweit möglich: `np
 | B3 | Kap. 7 hätte genau diesen Status gelöscht | gelöst |
 | B4 | Firebase-Skript läuft in dieser Umgebung nicht | gelöst |
 | B5 | Jedes Artefakt hat eine eigene DB; ein neues Artefakt startet leer | entschieden: InfraTech-Artefakt A4 wird aktualisiert (28.09.2026) |
-| B6 | Standentwurf 15.11. (Notion-Meilenstein 18.09. „Fristen lt. Handbuch 2027 belegt“) gegenüber 21.11. (Deadline-Übersicht 2026) | übernommen, **gegen das Aussteller-Handbuch 2027 prüfen** |
+| B6 | Standentwurf 15.11. gegenüber 21.11. (Referenz 2026) | gelöst: Handbuch 2027 V1.3 nennt 15.11.2026 für Individualstände; Standtyp Individualstand bestätigt 30.09.2026 |
 | B7 | Budget 24.200–26.500 € gegenüber 500 € im Marketing-Scan | sichtbar gemacht; GL-Entscheidung 1 |
 | B8 | Admin-Rolle war nur Anzeige | DB-Regel |
 | B9 | Klarnamen von Kolleg:innen in Seeds/Collections | Rollen |
