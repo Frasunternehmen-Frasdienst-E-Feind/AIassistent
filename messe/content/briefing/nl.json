@@ -1,0 +1,88 @@
+{
+ "code": "NL",
+ "file": "Briefing_Rotterdam_2027_NL.pdf",
+ "title": "Leveranciersbriefing standbouw Rotterdam 2027",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Stand 5.209 · di 12 – vr 15 januari 2027",
+ "chip": "Briefing",
+ "src": "Invulbare leveranciersbriefing · Bron: projecthub · stand 29.09.2026",
+ "intern": "Voor overdracht aan leveranciers · voorwaarden vertrouwelijk.",
+ "basis": "Basis: projecthub (data, standbouw) + Feind corporate design",
+ "howto": "Zo werkt de briefing",
+ "howto_lines": [
+  "1)  Vakje aanvinken = geleverd/afgesproken.   2)  Statusdropdown rechts: Open / Aangevraagd / Offerte / Afgesproken / Niet nodig.",
+  "3)  Notitieveld per positie – offerte, prijs, datum, contactpersoon, link (max. 250 tekens).",
+  "Offertes uiterlijk 16.10.2026 (volgens projecthub). Standmaat/bouwhoogte/vloerbelasting via het Ahoy-portaal bevestigen.",
+  "CI-richtlijnen bindend (kleuren/logo/lettertype). Invullen & printen in elke PDF-viewer."
+ ],
+ "legend_label": "Legenda:",
+ "legend": [["ok", "afgesproken"], ["warn", "offerte / te verduidelijken"], ["none", "open"], ["no", "niet nodig"], ["add", "vereiste / verplicht"]],
+ "blocker_title": "Kerngegevens (bindend)",
+ "blockers": [
+  ["Exposant", "Fräsdienst-Service E. Feind GmbH"],
+  ["Beurs/locatie", "InfraTech 2027 · Rotterdam Ahoy · Stand 5.209"],
+  ["Data", "di 12 – vr 15.01.2027 · opbouw vanaf 07.01.2027"],
+  ["Offertedeadline", "uiterlijk 16.10.2026 (volgens projecthub)"],
+  ["CI-richtlijnen", "kleuren/logo volgens Feind corporate design"]
+ ],
+ "blocker_note": "Standgrootte, bouwhoogte en vloerbelasting definitief via het Ahoy-exposantenportaal bevestigen. Offertes uiterlijk 16.10.2026 (projecthub).",
+ "status": ["Open", "Aangevraagd", "Offerte", "Afgesproken", "Niet nodig"],
+ "status_def": "Open",
+ "tt_status": "Status: Open / Aangevraagd / Offerte / Afgesproken / Niet nodig",
+ "tt_note": "Offerte, prijs, datum, contactpersoon, link – max. 250 tekens",
+ "tt_done": "Aanvinken bij geleverd/afgesproken",
+ "blind_banner": "Aanwijzingen & bewijzen",
+ "blind_sub": "Aanvullende eisen aan de leverancier. Juridische punten zijn gemarkeerd.",
+ "dp_title": "Gegevensbescherming & recht",
+ "dp": [
+  "• Deze briefing bevat geen persoonsgegevens van derden; contactpersonen alleen indien nodig in het notitieveld toevoegen.",
+  "• Foto-/video-/referentiegebruik van de stand alleen na voorafgaande goedkeuring.",
+  "• Bij contract, aansprakelijkheid, annulering, verzekering of btw/verlegging (NL): graag juridische afdeling laten controleren."
+ ],
+ "src_title": "Bronnen & werkbladen",
+ "links": ["Master · Beurs Rotterdam 2027 (Notion)", "ToDo-lijst Rotterdam 2027 (Notion)", "Takentracker (ClickUp)", "InfraTech-handboek 2027 V1.3 (PDF)"],
+ "link_urls": ["https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db", "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a", "https://app.clickup.com/90122021025/v/l/li/901222034862", "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stand 5.209  ·  stand 29.09.2026",
+ "page": "Pagina",
+ "cont": "vervolg",
+ "brand": "BRIEFING · Rotterdam 2027",
+ "slim": "Briefing Rotterdam 2027",
+ "sections": [
+  ["Project & standkader", [
+   ["warn", "Standgrootte/maten stand 5.209 bevestigen (Ahoy-exposantenlijst)"],
+   ["warn", "Bouwhoogte & vloerbelasting volgens Ahoy-richtlijnen verduidelijken"],
+   ["none", "Standtype (rij/hoek/kop) & open zijden opgeven"]
+  ]],
+  ["Omvang standbouw", [
+   ["none", "Vloerbedekking incl. leggen"],
+   ["none", "Wanden/fries + achterwand"],
+   ["add", "Grafiek/branding volgens Feind CI (groen #84bb20, antraciet #424e4e, logo, lettertype)"],
+   ["none", "Verlichting (spots/LED)"],
+   ["none", "Afsluitbare opslag/cabine"],
+   ["none", "Meubilair (balie, statafels, krukken, folderhouders)"]
+  ]],
+  ["Techniek & aansluitingen", [
+   ["warn", "Stroomaansluiting/vermogen opgeven (freestechniek-exponaten)"],
+   ["none", "Internet/LAN op de stand"],
+   ["none", "Rigging/ophanging (indien truss/banner)"],
+   ["warn", "Water/perslucht voor exponaten controleren"]
+  ]],
+  ["Op-/afbouw & logistiek", [
+   ["none", "Opbouw vanaf 07.01.2027 – datum/slot coördineren"],
+   ["none", "Aanlevering/inrit Ahoy (tijdvenster, toegang)"],
+   ["none", "Afbouw na vr 15.01. – demontage & afvoer"]
+  ]],
+  ["Offerte & voorwaarden", [
+   ["warn", "Gedetailleerde offerte + prijzen per post"],
+   ["warn", "Opties/alternatieven aangeven"],
+   ["add", "Verzekering/aansprakelijkheid & annuleringsvoorwaarden opgeven – juridische afdeling controleren"],
+   ["add", "Btw/verlegging (NL-dienst) verduidelijken – belastingadviseur/juridische afdeling"]
+  ]]
+ ],
+ "blind": [
+  ["Aanwijzingen & bewijzen", [
+   ["add", "CI-manual/logobestanden worden geleverd – kleurechtheid #84bb20 waarborgen"],
+   ["add", "Bewijzen: handelsregister/KvK & referenties bijvoegen"],
+   ["add", "Contactpersoon & bereikbaarheid in het notitieveld invullen"]
+  ]]
+ ]
+}
