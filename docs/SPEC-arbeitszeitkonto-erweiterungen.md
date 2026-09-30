@@ -9,6 +9,18 @@ Drei Funktionen, umgesetzt in dieser Reihenfolge:
 2. Mehrarbeitskonto: Monatsverlauf
 3. Tagesarten und Urlaubsplanung
 
+**Umsetzungsstand 30.09.2026:** AP1–AP3 in Artefakt-Version 8, AP4–AP9 in
+Version 9 – mit den Annahmen aus Abschnitt 6 als Platzhalter. Abweichungen
+bzw. Ergänzungen gegenüber dieser Spec:
+
+* Resturlaub-Hinweis erscheint schon ab 01.11. (Antrag bis 15.11. noch
+  möglich); nach dem 15.11. lautet er „Frist vorbei – mit Personalabteilung
+  klären“.
+* Urlaub an arbeitsfreien Tagen oder Feiertagen zählt nicht gegen den
+  Anspruch und wird unter „Zu klären“ gemeldet.
+* „Tag erfassen“ überschreibt keinen vorhandenen Tag mehr; dafür gibt es
+  „bearbeiten“. Eine Importzeile nur mit Tagesart behält vorhandene Buchungen.
+
 **Fett markiert** sind Annahmen, die noch bestätigt werden müssen (Liste in
 Abschnitt 6). Rechenregeln aus `CLAUDE.md` („Zeitwirtschaft – fachliche Regeln“)
 gelten unverändert, sofern hier nichts anderes steht.
