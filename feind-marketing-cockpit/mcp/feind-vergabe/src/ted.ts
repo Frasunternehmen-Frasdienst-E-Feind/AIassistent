@@ -72,11 +72,12 @@ export async function searchTed(q: TedQuery, today: string): Promise<{ notices: 
   const r = await httpGet(SEARCH_URL, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
   if (r.status === 429) { noteStatus('ted', false, 429, 'Fair-Usage-Grenze erreicht'); throw new Error('TED meldet zu viele Anfragen (429). Einige Minuten warten, dann erneut suchen.'); }
   if (r.status >= 400) { noteStatus('ted', false, r.status, r.text.slice(0, 200)); throw new Error(`TED-Suche abgelehnt (HTTP ${r.status}). Abfrage prüfen: ${query}. Antwort: ${r.text.slice(0, 300)}`); }
+  // TED liefert auch auf der letzten Seite einen Token; eine Folgeabfrage beginnt dann wieder bei Seite 1.
   const data = JSON.parse(r.text) as { notices?: Record<string, unknown>[]; totalNoticeCount?: number; iterationNextToken?: string | null };
   const all = (data.notices ?? []).map(normalizeTed);
   const notices = applyFilters(all, today, q.onlyOpen, q.keywords);
   noteStatus('ted', true, r.status, `${all.length} geladen, ${notices.length} nach Filter`);
-  return { notices, total: data.totalNoticeCount ?? all.length, nextToken: data.iterationNextToken ?? null, query, filteredOut: all.length - notices.length };
+  return { notices, total: data.totalNoticeCount ?? all.length, nextToken: all.length >= q.limit ? (data.iterationNextToken ?? null) : null, query, filteredOut: all.length - notices.length };
 }
 
 export async function getTedNotice(publicationNumber: string): Promise<Notice | null> {

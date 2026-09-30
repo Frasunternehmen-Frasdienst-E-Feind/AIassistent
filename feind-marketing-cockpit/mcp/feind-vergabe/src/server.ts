@@ -89,7 +89,7 @@ Standard-Stichworte: fräs, asphalt, fahrbahn, deckschicht, straßenbau, straße
 existing: vorher mit ArtifactData list tenders geholte {id,url,deadline}. Schreibt NICHTS – das Schreiben erfolgt erst nach Freigabe durch David per ArtifactData batch. fit bleibt "pruefen"; die Bewertung macht der Skill tender-monitoring.`,
     inputSchema: {
       notices: z.array(noticeShape),
-      existing: z.array(z.object({ id: z.string(), url: z.string().optional(), deadline: z.string().nullable().optional() })).default([]),
+      existing: z.array(z.object({ id: z.string(), url: z.string().optional(), deadline: z.string().nullable().optional(), title: z.string().optional(), status: z.string().optional() })).default([]).describe('Vorhandene tenders mit id, url, deadline, title, status'),
       cpvWatch: z.array(z.string()).default(DEFAULT_CPV),
       keywords: z.array(z.string()).default(DEFAULT_KEYWORDS)
     },
