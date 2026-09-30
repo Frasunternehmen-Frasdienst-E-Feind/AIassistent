@@ -21,12 +21,16 @@ die Vergabeunterlagen selbst bleiben im Vertrieb und werden nicht in diesen Ordn
 
 | Portal | Zugang | Status |
 |---|---|---|
-| TED – Tenders Electronic Daily | https://ted.europa.eu (Expertensuche; Such-API der EU) | bekannt; API-Endpunkt und Abfragesyntax vor Nutzung in der TED-Dokumentation prüfen |
-| service.bund.de | https://www.service.bund.de (Rubrik Ausschreibungen) | bekannt |
+| TED – Tenders Electronic Daily | MCP-Server `feind-vergabe`: `vergabe_search_ted`, `vergabe_get_notice` (TED-API v3, anonym) | verbunden (Prototyp, 30.09.2026); Nutzungsbedingungen: Bitte Rechtsabteilung prüfen |
+| service.bund.de | MCP-Server `feind-vergabe`: `vergabe_fetch_bund` (RSS, nur neueste Einträge, ohne CPV) | verbunden (Prototyp, 30.09.2026); Nutzungsbedingungen: Bitte Rechtsabteilung prüfen |
 | Vergabeplattform des Bundes (e-Vergabe) | https://www.evergabe-online.de | zu verifizieren |
 | Vergabemarktplatz Brandenburg | https://vergabemarktplatz.brandenburg.de | zu verifizieren |
 | Vergabeportal Mecklenburg-Vorpommern | URL | zu verifizieren |
 | Weitere Norddeutschland (Schleswig-Holstein, Niedersachsen, Hamburg, Sachsen-Anhalt) | Landesportale bzw. Plattformbetreiber | zu verifizieren |
+
+Ablauf mit dem MCP-Server: Such-Tools aufrufen → `vergabe_prepare_tenders` mit den vorhandenen
+`tenders`-IDs → Tabelle neu / Frist geändert / Dublette an David → erst nach Freigabe
+`ArtifactData batch`. Ist der Server nicht erreichbar, weiter über Firecrawl.
 
 Kennzeichne jede Portal-URL, die du nicht in der laufenden Sitzung aufgerufen und bestätigt
 hast, im Ergebnis als „zu verifizieren“. Bevorzuge offizielle Portale; Aggregatoren nur als

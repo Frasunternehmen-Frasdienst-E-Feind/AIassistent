@@ -15,7 +15,8 @@ Stand: 2026-09-24.
 | Dateiablage alternativ / Fotoarchiv | Dropbox | verbunden | `reference-library`, `content-pipeline` |
 | Redaktionsplan, Notizen, Marketing-Scan | Notion | verbunden | `content-pipeline`, `seo-local` |
 | Aufgaben und Freigaben | ClickUp | verbunden | `feind-copilot` (Wochenplan), `event-planning` |
-| Webrecherche, Vergabeportale auslesen | Firecrawl | verbunden | `tender-monitoring`, `seo-local` |
+| Ausschreibungen TED und service.bund.de | eigener MCP-Server `feind-vergabe` (`mcp/feind-vergabe`, lokal über stdio) | Prototyp seit 30.09.2026 | `tender-monitoring` |
+| Webrecherche, übrige Vergabeportale | Firecrawl | verbunden | `tender-monitoring`, `seo-local` |
 | Webrecherche (Suche) | Parallel Search | verbunden | `tender-monitoring`, `seo-local`, `reference-library` |
 | Grafiken, Social-Media-Vorlagen | Canva | verbunden | `content-pipeline` |
 | Übersetzung und Korrektur | DeepL | verbunden | `content-pipeline` |
