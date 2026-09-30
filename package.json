@@ -7,6 +7,7 @@
     "test": "node --test zeiterfassung/test/*.test.js",
     "start": "node -e \"const p=require('path').resolve('zeiterfassung/index.html');console.log('Im Browser öffnen: file://'+p)\"",
     "test:cockpit": "node --test cockpit/test/*.test.mjs",
+    "test:cockpit-a1": "node --test cockpit-a1/test/*.test.mjs",
     "e2e:cockpit": "playwright test -c cockpit/playwright.config.mjs",
     "migrate:cockpit": "node cockpit/tools/migrate.mjs"
   },

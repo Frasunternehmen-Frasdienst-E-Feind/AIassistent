@@ -1,5 +1,8 @@
 # Feind Cockpit v1.0
 
+> **Archiv (Stand 30.09.2026):** Dieser Ordner ist der ältere A4-Stand. A4 ist gelöscht; live und führend ist
+> A1 (https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd), Quelle unter `cockpit-a1/`.
+
 Ein Artefakt für Marketing, InfraTech 2027 und Administration. Die Seite
 `Feind-Cockpit.html` ersetzt vier bisher getrennte Artefakte und führt deren Daten in
 **einem** Artefakt-Speicher (`db`) zusammen.
