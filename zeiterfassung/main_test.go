@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func testApp(t *testing.T, base string) *App {
@@ -151,5 +152,86 @@ func TestDataSuggestions(t *testing.T) {
 	got := a.dataSuggestions()
 	if len(got) != 3 || got[0] != filepath.Join(base, "OneDrive", "Stempeluhr") || got[2] != baseDir() {
 		t.Fatalf("Vorschläge: %v", got)
+	}
+}
+
+func ptr(s string) *string { return &s }
+
+func TestLastBookingDate(t *testing.T) {
+	bs := []Booking{
+		{Date: "2026-09-10", Start: "06:30", End: ptr("12:00")},
+		{Date: "2026-09-10", Start: "12:30", End: ptr("16:00")},
+		{Date: "2026-09-14", Start: "06:48", End: ptr("14:37")},
+		{Date: "2026-09-14", Start: "14:57", End: nil}, // Tag läuft noch
+	}
+	last, offen := lastBookingDate(bs)
+	if last != "2026-09-14" {
+		t.Errorf("jüngstes Datum = %q, erwartet 2026-09-14", last)
+	}
+	if offen != 1 {
+		t.Errorf("offene Tage = %d, erwartet 1", offen)
+	}
+	if last, offen := lastBookingDate(nil); last != "" || offen != 0 {
+		t.Errorf("ohne Buchungen = (%q, %d), erwartet (\"\", 0)", last, offen)
+	}
+}
+
+// Ein Sammellauf mit vollständigem Ergebnis meldet Erfolg.
+func TestCollectReportOK(t *testing.T) {
+	now := time.Date(2026, 9, 15, 7, 0, 0, 0, time.UTC)
+	a := &App{
+		id:       Identity{Username: "d.halko", Source: "windows", Host: "NB-EFEIND-0021"},
+		dataFile: `C:\Users\d.halko\AppData\Roaming\Stempeluhr\d.halko\data.json`,
+		sync: SyncResult{
+			Path: `C:\Users\d.halko\AppData\Local\OptiTime`, PathSource: "benutzerprofil",
+			Files: []FileResult{{}}, Imported: 4,
+			Identity: Identity{MatchedPerson: "Halko, David"},
+		},
+		state: State{Bookings: []Booking{{Date: "2026-09-14", Start: "06:48", End: ptr("14:37")}}},
+	}
+	report, code := a.collectReport(168*time.Hour, now)
+	if code != 0 {
+		t.Errorf("Exit-Code = %d, erwartet 0\n%s", code, report)
+	}
+	for _, want := range []string{"Halko, David", "2026-09-14", "NB-EFEIND-0021"} {
+		if !strings.Contains(report, want) {
+			t.Errorf("Bericht enthält %q nicht:\n%s", want, report)
+		}
+	}
+	if strings.Contains(report, "Warnung") {
+		t.Errorf("unerwartete Warnung:\n%s", report)
+	}
+}
+
+// Veraltete Buchungen, fehlende Zuordnung und Fehler melden einen Fehlschlag,
+// damit die geplante Aufgabe in Windows nicht still fehlschlägt.
+func TestCollectReportProbleme(t *testing.T) {
+	now := time.Date(2026, 9, 30, 7, 0, 0, 0, time.UTC)
+	a := &App{
+		id:    Identity{Username: "d.halko", Source: "windows"},
+		sync:  SyncResult{Path: `C:\OptiTime`, Errors: []string{"Datei nicht lesbar"}},
+		state: State{Bookings: []Booking{{Date: "2026-09-14", Start: "06:48", End: nil}}},
+	}
+	report, code := a.collectReport(168*time.Hour, now)
+	if code != 1 {
+		t.Errorf("Exit-Code = %d, erwartet 1\n%s", code, report)
+	}
+	for _, want := range []string{"Zuordnung: keine", "Warnung: seit 16 Tagen", "Fehler: Datei nicht lesbar", "1 Tag(e) ohne Gehen-Buchung"} {
+		if !strings.Contains(report, want) {
+			t.Errorf("Bericht enthält %q nicht:\n%s", want, report)
+		}
+	}
+	// Ohne Stillstandsprüfung darf das Alter allein nicht warnen.
+	if report, _ := a.collectReport(0, now); strings.Contains(report, "Warnung: seit") {
+		t.Errorf("Stillstandswarnung trotz 0:\n%s", report)
+	}
+}
+
+// Ohne gefundenen Ordner ist der Lauf ein Fehlschlag.
+func TestCollectReportOhneOrdner(t *testing.T) {
+	a := &App{sync: SyncResult{Searched: []string{"a", "b"}}}
+	report, code := a.collectReport(0, time.Now())
+	if code != 1 || !strings.Contains(report, "nicht gefunden, 2 Orte geprüft") {
+		t.Errorf("Exit-Code = %d, Bericht:\n%s", code, report)
 	}
 }

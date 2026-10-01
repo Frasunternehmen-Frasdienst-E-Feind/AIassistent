@@ -89,12 +89,58 @@ Stempeluhr.exe --data "%OneDrive%\Stempeluhr"            Datenordner vorgeben (s
 Stempeluhr.exe --port 8123 --no-browser                  fester Port, Browser nicht öffnen
 Stempeluhr.exe --idle 0                                  nie automatisch beenden
 Stempeluhr.exe --diagnose                                Diagnosebericht schreiben und beenden
+Stempeluhr.exe --sammeln                                 einlesen, speichern, beenden (ohne Oberfläche)
+Stempeluhr.exe --sammeln --stillstand 336h               Stillstandswarnung erst nach 14 Tagen (0 = nie)
 ```
 
 Protokoll: `%APPDATA%\Stempeluhr\stempeluhr.log`. Einstellungen: `%APPDATA%\Stempeluhr\config.json`.
 `Stempeluhr-Konsole.exe` ist dieselbe App mit sichtbarem Konsolenfenster für die Fehlersuche.
 
 Beispiel-Verknüpfung (Ziel): `"C:\Tools\Stempeluhr.exe" --user d.halko`
+
+### Automatisch sammeln
+
+`--sammeln` liest das Protokoll des angemeldeten Benutzers, führt die Buchungen mit dem
+gespeicherten Stand zusammen und beendet sich – ohne Fenster, ohne Browser. Für eine geplante
+Aufgabe gedacht, die im Hintergrund läuft.
+
+Der Lauf ist wiederholbar: gleiche Buchungen werden zusammengeführt, nicht angehängt. Mehrmals
+stündlich ausführen ist unbedenklich.
+
+Der Exit-Code meldet das Ergebnis, damit ein Fehlschlag in der Aufgabenplanung sichtbar wird und
+nicht still bleibt:
+
+| Code | Bedeutung |
+| --- | --- |
+| 0 | Buchungen gelesen und gespeichert |
+| 1 | OptiTime-Ordner nicht gefunden, keine Zuordnung, Lesefehler oder Stillstand |
+
+Stillstand heißt: die jüngste Buchung ist älter als `--stillstand` (Standard 168 h, also eine Woche).
+Das fällt auf, wenn BDE_PC auf dem Rechner nicht mehr läuft oder der Ordner umgezogen ist. Über
+längere Abwesenheiten den Wert hochsetzen oder mit `--stillstand 0` abschalten.
+
+Aufgabe einrichten (einmalig je Arbeitsplatz, in einer Eingabeaufforderung des Benutzers):
+
+```
+schtasks /Create /TN "Stempeluhr sammeln" /SC MINUTE /MO 15 ^
+  /TR "\"C:\Tools\Stempeluhr.exe\" --sammeln --data \"%OneDrive%\Stempeluhr\"" ^
+  /RL LIMITED /F
+```
+
+Die Aufgabe läuft unter dem angemeldeten Benutzer – genau so ermittelt das Programm die Person,
+wie BDE_PC es auch tut. Keine erhöhten Rechte nötig (`/RL LIMITED`). Ergebnis jedes Laufs steht in
+`%APPDATA%\Stempeluhr\stempeluhr.log`.
+
+Vor dem Einrichten einmal von Hand prüfen:
+
+```
+Stempeluhr-Konsole.exe --sammeln
+```
+
+**Manuelle Korrekturen an eingelesenen Buchungen werden vom nächsten Lauf überschrieben**, weil
+OptiTime als führend gilt (gleiches Datum und gleiche Startzeit zählt als dieselbe Buchung). Bei
+einer Aufgabe alle 15 Minuten passiert das schnell. Korrekturen deshalb im Arbeitszeitkonto
+vornehmen, das sie getrennt von den eingelesenen Buchungen speichert.
 
 ### Datenablage
 

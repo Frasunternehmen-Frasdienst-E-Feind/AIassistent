@@ -54,9 +54,48 @@ https://claude.ai/artifact/7Uvmb6GjyHjfwzo5TtmXmQ
 Datenhaltung im Artefakt-Speicher (`db`), nicht im HTML:
 
 * `days/<JJJJ-MM-TT>` = `{ date, books: [{ start, end, kind: "work"|"pause" }],
-  origin: "export"|"import"|"manuell", note }`
-* `settings/general` = `{ weekHours, workdays: [1..5], seeded: true }`
+  origin: "export"|"import"|"manuell", note, type? }`
+  * `type` (optional): `urlaub` (Soll 0, 1 Urlaubstag), `urlaub_halb` (halbes
+    Tages-Soll, 0,5 Tage), `sonderurlaub`, `krank`, `feiertag` (je Soll 0),
+    `gleittag` (volles Soll, Ist 0). Mit Tagesart dürfen `books` leer sein.
+* `settings/general` = `{ weekHours, workdays: [1..5], seeded: true,
+  vacation: { "2026": 30, "2027": 30 }, gleittag: false }`
+  * `vacation` = Urlaubsanspruch je Jahr, von Hand gepflegt (2026 vorläufig,
+    Personalabteilung klärt). `gleittag` blendet die Tagesart ein.
+  * Das Dokument wird immer vollständig geschrieben – neue Felder in
+    `settingsDoc()` ergänzen, sonst gehen sie beim Speichern verloren.
+
+Feiertage Brandenburg werden im Artefakt berechnet (Ostern nach Gauß) und nur
+nach Klick auf „übernehmen“ als `type: "feiertag"` gespeichert.
 
 Der im HTML eingebettete Stand vom 14.09.2026 ist nur Notfall-Anzeige und
 Erstbefüllung. Neue Buchungen kommen über „Buchungen importieren“
 (`Datum;Von;Bis;Art`) in die Seite – dafür ist keine Änderung am Code nötig.
+Zeilen ohne Uhrzeit sind Tagesarten (`2026-12-28;;;Urlaub`), erkannt per
+Stichwort: halb+urlaub, sonder/000004, urlaub, krank, feiertag, gleit.
+
+## Neue Funktionen: Planungs-Skills vorschlagen
+Wenn David eine neue Funktion planen oder umsetzen lassen will (auch im
+Arbeitszeitkonto), vor dem Coden prüfen und aktiv vorschlagen, ob ein
+Skill aus „Skills For Real Engineers“ (Matt Pocock) vorgeschaltet werden
+sollte:
+
+* `grill-me` – wenn Anforderung, Randfälle oder Fachregeln unklar sind.
+* `to-spec` – wenn die Funktion mehrere Teile hat oder Datenmodell bzw.
+  Artefakt-Speicher (`db`) berührt.
+* `to-tickets` – wenn die Spec in mehrere Arbeitsschritte zerfällt.
+
+Nur vorschlagen, nicht ungefragt ausführen. Ist das Plugin in der Sitzung
+nicht aktiv, darauf hinweisen und die Installation anbieten. Bei
+Kleinständerungen (Tippfehler, Farbwert, Einzeiler) entfällt der Vorschlag.
+
+## Arbeitsweise bei Entscheidungen
+Bei schwer umkehrbaren oder nach außen wirkenden Aktionen (PR mergen, Branch
+löschen, E-Mail senden, Veröffentlichen, Daten überschreiben) und bei
+mehrdeutigen Anweisungen: **immer zuerst nachfragen** und dabei klar sagen,
+welche Option in diesem Fall die beste ist und warum. Erst nach ausdrücklicher
+Bestätigung ausführen.
+
+Auswahlmöglichkeiten (Optionen, Varianten, Rückfragen) immer **zum Anklicken**
+ausgeben (Multiple-Choice-Abfrage), nicht nur als Text – die empfohlene Option
+steht zuerst und ist als „(Empfohlen)“ markiert.

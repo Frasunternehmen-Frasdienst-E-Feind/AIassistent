@@ -6,6 +6,7 @@
 **Erstellt von:** David Halko (Marketing & Eventmanagement) mit KI-Unterstützung
 **Berichtsdatum:** 14.09.2026
 **Version:** 1.3 (Entwurf)
+**Änderungsvermerk v1.4 (01.10.2026):** Abschnitt 12.1 (Kartenansicht im internen Feind Cockpit: Kachelanbieter, Einwilligung, lokal eingebettete Schrift) und Zeile „Kartenkachel-Anbieter“ in 7.1 ergänzt. HTML-, DOCX- und PDF-Fassung sind noch auf Stand v1.3.
 **Änderungsvermerk v1.3 (21.09.2026):** Unternehmensprofil korrigiert (Kaltfräsarbeiten im Straßen-/Tiefbau statt CNC-Fertigung), Standorte Lübben (Brandenburg) und Wittenburg (Mecklenburg-Vorpommern) sowie zuständige Aufsichtsbehörde (LDA Brandenburg statt LDI NRW), Datenkategorien und Empfänger an das Baugeschäft angepasst.
 **Änderungsvermerk v1.2:** Aufgewertete Ausgabe (klickbares Inhaltsverzeichnis mit Anker-Links, verbesserte Tabellen-Darstellung, **Fußnoten** zu Rechtsquellen) sowie zusätzliche browserfreundliche HTML-Ansicht mit Navigations-Seitenleiste.
 **Änderungsvermerk v1.1:** Durchgängige `Annahme:`/`Offene Frage:`-Kennzeichnung, `{{PLATZHALTER}}`-Mechanismus in allen Vorlagen, neuer Abschnitt zur `.env`-Ableitungslogik, 4-spaltige Offene-Fragen-Tabelle, ergänzte kostengünstige/Open-Source-Optionen.
@@ -293,6 +294,7 @@ Open-Source-Option (neutral, keine Kaufempfehlung).
 | **{{NEWSLETTER_TOOL}}** *(falls genutzt)* | E-Mail-Marketing | Ja | **Offene Frage** | AVV einholen |
 | **Subunternehmer/Entsorger/Logistik** | Baustellenlogistik, Fräsgut-Entsorgung | meist eigenständig Verantwortlicher | EU | klären |
 | **GitHub (Microsoft)** | Code-/Config-Hosting | Ja (soweit personenbezogen) | USA (DPF) | prüfen; keine Rohdaten (verifiziert) |
+| **Kartenkachel-Anbieter** (Feind Cockpit, Straßenkarte) | Auslieferung von Kartenkacheln; dabei IP-Adresse, Zeitpunkt, Browserkennung | Bei OpenStreetMap: eigenständig Verantwortlicher, kein AVV angeboten. Bei einem kommerziellen Anbieter (z. B. MapTiler): AVV/DPA prüfen | **Annahme:** OSMF = Vereinigtes Königreich (Angemessenheitsbeschluss), Auslieferung über CDN; EU-Anbieter vorzuziehen | Nur nach Einwilligung je Person (Abschnitt 12.1); Anbieter vor Produktivbetrieb festlegen |
 
 ### 7.2 AVV-Prüfliste
 
@@ -410,6 +412,39 @@ registriert; Website-Kontaktformular vorhanden.
 **Empfehlungen:** Consent-Management einführen und GA4 daran koppeln (oder auf Matomo mit
 Datenhoheit umstellen); Google Fonts lokal einbinden; Cookies inventarisieren; DSE an tatsächlich
 geladene Dienste anpassen; TLS/HSTS erzwingen.
+
+### 12.1 Internes Feind Cockpit – Kartenansicht der Ausschreibungen (Stand v3.1, 01.10.2026)
+
+Betrifft das Artefakt „Feind Cockpit“ (Quelle: `messe/rotterdam-2027/feind-cockpit-v3.html`,
+Doku: `messe/rotterdam-2027/KARTE.md`). Nutzerkreis: Beschäftigte, keine Website-Besucher.
+
+| Datenfluss | Wann | Empfänger | Daten | Rechtsgrundlage (Vorschlag) |
+|---|---|---|---|---|
+| Umrisskarte, Bundesländer, Pins | immer | keiner (eingebettet) | – | – |
+| Schrift Exo | immer | keiner (lokal eingebettet, seit v3.1) | – | – |
+| Straßenkarte (Kartenkacheln) | erst nach Klick auf „Einwilligen und laden“ | konfigurierter Kachelanbieter; Standard OpenStreetMap (`tile.openstreetmap.org`) | IP-Adresse, Zeitpunkt, Browserkennung, abgerufener Kartenausschnitt | Einwilligung, Art. 6 Abs. 1 lit. a DSGVO i. V. m. § 25 Abs. 1 TDDDG (konservativ; berechtigtes Interesse wäre bei EU-Anbieter denkbar) |
+| Einwilligungsstand | bei Erteilung | nur im Browser der Person (`localStorage`, Schlüssel `feind-cockpit:osm-consent`: Host, Zeitpunkt, an/aus) | keine Übermittlung | – |
+
+**Umgesetzte Maßnahmen:** Ohne Einwilligung keine externen Requests (automatisiert geprüft,
+`messe/rotterdam-2027/e2e/karte.e2e.mjs`); Einwilligung gilt je Anbieter-Host und wird bei
+Anbieterwechsel neu eingeholt; Widerruf mit einem Klick („Einwilligung widerrufen“);
+Namensnennung „© OpenStreetMap-Mitwirkende“ (ODbL) immer sichtbar; Google Fonts entfernt.
+
+**Offen:** OpenStreetMap-Kacheln sind laut Tile Usage Policy nur für geringe Last gedacht und ohne
+Verfügbarkeitszusage. Für den Dauerbetrieb einen Anbieter mit EU-Verarbeitung festlegen (Admin ›
+Funktionen und Quellen), AVV prüfen und hier eintragen. **Bitte Rechtsabteilung prüfen**, ob
+Einwilligung oder berechtigtes Interesse gewählt wird und ob eine Information nach Art. 13 DSGVO
+im Beschäftigtenkontext ergänzt werden muss.
+
+**Textbaustein Datenschutzhinweis (Beschäftigte, Feind Cockpit):**
+
+> Kartenansicht: Das Feind Cockpit zeigt standardmäßig eine Umrisskarte ohne Verbindung zu Dritten.
+> Wenn Sie die Straßenkarte laden und einwilligen, ruft Ihr Browser Kartenkacheln von
+> {{KACHELANBIETER}} ({{KACHEL_HOST}}) ab. Dabei werden Ihre IP-Adresse, Datum und Uhrzeit sowie
+> Angaben zu Ihrem Browser an diesen Anbieter übertragen. Rechtsgrundlage ist Ihre Einwilligung
+> (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG). Sie können sie jederzeit über „Einwilligung
+> widerrufen“ in der Karte zurücknehmen; die Rechtmäßigkeit der bis dahin erfolgten Abrufe bleibt
+> unberührt. Datenschutzhinweise des Anbieters: {{KACHEL_DATENSCHUTZ_URL}}.
 
 ---
 
@@ -945,6 +980,7 @@ Rechtlicher Hinweis: Muster vor Einsatz durch Rechtsabteilung/Fachanwalt pruefen
 | `{{CLOUD_STANDORT}}` | Cloud-Speicher-Standort | abgeleitet |
 | `{{LOG_RETENTION}}` / `{{GA4_RETENTION}}` | Aufbewahrungsdauer Logs/GA4 | Konfiguration |
 | `{{DSE_URL}}` / `{{DATUM}}` / `{{DATUM_ANLASS}}` | URL/Datumsangaben | manuell |
+| `{{KACHELANBIETER}}` / `{{KACHEL_HOST}}` / `{{KACHEL_DATENSCHUTZ_URL}}` | Kachelanbieter der Cockpit-Straßenkarte (Abschnitt 12.1) | Admin › Funktionen und Quellen im Cockpit |
 
 ---
 

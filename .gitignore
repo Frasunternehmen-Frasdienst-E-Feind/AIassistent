@@ -35,3 +35,6 @@ dist/
 
 # Plugin-Paket (wird mit build-zip.sh erzeugt)
 *.zip
+
+# Node-Abhängigkeiten (npm install)
+node_modules/
