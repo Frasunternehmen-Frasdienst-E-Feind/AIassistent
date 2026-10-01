@@ -10467,11 +10467,21 @@ svg.leaflet-image-layer.leaflet-interactive path {
     html: '<span class="gm-pin' + (p.approx ? ' approx' : '') + '"' + (home ? '' : ' style="--pin:var(' + (KIND[p.kind] || '--ink') + ')"') + '></span>' });
 
   // opts: { id, height, label, states: { name: { n, home, sel } } | null, onState(name), points: [{ lat, lon, label, sub, kind, approx, onClick }], note }
+  // Die Leaflet-Karte bleibt über Renderläufe erhalten, solange Anbieter, Einwilligung, Modus und Theme gleich sind.
+  // Ein Filterwechsel färbt dann nur die Länder neu und tauscht die Pins, wenn sie sich geändert haben.
+  // Ausschnitt und Zoom der Person bleiben stehen.
   app.geoMap = function (opts) {
     const id = opts.id || 'map';
-    if (maps[id]) { const old = maps[id]; delete maps[id]; try { if (old._fcObs) old._fcObs.forEach(o => o.disconnect()); old.stop(); old.remove(); } catch (e) { /* schon weg */ } }
     const p = provider(), c = consentOf(p), on = tilesOn(p);
-    const box = h('div', { class: 'gm-map', style: 'height:' + (opts.height || 420) + 'px', role: 'region', 'aria-label': (opts.label || 'Karte') + '. Mit Pfeiltasten verschieben, Plus und Minus zoomen.' });
+    const st = opts.states || null;
+    const key = [on ? p.url + '|' + p.attributionHtml : 'offline', st ? 'states' : '', st && opts.onState ? 'click' : '', tok('--surface'), tok('--line')].join('¦');
+    const prev = maps[id];
+    const reuse = !!(L && prev && prev._fcKey === key);
+    if (prev && !reuse) { delete maps[id]; try { if (prev._fcObs) prev._fcObs.forEach(o => o.disconnect()); prev.stop(); prev.remove(); } catch (e) { /* schon weg */ } }
+    const label = (opts.label || 'Karte') + '. Mit Pfeiltasten verschieben, Plus und Minus zoomen.';
+    const box = reuse ? prev._fcBox : h('div', { class: 'gm-map', role: 'region' });
+    box.style.height = (opts.height || 420) + 'px';
+    box.setAttribute('aria-label', label);
     const info = h('div', { class: 'gm-info muted small', role: 'status' });
     const toggle = h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(on),
       onclick: () => {
@@ -10484,21 +10494,68 @@ svg.leaflet-image-layer.leaflet-interactive path {
       h('span', { class: 'muted small', text: on ? 'Straßenkarte von ' + p.name + ' (' + p.host + ')' + (p.testOnly ? ' · Testbetrieb' : '') + '.'
         : c.on && failedHosts.has(p.host) ? 'Die Straßenkarte von ' + p.name + ' ließ sich nicht laden (Anbieter nicht erreichbar oder vom Viewer blockiert). Umrisskarte aktiv, „Straßenkarte laden“ versucht es erneut.'
         : 'Umrisskarte offline: keine Datenübertragung an Dritte.' }));
-    const st = opts.states || null;
     const cls = GL.classes(st ? Object.values(st).map(s => s.n || 0) : []);
     const wrap = h('div', { class: 'gm-wrap' }, bar, asking === id ? consentPanel(id, p) : null, box, st ? legendFor(cls) : null, info);
     if (!L) { box.replaceChildren(h('p', { class: 'muted small', text: 'Kartenbibliothek nicht geladen.' })); return wrap; }
+    const pts = (opts.points || []).filter(q => typeof q.lat === 'number' && typeof q.lon === 'number');
+    const note = () => { if (opts.note && !info.textContent) info.textContent = opts.note; };
+
+    // Bundesländer als Choropleth: Klasse aus geo-logic, Fläche Grün mit steigender Deckkraft.
+    const paint = map => {
+      const de = tok('--surface'), ink = tok('--ink-muted'), acc = tok('--accent'), focus = tok('--focus');
+      for (const [name, poly] of Object.entries(map._fcPolys)) {
+        const s = st ? st[name] || {} : {};
+        const k = cls.classOf(s.n || 0), o = cls.legend[k].opacity;
+        poly.setStyle({ color: s.sel ? focus : s.home ? acc : ink, opacity: s.sel || s.home ? 1 : 0.55, weight: s.sel ? 3 : s.home ? 2.5 : 1,
+          fillColor: k ? acc : de, fillOpacity: k ? (on ? o * 0.8 : o) : (on ? 0 : 1) });
+        if (st && opts.onState) {
+          const lab = name + ', ' + (s.n || 0) + ((s.n || 0) === 1 ? ' Ausschreibung' : ' Ausschreibungen') + (s.home ? ', Heimatregion' : '');
+          poly._fcLabel = lab;
+          if (poly.getTooltip()) poly.setTooltipContent(lab); else poly.bindTooltip(lab, { sticky: true, direction: 'top' });
+          const el = poly.getElement(); if (el) el.setAttribute('aria-label', lab);
+        }
+      }
+    };
+    // Pins: Ausschreibungen und Projekte gebündelt (Leaflet.markercluster), Standorte immer einzeln.
+    // Neu aufgebaut wird nur, wenn sich Lage, Text oder Art der Pins geändert haben.
+    const pinSig = JSON.stringify(pts.map(q => [q.lat, q.lon, q.label, q.sub || '', q.kind || '', !!q.approx, !!q.onClick]));
+    const pins = map => {
+      map._fcPts = pts;
+      if (map._fcPinSig === pinSig) return;
+      map._fcPinSig = pinSig;
+      map._fcGroup.clearLayers();
+      map._fcHomes.clearLayers();
+      pts.forEach((q, i) => {
+        const home = q.kind === 'home';
+        const m = L.marker([q.lat, q.lon], { icon: pinIcon(q, home), title: q.label + (q.sub ? ' · ' + q.sub : ''), alt: q.label, keyboard: !!q.onClick, zIndexOffset: home ? 1000 : 0 });
+        m.bindTooltip(q.label + (q.sub ? ' · ' + q.sub : ''), { direction: 'top', offset: [0, -8] });
+        // Leaflet löst bei Enter auf einem fokussierten Pin selbst „click“ aus. Handler aus dem jüngsten Renderlauf.
+        if (q.onClick) m.on('click', () => { const cur = map._fcPts[i]; if (!cur || !cur.onClick) return; if (app.haptic) app.haptic(8); cur.onClick(); });
+        (home ? map._fcHomes : map._fcGroup).addLayer(m);
+      });
+    };
+
+    if (reuse) {
+      prev._fcOpts = opts;
+      paint(prev);
+      pins(prev);
+      note();
+      return wrap;
+    }
 
     const init = () => {
       if (!box.isConnected || maps[id]) return;
       const map = L.map(box, { zoomSnap: 0.25, minZoom: 4, maxZoom: 18, scrollWheelZoom: true, keyboard: true, attributionControl: true });
       maps[id] = map;
       map._fcObs = [];
+      map._fcKey = key;
+      map._fcBox = box;
+      map._fcOpts = opts;
       map.on('zoomend', () => { box.dataset.zoom = String(map.getZoom()); });
       map.fitBounds(DE_BOUNDS, { animate: false }); // Ansicht vor dem ersten Layer setzen, sonst fehlen Pixelgrenzen
       map.attributionControl.setPrefix(false);
       const G = data();
-      const de = tok('--surface'), line = tok('--line'), land = tok('--surface-muted'), ink = tok('--ink-muted'), acc = tok('--accent'), focus = tok('--focus');
+      const line = tok('--line'), land = tok('--surface-muted');
       if (!on) {
         map.getContainer().style.background = tok('--line-soft');
         const feats = Object.entries(G.countries).filter(([cc]) => cc !== 'DE').flatMap(([, rings]) => rings.map(r => L.polygon(ring(r), { color: line, weight: 0.8, fillColor: land, fillOpacity: 1, interactive: false })));
@@ -10520,43 +10577,32 @@ svg.leaflet-image-layer.leaflet-interactive path {
         });
         tiles.addTo(map);
       }
-      // Bundesländer als Choropleth: Klasse aus geo-logic, Fläche Grün mit steigender Deckkraft.
+      map._fcPolys = {};
       for (const [name, rings] of Object.entries(G.states)) {
-        const s = st ? st[name] || {} : {};
-        const k = cls.classOf(s.n || 0), o = cls.legend[k].opacity;
-        const poly = L.polygon(rings.map(ring), {
-          color: s.sel ? focus : s.home ? acc : ink, opacity: s.sel || s.home ? 1 : 0.55, weight: s.sel ? 3 : s.home ? 2.5 : 1,
-          fillColor: k ? acc : de, fillOpacity: k ? (on ? o * 0.8 : o) : (on ? 0 : 1), interactive: !!(st && opts.onState)
-        });
+        const poly = L.polygon(rings.map(ring), { interactive: !!(st && opts.onState) });
         if (st && opts.onState) {
-          const lab = name + ', ' + (s.n || 0) + ((s.n || 0) === 1 ? ' Ausschreibung' : ' Ausschreibungen') + (s.home ? ', Heimatregion' : '');
-          poly.bindTooltip(lab, { sticky: true, direction: 'top' });
-          poly.on('add', () => { const el = poly.getElement(); if (el) el.setAttribute('aria-label', lab); });
-          poly.on('click', () => opts.onState(name));
+          poly.on('add', () => { const el = poly.getElement(); if (el && poly._fcLabel) el.setAttribute('aria-label', poly._fcLabel); });
+          poly.on('click', () => { const o = map._fcOpts; if (o && o.onState) o.onState(name); });
         }
+        map._fcPolys[name] = poly;
         poly.addTo(map);
       }
-      // Pins: Ausschreibungen und Projekte gebündelt (Leaflet.markercluster), Standorte immer einzeln.
-      const pts = (opts.points || []).filter(q => typeof q.lat === 'number' && typeof q.lon === 'number');
-      const group = L.markerClusterGroup
+      map._fcGroup = L.markerClusterGroup
         ? L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 48, spiderfyOnMaxZoom: true, chunkedLoading: true,
           iconCreateFunction: cl => L.divIcon({ html: String(cl.getChildCount()), className: 'marker-cluster gm-cluster', iconSize: L.point(34, 34) }) })
         : L.layerGroup();
-      for (const q of pts) {
-        const home = q.kind === 'home';
-        const m = L.marker([q.lat, q.lon], { icon: pinIcon(q, home), title: q.label + (q.sub ? ' · ' + q.sub : ''), alt: q.label, keyboard: !!q.onClick, zIndexOffset: home ? 1000 : 0 });
-        m.bindTooltip(q.label + (q.sub ? ' · ' + q.sub : ''), { direction: 'top', offset: [0, -8] });
-        // Leaflet löst bei Enter auf einem fokussierten Pin selbst „click“ aus.
-        if (q.onClick) m.on('click', () => { if (app.haptic) app.haptic(8); q.onClick(); });
-        if (home) m.addTo(map); else group.addLayer(m);
-      }
-      group.addTo(map);
+      map._fcHomes = L.layerGroup();
+      // Erster Lauf: Färbung und Pins wie bei jedem späteren Renderlauf.
+      paint(map);
+      pins(map);
+      map._fcGroup.addTo(map);
+      map._fcHomes.addTo(map);
       const b = L.latLngBounds(DE_BOUNDS);
       for (const q of pts) b.extend([q.lat, q.lon]);
       map.fitBounds(b, { padding: [12, 12], animate: false });
       box.dataset.zoom = String(map.getZoom());
       if (window.ResizeObserver) { const ro = new ResizeObserver(() => { if (maps[id] === map && box.isConnected) { try { map.invalidateSize({ animate: false }); } catch (e) { /* entfernt */ } } }); ro.observe(box); map._fcObs.push(ro); }
-      if (opts.note && !info.textContent) info.textContent = opts.note;
+      note();
     };
     // Lazy: Karte (und ggf. Kacheln) erst aufbauen, wenn sie in den sichtbaren Bereich kommt.
     requestAnimationFrame(() => requestAnimationFrame(() => {
