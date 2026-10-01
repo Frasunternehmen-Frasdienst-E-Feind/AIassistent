@@ -195,3 +195,29 @@ test('EU-Endpunkt Stadia: Dialog weist auf EU-Server hin, Kacheln nur von tiles-
   assert.match(await page.locator('.gm-map .leaflet-control-attribution').innerText(), /© Stadia Maps © OpenMapTiles/);
   await ctx.close();
 });
+
+test('Filterwechsel: Karte bleibt dieselbe, Zoom bleibt, nur Färbung und Auswahl ändern sich', async () => {
+  const { page, ctx, errors } = await open();
+  const map = page.locator('.gm-map.leaflet-container');
+  await map.evaluate(el => { el.dataset.e2eMark = 'erste'; });
+  await map.click({ position: { x: 40, y: 40 } });
+  await page.keyboard.press('+');
+  await page.waitForTimeout(500);
+  const zoom = await map.getAttribute('data-zoom');
+  const sachsen = page.locator('.gm-map path.leaflet-interactive[aria-label^="Sachsen,"]');
+  await sachsen.dispatchEvent('click');
+  await page.waitForTimeout(400);
+  assert.equal(await page.locator('#geo-SN').getAttribute('aria-pressed'), 'true');
+  assert.equal(await page.locator('.gm-map.leaflet-container').getAttribute('data-e2e-mark'), 'erste', 'Kartencontainer wurde neu erzeugt');
+  assert.equal(await page.locator('.gm-map.leaflet-container').getAttribute('data-zoom'), zoom, 'Zoom wurde zurückgesetzt');
+  assert.equal(await page.locator('.gm-map path.leaflet-interactive[aria-label^="Sachsen,"]').getAttribute('stroke-width'), '3');
+  assert.equal(await page.locator('.gm-map').count(), 1);
+  // Zweiter Klick hebt den Filter auf, die Karte bleibt weiterhin dieselbe.
+  await page.locator('.gm-map path.leaflet-interactive[aria-label^="Sachsen,"]').dispatchEvent('click');
+  await page.waitForTimeout(400);
+  assert.notEqual(await page.locator('#geo-SN').getAttribute('aria-pressed'), 'true');
+  assert.equal(await page.locator('.gm-map.leaflet-container').getAttribute('data-e2e-mark'), 'erste');
+  assert.equal(await page.locator('.gm-map .marker-cluster, .gm-map .gm-home').count() > 0, true);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});

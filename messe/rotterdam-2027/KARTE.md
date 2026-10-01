@@ -99,7 +99,7 @@ Hinweise:
 | Modul in `feind-cockpit-v3.html` | Aufgabe |
 |---|---|
 | `geo-logic.js` | reine Funktionen: `classes()`, `provider()` (inkl. `eu`, `warning`), `presets()`, `consent.read/grant/setOn` |
-| `geomap.js` | `app.geoMap(opts)`: Leaflet, Einwilligungsdialog, Legende, Cluster, Lazy-Init per IntersectionObserver, Ladehinweis (`aria-busy`) |
+| `geomap.js` | `app.geoMap(opts)`: Leaflet, Einwilligungsdialog, Legende, Cluster, Lazy-Init per IntersectionObserver, Ladehinweis (`aria-busy`), Wiederverwendung der Karte bei Filterwechsel |
 | `config.js` | `mapTiles` in `merge()` |
 | `app-admin.js` | Karte „Straßenkarte: Kachelanbieter“ mit Vorlage „Stadia Maps, EU-Endpunkt“ |
 | `app-marketing.js` | `regionMap()`: liefert Zählung, Auswahl und Pins an `app.geoMap` |
@@ -120,6 +120,7 @@ Chromium `localStorage` gelegentlich beim Neuladen. Jeder Request an einen ander
 - Der Widerruf wirkt.
 - Ein konfigurierter EU-Anbieter wird genutzt.
 - Ein Klick auf ein Land setzt den Filter.
+- Beim Filterwechsel bleiben Karte und Zoom erhalten.
 - Cluster sind aktiv.
 - Die Tastatur zoomt.
 
@@ -127,9 +128,10 @@ Chromium `localStorage` gelegentlich beim Neuladen. Jeder Request an einen ander
 
 - Pins gibt es nur für Orte, die das eingebaute Ortsverzeichnis findet. Beispiel: „München“
   wurde im Test nicht gefunden, das Land Bayern wird trotzdem gezählt und eingefärbt.
-- Cluster und Choropleth werden bei jedem Filterwechsel neu aufgebaut, wie bisher bei `app.refresh()`.
-  Bei Hunderten Pins ist das unkritisch (`chunkedLoading`). Bei vierstelligen Mengen sollte man die
-  Karte zwischen Renderläufen wiederverwenden.
+- Seit v3.2 bleibt die Leaflet-Karte über Renderläufe erhalten. Ein Filterwechsel färbt nur die
+  Länder neu (`setStyle`) und tauscht die Pins nur, wenn sich Lage, Text oder Art geändert haben.
+  Ausschnitt und Zoom bleiben stehen. Neu aufgebaut wird die Karte nur, wenn Anbieter,
+  Einwilligung, Modus (mit/ohne Länderfilter) oder Theme wechseln. Der E2E-Test „Filterwechsel“ prüft das.
 
 ## Abgleich mit der Arbeitsanweisung „Kartenansicht (Leaflet)“ vom 01.10.2026
 
@@ -145,6 +147,7 @@ Chromium `localStorage` gelegentlich beim Neuladen. Jeder Request an einen ander
 | Layer-Toggle mit gespeicherter Wahl | erfüllt | E2E „Wahl bleibt nach Neuladen“ |
 | Marker-Clustering aktiv | erfüllt | E2E Cluster |
 | Datenschutzerklärung um Kachelanbieter ergänzt | erfüllt als Entwurf (Bericht v1.4, Abschnitt 12.1) | **Bitte Rechtsabteilung prüfen** |
+| Keine unnötigen Re-Renders bei Filterwechsel (Abschnitt 10) | erfüllt | E2E „Filterwechsel: Karte bleibt dieselbe“ |
 | Tests vorhanden und grün | erfüllt | `npm run test:cockpit`, `npm run test:cockpit:e2e` |
 | Dokumentation aktualisiert | erfüllt | diese Datei |
 
