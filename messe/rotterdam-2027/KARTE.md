@@ -92,11 +92,11 @@ Hinweise:
 ```bash
 npm install                      # einmalig, holt playwright
 npm run test:cockpit             # Unit: geo-logic.js, config.js (node --test)
-npm run test:cockpit:e2e         # E2E: Chromium, Seite per file://
+npm run test:cockpit:e2e         # E2E: Chromium, Seite vom Test-Ursprung http://cockpit.test
 ```
 
-Ist Chromium nicht über Playwright installiert, setzt man `PW_CHROMIUM=/pfad/zu/chrome`. Die E2E-Tests schreiben jeden Request außerhalb
-von `file:` mit und prüfen:
+Ist Chromium nicht über Playwright installiert, setzt man `PW_CHROMIUM=/pfad/zu/chrome`. Die E2E-Tests liefern die Seite selbst unter `http://cockpit.test` aus, nicht per `file://`. Dort verliert
+Chromium `localStorage` gelegentlich beim Neuladen. Jeder Request an einen anderen Ursprung wird mitgeschrieben. Geprüft wird:
 - Ohne Einwilligung gibt es keinen Request, auch keine Schrift.
 - Der Dialog nennt den Anbieter, Abbrechen lädt nichts.
 - Nach der Einwilligung kommen Kacheln vom richtigen Host, die Namensnennung ist sichtbar und die Wahl bleibt nach dem Neuladen.
