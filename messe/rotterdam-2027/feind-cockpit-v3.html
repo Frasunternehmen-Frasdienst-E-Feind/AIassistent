@@ -6741,7 +6741,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   const { h, panelHead, chip } = app;
   const { str, arr, fmtTs } = H;
   const S = app.state;
-  const ui = S.ui.adm = { sec: 'module', note: '', reqText: '', stamp: null, plan: null, planInput: null, planCheck: null, planMsg: '', legacyMsg: '', busy: false };
+  const ui = S.ui.adm = { sec: 'module', note: '', reqText: '', stamp: null, plan: null, planInput: null, planCheck: null, planMsg: '', legacyMsg: '', busy: false, tilePreset: '' };
   const rerender = () => app.refresh();
   const live = () => C.merge(S.docs.adminConfig);
   const isAdmin = () => app.isAdmin();
@@ -6959,11 +6959,14 @@ svg.leaflet-image-layer.leaflet-interactive path {
     const p = FC.geoLogic ? FC.geoLogic.provider(e.mapTiles) : null;
     // Vorlage füllt alle vier Felder; den API-Key hängt der Admin an die Kachel-URL an.
     const presets = FC.geoLogic && FC.geoLogic.presets ? FC.geoLogic.presets() : [];
-    const sel = h('select', { id: 'mt-preset', disabled: dis }, h('option', { value: '', text: 'Vorlage wählen …' }), presets.map(x => h('option', { value: x.id, text: x.label })));
+    // Auswahl im UI-Zustand, damit ein Renderlauf zwischen Wählen und Übernehmen sie nicht zurücksetzt.
+    const sel = h('select', { id: 'mt-preset', disabled: dis, onchange: ev => { ui.tilePreset = ev.target.value; } },
+      h('option', { value: '', text: 'Vorlage wählen …' }), presets.map(x => h('option', { value: x.id, text: x.label, selected: ui.tilePreset === x.id })));
     const use = h('button', { class: 'btn', type: 'button', disabled: dis, onclick: () => {
-      const x = presets.find(q => q.id === sel.value);
+      const x = presets.find(q => q.id === (sel.value || ui.tilePreset));
       if (!x) { sel.focus(); return; }
       e.mapTiles = { name: x.name, url: x.url, attribution: x.attribution, privacyUrl: x.privacyUrl };
+      ui.tilePreset = '';
       changed();
     } }, 'Vorlage übernehmen');
     const state = !p ? '' : p.error ? 'Ungültig: ' + p.error + ' Es gilt OpenStreetMap.'
