@@ -4,14 +4,14 @@
  "title": "Stand Duty & Schedule Rotterdam 2027",
  "event": "InfraTech 2027 · Rotterdam Ahoy · Booth 5.209 · Tue 12–Fri 15 January 2027",
  "chip": "Schedule",
- "src": "Fillable schedule · Source: Project Hub + To-Do focus sheet · as of 28 Sep 2026",
+ "src": "Fillable schedule · Source: Project Hub + To-Do focus sheet · as of 30 Sep 2026",
  "intern": "INTERNAL / confidential – contains team names, do not publish.",
  "basis": "Base: Project Hub (dates, build-up) + InfraTech 2027 handbook",
  "howto": "How to use this schedule",
  "howto_lines": [
   "1)  Tick the box = done.   2)  Status dropdown on the right: Open / Confirmed / In progress / Done / N/A.",
   "3)  Note field per item – time, names, location, link (max. 250 characters).",
-  "Core times from Project Hub/handbook; confirm exact opening/build-up/teardown times before printing.",
+  "Opening Tue–Thu 10:00–18:00, Fri 10:00–16:00 (per handbook – confirm before printing); build-up/teardown slots via Ahoy portal.",
   "Default “Open”; enter stand-duty names in the note field. Prints in any PDF viewer."
  ],
  "legend_label": "Legend:",
@@ -48,19 +48,19 @@
    "Rotterdam Ahoy, Ahoyweg 10 · Booth 5.209"
   ],
   [
-   "Build-up",
-   "from Wed 7 Jan 2027 (per Project Hub)"
+   "Opening hours",
+   "Tue–Thu 10:00–18:00 · Fri 10:00–16:00 (per handbook – to confirm)"
   ],
   [
-   "Opening hours",
-   "confirm per InfraTech handbook"
+   "Build-up",
+   "from Wed 7 Jan 2027 – slot per Ahoy portal"
   ],
   [
    "Teardown",
-   "after close Fri 15 Jan – times per handbook"
+   "Fri 15 Jan from 16:00 (after close) – slot per Ahoy portal"
   ]
  ],
- "blocker_note": "Times from Project Hub/handbook. Confirm exact opening, build-up and teardown times before printing.",
+ "blocker_note": "Opening Tue–Thu 10:00–18:00, Fri 10:00–16:00 (per handbook – confirm before printing). Book build-up and teardown time slots via the Ahoy exhibitor portal.",
  "status": [
   "Open",
   "Confirmed",
@@ -93,7 +93,7 @@
   "https://app.clickup.com/90122021025/v/l/li/901222034862",
   "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"
  ],
- "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Booth 5.209  ·  As of 28 Sep 2026",
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Booth 5.209  ·  As of 30 Sep 2026",
  "page": "Page",
  "cont": "continued",
  "brand": "SCHEDULE · Rotterdam 2027",
@@ -128,12 +128,12 @@
    "Fair-day flow (daily Tue–Fri)",
    [
     [
-     "none",
-     "Stand team present before opening – short briefing, coffee on"
+     "ok",
+     "Team on site from 09:00 (1 h before opening) – short briefing, coffee on"
     ],
     [
-     "none",
-     "Opening: start outreach on the show floor (not just at the stand)"
+     "ok",
+     "Opening 10:00: start outreach on the show floor (not just at the stand)"
     ],
     [
      "none",
@@ -141,24 +141,36 @@
     ],
     [
      "warn",
-     "Midday rotation of stand staffing – breaks per working-time law"
+     "Shift change/rotation ~14:00 – breaks per working-time law (>6 h: 30 min)"
     ],
     [
      "none",
-     "End of day: secure leads, restock material & giveaways"
+     "End of day from close (Tue–Thu 18:00, Fri 16:00): secure leads, restock material & giveaways"
     ]
    ]
   ],
   [
-   "Stand-duty shifts (names in the note field)",
+   "Stand-duty shifts · 2-shift model (names in the note field)",
    [
     [
-     "none",
-     "Early shift (before opening–midday) – enter staffing"
+     "ok",
+     "Team on site from 09:00 – short briefing (1 h before opening 10:00)"
     ],
     [
      "none",
-     "Late shift (midday–close) – enter staffing"
+     "Early shift 09:00–14:00 – enter staffing"
+    ],
+    [
+     "ok",
+     "Handover 13:45–14:00 – brief leads & open conversations"
+    ],
+    [
+     "none",
+     "Late shift 13:45 until close +30 min (Tue–Thu until 18:30, Fri until 16:30) – enter staffing"
+    ],
+    [
+     "add",
+     "Friday shortened (close 16:00): bring shift change forward to ~13:00 if needed"
     ],
     [
      "none",
@@ -184,7 +196,7 @@
    ]
   ],
   [
-   "Teardown (Fri 15 Jan after close)",
+   "Teardown (Fri 15 Jan from 16:00 after close)",
    [
     [
      "none",

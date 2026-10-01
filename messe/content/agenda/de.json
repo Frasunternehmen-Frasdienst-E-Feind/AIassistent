@@ -4,14 +4,14 @@
  "title": "Standdienst- & Ablaufplan Rotterdam 2027",
  "event": "InfraTech 2027 · Rotterdam Ahoy · Stand 5.209 · Di 12.–Fr 15. Januar 2027",
  "chip": "Ablaufplan",
- "src": "Ausfüllbarer Ablaufplan · Quelle: Projekt-Hub + ToDo-Brennglas · Stand 28.09.2026",
+ "src": "Ausfüllbarer Ablaufplan · Quelle: Projekt-Hub + ToDo-Brennglas · Stand 30.09.2026",
  "intern": "INTERN / vertraulich – enthält Teamnamen, nicht veröffentlichen.",
  "basis": "Basis: Projekt-Hub (Termine, Aufbau) + Handbuch InfraTech 2027",
  "howto": "So funktioniert der Ablaufplan",
  "howto_lines": [
   "1)  Kästchen abhaken = erledigt.   2)  Status-Dropdown rechts: Offen / Bestätigt / Läuft / Erledigt / Entfällt.",
   "3)  Notizfeld je Position – Uhrzeit, Namen, Ort, Link (max. 250 Zeichen).",
-  "Kernzeiten aus Projekt-Hub/Handbuch; exakte Öffnungs-/Auf-/Abbauzeiten vor Druck bestätigen.",
+  "Öffnung Di–Do 10:00–18:00, Fr 10:00–16:00 (lt. Handbuch – vor Druck final bestätigen); Auf-/Abbau-Slots über Ahoy-Portal.",
   "Vorbelegung „Offen“; Standdienst-Namen ins Notizfeld eintragen. Druck in jedem PDF-Viewer."
  ],
  "legend_label": "Legende:",
@@ -48,19 +48,19 @@
    "Rotterdam Ahoy, Ahoyweg 10 · Stand 5.209"
   ],
   [
-   "Aufbau",
-   "ab Mi 07.01.2027 (lt. Projekt-Hub)"
+   "Öffnungszeiten",
+   "Di–Do 10:00–18:00 · Fr 10:00–16:00 (lt. Handbuch – final best.)"
   ],
   [
-   "Öffnungszeiten",
-   "lt. InfraTech-Handbuch bestätigen"
+   "Aufbau",
+   "ab Mi 07.01.2027 – Slot lt. Ahoy-Portal"
   ],
   [
    "Abbau",
-   "nach Schluss Fr 15.01. – Zeiten lt. Handbuch"
+   "Fr 15.01. ab 16:00 (nach Schluss) – Slot lt. Ahoy-Portal"
   ]
  ],
- "blocker_note": "Zeiten aus Projekt-Hub/Handbuch. Exakte Öffnungs-, Auf- und Abbauzeiten vor dem Druck final bestätigen.",
+ "blocker_note": "Öffnung Di–Do 10:00–18:00, Fr 10:00–16:00 (lt. Handbuch – vor dem Druck final bestätigen). Auf- und Abbau-Zeitfenster über das Ahoy-Ausstellerportal buchen.",
  "status": [
   "Offen",
   "Bestätigt",
@@ -93,7 +93,7 @@
   "https://app.clickup.com/90122021025/v/l/li/901222034862",
   "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"
  ],
- "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stand 5.209  ·  Stand 28.09.2026",
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stand 5.209  ·  Stand 30.09.2026",
  "page": "Seite",
  "cont": "Fortsetzung",
  "brand": "ABLAUFPLAN · Rotterdam 2027",
@@ -128,12 +128,12 @@
    "Messetag-Ablauf (täglich Di–Fr)",
    [
     [
-     "none",
-     "Standteam vor Öffnung da – Kurz-Briefing, Kaffeemaschine an"
+     "ok",
+     "Team ab 09:00 vor Ort (1 h vor Öffnung) – Kurz-Briefing, Kaffeemaschine an"
     ],
     [
-     "none",
-     "Öffnung: Ansprache auf der Messefläche starten (nicht nur am Stand)"
+     "ok",
+     "Öffnung 10:00: Ansprache auf der Messefläche starten (nicht nur am Stand)"
     ],
     [
      "none",
@@ -141,24 +141,36 @@
     ],
     [
      "warn",
-     "Mittags-Rotation der Standbesetzung – Pausen nach ArbZG"
+     "Schichtwechsel/Rotation ~14:00 – Pausen nach ArbZG (>6 h: 30 Min)"
     ],
     [
      "none",
-     "Tagesabschluss: Leads sichern, Material & Give-aways auffüllen"
+     "Tagesabschluss ab Schluss (Di–Do 18:00, Fr 16:00): Leads sichern, Material & Give-aways auffüllen"
     ]
    ]
   ],
   [
-   "Standdienst-Schichten (Namen ins Notizfeld)",
+   "Standdienst-Schichten · 2-Schicht-Modell (Namen ins Notizfeld)",
    [
     [
-     "none",
-     "Frühschicht (vor Öffnung–Mittag) – Besetzung eintragen"
+     "ok",
+     "Team vor Ort ab 09:00 – Kurz-Briefing (1 h vor Öffnung 10:00)"
     ],
     [
      "none",
-     "Spätschicht (Mittag–Schluss) – Besetzung eintragen"
+     "Frühschicht 09:00–14:00 – Besetzung eintragen"
+    ],
+    [
+     "ok",
+     "Übergabe 13:45–14:00 – Leads & offene Gespräche briefen"
+    ],
+    [
+     "none",
+     "Spätschicht 13:45 bis Schluss +30 Min (Di–Do bis 18:30, Fr bis 16:30) – Besetzung eintragen"
+    ],
+    [
+     "add",
+     "Freitag verkürzt (Schluss 16:00): Schichtwechsel ggf. auf ~13:00 vorziehen"
     ],
     [
      "none",
@@ -184,7 +196,7 @@
    ]
   ],
   [
-   "Abbau (Fr 15.01. nach Schluss)",
+   "Abbau (Fr 15.01. ab 16:00 nach Schluss)",
    [
     [
      "none",
