@@ -147,4 +147,3 @@
 
   return { STATUS, FLAG, WRITABLE, NOTION_OWNED, LABEL, pageId, rowToTask, rowsToTasks, splitPatch, toProps, newTaskProps, conflicts, norm };
 });
-
