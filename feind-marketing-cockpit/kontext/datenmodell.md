@@ -5,6 +5,27 @@ Einzige Datenquelle des Dashboards. Der Feind Copilot und die Skills schreiben h
 `batch`, `list`, `query`), das Dashboard liest live (`onSnapshot`).
 Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 
+## Aufgaben InfraTech 2027: Notion ist führend (Entscheidung David, 01.10.2026)
+
+* Einzige führende Aufgabenliste ist die Notion-Datenbank „Aufgaben InfraTech 2027“
+  (https://app.notion.com/p/5718273f9a2c4ba085d5da4e62c0c878, Data Source
+  `b640ffee-6dfd-4324-b3d6-4b1f2fec0153`). Aufgaben, Status und erledigte Punkte werden dort
+  gepflegt; alles andere wird daraus abgeleitet. Zuständigkeit nur als Rolle (`Zuständig (Rolle)`);
+  `Person (intern)` liest das Cockpit nie.
+* Das Cockpit liest Notion live (je Minute) und schreibt Status, Notiz, Fällig, Priorität,
+  Beschluss und Archiviert zurück (Notion gewinnt je Feld; vor dem Schreiben wird neu gelesen,
+  inzwischen geänderte Felder nur nach Rückfrage). Der PDF-Rücklauf darf zusätzlich
+  `Zuständig (Rolle)` setzen.
+* Reihenfolge der Quellen im Cockpit: Notion live → Notion-Stand `notion/tasks` → eingebaute
+  Liste im HTML (nur Notfallstand vom 28.09.2026, sichtbar als „Notfallstand, nicht aktuell“ gekennzeichnet,
+  nie mit Notion-Daten gemischt, nicht beschreibbar).
+* Die Event-Checkliste der InfraTech 2027 (`events/infratech-2027`) wird aus den Notion-Aufgaben
+  abgeleitet (Fortschritt je Bereich). Abhaken dort schreibt nach Rückfrage die Notion-Aufgabe;
+  `events/infratech-2027.checklist` wird nicht mehr geschrieben und bleibt nur Archiv/Rückfall,
+  bis `checklistMigrated` gesetzt ist.
+* ClickUp-Liste „[ARCHIV] Messe Rotterdam 2027 – InfraTech“ ist stillgelegt (nur Link auf Notion);
+  dort keine neuen Aufgaben anlegen. Abgleich vom 01.10.2026: `konzepte/aufgaben-abgleich-2026-10-01.md`.
+
 Grundregeln
 * Datum immer `JJJJ-MM-TT`, Zeitstempel ISO 8601. IDs: kleinbuchstaben-mit-bindestrich.
 * **Keine personenbezogenen Daten**: keine Namen, E-Mail-Adressen oder Telefonnummern
@@ -21,7 +42,9 @@ Grundregeln
 | `mkt_leads/<id>` | `organisation, orgType ("bauunternehmen"\|"kommune"\|"behoerde"\|"ingenieurbuero"\|"sonstige"), stage ("neu"\|"qualifiziert"\|"angebot"\|"verhandlung"\|"gewonnen"\|"verloren"), channel ("website"\|"linkedin"\|"empfehlung"\|"ausschreibung"\|"messe"\|"telefon"), region, landkreis, service, valueBand?, createdAt, lastContact, nextAction, nextActionDate, source` |
 | `leads/counts` | Nur Stückzahlen des InfraTech-Lead-Zählers: `{ days: { "JJJJ-MM-TT": {a, b, c} }, updatedAt }`. Marketing-Leads gehören nicht unter `leads/`. |
 | `tenders/<id>` | `title, authority, cpv: [string], region, deadline, portal, url, fit ("passt"\|"pruefen"\|"passt_nicht"), fitReason, status ("neu"\|"in_pruefung"\|"angebot"\|"abgegeben"\|"verworfen"), statusNote?, foundAt, source` |
-| `events/<id>` | `title, type ("messe"\|"tag_der_offenen_tuer"\|"baustellenbesichtigung"\|"sonstiges"), date, endDate?, location, checklist: [{area ("sicherheit"\|"ansprechpartner"\|"materialien"\|"verkehrssicherung"\|"logistik"\|"budget"\|"marketing"\|"nachbereitung"), item, done: bool}], nextStep?, leadsCaptured: number, followupStatus ("offen"\|"laeuft"\|"erledigt"), source` |
+| `events/<id>` | `title, type ("messe"\|"tag_der_offenen_tuer"\|"baustellenbesichtigung"\|"sonstiges"), date, endDate?, location, checklist: [{area ("sicherheit"\|"ansprechpartner"\|"materialien"\|"verkehrssicherung"\|"logistik"\|"budget"\|"marketing"\|"nachbereitung"), item, done: bool}], nextStep?, leadsCaptured: number, followupStatus ("offen"\|"laeuft"\|"erledigt"), checklistMigrated?: {at, by (Nutzer-ID), to: "notion"}, source`. Für `infratech-2027` ist `checklist` nur Archiv; die Checkliste kommt aus Notion (siehe oben). |
+| `tasks/<id>` | Zwischenstand der InfraTech-Aufgaben im Cockpit: `links: [{label, url}]`, `attachments: [{id, name, type}]`, bei im Cockpit neu angelegten Aufgaben die Aufgabenfelder mit `custom: true, notionPending` bis zur Übertragung nach Notion. Fachliche Felder führt Notion. |
+| `notion/tasks` | Letzter Notion-Stand der Aufgaben für Ansichten ohne Notion-Zugang: `{ at, tasks: [{id, title, status, prio, due, note, beschluss, budget, archived, flags, cat, owner (Rollen-Schlüssel), deps?, nr, source, _nurl}] }`. Schreibt nur das Cockpit (bei Änderung, höchstens alle 5 Minuten). |
 | `seo_keywords/<id>` | `keyword, region, position, previousPosition?, url, clicks, impressions, checkedAt, source` |
 | `seo_traffic/<JJJJ-MM>` | `month, clicks, impressions, ctr, avgPosition, sessions?, source` |
 | `seo_gaps/<id>` | `topic, service, region, reason, priority ("hoch"\|"mittel"\|"niedrig"), source` |

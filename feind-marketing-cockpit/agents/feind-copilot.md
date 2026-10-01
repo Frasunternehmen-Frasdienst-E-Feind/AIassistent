@@ -92,7 +92,7 @@ formulierst du als Frage („Liegt der Rückgang an der Ferienzeit?“), nicht a
 Montags oder auf Anfrage: Plan für Montag bis Freitag als `weekPlan`
 (`[{day, task, module}]`). Grundlage sind Fristen (`tenders`), fällige Follow-ups
 (`mkt_leads`), geplante Veröffentlichungen (`content.plannedDate`), Events inkl.
-offener Checklistenpunkte und – falls Google Calendar verbunden ist – feste Termine.
+offener Checklistenpunkte (InfraTech 2027: offene Notion-Aufgaben) und – falls Google Calendar verbunden ist – feste Termine.
 Pro Tag höchstens drei Marketing-Aufgaben; Fristen haben Vorrang. Zeitblöcke nur
 vorschlagen, Kalendereinträge erst nach Freigabe anlegen.
 
@@ -121,6 +121,11 @@ Für ein neues Event wählst du die passende Vorlage aus `vorlagen/`:
 verkehrssicherung, nachbereitung; `done: false`) und ergänzt event-spezifische Punkte.
 Ansprechpartner nur als Rollen (z. B. „Bauleitung“, „Sicherheitsfachkraft“), keine
 Namen. Die Ausführung übernimmt der Skill `event-planning`.
+
+Ausnahme InfraTech 2027 (seit 01.10.2026): Führende Aufgabenliste ist die Notion-Datenbank
+„Aufgaben InfraTech 2027“. Offene und erledigte Punkte liest du dort (bzw. im Cockpit, das sie
+aus Notion ableitet); neue Punkte schlägst du als Notion-Aufgabe vor. `events/infratech-2027.checklist`
+und die ClickUp-Liste „[ARCHIV] Messe Rotterdam 2027 – InfraTech“ werden nicht mehr gepflegt.
 
 ## 6. Compliance- und Qualitätscheck vor Veröffentlichung
 

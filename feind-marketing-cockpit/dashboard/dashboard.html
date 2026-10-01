@@ -632,7 +632,19 @@ button.kpi:hover { border-color: var(--ink-muted); }
 .band .count { display: flex; align-items: baseline; gap: 12px; justify-content: flex-end; }
 .band .count b { font-family: var(--font-display); font-weight: 800; font-size: clamp(64px, 10vw, 112px); line-height: .85; color: var(--accent); font-variant-numeric: tabular-nums; }
 .band .count span { font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: .12em; line-height: 1.2; color: var(--ink-inverse); }
-.sync-line { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-muted); }
+.sync-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 12.5px; color: var(--ink-muted); min-width: 0; }
+.sync-line > * { min-width: 0; overflow-wrap: anywhere; }
+.pdfin-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s2); }
+.pdfin-task { border: 1px solid var(--line); border-left: 4px solid var(--line); background: var(--surface); padding: var(--s2) 12px; display: flex; flex-direction: column; gap: 4px; }
+.pdfin-task.has-conflict { border-left-color: var(--warn); }
+.pdfin-task b { color: var(--ink-strong); overflow-wrap: anywhere; }
+.pdfin-ch { display: flex; flex-direction: column; gap: 2px; font-size: 13.5px; padding-top: 4px; border-top: 1px solid var(--line-soft); }
+.pdfin-ch .row { gap: 4px var(--s3); }
+.pdfin-ch .now { font-size: 12.5px; color: var(--ink-muted); overflow-wrap: anywhere; }
+.pdfin-ch .bad { color: var(--signal-text); font-size: 12.5px; }
+.fair-src { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; font-size: 12.5px; color: var(--ink-muted); }
+.chk-arch li { display: flex; gap: var(--s2); font-size: 13.5px; padding: 2px 0; }
+.chk-arch li .mk { flex: none; width: 2.2ch; color: var(--ink-strong); font-weight: 700; }
 .sync-line .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-muted); flex: none; }
 .sync-line.live .dot { background: var(--accent); }
 .sync-line.warn .dot { background: var(--warn); }
@@ -1276,6 +1288,9 @@ label.check input { margin-top: 3px; }
     {"id":"ablauf","label":"Durchführung & Review","tone":"accent"},
     {"id":"dokumente","label":"Dokumente & Ablage","tone":"muted"}
   ];
+  // Eingebaute Aufgabenliste: nur Notfallstand (Erstbefüllung 28.09.2026). Führend ist Notion „Aufgaben InfraTech 2027“;
+  // das Cockpit zeigt diese Liste nur, wenn weder Notion live noch ein Notion-Stand (notion/tasks) vorliegt, und mischt sie nie mit Notion-Daten.
+  const TASKS_STAND = '2026-09-28';
   const TASKS = [
     {"id":"s1","cat":"steuerung","prio":"P0","due":"2026-10-02","owner":"mkt","title":"2027-Handbuch, Standnummer & Portalzugänge bei Rotterdam Ahoy anfordern/bestätigen","note":"Voraussetzung für alle weiteren Fristen.","flags":[]},
     {"id":"s2","cat":"steuerung","prio":"P0","due":"2026-10-09","owner":"mkt","title":"Verbindliche 2027-Fristenmatrix mit Ahoy verifizieren","note":"Standentwurf (Individualstand) 15.11.2026 laut Handbuch 2027 V1.3 belegt. Anmeldeschluss, VRS/Slot, Auf-/Abbauzeiten noch verifizieren.","flags":["fakt"]},
@@ -1504,7 +1519,7 @@ label.check input { margin-top: 3px; }
   };
 
   return {
-    FAIR, INNOVATION, ROLES, TASK_STATUS, CATS, TASKS, DEADLINES, KPIS, BUDGET, BUDGET_FRAME, LESSONS, FACTS, SOURCES, HOTELS, LEAD_GRADES, LEAD_TARGET,
+    FAIR, INNOVATION, ROLES, TASK_STATUS, CATS, TASKS, TASKS_STAND, DEADLINES, KPIS, BUDGET, BUDGET_FRAME, LESSONS, FACTS, SOURCES, HOTELS, LEAD_GRADES, LEAD_TARGET,
     DEFAULTS, CONTENT_STATUS, CHANNELS_CONTENT, LEAD_STAGES, LEAD_CHANNELS, ORG_TYPES, VALUE_BANDS, FIT, TENDER_STATUS, EVENT_TYPES, AREAS, FOLLOWUP, SEV_ORDER, SEV_LABEL, PRIO, WEEKDAYS,
     HOME_SITES, BUNDESLAENDER, STATE_ABBR, STATE_NEIGHBOURS, MAP_TILES, RING_COUNTRY, RING_UNKNOWN, NEIGHBOUR_COUNTRIES, COUNTRY_ALIASES,
     PLAN90
@@ -1888,10 +1903,11 @@ label.check input { margin-top: 3px; }
     return { notion, local, owned };
   }
 
-  function toProps(fields) {
+  function toProps(fields, roles) {
     const p = {};
     for (const [k, v] of Object.entries(fields || {})) {
-      if (k === 'status') p.Status = STATUS[v] || 'offen';
+      if (k === 'owner') { const r = (roles || []).find(x => x.key === v); if (r) p['Zuständig (Rolle)'] = r.label; }
+      else if (k === 'status') p.Status = STATUS[v] || 'offen';
       else if (k === 'prio') p['Priorität'] = /^P[012]$/.test(str(v)) ? v : 'P2';
       else if (k === 'note') p.Notiz = str(v).slice(0, 1900);
       else if (k === 'beschluss') p.Beschluss = str(v).slice(0, 1900);
@@ -1930,6 +1946,128 @@ label.check input { margin-top: 3px; }
   }
 
   return { STATUS, FLAG, WRITABLE, NOTION_OWNED, LABEL, pageId, rowToTask, rowsToTasks, splitPatch, toProps, newTaskProps, conflicts, norm };
+});
+
+/* ---- pdf-return.js ---- */
+/* Feind Cockpit · PDF-Rücklauf (reine Funktionen): Stand-Kennung für Aufgaben-PDFs bilden und lesen, Formularwerte
+   eines ausgefüllten PDFs mit dem Ausgangsstand und dem aktuellen Notion-Stand vergleichen. Feldnamen je Zeile:
+   E_<Schlüssel> erledigt, V_ Zuständig (Rolle), B_ bis, N_ Notiz; Schlüssel = Notion-Seiten-ID (32 Hex) oder C_<Aufgaben-ID>.
+   Der Ausgangsstand liegt als JSON in den Dokument-Stichwörtern (nur ASCII: Rollen-Schlüssel, Daten, Prüfsummen). */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else (root.FC = root.FC || {}).pdfReturn = factory();
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const PREFIX = 'feind-cockpit-aufgaben:';
+  const str = v => (v == null ? '' : String(v));
+  function hash(s) {
+    let h = 0x811c9dc5;
+    for (const ch of str(s)) { h ^= ch.codePointAt(0); h = Math.imul(h, 0x01000193) >>> 0; }
+    return ('0000000' + h.toString(16)).slice(-8);
+  }
+  function pageId(u) {
+    const m = str(u).replace(/-/g, '').match(/([0-9a-f]{32})(?![0-9a-f])/i);
+    return m ? m[1].toLowerCase() : null;
+  }
+  const keyOf = t => (t && t._nurl && pageId(t._nurl)) || ('C_' + str(t && t.id).replace(/[^A-Za-z0-9]/g, '_').slice(0, 50));
+  const pad = n => String(n).padStart(2, '0');
+  const fmtIso = iso => (/^\d{4}-\d{2}-\d{2}$/.test(str(iso)) ? iso.slice(8, 10) + '.' + iso.slice(5, 7) + '.' + iso.slice(0, 4) : '');
+
+  function buildBase(tasks, now) {
+    const rows = {};
+    for (const t of tasks || []) rows[keyOf(t)] = [str(t.id), str(t.status || 'open'), str(t.owner), str(t.due || '').slice(0, 10), hash(str(t.note))];
+    const at = (now || new Date()).toISOString();
+    const body = JSON.stringify({ v: 1, at, rows });
+    const h8 = hash(body);
+    return { at, rows, hash: h8, id: at.slice(0, 10) + '-' + h8, keywords: PREFIX + body };
+  }
+  function readBase(keywords) {
+    const s = str(keywords), i = s.indexOf(PREFIX);
+    if (i < 0) return null;
+    let o = null;
+    try { o = JSON.parse(s.slice(i + PREFIX.length)); } catch (e) { return { error: 'Stand-Kennung beschädigt' }; }
+    if (!o || typeof o !== 'object' || !o.rows || typeof o.rows !== 'object') return { error: 'Stand-Kennung unvollständig' };
+    const h8 = hash(JSON.stringify(o));
+    return { at: str(o.at), rows: o.rows, hash: h8, id: str(o.at).slice(0, 10) + '-' + h8 };
+  }
+  // Datum aus dem PDF: TT.MM.JJJJ, T.M.JJJJ oder JJJJ-MM-TT; leer = ohne Termin; null = nicht lesbar.
+  function parseDate(raw) {
+    const s = str(raw).trim();
+    if (!s || s === '-' || s === '–' || /^(offen|ohne|ohne termin|keiner?)$/i.test(s)) return '';
+    let m = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(s);
+    if (m) {
+      const d = new Date(+m[3], +m[2] - 1, +m[1]);
+      return d.getDate() === +m[1] && d.getMonth() === +m[2] - 1 ? m[3] + '-' + pad(m[2]) + '-' + pad(m[1]) : null;
+    }
+    m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+    return m ? s : null;
+  }
+  const norm = s => str(s).toLowerCase().replace(/\s+/g, ' ').trim();
+  function roleFromText(text, roles) {
+    const n = norm(text);
+    if (!n) return null;
+    const r = (roles || []).find(x => norm(x.label) === n || norm(x.key) === n);
+    return r ? r.key : null;
+  }
+  const truthy = v => v === true || /^(on|yes|ja|true|1|x)$/i.test(str(v));
+
+  // values: { Feldname: Text oder true/false }; tasks: aktueller Stand (Notion live oder Notion-Stand).
+  function diff(base, values, tasks, opts) {
+    const o = opts || {};
+    const roles = o.roles || [];
+    const label = o.label || (k => ((roles.find(r => r.key === k) || {}).label) || str(k));
+    const stamp = fmtIso(str(base.at).slice(0, 10)) || str(base.at).slice(0, 10);
+    const byKey = new Map(), byId = new Map();
+    for (const t of tasks || []) { byKey.set(keyOf(t), t); byId.set(str(t.id), t); }
+    const has = k => Object.prototype.hasOwnProperty.call(values || {}, k);
+    const groups = [], missing = [], used = new Set();
+    for (const [key, b] of Object.entries(base.rows || {})) {
+      if (!Array.isArray(b)) continue;
+      const [id, bStatus, bOwner, bDue, bNote] = b;
+      const cur = byKey.get(key) || byId.get(str(id)) || null;
+      const items = [];
+      for (const p of ['E_', 'V_', 'B_', 'N_']) used.add(p + key);
+      if (has('E_' + key)) {
+        const done = truthy(values['E_' + key]);
+        if (done !== (bStatus === 'done')) {
+          const to = done ? 'done' : 'open';
+          items.push({ field: 'status', from: bStatus, to, now: cur ? str(cur.status || 'open') : null, conflict: !!cur && str(cur.status || 'open') !== bStatus, same: !!cur && str(cur.status || 'open') === to });
+        }
+      }
+      if (has('V_' + key)) {
+        const raw = str(values['V_' + key]).trim();
+        if (raw && norm(raw) !== norm(label(bOwner))) {
+          const k = roleFromText(raw, roles);
+          items.push({ field: 'owner', from: bOwner, to: k, raw, now: cur ? str(cur.owner) : null,
+            invalid: k ? '' : raw ? 'Unbekannte Rolle „' + raw + '“. Möglich: ' + roles.map(r => r.label).join(', ') + '.' : 'Zuständig darf nicht leer sein.',
+            conflict: !!cur && str(cur.owner) !== bOwner, same: !!cur && !!k && str(cur.owner) === k });
+        }
+      }
+      if (has('B_' + key)) {
+        const raw = str(values['B_' + key]).trim(), iso = parseDate(raw);
+        if (!raw) { /* leer = unverändert */ } else if (iso === null) items.push({ field: 'due', from: bDue, to: null, raw, now: cur ? str(cur.due || '') : null, invalid: 'Datum „' + raw + '“ nicht lesbar (TT.MM.JJJJ).', conflict: false, same: false });
+        else if (iso !== bDue) items.push({ field: 'due', from: bDue, to: iso || null, raw, now: cur ? str(cur.due || '') : null, conflict: !!cur && str(cur.due || '') !== bDue, same: !!cur && str(cur.due || '') === iso });
+      }
+      if (has('N_' + key)) {
+        const raw = str(values['N_' + key]).trim();
+        if (raw) {
+          const curNote = cur ? str(cur.note) : '';
+          const add = 'PDF-Rücklauf (Stand ' + stamp + '): ' + raw;
+          items.push({ field: 'note', add: raw, to: curNote ? curNote + '\n' + add : add, now: curNote, conflict: !!cur && hash(curNote) !== bNote, same: !!cur && curNote.includes(add) });
+        }
+      }
+      if (!items.length) continue;
+      if (!cur) { missing.push({ key, id: str(id), items }); continue; }
+      const linked = !!cur._nurl;
+      for (const it of items) it.writable = linked && !it.invalid && !it.same;
+      groups.push({ key, task: cur, linked, items: items.filter(i => !i.same), already: items.filter(i => i.same) });
+    }
+    const extra = Object.entries(values || {}).filter(([k, v]) => !used.has(k) && typeof v === 'string' && v.trim() && !/^Meta_|^Freigabe/.test(k)).map(([k, v]) => ({ name: k, text: v.trim() }));
+    const all = groups.flatMap(g => g.items);
+    return { groups: groups.filter(g => g.items.length || g.already.length), missing, extra, counts: { changes: all.length, conflicts: all.filter(i => i.conflict).length, invalid: all.filter(i => i.invalid).length, writable: all.filter(i => i.writable).length } };
+  }
+
+  return { PREFIX, hash, pageId, keyOf, buildBase, readBase, parseDate, roleFromText, diff, fmtIso };
 });
 
 /* ---- connect-logic.js ---- */
@@ -3674,7 +3812,10 @@ label.check input { margin-top: 3px; }
   }
 
   /* ---------- Kopf: Countdown, Fortschritt, Speicherstatus ---------- */
-  app.tasks = () => M.allTasks(D.TASKS, app.taskDocs ? app.taskDocs() : (S.data.tasks || []));
+  // Grundliste: eingebaute Notfall-Liste; app-notion-tasks.js ersetzt sie durch Notion (live oder Notion-Stand).
+  app.taskSeed = () => D.TASKS;
+  app.tasks = () => M.allTasks(app.taskSeed(), app.taskDocs ? app.taskDocs() : (S.data.tasks || []));
+  app.archivedTasks = () => M.allTasks(app.taskSeed(), app.taskDocs ? app.taskDocs() : (S.data.tasks || []), true);
   function updateHeader() {
     const days = H.dayDiff(today(), H.parseDay(D.FAIR.start));
     $('cdDays').textContent = days >= 0 ? String(days) : 'läuft';
@@ -4424,10 +4565,12 @@ label.check input { margin-top: 3px; }
       return c;
     }));
   }
+  // Marketing-Event der InfraTech 2027: Checkliste kommt aus den Notion-Aufgaben (01.10.2026).
+  app.isFairEvent = e => !!e && (e._id === D.FAIR.slug || str(e.slug) === D.FAIR.slug || /infratech/i.test(str(e.title)));
   // Kennzahlen-Leiste (aus dem Floot-Entwurf übernommen, nur echte Daten): Kachel öffnet das Modul.
   function kpiStrip() {
     const t = today();
-    const TIP = { tenders: 'Offene Ausschreibungen mit Frist ab heute. Rot, wenn die nächste Frist in der roten Ampelzone liegt. Klick öffnet den Monitor.', leads: 'Neue Leads der letzten 30 Tage; qualifiziert = über „Neu“ hinaus, ohne „Verloren“. Klick öffnet die Pipeline.', events: 'Events ab heute; Prozent = erledigte Punkte der Checkliste des nächsten Events.', content: 'Beiträge in Entwurf, Review oder freigegeben; Bernstein, wenn etwas im Review wartet.' };
+    const TIP = { tenders: 'Offene Ausschreibungen mit Frist ab heute. Rot, wenn die nächste Frist in der roten Ampelzone liegt. Klick öffnet den Monitor.', leads: 'Neue Leads der letzten 30 Tage; qualifiziert = über „Neu“ hinaus, ohne „Verloren“. Klick öffnet die Pipeline.', events: 'Events ab heute; Prozent = erledigte Punkte der Checkliste des nächsten Events (InfraTech 2027: erledigte Notion-Aufgaben).', content: 'Beiträge in Entwurf, Review oder freigegeben; Bernstein, wenn etwas im Review wartet.' };
     const tile = (cls, v, k, sub, go, ic) => h('button', { class: 'kpi' + (cls ? ' ' + cls : ''), type: 'button', 'data-tip': TIP[go] || null, onclick: () => app.go('marketing', go), 'aria-label': k + ': ' + v + '. ' + sub + '. Modul öffnen' },
       app.ico(ic), h('div', { class: 'v', text: String(v) }), h('div', { class: 'k', text: k }), h('div', { class: 'sub', text: sub }));
     const ready = c => S.loaded[c];
@@ -4437,7 +4580,7 @@ label.check input { margin-top: 3px; }
     const qual = leads30.filter(l => l.stage && l.stage !== 'neu' && l.stage !== 'verloren').length;
     const upEv = S.data.events.filter(e => { const end = parseDay(e.endDate) || parseDay(e.date); return end && end >= t; }).sort((a, b) => parseDay(a.date) - parseDay(b.date));
     const ev = upEv[0], cl = ev ? arr(ev.checklist).filter(c => c && typeof c === 'object') : [];
-    const evPct = cl.length ? Math.round(cl.filter(c => c.done).length / cl.length * 100) : null;
+    const evPct = ev && app.isFairEvent(ev) ? M.progress(app.tasks()).pct : cl.length ? Math.round(cl.filter(c => c.done).length / cl.length * 100) : null;
     const work = S.data.content.filter(c => ['entwurf', 'review', 'freigegeben'].includes(c.status));
     const rev = work.filter(c => c.status === 'review').length;
     const dash = '–';
@@ -4779,7 +4922,73 @@ label.check input { margin-top: 3px; }
     rerender();
   }
   // Blinder Fleck 10: Marketing-Event und InfraTech-Welt über den Event-Slug verknüpfen.
-  const isFairEvent = e => e._id === D.FAIR.slug || str(e.slug) === D.FAIR.slug || /infratech/i.test(str(e.title));
+  const isFairEvent = e => app.isFairEvent(e);
+  // InfraTech 2027: Checkliste aus den Notion-Aufgaben abgeleitet (Fortschritt je Bereich). Abhaken schreibt die
+  // Notion-Aufgabe über den Aufgaben-Schreibweg, nach Rückfrage; events/<id>.checklist wird nicht mehr geschrieben.
+  async function toggleFairTask(t, done) {
+    const cat = (D.CATS.find(c => c.id === t.cat) || {}).label || '';
+    const ok = await app.confirm({
+      title: done ? 'In Notion als erledigt markieren?' : 'In Notion wieder öffnen?',
+      text: '„' + str(t.title) + '“' + (cat ? ' (' + cat + ')' : '') + ' wird in der Notion-Datenbank „Aufgaben InfraTech 2027“ auf „' + (done ? 'erledigt' : 'offen') + '“ gesetzt. Die alte Event-Checkliste wird dabei nicht verändert.',
+      confirmLabel: done ? 'Als erledigt markieren' : 'Wieder öffnen'
+    });
+    if (ok && app.saveTask) await app.saveTask(t.id, { status: done ? 'done' : 'open' }, 'Status geändert (Event-Checkliste)', str(t.title) + ' → ' + (done ? 'erledigt' : 'offen'));
+    rerender();
+  }
+  async function confirmMigration(ev) {
+    const ok = await app.confirm({ title: 'Übernahme der alten Checkliste bestätigen?', text: 'Bestätigt, dass alle Punkte der alten Event-Checkliste in Notion stehen (Abgleich vom 01.10.2026). Danach erscheint die alte Liste nur noch eingeklappt als Archiv; gelöscht wird nichts.', confirmLabel: 'Übernahme bestätigen' });
+    if (!ok) return;
+    const ok2 = await app.write('events/' + ev._id, 'update', { checklistMigrated: { at: new Date().toISOString(), by: (S.me && S.me.id) || null, to: 'notion' } });
+    if (ok2) { app.log('Checkliste', str(ev.title) + ': Übernahme nach Notion bestätigt'); app.toast('Übernahme bestätigt. Die alte Checkliste bleibt als Archiv lesbar.'); }
+    rerender();
+  }
+  function fairParts(e, past) {
+    const ts = app.tasks();
+    const src = app.taskSource ? app.taskSource() : { kind: 'notfall', label: 'Notfallstand, nicht aktuell', tip: '', at: D.TASKS_STAND, count: ts.length };
+    const live = src.kind === 'live', writable = live && !S.readOnly;
+    const groups = D.CATS.map(c => [c, ts.filter(t => t.cat === c.id)]).filter(([, l]) => l.length);
+    const done = ts.filter(t => t.status === 'done').length;
+    const allPct = ts.length ? Math.round(done / ts.length * 100) : 0;
+    const srcLine = h('div', { class: 'fair-src', role: 'status' },
+      h('span', { class: 'pill ' + (live ? 'ready' : src.kind === 'snapshot' ? 'wait' : 'block'), tabindex: '0', 'data-tip': 'Die Checkliste der InfraTech 2027 wird aus der Notion-Datenbank „Aufgaben InfraTech 2027“ abgeleitet: ein Punkt je Aufgabe, Fortschritt je Bereich. ' + src.tip }, 'Aus Notion: ' + src.label),
+      h('span', { class: 'num', text: (src.kind === 'notfall' ? 'Stand ' + fmtD(src.at) : src.at ? 'Stand ' + H.fmtTs(new Date(src.at)) : '') + ' · ' + ts.length + ' Aufgaben' }),
+      h('button', { class: 'linkbtn', type: 'button', onclick: () => app.go('infratech', 'aufgaben') }, 'Aufgaben öffnen'));
+    const progress = h('div', { class: 'progress' }, groups.map(([c, items]) => {
+      const d = items.filter(t => t.status === 'done').length, pct = Math.round(d / items.length * 100);
+      return h('div', { class: 'prow' }, h('div', { class: 'pl' }, h('span', { text: c.label }), h('span', { class: 'num', text: d + '/' + items.length })),
+        h('div', { class: 'ptrack', role: 'progressbar', 'aria-label': c.label, 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(pct) }, h('span', { class: 'pfill', style: 'width:' + pct + '%' })));
+    }));
+    const det = h('details', { class: 'chk', open: ui.openEvents.has(e._id) },
+      h('summary', {}, 'Checkliste aus Notion (' + done + '/' + ts.length + ' erledigt)' + (writable ? '' : ' · nur Lesen')));
+    det.addEventListener('toggle', () => { if (det.open) ui.openEvents.add(e._id); else ui.openEvents.delete(e._id); });
+    for (const [c, items] of groups) {
+      det.append(h('div', { class: 'chk-group' }, h('div', { class: 'label', text: c.label }), h('ul', {}, items.map(t => {
+        const id = 'chk-' + e._id + '-' + String(t.id).replace(/[^A-Za-z0-9_-]/g, '_');
+        const inp = h('input', { type: 'checkbox', id, checked: t.status === 'done', disabled: !writable });
+        if (!writable) inp.title = live ? 'Nur Lesezugriff' : 'Abhaken nur mit Notion-Verbindung';
+        inp.addEventListener('change', () => toggleFairTask(t, inp.checked));
+        return h('li', {}, h('label', { for: id }, inp, h('span', { text: str(t.title) + (t.status !== 'done' && t.status !== 'open' ? ' (' + M.statusLabel(t.status) + ')' : '') })));
+      }))));
+    }
+    const overall = h('div', { class: 'ev-overall' },
+      h('div', { class: 'ptrack', role: 'progressbar', 'aria-label': 'Aufgaben gesamt', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(allPct) }, h('span', { class: 'pfill', style: 'width:' + allPct + '%' })),
+      h('span', { class: 'num' }, h('b', { text: allPct + ' %' }), ' erledigt'));
+    const nextT = ts.filter(M.isOpen).sort((a, b) => str(a.due || '9999').localeCompare(str(b.due || '9999')))[0];
+    const nextTxt = str(e.nextStep) || (nextT ? str(nextT.title) + (nextT.due ? ' (bis ' + fmtD(nextT.due) + ')' : '') : '');
+    // Alte Checkliste: nur Archiv bzw. Rückfall, nie mehr beschrieben.
+    const cl = arr(e.checklist).filter(c => c && typeof c === 'object');
+    const mig = e.checklistMigrated && typeof e.checklistMigrated === 'object' ? e.checklistMigrated : null;
+    let arch = null;
+    if (cl.length) {
+      const areaL = a => (D.AREAS.find(x => x[0] === a) || [0, str(a) || 'ohne Bereich'])[1];
+      arch = h('details', { class: 'chk chk-arch', open: src.kind === 'notfall' && !mig },
+        h('summary', {}, (mig ? 'Archiv: alte Checkliste (Übernahme bestätigt ' + (H.parseTs(mig.at) ? fmtD(H.parseTs(mig.at)) : '') + ')' : 'Alte Checkliste, nur als Rückfall und Archiv') + ' · ' + cl.filter(c => c.done).length + '/' + cl.length),
+        h('p', { class: 'muted small', text: 'Nur lesen. Diese Liste wird nicht mehr gepflegt; führend sind die Notion-Aufgaben. Zuordnung der Punkte: konzepte/aufgaben-abgleich-2026-10-01.md.' }),
+        h('ul', { style: 'list-style:none;margin:4px 0 0;padding:0' }, cl.map(c => h('li', {}, h('span', { class: 'mk', 'aria-hidden': 'true', text: c.done ? '[x]' : '[ ]' }), h('span', { text: areaL(c.area) + ': ' + str(c.item) + (c.done ? ' (erledigt)' : '') })))),
+        !mig && !S.readOnly && app.isAdmin && app.isAdmin() ? h('button', { class: 'btn small', type: 'button', 'data-tip': 'Erst bestätigen, wenn alle offenen Punkte der alten Liste in Notion übernommen sind. Danach bleibt die alte Liste eingeklappt als Archiv.', onclick: () => confirmMigration(e) }, 'Übernahme bestätigen') : null);
+    }
+    return { overall, nextEl: !past && nextTxt ? h('p', { class: 'ev-next' }, h('b', { text: 'Nächster Schritt: ' }), nextTxt) : null, srcLine, progress: groups.length ? progress : h('p', { class: 'muted small', text: 'Keine Aufgaben geladen.' }), det: groups.length ? det : null, arch };
+  }
   function fairLink() {
     const tasks = app.tasks();
     const pr = M.progress(tasks);
@@ -4789,6 +4998,7 @@ label.check input { margin-top: 3px; }
       h('button', { class: 'btn small', type: 'button', onclick: () => app.go('infratech', 'dashboard') }, 'InfraTech-Welt öffnen'));
   }
   function eventCard(e, past) {
+    if (isFairEvent(e)) return fairEventCard(e, past);
     const cl = arr(e.checklist).filter(c => c && typeof c === 'object');
     const done = cl.filter(c => c.done).length;
     const a = parseDay(e.date), b = parseDay(e.endDate);
@@ -4842,6 +5052,28 @@ label.check input { margin-top: 3px; }
           chip(fsLvl, 'Follow-up ' + (D.FOLLOWUP[fs] || 'ohne Status'))),
         str(e.source) ? h('p', { class: 'muted small', text: 'Quelle: ' + str(e.source) }) : null));
   }
+  function fairEventCard(e, past) {
+    const a = parseDay(e.date), b = parseDay(e.endDate);
+    const days = a ? dayDiff(today(), a) : null;
+    const f = fairParts(e, past);
+    const fs = e.followupStatus;
+    const fsLvl = fs === 'erledigt' ? 'green' : fs === 'laeuft' ? 'yellow' : past ? 'red' : 'soft';
+    return h('div', { class: 'tl-item' + (past ? ' past' : '') },
+      h('article', { class: 'ev-card', id: 'ev-' + e._id },
+        h('div', { class: 'ev-top' },
+          h('div', {}, h('div', { class: 'ev-date', text: fmtD(a) + (b && b > a ? ' – ' + fmtD(b) : '') }),
+            h('h3', { style: 'font-size:17px;margin-top:2px', text: str(e.title) || '(ohne Titel)' }),
+            h('div', { class: 'muted small', text: [D.EVENT_TYPES[e.type] || str(e.type), str(e.location)].filter(Boolean).join(' · ') })),
+          days != null ? h('span', { class: 'chip soft', text: days > 0 ? 'in ' + tageText(days) : days === 0 ? 'heute' : 'vor ' + tageText(-days) }) : null),
+        str(e.note || e.notes) ? h('p', { class: 'small', text: str(e.note || e.notes) }) : null,
+        f.srcLine, f.overall, f.nextEl, f.progress, f.det, f.arch,
+        fairLink(),
+        h('div', { class: 'post' }, h('span', { class: 'label', text: 'Nachbereitung' }),
+          h('span', {}, 'Erfasste Leads: ', h('b', { class: 'num', text: fmtN(numOr(e.leadsCaptured, NaN)) })),
+          chip(fsLvl, 'Follow-up ' + (D.FOLLOWUP[fs] || 'ohne Status'))),
+        str(e.source) ? h('p', { class: 'muted small', text: 'Quelle: ' + str(e.source) }) : null));
+  }
+  app.fairChecklistParts = fairParts;
   app.module('marketing', 'events', {
     count: () => S.data.events.length,
     render() {
@@ -5374,7 +5606,7 @@ label.check input { margin-top: 3px; }
   const settingsDoc = () => S.docs.settings || null;
   const team = () => arr(settingsDoc() && settingsDoc().team);
   const leadDays = () => { const r = settingsDoc() && settingsDoc().reminders; return r && Array.isArray(r.leadDays) && r.leadDays.length ? r.leadDays : [14, 7, 2]; };
-  const archivedTasks = () => M.allTasks(D.TASKS, app.taskDocs ? app.taskDocs() : S.data.tasks, true);
+  const archivedTasks = () => app.archivedTasks();
   const isRole = o => D.ROLES.some(r => r.key === o);
 
   // Anzeige: Rolle, Team-Eintrag (Rolle, ggf. mit aufgelöstem Namen) oder Nutzer-ID (Name nur zur Laufzeit).
@@ -5433,6 +5665,7 @@ label.check input { margin-top: 3px; }
       app.resolveProfiles(peopleIds());
       return [
         panelHead('InfraTech 2027 · Rotterdam Ahoy', null, h('span', { class: 'muted small', text: '12.–15.01.2027 (Di–Fr) · ' + (days > 0 ? 'Messebeginn in ' + days + ' Tagen' : days === 0 ? 'Messebeginn heute' : 'Messe begonnen') })),
+        app.taskFallbackBanner ? app.taskFallbackBanner() : null,
         h('div', { class: 'stack' }, alarmCard(),
           h('div', { class: 'alert info' }, h('span', { class: 'ic', 'aria-hidden': 'true', text: 'i' }), h('div', {}, h('h3', { text: 'Messedatum' }),
             h('p', { text: 'InfraTech 2027 läuft vom 12. bis 15. Januar 2027 (Di bis Fr), nicht vom 12. bis 14. Auf- und Abbau auf vier Messetage ausrichten.' })))),
@@ -5701,6 +5934,7 @@ label.check input { margin-top: 3px; }
       return [
         panelHead('Aufgaben', null, actions),
         app.notionTaskStatus ? app.notionTaskStatus() : null,
+        app.taskFallbackBanner ? app.taskFallbackBanner() : null,
         filterBar,
         summary,
         ui.archived ? h('p', { class: 'muted small', text: 'Archivierte Aufgaben lassen sich wiederherstellen. Nichts wird endgültig gelöscht.' }) : null,
@@ -7292,7 +7526,7 @@ label.check input { margin-top: 3px; }
     return a.map((x, i) => [x, i]).sort((p, q) => roleLabel(p[0].owner).localeCompare(roleLabel(q[0].owner), 'de') || p[1] - q[1]).map(x => x[0]);
   }
   const current = () => ordered()[mt.idx] || null;
-  const taskOf = id => app.tasks().concat(M.allTasks(D.TASKS, app.taskDocs ? app.taskDocs() : S.data.tasks, true)).find(t => t.id === id) || null;
+  const taskOf = id => app.tasks().concat(app.archivedTasks()).find(t => t.id === id) || null;
   const handled = it => !!(mt.doc && mt.doc.changes && mt.doc.changes[it.id]);
 
   /* ---------- Speichern (merge, nacheinander) ---------- */
@@ -7690,8 +7924,26 @@ label.check input { margin-top: 3px; }
     nt.byId = new Map(tasks.map(t => [t.id, t]));
     nt.dupes = dupes || [];
   }
-  // Aufgaben-Dokumente fürs Modell: Speicher zuerst, Notion zuletzt (Notion gewinnt je Feld).
-  app.taskDocs = () => (S.data.tasks || []).concat(nt.tasks);
+  // Quelle der Aufgabenliste: Notion live, sonst Notion-Stand (notion/tasks), sonst eingebauter Notfallstand.
+  // Notion-Daten und Notfallstand werden nie gemischt.
+  const sourceKind = () => (nt.state === 'live' ? 'live' : nt.snap && Array.isArray(nt.snap.tasks) && nt.snap.tasks.length ? 'snapshot' : 'notfall');
+  app.taskSource = function () {
+    const kind = sourceKind();
+    const at = kind === 'live' ? nt.at : kind === 'snapshot' ? nt.snap.at : D.TASKS_STAND;
+    const label = kind === 'live' ? 'Notion live' : kind === 'snapshot' ? 'Notion-Stand (Snapshot)' : 'Notfallstand, nicht aktuell';
+    const tip = kind === 'live' ? 'Die Aufgaben kommen direkt aus der Notion-Datenbank „Aufgaben InfraTech 2027“ (führende Liste) und werden jede Minute neu geladen.'
+      : kind === 'snapshot' ? 'Notion ist in dieser Ansicht nicht erreichbar. Angezeigt wird der zuletzt gespeicherte Notion-Stand (notion/tasks), nur lesend.'
+        : 'Weder Notion noch ein gespeicherter Notion-Stand ist erreichbar. Angezeigt wird die beim Veröffentlichen eingebaute Liste vom ' + H.fmtD(D.TASKS_STAND) + '. Sie ist nicht aktuell; Änderungen bitte direkt in Notion.';
+    return { kind, at, label, tip, count: app.tasks().length };
+  };
+  app.taskSeed = () => (sourceKind() === 'notfall' ? D.TASKS : []);
+  // Aufgaben-Dokumente fürs Modell: Speicher zuerst, Notion zuletzt (Notion gewinnt je Feld). Mit Notion-Daten nur die
+  // Speicher-Dokumente, die zu einer Notion-Aufgabe gehören (Links, Anhänge) oder im Cockpit neu angelegt wurden.
+  app.taskDocs = function () {
+    const local = S.data.tasks || [];
+    if (sourceKind() === 'notfall') return local;
+    return local.filter(d => nt.byId.has(d.id || d._id) || d.custom).concat(nt.tasks);
+  };
   app.notionLinked = t => !!(t && t._nurl);
   app.notionLive = () => nt.state === 'live';
 
@@ -7774,9 +8026,9 @@ label.check input { margin-top: 3px; }
   app.notionReload = () => load(true);
 
   /* ---------- Schreiben ---------- */
-  const show = (k, v) => (k === 'status' ? N.STATUS[v] || v : k === 'archived' ? (v ? 'ja' : 'nein') : k === 'due' ? (v ? H.fmtD(v) : 'ohne Termin') : H.str(v) || 'leer');
+  const show = (k, v) => (k === 'owner' ? ((D.ROLES.find(x => x.key === v) || {}).label || H.str(v) || 'leer') : k === 'status' ? N.STATUS[v] || v : k === 'archived' ? (v ? 'ja' : 'nein') : k === 'due' ? (v ? H.fmtD(v) : 'ohne Termin') : H.str(v) || 'leer');
   function findTask(id) {
-    return app.tasks().concat(FC.model.allTasks(D.TASKS, app.taskDocs(), true)).find(t => t.id === id) || null;
+    return app.tasks().concat(app.archivedTasks()).find(t => t.id === id) || null;
   }
   function roleLabel(owner) {
     const r = D.ROLES.find(x => x.key === owner);
@@ -7855,6 +8107,10 @@ label.check input { margin-top: 3px; }
       return ok;
     }
     const isNew = !cur && patch && patch.custom && H.str(patch.title);
+    if (cur && !cur.custom && sourceKind() === 'notfall') {
+      app.toast('Notfallstand, nicht aktuell: Notion ist nicht erreichbar. Änderungen bitte direkt in Notion vornehmen.', true);
+      return false;
+    }
     const ok = await origPatch(id, isNew ? Object.assign({}, patch, { notionPending: true }) : patch);
     if (ok && isNew && nt.state === 'live') {
       if (await createNotion(id, patch)) origPatch(id, { notionPending: false });
@@ -7863,10 +8119,46 @@ label.check input { margin-top: 3px; }
     return ok;
   };
 
+  // Mehrere Aufgaben in einem Durchgang (PDF-Rücklauf): einmal frisch lesen, in Notion inzwischen geänderte Felder
+  // mit Rückfrage, dann je Aufgabe update_properties. items: [{ cur, fields }]; cur ist der angezeigte Stand.
+  app.notionWriteMany = async function (items) {
+    const mcp = await useMcp();
+    if (!mcp || nt.state !== 'live') { app.toast('Notion ist nicht verbunden: nichts geschrieben.', true); return { ok: 0, failed: items.length, skipped: 0 }; }
+    nt.busy++;
+    try {
+      try { const { rows, at } = await fetchAll(mcp, true); apply(rows, at); }
+      catch (e) { app.toast('Notion-Stand konnte nicht geprüft werden: ' + errText((e && e.code) || 'upstream_error'), true); return { ok: 0, failed: items.length, skipped: 0 }; }
+      const todo = [], gone = [], lines = [];
+      for (const it of items) {
+        const fresh = nt.byId.get(it.cur.id);
+        if (!fresh || !fresh._nurl) { gone.push(it); continue; }
+        const cf = N.conflicts(it.cur, fresh, it.fields);
+        cf.forEach(k => lines.push('„' + H.str(fresh.title).slice(0, 60) + '“ ' + N.LABEL[k] + ': jetzt „' + show(k, fresh[k]) + '“, vorher „' + show(k, it.cur[k]) + '“'));
+        todo.push({ fresh, fields: it.fields });
+      }
+      if (lines.length) {
+        const ok = await app.confirm({ title: 'In Notion inzwischen geändert', text: lines.slice(0, 8).join(' · ') + (lines.length > 8 ? ' · …' : '') + '. Mit den Werten aus dem PDF überschreiben?', confirmLabel: 'Überschreiben' });
+        if (!ok) { app.refresh(); return { ok: 0, failed: 0, skipped: items.length }; }
+      }
+      let ok = 0, failed = gone.length;
+      for (const t of todo) {
+        try {
+          await mcp.callTool(CFG.server, CFG.update, { page_id: N.pageId(t.fresh._nurl), command: 'update_properties', properties: N.toProps(t.fields, D.ROLES) }, { cache: false });
+          Object.assign(t.fresh, t.fields);
+          ok++;
+        } catch (e) { failed += todo.length - ok; writeFailed(e, 'Die Übernahme'); break; }
+      }
+      setTasks(nt.tasks.slice(), nt.dupes);
+      if (mcp.invalidate) mcp.invalidate(CFG.server, CFG.read).catch(() => {});
+      app.refresh();
+      return { ok, failed, skipped: 0 };
+    } finally { nt.busy--; }
+  };
+
   // Im Cockpit angelegte Aufgaben, die (noch) nicht in Notion stehen.
   function pending() {
     if (nt.state !== 'live') return [];
-    return FC.model.allTasks(D.TASKS, S.data.tasks || []).filter(t => t.custom && !nt.byId.has(t.id));
+    return FC.model.allTasks([], S.data.tasks || []).filter(t => t.custom && !nt.byId.has(t.id));
   }
   async function pushPending() {
     const list = pending();
@@ -7879,13 +8171,27 @@ label.check input { margin-top: 3px; }
   app.notionTaskStatus = function () {
     const cls = nt.state === 'live' ? 'live' : nt.state === 'warn' ? 'warn' : nt.state === 'err' ? 'err' : '';
     const pend = pending();
-    return h('div', { class: 'sync-line ' + cls, role: 'status', id: 'it-notion' },
+    const src = app.taskSource();
+    const when = src.kind === 'notfall' ? 'Stand ' + H.fmtD(src.at) : 'Stand ' + fmtAt(src.at);
+    const detail = src.kind !== 'live' || /fehlgeschlagen/.test(nt.text) ? nt.text : '';
+    return h('div', { class: 'sync-line ' + (src.kind === 'notfall' ? 'err' : cls), role: 'status', id: 'it-notion' },
       h('span', { class: 'dot', 'aria-hidden': 'true' }),
-      h('span', { text: nt.text || 'Notion-Anbindung wird geprüft …' }),
+      h('span', { class: 'pill ' + (src.kind === 'live' ? 'ready' : src.kind === 'snapshot' ? 'wait' : 'block'), id: 'it-src', tabindex: '0', 'data-tip': src.tip }, 'Quelle: ' + src.label),
+      h('span', { class: 'num', id: 'it-src-meta', text: when + ' · ' + src.count + ' Aufgaben' }),
+      detail ? h('span', { class: 'muted', text: detail }) : null,
       nt.dupes.length ? h('span', { class: 'pill flag', text: 'Doppelte Cockpit-ID in Notion: ' + Array.from(new Set(nt.dupes)).join(', ') }) : null,
       pend.length && !app.ro() ? h('button', { class: 'btn small', type: 'button', onclick: pushPending }, pend.length + ' nach Notion übertragen') : null,
-      inViewer() ? h('button', { class: 'linkbtn', type: 'button', onclick: () => load(true) }, 'Neu laden') : null,
+      inViewer() ? h('button', { class: 'linkbtn', type: 'button', 'data-tip': 'Lädt die Aufgaben sofort neu aus Notion.', onclick: () => load(true) }, 'Neu laden') : null,
       h('a', { href: CFG.db, target: '_blank', rel: 'noopener', class: 'small' }, 'In Notion öffnen'));
+  };
+  // Sichtbarer Hinweis, solange nur die eingebaute Liste angezeigt wird.
+  app.taskFallbackBanner = function () {
+    const src = app.taskSource();
+    if (src.kind !== 'notfall') return null;
+    return h('div', { class: 'banner crit', role: 'status', id: 'it-notfall' }, h('div', { class: 'txt' },
+      h('strong', { text: 'Notfallstand, nicht aktuell. ' }),
+      'Notion ist nicht erreichbar und es liegt kein gespeicherter Notion-Stand vor. Angezeigt wird die eingebaute Liste vom ' + H.fmtD(D.TASKS_STAND) + '; erledigte Punkte und neue Aufgaben fehlen. Änderungen bitte direkt in Notion.'),
+      h('a', { class: 'btn small', href: CFG.db, target: '_blank', rel: 'noopener noreferrer' }, 'Notion öffnen'));
   };
 
   /* ---------- Start ---------- */
@@ -8033,7 +8339,9 @@ label.check input { margin-top: 3px; }
 (function () {
   'use strict';
   const FC = window.FC;
-  const SRC = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+  // jsPDF 4.2.1 statt 2.5.1 (für 2.x gibt es veröffentlichte Sicherheitshinweise); SRI-Hash von cdnjs: Der Browser führt nur genau diese Datei aus.
+  const SRC = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.2.1/jspdf.umd.min.js';
+  const SRI = 'sha512-plOdviVmws4Y3JAvbnpfKb2hVxKM1lCwsi3vmElYRj+tiDLffZ4FVUj5a8vyKJ9pIgl8JCAHEJ4D1iUKBecswg==';
   let libP = null;
   function loadLib() {
     if (window.jspdf && window.jspdf.jsPDF) return Promise.resolve(window.jspdf);
@@ -8042,6 +8350,9 @@ label.check input { margin-top: 3px; }
         const sc = document.createElement('script');
         sc.src = SRC;
         sc.async = true;
+        sc.integrity = SRI;
+        sc.crossOrigin = 'anonymous';
+        sc.referrerPolicy = 'no-referrer';
         sc.onload = () => (window.jspdf && window.jspdf.jsPDF ? resolve(window.jspdf) : reject(new Error('PDF-Bibliothek nicht ladbar')));
         sc.onerror = () => { libP = null; sc.remove(); reject(new Error('PDF-Bibliothek nicht ladbar')); };
         (document.head || document.body).append(sc);
@@ -8108,7 +8419,8 @@ label.check input { margin-top: 3px; }
         else doc.text(l, x, by);
       });
     }
-    function textField(x, yy, w, hh, name) {
+    // value: vorbelegter Text (PDF-Rücklauf: Zuständig, Termin); der Ausgangswert steht zusätzlich in der Stand-Kennung.
+    function textField(x, yy, w, hh, name, value) {
       doc.setDrawColor(C.line); doc.setFillColor(C.white); doc.setLineWidth(0.8);
       doc.rect(x, yy, w, hh, 'FD');
       const f = new AcroFormTextField();
@@ -8116,17 +8428,18 @@ label.check input { margin-top: 3px; }
       f.Rect = [x, yy, w, hh];
       f.fontSize = FS;
       f.multiline = hh > 24;
-      f.value = '';
+      f.value = value ? txt(value) : '';
       doc.addField(f);
     }
-    function checkBox(x, yy, name) {
+    function checkBox(x, yy, name, checked) {
       const s = 11;
       doc.setDrawColor(C.anth); doc.setFillColor(C.white); doc.setLineWidth(0.8);
       doc.rect(x, yy, s, s, 'FD');
       const c = new AcroFormCheckBox();
       c.fieldName = uniq(name);
       c.Rect = [x, yy, s, s];
-      c.appearanceState = 'Off';
+      c.appearanceState = checked ? 'On' : 'Off';
+      c.value = checked ? 'On' : 'Off';
       doc.addField(c);
     }
     function label(text, optional, x, yy) {
@@ -8199,6 +8512,7 @@ label.check input { margin-top: 3px; }
     /* Tabelle: Kopf Anthrazit mit weißer fetter Schrift, Zebra, Linien; Zellen Text, Kästchen oder Feld */
     function measure(cell, w) {
       if (cell && typeof cell === 'object' && cell.check) return { kind: 'check', h: 11, cell };
+      if (cell && typeof cell === 'object' && cell.field && cell.value) return { kind: 'field', h: cell.h || 18, cell };
       if (cell && typeof cell === 'object' && cell.field) return { kind: 'field', h: cell.h || 18, cell };
       const c = cell && typeof cell === 'object' ? cell : { t: cell };
       const style = c.bold || c.color === 'signal' ? 'bold' : 'normal';
@@ -8237,8 +8551,8 @@ label.check input { margin-top: 3px; }
         let x = ML;
         r.m.forEach((m, i) => {
           const cw = ws[i] - 2 * P, al = cols[i].align, top = y + (r.h - m.h) / 2;
-          if (m.kind === 'check') checkBox(al === 'left' ? x + P : x + (ws[i] - 11) / 2, top, m.cell.check);
-          else if (m.kind === 'field') textField(x + P, top, cw, m.h, m.cell.field);
+          if (m.kind === 'check') checkBox(al === 'left' ? x + P : x + (ws[i] - 11) / 2, top, m.cell.check, m.cell.on);
+          else if (m.kind === 'field') textField(x + P, top, cw, m.h, m.cell.field, m.cell.value);
           else {
             font(r.total ? 'bold' : m.style, FS, r.total ? C.anth : m.color);
             put(m.ls, x + P, top, LD, FS, al, cw);
@@ -8283,7 +8597,7 @@ label.check input { margin-top: 3px; }
       doc.text(txt(title + ' · ' + day + ' · intern'), ML, PH - 9 * PT);
       doc.text('Seite ' + i, PW - ML, PH - 9 * PT, { align: 'right' });
     }
-    doc.setProperties({ title: txt(title), subject: txt(spec.subject || spec.subtitle || title), author: 'Marketing, Fräsdienst-Service E. Feind GmbH', creator: 'Feind Cockpit' });
+    doc.setProperties({ title: txt(title), subject: txt(spec.subject || spec.subtitle || title), author: 'Marketing, Fräsdienst-Service E. Feind GmbH', creator: 'Feind Cockpit', keywords: spec.keywords ? String(spec.keywords) : '' });
     if (spec.autoPrint) doc.autoPrint();
     return { bytes: doc.output('arraybuffer'), pages: n, fields: names.size };
   }
@@ -8486,6 +8800,18 @@ label.check input { margin-top: 3px; }
     const blocks = [{ p: 'Je Event die Checkliste nach Bereichen. „Stand“ zeigt den Cockpit-Stand; ankreuzen, was in der Besprechung erledigt wurde, und danach im Cockpit abhaken.', style: 'muted' }];
     let openTotal = 0;
     up.forEach((e, ei) => {
+      if (app.isFairEvent && app.isFairEvent(e)) {
+        const ts = app.tasks(), src = app.taskSource ? app.taskSource() : { label: 'Notfallstand, nicht aktuell' };
+        const rows = D.CATS.map(c => [c, ts.filter(t => t.cat === c.id)]).filter(([, l]) => l.length);
+        openTotal += ts.filter(M.isOpen).length;
+        blocks.push({ h: str(e.title) || 'InfraTech 2027' },
+          { p: [fmtD(e.date) + (parseDay(e.endDate) && e.endDate !== e.date ? ' bis ' + fmtD(e.endDate) : ''), str(e.location), ts.filter(t => t.status === 'done').length + ' von ' + ts.length + ' Aufgaben erledigt'].filter(Boolean).join(' · '), style: 'strong' },
+          { p: 'Checkliste aus der Notion-Datenbank „Aufgaben InfraTech 2027“ (Quelle: ' + src.label + '). Einzelaufgaben zum Abhaken: Aufgaben-PDF in InfraTech 2027 › Aufgaben.', style: 'muted' },
+          { table: { cols: [{ t: 'Bereich' }, { t: 'erledigt', w: 22, align: 'right' }, { t: 'offen', w: 18, align: 'right' }, { t: 'überfällig', w: 22, align: 'right' }, { t: 'besprochen', w: 22, align: 'center' }],
+            rows: rows.map(([c, l]) => { const ov = M.overdue(l, t).length; return [c.label, l.filter(x => x.status === 'done').length + '/' + l.length, n(l.filter(M.isOpen).length), ov ? sig(n(ov)) : '0', chk('E' + ei + '_' + c.id)]; }) } },
+          { field: { label: 'Notiz zu ' + (str(e.title) || 'diesem Event'), name: 'Notiz_E' + ei, h: 36, optional: true } });
+        return;
+      }
       const cl = arr(e.checklist).filter(c => c && typeof c === 'object');
       const done = cl.filter(c => c.done).length;
       openTotal += cl.length - done;
@@ -8653,22 +8979,26 @@ label.check input { margin-top: 3px; }
     if (ui.prio && ui.prio !== 'all') filt.push('Priorität ' + ui.prio);
     if (ui.owner && ui.owner !== 'all') filt.push('Zuständig ' + role(ui.owner));
     if (str(ui.q).trim()) filt.push('Suche „' + str(ui.q).trim() + '“');
-    const blocks = [{ p: (ui.archived ? 'Archiv. ' : '') + 'Filter: ' + (filt.join(' · ') || 'keine') + '. ' + plural(list.length, 'Aufgabe', 'Aufgaben') + ' nach Bereich. Ankreuzen = erledigt; den Status danach im Cockpit setzen.', style: 'muted' }];
+    // PDF-Rücklauf: je Zeile Felder mit der Notion-Seiten-ID (bzw. Aufgaben-ID) im Namen, Ausgangsstand als Stand-Kennung.
+    const R = FC.pdfReturn, base = R.buildBase(list, new Date());
+    const src = app.taskSource ? app.taskSource() : { label: 'Notfallstand, nicht aktuell', kind: 'notfall' };
+    const blocks = [{ p: (ui.archived ? 'Archiv. ' : '') + 'Filter: ' + (filt.join(' · ') || 'keine') + '. ' + plural(list.length, 'Aufgabe', 'Aufgaben') + ' nach Bereich. Quelle: ' + src.label + '.', style: src.kind === 'notfall' ? 'signal' : 'muted' },
+      { p: 'Rücklauf: Kästchen „erl.“ ankreuzen; nur bei Änderung eine neue Rolle (z. B. Messeteam) oder einen neuen Termin (TT.MM.JJJJ, „ohne“ löscht ihn) eintragen; Notiz ergänzen. Leere Felder bleiben unverändert. Danach im Cockpit unter Aufgaben „Ausgefülltes PDF einlesen“; übernommen wird erst nach Prüfung der Unterschiede. Stand-Kennung ' + base.id + '.', style: 'muted' }];
     for (const c of D.CATS) {
       const ts = list.filter(x => x.cat === c.id);
       if (!ts.length) continue;
       blocks.push({ h: c.label + ' · ' + ts.filter(x => x.status === 'done').length + ' von ' + ts.length + ' erledigt' },
-        { table: { cols: [{ t: 'Aufgabe' }, { t: 'Prio', w: 13 }, { t: 'Zuständig', w: 33 }, { t: 'Termin', w: 22 }, { t: 'Status', w: 26 }, { t: 'erledigt', w: 17, align: 'center' }],
-          rows: ts.map(x => { const due = H.dueInfo(x.due, t); const late = M.isOpen(x) && due.days != null && due.days < 0;
-            return [{ t: x.title, sub: [str(x.note), str(x.beschluss) ? 'Beschluss: ' + str(x.beschluss) : ''].filter(Boolean).join(' · ') }, x.prio, role(x.owner), x.due ? fmtD(x.due) : 'offen',
-              late ? sig('überfällig') : M.statusLabel(x.status), chk('A_' + x.id)]; }) } },
+        { table: { cols: [{ t: 'Aufgabe' }, { t: 'Zuständig neu (Rolle)', w: 34 }, { t: 'bis neu', w: 24 }, { t: 'Notiz (optional)', w: 40 }, { t: 'erl.', w: 13, align: 'center' }],
+          rows: ts.map(x => { const due = H.dueInfo(x.due, t); const late = M.isOpen(x) && due.days != null && due.days < 0; const k = R.keyOf(x);
+            return [{ t: x.title, sub: [x.prio + ' · ' + (late ? 'überfällig' : M.statusLabel(x.status)) + ' · ' + role(x.owner) + ' · ' + (x.due ? 'bis ' + fmtD(x.due) : 'ohne Termin'), str(x.note), str(x.beschluss) ? 'Beschluss: ' + str(x.beschluss) : ''].filter(Boolean).join(' · ') },
+              { field: 'V_' + k }, { field: 'B_' + k }, { field: 'N_' + k, h: 30 }, x.status === 'done' ? bold('ja') : chk('E_' + k)]; }) } },
         { field: { label: 'Notiz ' + c.label, name: 'Notiz_' + c.id, h: 30, optional: true } });
     }
     const legal = list.filter(x => arr(x.flags).includes('recht') && M.isOpen(x));
     if (legal.length) blocks.push({ h: 'Bitte Rechtsabteilung prüfen' }, { table: { cols: [{ t: 'Aufgabe mit Rechtsbezug' }, { t: 'beauftragt', w: 22, align: 'center' }], rows: legal.map(x => [x.title, chk('Recht_' + x.id)]) } });
     if (!list.length) blocks.push({ p: 'Keine Aufgaben für diese Filter.', style: 'muted' });
     return {
-      name: 'Aufgaben InfraTech 2027', subtitle: 'Aufgabenliste' + (ui.archived ? ' (Archiv)' : '') + ' · Messe 12.–15.01.2027 · ' + stand(),
+      name: 'Aufgaben InfraTech 2027', subtitle: 'Aufgabenliste' + (ui.archived ? ' (Archiv)' : '') + ' · Quelle ' + src.label + ' · Stand-Kennung ' + base.id + ' · ' + stand(), keywords: base.keywords,
       kpis: [{ v: n(all.filter(M.isOpen).length), k: 'offene Aufgaben' }, { v: n(over.length), k: 'überfällig', signal: over.length > 0 }, { v: n(p0.length), k: 'P0 offen', signal: p0.length > 0 }, { v: pr.pct + ' %', k: 'Gesamtfortschritt' }],
       blocks
     };
@@ -8888,6 +9218,7 @@ label.check input { margin-top: 3px; }
       { id: 'itd-over', label: 'Überfällige Aufgaben öffnen', short: 'Überfällig', icon: 'warndreieck', tip: 'Öffnet die Aufgabenliste ohne Filter; überfällige Bereiche sind aufgeklappt.', run: () => { Object.assign(app.itUi, { cat: 'all', prio: 'all', owner: 'all', q: '', archived: false }); app.go('infratech', 'aufgaben'); } },
       print('itd', 'InfraTech-2027-Status', specDashboard)],
     'infratech:aufgaben': () => [pdf('it', 'Aufgabenliste (PDF)', 'Aufgaben-InfraTech-2027', specAufgaben),
+      { id: 'it-pdfin', label: 'Ausgefülltes PDF einlesen', short: 'Einlesen', icon: 'up', tip: 'Liest ein ausgefülltes Aufgaben-PDF ein (Kästchen, Zuständig, Termin, Notiz), zeigt die Unterschiede zum aktuellen Notion-Stand und schreibt erst nach „Übernehmen“. Ohne Notion-Zugang nur Anzeige.', run: () => app.openPdfReturn() },
       csv('it-csv', 'Als CSV', IT + 'Aufgaben.csv', () => M.buildTasksCsv(app.itFiltered(), D.CATS, app.ownerRole)),
       { id: 'it-md', label: 'Als Markdown', short: 'Markdown', icon: 'down', tip: 'Checkliste als Markdown-Text, etwa für Notion oder Teams.', run: () => runText(IT + 'Aufgaben.md', 'text/markdown', () => M.buildTasksMd(app.itFiltered(), D.CATS, app.ownerRole, 'InfraTech 2027 – Aufgaben (' + (app.itUi.archived ? 'Archiv' : 'aktiv') + ')', new Date())) },
       print('it', 'Aufgaben-InfraTech-2027', specAufgaben)],
@@ -9014,6 +9345,186 @@ label.check input { margin-top: 3px; }
     if (focusId) { const el = document.getElementById(focusId); if (el) el.focus({ preventScroll: true }); }
   };
   window.addEventListener('resize', () => { const bar = document.getElementById('actionBar'); if (bar && !bar.hidden) { bar.classList.remove('ab-compact'); const sc = bar.querySelector('.ab-scroll'); if (sc && sc.scrollWidth > sc.clientWidth + 1) bar.classList.add('ab-compact'); } });
+})();
+
+/* ---- app-pdf-return.js ---- */
+/* Feind Cockpit · „Ausgefülltes PDF einlesen“ (Aufgaben InfraTech 2027): pdf-lib wird erst beim Einlesen von cdnjs
+   geladen. Formularfelder werden mit dem Ausgangsstand (Stand-Kennung im PDF) und dem aktuellen Notion-Stand
+   verglichen; geschrieben wird erst nach Klick auf „Übernehmen“ über den Notion-Schreibweg der Aufgaben.
+   Konflikte (in Notion seit der PDF-Erstellung geändert) stehen einzeln zur Wahl. Ohne Notion-Zugang: nur Anzeige. */
+(function () {
+  'use strict';
+  const FC = window.FC, app = FC.app, H = FC.helpers, D = FC.data, M = FC.model, R = FC.pdfReturn;
+  const { h } = app;
+  const S = app.state;
+  // pdf-lib 1.17.1 mit SRI-Hash von cdnjs: Der Browser führt nur genau diese Datei aus.
+  const SRC = 'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js';
+  const SRI = 'sha512-z8IYLHO8bTgFqj+yrPyIJnzBDf7DDhWwiEsk4sY+Oe6J2M+WQequeGS7qioI5vT6rXgVRb4K1UVQC5ER7MKzKQ==';
+  let libP = null;
+  function loadLib() {
+    if (window.PDFLib && window.PDFLib.PDFDocument) return Promise.resolve(window.PDFLib);
+    if (!libP) {
+      libP = new Promise((resolve, reject) => {
+        const sc = document.createElement('script');
+        sc.src = SRC; sc.async = true; sc.integrity = SRI; sc.crossOrigin = 'anonymous'; sc.referrerPolicy = 'no-referrer';
+        sc.onload = () => (window.PDFLib && window.PDFLib.PDFDocument ? resolve(window.PDFLib) : reject(new Error('PDF-Leser nicht ladbar')));
+        sc.onerror = () => { libP = null; sc.remove(); reject(new Error('PDF-Leser nicht ladbar')); };
+        (document.head || document.body).append(sc);
+      });
+    }
+    return libP;
+  }
+  async function readPdf(bytes, name) {
+    const lib = await loadLib();
+    const pdf = await lib.PDFDocument.load(bytes, { ignoreEncryption: true, updateMetadata: false });
+    const base = R.readBase(pdf.getKeywords() || '');
+    // Felder direkt aus dem AcroForm lesen: jsPDF legt Felder als Stream-Objekte an, die getForm() übergeht.
+    const values = {};
+    const N = n => lib.PDFName.of(n);
+    const dictOf = o => (o instanceof lib.PDFDict ? o : o && o.dict instanceof lib.PDFDict ? o.dict : null);
+    const text = v => (v instanceof lib.PDFString || v instanceof lib.PDFHexString ? v.decodeText() : v instanceof lib.PDFName ? v.decodeText() : '');
+    function walk(arr, prefix, ft0, depth) {
+      if (!(arr instanceof lib.PDFArray) || depth > 6) return;
+      for (let i = 0; i < arr.size(); i++) {
+        const d = dictOf(arr.lookup(i));
+        if (!d) continue;
+        const t = text(d.lookup(N('T')));
+        const full = t ? (prefix ? prefix + '.' : '') + t : prefix;
+        const ftObj = d.lookup(N('FT'));
+        const ft = ftObj instanceof lib.PDFName ? ftObj.decodeText() : ft0;
+        const kids = d.lookup(N('Kids'));
+        if (kids instanceof lib.PDFArray && !d.lookup(N('V')) && kids.size() && dictOf(kids.lookup(0)) && dictOf(kids.lookup(0)).lookup(N('T'))) { walk(kids, full, ft, depth + 1); continue; }
+        if (!full) continue;
+        const v = d.lookup(N('V'));
+        if (ft === 'Btn') {
+          // Sichtbarer Zustand (/AS) zuerst: jsPDF schreibt /V auch bei leeren Kästchen als „On“.
+          const as = d.lookup(N('AS'));
+          let st = as instanceof lib.PDFName ? as.decodeText() : '';
+          if (!st) st = v instanceof lib.PDFName ? v.decodeText() : '';
+          values[full] = !!st && st !== 'Off';
+        } else if (ft === 'Tx') values[full] = text(v);
+      }
+    }
+    try {
+      const af = dictOf(pdf.catalog.lookup(N('AcroForm')));
+      if (af) walk(af.lookup(N('Fields')), '', '', 0);
+    } catch (e) { /* ohne Formular */ }
+    return { base, values, name: name || 'PDF' };
+  }
+  app.pdfReturnRead = readPdf;
+
+  const STATUS = k => M.statusLabel(k || 'open');
+  const roleL = k => (k ? (app.ownerRole ? app.ownerRole(k) : k) : 'offen');
+  const dayL = v => (v ? H.fmtD(v) : 'ohne Termin');
+  const FIELD = { status: 'Erledigt', owner: 'Zuständig', due: 'bis', note: 'Notiz' };
+  function describe(it) {
+    if (it.field === 'status') return [STATUS(it.from) + ' → ' + STATUS(it.to), 'Notion jetzt: ' + STATUS(it.now)];
+    if (it.field === 'owner') return [roleL(it.from) + ' → ' + (it.to ? roleL(it.to) : '„' + it.raw + '“'), 'Notion jetzt: ' + roleL(it.now)];
+    if (it.field === 'due') return [dayL(it.from) + ' → ' + (it.invalid ? '„' + it.raw + '“' : dayL(it.to)), 'Notion jetzt: ' + dayL(it.now)];
+    return ['ergänzen: „' + it.add + '“', it.conflict ? 'Notiz wurde in Notion seit dem PDF geändert.' : 'wird an die Notiz angehängt'];
+  }
+
+  function showDiff(res) {
+    const live = !!(app.notionLive && app.notionLive());
+    const base = res.base;
+    const d = R.diff(base, res.values, app.tasks().concat(app.archivedTasks()), { roles: D.ROLES, label: k => (D.ROLES.find(r => r.key === k) ? D.ROLES.find(r => r.key === k).label : roleL(k)) });
+    app.lastPdfReturn = d;
+    const choice = new Map();
+    let n = 0;
+    const list = h('ul', { class: 'pdfin-list', id: 'pdfin-list' });
+    for (const g of d.groups) {
+      const li = h('li', { class: 'pdfin-task' + (g.items.some(i => i.conflict) ? ' has-conflict' : ''), 'data-key': g.key },
+        h('b', { text: g.task.title }),
+        g.linked ? null : h('span', { class: 'bad', text: 'Nicht in Notion verknüpft: nicht übernehmbar.' }));
+      for (const it of g.items) {
+        const i = n++;
+        const [what, now] = describe(it);
+        const row = h('div', { class: 'pdfin-ch', 'data-field': it.field, 'data-conflict': it.conflict ? '1' : '0' });
+        row.append(h('div', { class: 'row' }, h('span', { class: 'label', text: FIELD[it.field] }), h('span', { text: what })));
+        if (it.invalid) { row.append(h('span', { class: 'bad', text: it.invalid })); li.append(row); continue; }
+        if (!it.writable) { row.append(h('span', { class: 'now', text: now })); li.append(row); continue; }
+        if (it.conflict) {
+          choice.set(i, { it, g, on: false });
+          const nm = 'pdfin-k-' + i;
+          const pick = on => { choice.get(i).on = on; };
+          row.append(h('span', { class: 'now', text: now + ' (seit der PDF-Erstellung in Notion geändert)' }),
+            h('div', { class: 'row', role: 'radiogroup', 'aria-label': 'Konflikt ' + FIELD[it.field] + ': ' + g.task.title },
+              h('label', { class: 'check', for: nm + '-keep', 'data-tip': 'Der aktuelle Wert in Notion bleibt, der PDF-Wert wird verworfen.' }, h('input', { type: 'radio', name: nm, id: nm + '-keep', checked: true, onchange: () => pick(false) }), ' Notion-Stand behalten'),
+              h('label', { class: 'check', for: nm + '-pdf', 'data-tip': 'Der Wert aus dem PDF überschreibt den neueren Notion-Stand.' }, h('input', { type: 'radio', name: nm, id: nm + '-pdf', onchange: () => pick(true) }), ' PDF-Wert übernehmen')));
+        } else {
+          choice.set(i, { it, g, on: true });
+          const id = 'pdfin-c-' + i;
+          row.append(h('span', { class: 'now', text: now }),
+            h('label', { class: 'check', for: id }, h('input', { type: 'checkbox', id, checked: true, onchange: e => { choice.get(i).on = e.target.checked; } }), ' übernehmen'));
+        }
+        li.append(row);
+      }
+      if (g.already.length) li.append(h('span', { class: 'now', text: g.already.length + ' Angabe(n) stehen in Notion schon so.' }));
+      list.append(li);
+    }
+    const valid = base && !base.error;
+    const head = [
+      h('p', { class: 'small', id: 'pdfin-sum' }, h('b', { text: res.name }), ' · Stand-Kennung ', h('code', { text: base.id }), ' · ',
+        d.counts.changes + ' Änderungen, davon ' + d.counts.conflicts + ' Konflikte' + (d.counts.invalid ? ', ' + d.counts.invalid + ' nicht lesbar' : '') + '.'),
+      live ? null : h('div', { class: 'banner warn', role: 'status', id: 'pdfin-offline' }, h('div', { class: 'txt' }, h('strong', { text: 'Ohne Notion-Zugang. ' }), 'Die Unterschiede werden nur angezeigt; geschrieben wird nichts. Cockpit in claude.ai mit verbundenem Notion öffnen und das PDF erneut einlesen.'))
+    ];
+    const tail = [];
+    if (d.missing.length) tail.push(h('p', { class: 'muted small', text: d.missing.length + ' Zeile(n) im PDF gehören zu Aufgaben, die es nicht mehr gibt; nicht übernommen.' }));
+    if (d.extra.length) tail.push(h('div', { class: 'stack' }, h('span', { class: 'label', text: 'Freie Notizen im PDF (nicht automatisch übernommen)' }),
+      h('ul', {}, d.extra.map(x => h('li', { class: 'small', text: x.name.replace(/_/g, ' ') + ': ' + x.text })))));
+    tail.push(h('p', { class: 'muted small', text: 'Geschrieben werden nur Status, Zuständig (Rolle), Termin und Notiz-Ergänzung, erst nach „Übernehmen“. Keine Namen oder Kontaktdaten Dritter eintragen. Rechtliche Fragen: Bitte Rechtsabteilung prüfen.' }));
+    async function apply() {
+      const per = new Map();
+      for (const c of choice.values()) {
+        if (!c.on) continue;
+        const e = per.get(c.g.task.id) || { cur: c.g.task, fields: {} };
+        e.fields[c.it.field] = c.it.to;
+        per.set(c.g.task.id, e);
+      }
+      if (!per.size) { app.toast('Nichts ausgewählt.'); return true; }
+      const r = await app.notionWriteMany(Array.from(per.values()));
+      if (r.ok) app.log('PDF-Rücklauf', r.ok + ' Aufgaben aus PDF ' + base.id + ' nach Notion übernommen');
+      app.toast(r.ok + ' von ' + per.size + ' Aufgaben in Notion übernommen' + (r.failed ? ', ' + r.failed + ' nicht' : '') + (r.skipped ? ', abgebrochen' : '') + '.', !!r.failed);
+      return !!r.skipped;
+    }
+    app.modal({
+      title: 'PDF-Rücklauf: Unterschiede zu Notion',
+      body: head.concat(d.groups.length ? [list] : [h('p', { class: 'empty', id: 'pdfin-none', text: 'Keine Änderungen gegenüber dem Stand im PDF.' })], tail),
+      actions: [{ label: 'Abbrechen' }, { label: 'Übernehmen', primary: true, disabled: !live || !valid || !d.counts.writable || S.readOnly, onClick: apply }]
+    });
+  }
+  app.pdfReturnShow = showDiff;
+
+  app.openPdfReturn = function () {
+    const file = h('input', { type: 'file', id: 'pdfin-file', accept: 'application/pdf,.pdf' });
+    const status = h('p', { class: 'small', role: 'status', id: 'pdfin-status' });
+    let close = null;
+    file.addEventListener('change', async () => {
+      const f = file.files && file.files[0];
+      if (!f) return;
+      if (f.size > 15 * 1024 * 1024) { status.textContent = 'Datei zu groß (höchstens 15 MB).'; return; }
+      status.textContent = 'PDF wird gelesen …';
+      let res;
+      try { res = await readPdf(new Uint8Array(await f.arrayBuffer()), f.name); }
+      catch (e) { status.textContent = /ladbar/.test(String(e && e.message)) ? 'PDF-Leser nicht erreichbar. Verbindung prüfen und erneut versuchen.' : 'Die Datei ließ sich nicht als PDF lesen.'; return; }
+      if (!res.base) { status.textContent = 'Keine Stand-Kennung gefunden: Bitte ein Aufgaben-PDF aus diesem Cockpit verwenden (Aktion „Aufgabenliste (PDF)“).'; return; }
+      if (res.base.error) { status.textContent = res.base.error + '. Das PDF bitte neu aus dem Cockpit erzeugen.'; return; }
+      if (close) close(false);
+      showDiff(res);
+    });
+    const live = !!(app.notionLive && app.notionLive());
+    close = app.modal({
+      title: 'Ausgefülltes PDF einlesen',
+      body: [
+        h('p', { text: 'Aufgaben-PDF aus dem Cockpit wählen, in dem Kästchen, Zuständig, Termin oder Notizen ausgefüllt wurden. Das Cockpit zeigt die Unterschiede zum aktuellen Notion-Stand; geschrieben wird erst nach „Übernehmen“.' }),
+        app.field('PDF-Datei', file, { hint: 'Nur Aufgaben-PDFs mit Stand-Kennung (Kopfzeile). Die Datei bleibt in deinem Browser.' }),
+        status,
+        live ? null : h('p', { class: 'muted small', id: 'pdfin-hint', text: 'Notion ist gerade nicht verbunden: Unterschiede werden angezeigt, aber nicht geschrieben.' })
+      ],
+      actions: [{ label: 'Schließen' }],
+      focus: '#pdfin-file'
+    });
+  };
 })();
 
 /* ---- app-init.js ---- */

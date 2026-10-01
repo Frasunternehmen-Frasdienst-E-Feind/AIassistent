@@ -24,6 +24,18 @@ Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
   `kontext/unternehmen.md` (wird parallel von einem Kollegen erstellt). Fehlt etwas, frage David.
 * Leads aus Events gehen in `mkt_leads` (Skill lead-tracking, `channel: "messe"` bzw. passend).
 
+## Sonderfall InfraTech 2027: Notion führt die Aufgaben (seit 01.10.2026)
+
+* Die Checkliste der InfraTech 2027 (`events/infratech-2027`) wird **nicht** mehr in `checklist`
+  gepflegt. Führend ist die Notion-Datenbank „Aufgaben InfraTech 2027“
+  (https://app.notion.com/p/5718273f9a2c4ba085d5da4e62c0c878); das Cockpit leitet daraus Fortschritt
+  je Bereich und die Checkliste ab, und Abhaken im Cockpit schreibt die Notion-Aufgabe.
+* Neue oder geänderte InfraTech-Punkte gehören als Aufgabe nach Notion (Zuständig nur als Rolle,
+  Quelle angeben), nicht in `events/infratech-2027.checklist` und nicht nach ClickUp (Liste stillgelegt).
+* `checklist` bleibt als Archiv lesbar; erst nach Davids Bestätigung im Cockpit („Übernahme
+  bestätigen“, Feld `checklistMigrated`) nur noch eingeklappt. Nichts löschen.
+* Andere Events (Tag der offenen Tür, Baustellenbesichtigung) behalten ihre Checkliste in `events/<id>`.
+
 ## Datensatz `events/<id>`
 
 `title, type, date, endDate?, location, checklist: [{area, item, done}], leadsCaptured,
@@ -42,6 +54,7 @@ followupStatus, source`
 3. Erzeuge die Checkliste aus der passenden Vorlage unten; streiche Punkte nur mit Begründung.
 4. Schreibe das Event per `ArtifactData set` (neu) oder `update` (Fortschritt, `done`-Werte,
    `leadsCaptured`, `followupStatus`). Mehrere Events in einem `ArtifactData batch`.
+   Ausnahme InfraTech 2027: Fortschritt und erledigte Punkte nur in Notion pflegen (siehe oben).
 5. Beim Einlesen von `03_Events/`: Dateien abbilden, `source` = Dateipfad, danach
    `ArtifactData update` auf `meta/sync`, Feld `events: { at, source: "03_Events/" }`.
 6. Nach dem Event: Nachbereitung (siehe unten) starten.

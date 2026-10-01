@@ -14,7 +14,8 @@ Stand: 2026-09-24.
 | Dateiablage (Content, Events, Referenzen) | Google Drive | verbunden | `content-pipeline`, `reference-library`, `event-planning` |
 | Dateiablage alternativ / Fotoarchiv | Dropbox | verbunden | `reference-library`, `content-pipeline` |
 | Redaktionsplan, Notizen, Marketing-Scan | Notion | verbunden | `content-pipeline`, `seo-local` |
-| Aufgaben und Freigaben | ClickUp | verbunden | `feind-copilot` (Wochenplan), `event-planning` |
+| Aufgaben InfraTech 2027 (führende Liste seit 01.10.2026) | Notion, Datenbank „Aufgaben InfraTech 2027“ | verbunden, Cockpit liest und schreibt live | Cockpit, `event-planning`, `feind-copilot` |
+| Aufgaben und Freigaben (InfraTech-Liste stillgelegt, nur Link auf Notion) | ClickUp | verbunden | `feind-copilot` (Wochenplan, nur andere Listen) |
 | Ausschreibungen TED und service.bund.de | eigener MCP-Server `feind-vergabe` (`mcp/feind-vergabe`, lokal über stdio) | Prototyp seit 30.09.2026 | `tender-monitoring` |
 | Webrecherche, übrige Vergabeportale | Firecrawl | verbunden | `tender-monitoring`, `seo-local` |
 | Webrecherche (Suche) | Parallel Search | verbunden | `tender-monitoring`, `seo-local`, `reference-library` |

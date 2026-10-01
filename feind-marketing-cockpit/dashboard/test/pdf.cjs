@@ -23,6 +23,7 @@ const SEED = {
   'tenders/t2': { title: 'Deckenerneuerung A 24 Abschnitt 3', authority: 'Autobahn GmbH', deadline: d(6), status: 'neu', fit: 'pruefen', region: 'Mecklenburg-Vorpommern' },
   'tenders/t3': { title: 'Grinding Betonfahrbahn', authority: 'Rijkswaterstaat', deadline: d(25), status: 'neu', fit: 'pruefen', region: 'Niederlande' },
   'events/e1': { title: 'Tag der offenen Tür Lübben', type: 'tag_der_offenen_tuer', date: d(20), location: 'Lübben', checklist: [{ area: 'sicherheit', item: 'Absperrung planen', done: true }, { area: 'marketing', item: 'Einladung versenden', done: false }, { area: 'logistik', item: 'Parkflächen markieren', done: false }] },
+  'events/infratech-2027': { title: 'InfraTech 2027 – Messe Rotterdam', type: 'messe', date: '2027-01-12', endDate: '2027-01-15', location: 'Rotterdam Ahoy', checklist: [{ area: 'budget', item: 'Budgetrahmen 2027 festlegen', done: false }, { area: 'marketing', item: 'Einreichung Innovationspreis', done: true }] },
   'seo_keywords/k1': { keyword: 'kaltfräsen brandenburg', region: 'Brandenburg', position: 4, previousPosition: 7, clicks: 31, impressions: 800, url: 'https://example.org/kaltfraesen', checkedAt: d(-1) },
   'seo_keywords/k2': { keyword: 'straßenfräsen', position: 18, previousPosition: 12, clicks: 4, impressions: 1200, url: 'https://example.org/', checkedAt: d(-1) },
   'seo_gaps/g1': { topic: 'Grooving für Flughäfen', service: 'Grooving', priority: 'hoch', reason: 'Suchvolumen ohne eigene Seite' },
@@ -37,7 +38,7 @@ const SEED = {
   const launch = { executablePath: '/opt/pw-browsers/chromium' };
   if (!JSPDF && process.env.HTTPS_PROXY) launch.proxy = { server: process.env.HTTPS_PROXY };
   const b = await chromium.launch(launch);
-  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 }, acceptDownloads: true });
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 }, acceptDownloads: true, ignoreHTTPSErrors: true });
   if (JSPDF) await ctx.route('https://cdnjs.cloudflare.com/**', r => r.fulfill({ path: JSPDF, contentType: 'application/javascript' }));
   await ctx.addInitScript(seed => { try { if (!localStorage.getItem('feind-cockpit:db')) localStorage.setItem('feind-cockpit:db', JSON.stringify(seed)); } catch (e) { /* egal */ } }, SEED);
   const p = await ctx.newPage();
