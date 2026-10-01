@@ -160,3 +160,34 @@ test('Anbieter nicht erreichbar: Rückfall auf Umrisskarte mit Hinweis', async (
   assert.equal(await page.getByRole('button', { name: 'Straßenkarte laden' }).count(), 1);
   await ctx.close();
 });
+
+test('Admin: Vorlage Stadia EU füllt die Felder und meldet den fehlenden API-Key', async () => {
+  const { page, ext, ctx, errors } = await open();
+  await page.locator('#wt-admin').click();
+  await page.locator('.tab', { hasText: 'Konfiguration' }).click();
+  await page.getByRole('button', { name: /Funktionen und Quellen/ }).first().click();
+  await page.locator('#mt-preset').selectOption('stadia-eu');
+  await page.getByRole('button', { name: 'Vorlage übernehmen' }).click();
+  assert.match(await page.locator('#mt-url').inputValue(), /^https:\/\/tiles-eu\.stadiamaps\.com\/tiles\/alidade_smooth\/\{z\}\/\{x\}\/\{y\}\{r\}\.png\?api_key=$/);
+  assert.equal(await page.locator('#mt-attribution').inputValue(), '© Stadia Maps © OpenMapTiles');
+  const card = page.locator('.card', { has: page.locator('#mt-preset') });
+  assert.match(await card.innerText(), /EU-Endpunkt/);
+  assert.match(await card.innerText(), /API-Key fehlt/);
+  assert.deepEqual(ext, []);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('EU-Endpunkt Stadia: Dialog weist auf EU-Server hin, Kacheln nur von tiles-eu.stadiamaps.com', async () => {
+  const mapTiles = { name: 'Stadia Maps (EU)', url: 'https://tiles-eu.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=test', attribution: '© Stadia Maps © OpenMapTiles' };
+  const { page, ext, ctx } = await open({ db: { 'admin/config': { version: 1, mapTiles } } });
+  await page.getByRole('button', { name: 'Straßenkarte laden' }).click();
+  const dlg = page.getByRole('dialog', { name: /Einwilligung/ });
+  assert.match(await dlg.innerText(), /EU-Endpunkt/);
+  await dlg.getByRole('button', { name: 'Einwilligen und laden' }).click();
+  await page.locator('.leaflet-tile-pane img').first().waitFor({ state: 'attached' });
+  assert.ok(tileRequests(ext, 'tiles-eu.stadiamaps.com').length > 0);
+  assert.deepEqual(ext.filter(u => !u.includes('tiles-eu.stadiamaps.com')), []);
+  assert.match(await page.locator('.gm-map .leaflet-control-attribution').innerText(), /© Stadia Maps © OpenMapTiles/);
+  await ctx.close();
+});
