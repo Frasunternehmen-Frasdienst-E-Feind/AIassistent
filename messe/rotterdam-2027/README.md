@@ -8,6 +8,7 @@ auf der **InfraTech 2027, Rotterdam Ahoy, 12.–15. Januar 2027**.
 | Datei | Zweck |
 |---|---|
 | `feind-cockpit.html` | **Aktuelle Quelle des Live-Cockpits** („Feind Cockpit“ v1.1: Marketing · InfraTech 2027 · Admin) inkl. Reiter **„Checkliste 26→27“** (übernommene ToDo-Liste, 64 Punkte). |
+| `feind-cockpit-v3.html` | Quelle des Artefakts „Feind Cockpit (Copy)“ (v3.1, Leaflet-Karte): Kartenansicht mit Einwilligung, konfigurierbarem Kachelanbieter, Clustering, lokal eingebetteter Schrift. Doku: **`KARTE.md`**, Tests: `test/` (Unit) und `e2e/` (Playwright). |
 | `infratech-2027-liste.html` | Vorgängerstand des Cockpits (v2, Altstand – nicht mehr live). Aufgaben, Fristen, Budget, KPIs, Lessons Learned, Faktencheck, Wissensbasis. Kategorisiert, filterbar, mit Fortschritt und Terminwarnungen. |
 | `MASTER-TODO.md` | Vollständige, kategorisierte Aufgabenliste als versionierbarer Text (Grundlage des Cockpits). |
 | `KATEGORISIERUNG-MANUS.md` | Kategorisierung der MANUS-Export-Inhalte + Plan, wie sie die ToDo-Liste ergänzen. |

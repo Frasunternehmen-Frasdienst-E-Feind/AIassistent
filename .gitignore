@@ -29,3 +29,6 @@ output/*
 # Build-Artefakte
 build/
 dist/
+
+# Node-Abhängigkeiten (npm install)
+node_modules/

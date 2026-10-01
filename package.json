@@ -5,7 +5,12 @@
   "description": "Werkzeuge für Marketing & Events – u. a. Stempeluhr (Zeiterfassung)",
   "scripts": {
     "test": "node --test zeiterfassung/test/*.test.js",
-    "start": "node -e \"const p=require('path').resolve('zeiterfassung/index.html');console.log('Im Browser öffnen: file://'+p)\""
+    "start": "node -e \"const p=require('path').resolve('zeiterfassung/index.html');console.log('Im Browser öffnen: file://'+p)\"",
+    "test:cockpit": "node --test messe/rotterdam-2027/test/*.test.mjs",
+    "test:cockpit:e2e": "node --test --test-timeout=60000 messe/rotterdam-2027/e2e/*.e2e.mjs"
   },
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "playwright": "^1.56.1"
+  }
 }
