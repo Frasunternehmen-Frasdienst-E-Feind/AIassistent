@@ -104,3 +104,36 @@ test('Einwilligung: ohne Einwilligung lässt sich die Straßenkarte nicht einsch
 test('Einwilligung: beschädigter Speicherstand gilt als nicht erteilt', () => {
   assert.deepEqual(G.consent.read('{kaputt', HOST), { granted: false, on: false });
 });
+
+test('Anbieter: dokumentierter EU-Endpunkt wird erkannt, andere Hosts nicht', () => {
+  assert.equal(G.provider({ url: 'https://tiles-eu.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=k' }).eu, true);
+  assert.equal(G.provider({ url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=k' }).eu, false);
+  assert.equal(G.provider(null).eu, false);
+});
+
+test('Vorlage Stadia EU: gültige URL mit EU-Host, Namensnennung und Datenschutz-Link', () => {
+  const x = G.presets().find(q => q.id === 'stadia-eu');
+  assert.ok(x);
+  const p = G.provider(Object.assign({}, x, { url: x.url + 'abc123' }));
+  assert.equal(p.error, '');
+  assert.equal(p.host, 'tiles-eu.stadiamaps.com');
+  assert.equal(p.eu, true);
+  assert.equal(p.warning, '');
+  assert.match(p.attributionHtml, /OpenStreetMap-Mitwirkende/);
+  assert.match(p.attributionHtml, /© Stadia Maps © OpenMapTiles/);
+  assert.match(p.privacyUrl, /^https:\/\/stadiamaps\.com\//);
+});
+
+test('Anbieter: leerer API-Key in der URL ergibt eine Warnung, kein Rückfall', () => {
+  const x = G.presets()[0];
+  const p = G.provider(x);
+  assert.equal(p.testOnly, false);
+  assert.match(p.warning, /API-Key fehlt/);
+  assert.equal(G.provider({ url: 'https://t.example.eu/{z}/{x}/{y}.png?key=&style=a' }).warning !== '', true);
+  assert.equal(G.provider({ url: 'https://t.example.eu/{z}/{x}/{y}.png?key=abc' }).warning, '');
+});
+
+test('Vorlagen: Änderungen an der Rückgabe verändern die Vorlage nicht', () => {
+  G.presets()[0].url = 'https://evil.example/{z}/{x}/{y}.png';
+  assert.match(G.presets()[0].url, /^https:\/\/tiles-eu\.stadiamaps\.com\//);
+});
