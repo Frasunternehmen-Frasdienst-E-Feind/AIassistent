@@ -167,7 +167,11 @@ test('Admin: Vorlage Stadia EU füllt die Felder und meldet den fehlenden API-Ke
   await page.locator('.tab', { hasText: 'Konfiguration' }).click();
   await page.getByRole('button', { name: /Funktionen und Quellen/ }).first().click();
   await page.locator('#mt-preset').selectOption('stadia-eu');
+  // Ein Renderlauf zwischen Wählen und Übernehmen (z. B. durch ein Speicher-Ereignis) darf die Auswahl nicht verlieren.
+  await page.evaluate(() => new Promise(r => { window.FC.app.refresh(); requestAnimationFrame(() => requestAnimationFrame(r)); }));
   await page.getByRole('button', { name: 'Vorlage übernehmen' }).click();
+  // Übernehmen rendert die Admin-Ansicht neu; erst danach stehen die Werte in den Feldern.
+  await page.waitForFunction(() => (document.getElementById('mt-url') || {}).value?.startsWith('https://tiles-eu.stadiamaps.com/'));
   assert.match(await page.locator('#mt-url').inputValue(), /^https:\/\/tiles-eu\.stadiamaps\.com\/tiles\/alidade_smooth\/\{z\}\/\{x\}\/\{y\}\{r\}\.png\?api_key=$/);
   assert.equal(await page.locator('#mt-attribution').inputValue(), '© Stadia Maps © OpenMapTiles');
   const card = page.locator('.card', { has: page.locator('#mt-preset') });
