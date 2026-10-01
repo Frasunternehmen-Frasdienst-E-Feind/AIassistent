@@ -1597,6 +1597,24 @@ svg.leaflet-image-layer.leaflet-interactive path {
 	transition: stroke-dashoffset 0.3s ease-out, stroke-opacity 0.3s ease-in;
 }
 
+/* ---- bulk.css ---- */
+.bk-tools { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); align-items: flex-end; }
+.bk-all { font-weight: 700; color: var(--ink-strong); }
+.bk-bar { position: sticky; top: 64px; z-index: 4; display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; background: var(--surface-inverse); color: var(--ink-inverse); padding: 8px 12px; border-left: 6px solid var(--accent); box-shadow: 0 4px 14px var(--shadow); }
+.bk-bar .btn:not(.primary) { background: var(--surface); }
+.bk-bar select { min-height: 30px; padding: 2px 6px; font-size: 13px; max-width: 220px; }
+.bk-bar .linkbtn { color: var(--ink-inverse); margin-left: auto; }
+.bk-groups { display: flex; flex-direction: column; gap: var(--s3); }
+.bk-ghead { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; justify-content: space-between; border-bottom: 2px solid var(--line); padding-bottom: 2px; margin-bottom: 6px; }
+.bk-ghead b { color: var(--ink-strong); font-family: var(--font-display); }
+.bk-list > li { align-items: center; }
+.kb-review.bk-list > li > .kb-thumb { flex: none; }
+.kb-review.bk-list > li > .stack { flex: 1 1 220px; }
+.bk-list > li > input[type="checkbox"], .bk-ghead input, .bk-all input { width: 20px; height: 20px; flex: none; cursor: pointer; }
+.bk-list > li.sel { background: var(--accent-soft); border-color: var(--accent); }
+@media (pointer: coarse) { .bk-list > li > input[type="checkbox"], .bk-ghead input, .bk-all input { width: 24px; height: 24px; } }
+@media print { .bk-bar, .bk-tools { display: none !important; } }
+
 /* ---- geomap.css ---- */
 .gm-wrap { display: flex; flex-direction: column; gap: var(--s2); min-width: 0; }
 .gm-bar { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); align-items: center; }
@@ -4352,6 +4370,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     const hash = '#' + world + '-' + key;
     if (location.hash !== hash) { try { history.replaceState(null, '', hash); } catch (e) { /* Rahmen erlaubt es evtl. nicht */ } }
     storeSet(NAV_KEY, JSON.stringify({ world, tab: S.tab }));
+    renderBanners();
     renderTabs();
     renderPanel();
     updatePrintHead();
@@ -4471,10 +4490,17 @@ svg.leaflet-image-layer.leaflet-interactive path {
   }
 
   let pending = false;
+  // Während eine Maustaste/ein Finger gedrückt ist, nicht neu zeichnen: sonst geht der Klick verloren.
+  let ptrDown = false, deferred = false;
+  document.addEventListener('pointerdown', () => { ptrDown = true; }, true);
+  const ptrEnd = () => { ptrDown = false; if (deferred) { deferred = false; setTimeout(() => app.refresh(), 0); } };
+  document.addEventListener('pointerup', ptrEnd, true);
+  document.addEventListener('pointercancel', ptrEnd, true);
+  window.addEventListener('blur', ptrEnd);
   app.refresh = function () {
     if (pending) return;
     pending = true;
-    const run = () => { pending = false; renderAll(); };
+    const run = () => { pending = false; if (ptrDown) { deferred = true; return; } renderAll(); };
     if (typeof requestAnimationFrame === 'function' && !document.hidden) requestAnimationFrame(run); else setTimeout(run, 0);
   };
   function renderAll() {
@@ -4533,6 +4559,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   /* ---------- Banner ---------- */
   const extraBanners = [];
   app.addBanner = fn => extraBanners.push(fn);
+  let lastBannerSig = null;
   function renderBanners() {
     const slot = $('bannerSlot');
     const out = [];
@@ -4554,6 +4581,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
         h('div', { class: 'txt' }, h('strong', { text: 'Hinweis der Administration: ' }), H.str(an.text))));
     }
     for (const fn of extraBanners) { try { const b = fn(); if (b) out.push(b); } catch (e) { /* Banner optional */ } }
+    // Nur bei Änderung neu zeichnen: Hintergrund-Aktualisierungen ersetzten sonst Knöpfe mitten im Klick.
+    const sig = out.map(e => e.outerHTML).join('');
+    if (sig === lastBannerSig && slot.childElementCount === out.length) return;
+    lastBannerSig = sig;
     slot.replaceChildren(...out);
   }
 
@@ -8909,7 +8940,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   const W = S.ui.kb = {
     q: '', cat: '', type: '', service: '', year: '', status: 'aktiv', project: '', sort: 'neu', view: 'grid', full: false,
     auto: app.storeGet(AUTO_KEY) !== '0', draft: '', files: new Map(), texts: new Map(), steps: new Map(), queue: [], skip: new Set(),
-    busy: false, fullText: new Map(), ask: { q: '', running: false, text: '', err: '', sources: [], ctl: null }, pauseUntil: 0
+    busy: false, fullText: new Map(), ask: { q: '', running: false, text: '', err: '', sources: [], ctl: null }, pauseUntil: 0, bulk: {}
   };
   const rerender = () => app.refresh();
   const items = () => (S.data.kb_items || []).map(r => Object.assign({ id: r._id }, r));
@@ -8957,7 +8988,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   app.toast = function (msg, err, action) {
     const t = document.getElementById('toast');
     t.className = 'toast' + (err ? ' err' : '');
-    t.replaceChildren(h('span', { text: msg }), action ? h('button', { class: 'toast-act', type: 'button', onclick: () => { t.hidden = true; action.run(); } }, action.label) : null);
+    t.replaceChildren(...[h('span', { text: msg }), action ? h('button', { class: 'toast-act', type: 'button', onclick: () => { t.hidden = true; action.run(); } }, action.label) : null].filter(Boolean));
     t.hidden = false;
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => { t.hidden = true; }, action ? 9000 : 6000);
@@ -9555,7 +9586,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
         dd('kb-sort', 'Sortierung', [['neu', 'Neueste zuerst'], ['relevanz', 'Relevanz'], ['titel', 'Titel A–Z']], W.sort, v => { W.sort = v; }));
       const viewBtns = h('div', { class: 'row kb-viewbar', role: 'group', 'aria-label': 'Ansicht' },
         h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(W.view === 'grid'), onclick: () => { W.view = 'grid'; rerender(); } }, app.ico('raster'), 'Karten'),
-        h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(W.view === 'list'), onclick: () => { W.view = 'list'; rerender(); } }, app.ico('liste'), 'Liste'),
+        h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(W.view === 'list'), onclick: () => { W.view = 'list'; rerender(); } }, app.ico('liste'), 'Liste & Mehrfachauswahl'),
         app.check('kb-full', W.loadingText ? 'Volltext wird geladen …' : 'Volltext durchsuchen', W.full, v => { W.full = v; if (v) loadFullText(); else rerender(); }),
         active ? h('button', { class: 'linkbtn', type: 'button', onclick: () => { Object.assign(W, { q: '', cat: '', type: '', service: '', year: '', project: '', status: 'aktiv' }); rerender(); } }, 'Filter zurücksetzen') : null,
         app.exportButton('Katalog (CSV)', 'Feind-Wissensarchiv-' + ymd(app.today()) + '.csv', 'text/csv', () => H.toCsv(['Titel', 'Kategorie', 'Typ', 'Leistungen', 'Jahr', 'Projekt', 'Orte', 'Status', 'Abgelegt', 'Ablagevorschlag'],
@@ -9564,12 +9595,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
       if (!S.loaded.kb_items) body = app.skeleton(5, 'Lade Archiv');
       else if (!all.length) body = emptyArchive();
       else if (!list.length) body = h('div', { class: 'empty' }, h('strong', { text: 'Keine Treffer. ' }), 'Suchbegriff oder Filter lockern' + (W.full ? '.' : ' oder „Volltext durchsuchen“ einschalten.'));
-      else if (W.view === 'list') body = h('div', { class: 'tbl-wrap' }, h('table', { class: 'data' }, h('caption', { class: 'sr', text: 'Archiv' }),
-        h('thead', {}, h('tr', {}, ['Titel', 'Kategorie', 'Typ', 'Jahr', 'Projekt', 'Status'].map(t => h('th', { scope: 'col', text: t })))),
-        h('tbody', {}, list.slice(0, 500).map(i => h('tr', {},
-          h('td', {}, h('button', { class: 'linkbtn', type: 'button', style: 'font-size:13.5px;text-align:left', onclick: () => openDetail(i.id) }, str(i.title) || str(i.name))),
-          h('td', { text: i.category ? K.catOf(i.category)[1] : '–' }), h('td', { text: str(i.docType) || '–' }), h('td', { class: 'num', text: i.year ? String(i.year) : '–' }),
-          h('td', { text: (projById(i.projectId) || {}).name || '–' }), h('td', {}, statusChip(i)))))));
+      else if (W.view === 'list') body = h('div', { class: 'stack' }, bulkView('archiv', list.slice(0, 1000), { sort: 'neu', archived: W.status === 'archiviert',
+        rowMeta: i => [i.category ? h('span', { class: 'chip soft', text: K.catOf(i.category)[1] }) : null, str(i.docType) ? h('span', { class: 'chip soft', text: str(i.docType) }) : null,
+          i.year ? h('span', { class: 'chip', text: String(i.year) }) : null, projById(i.projectId) ? h('span', { class: 'chip', text: projById(i.projectId).name }) : null,
+          i.reviewedAt ? chip('green', 'Verifiziert') : null, statusChip(i)] }));
       else body = h('div', { class: 'kb-grid' }, list.slice(0, 300).map(itemCard));
       return [
         panelHead('Archiv · Unternehmenswissen', list.length + ' von ' + all.length, h('button', { class: 'btn primary', type: 'button', disabled: !!intakeBlocked(), onclick: () => app.kbQuickCapture() }, app.ico('ablegen'), 'Ablegen')),
@@ -9651,8 +9680,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
     const box = document.querySelector('#modalRoot .modal');
     if (box) box.classList.add('wide');
   }
-  async function removeItem(it) {
-    const ok = await app.confirm({ title: 'Endgültig löschen?', confirmLabel: 'Endgültig löschen', danger: true,
+  async function removeItem(it, skipConfirm) {
+    const ok = skipConfirm || await app.confirm({ title: 'Endgültig löschen?', confirmLabel: 'Endgültig löschen', danger: true,
       text: '„' + str(it.title) + '“ wird mit gelesenem Text' + (it.assetId ? ' und Originaldatei' : '') + ' gelöscht. Das lässt sich nicht rückgängig machen. Zum Aufräumen genügt meist „Archivieren“.' });
     if (!ok) return;
     if (it.assetId) { const assets = await use('assets'); if (assets) { try { await assets.delete(it.assetId); } catch (e) { /* bleibt im Speicher */ } } }
@@ -9661,6 +9690,118 @@ svg.leaflet-image-layer.leaflet-interactive path {
     if (await app.write('kb_items/' + it.id, 'delete')) { app.log('Wissensarchiv', 'Eintrag gelöscht: ' + str(it.title)); app.toast('Gelöscht.'); }
   }
   app.kbOpen = openDetail;
+
+  /* ---------- Mehrfachauswahl: sortieren, gruppieren, gemeinsam bearbeiten ---------- */
+  const BULK_GROUP = [['', 'Keine Gruppen'], ['thema', 'Themengebiet'], ['typ', 'Dokumenttyp'], ['projekt', 'Projekt'], ['zuordnung', 'Bisherige Zuordnung']];
+  const BULK_SORT = [['name', 'Name A–Z'], ['typ', 'Typ'], ['thema', 'Themengebiet'], ['neu', 'Neueste zuerst'], ['alt', 'Älteste zuerst']];
+  const zuordnung = it => it.reviewedAt ? [0, 'Verifiziert (geprüft)'] : it.via === 'ki' ? [1, 'KI-Zuordnung, nicht geprüft'] : it.via === 'regeln' ? [2, 'Regel-Zuordnung (ohne KI), nicht geprüft'] : it.via === 'manuell' ? [1, 'Von Hand gesetzt, nicht geprüft'] : [3, 'Noch nicht zugeordnet'];
+  const groupOf = (it, g) => g === 'thema' ? (it.category ? K.catOf(it.category)[1] : 'Ohne Themengebiet')
+    : g === 'typ' ? (str(it.docType) || 'Ohne Typ')
+    : g === 'projekt' ? ((projById(it.projectId) || {}).name || 'Ohne Projekt')
+    : g === 'zuordnung' ? zuordnung(it)[1] : '';
+  const nameOf = it => str(it.title) || str(it.name);
+  function bulkSort(list, by) {
+    const de = (a, b) => a.localeCompare(b, 'de', { sensitivity: 'base' });
+    const cmp = {
+      name: (a, b) => de(nameOf(a), nameOf(b)),
+      typ: (a, b) => de(str(a.docType) || '~', str(b.docType) || '~') || de(nameOf(a), nameOf(b)),
+      thema: (a, b) => de(a.category ? K.catOf(a.category)[1] : '~', b.category ? K.catOf(b.category)[1] : '~') || de(nameOf(a), nameOf(b)),
+      neu: (a, b) => (b.createdAt || 0) - (a.createdAt || 0),
+      alt: (a, b) => (a.createdAt || 0) - (b.createdAt || 0)
+    }[by] || null;
+    return cmp ? list.slice().sort(cmp) : list.slice();
+  }
+  function bulkGroups(list, g) {
+    if (!g) return [['', list]];
+    const m = new Map();
+    for (const it of list) { const k = groupOf(it, g); if (!m.has(k)) m.set(k, []); m.get(k).push(it); }
+    const keys = Array.from(m.keys());
+    if (g === 'zuordnung') keys.sort((a, b) => zuordnung(m.get(a)[0])[0] - zuordnung(m.get(b)[0])[0]);
+    else keys.sort((a, b) => (/^Ohne /.test(a) ? 1 : 0) - (/^Ohne /.test(b) ? 1 : 0) || a.localeCompare(b, 'de'));
+    return keys.map(k => [k, m.get(k)]);
+  }
+  async function bulkRun(ids, label, fn) {
+    if (!ids.length) return;
+    let ok = 0;
+    app.toast(label + ': ' + ids.length + ' Einträge …');
+    for (const id of ids) { const it = byId(id); if (!it) continue; try { if (await fn(it)) ok++; } catch (e) { /* nächster */ } }
+    app.log('Wissensarchiv', label + ': ' + ok + ' von ' + ids.length);
+    app.toast(label + ': ' + ok + (ok === 1 ? ' Eintrag' : ' Einträge') + (ok < ids.length ? ', ' + (ids.length - ok) + ' fehlgeschlagen' : '') + '.', ok < ids.length);
+    rerender();
+  }
+  // key: eigener Auswahl-Speicher je Ansicht; rowExtra(it): Knöpfe je Zeile; rowMeta(it): Chips je Zeile
+  function bulkView(key, list, opts) {
+    const st = W.bulk[key] || (W.bulk[key] = { sel: new Set(), group: opts.group || '', sort: opts.sort || 'name', last: null });
+    const live = new Set(list.map(i => i.id));
+    for (const id of Array.from(st.sel)) if (!live.has(id)) st.sel.delete(id);
+    const ro = !canWrite();
+    const groups = bulkGroups(bulkSort(list, st.sort), st.group);
+    const flat = groups.flatMap(g => g[1]);
+    const n = st.sel.size;
+    const toggle = (ids, on) => { for (const id of ids) on ? st.sel.add(id) : st.sel.delete(id); rerender(); };
+    const triBox = (ids, label, id) => {
+      const c = ids.filter(x => st.sel.has(x)).length;
+      const cb = h('input', { type: 'checkbox', id, 'aria-label': label, checked: c > 0 && c === ids.length, disabled: !ids.length });
+      cb.indeterminate = c > 0 && c < ids.length;
+      cb.addEventListener('change', () => toggle(ids, cb.checked));
+      return cb;
+    };
+    const rowBox = (it, idx) => {
+      const cb = h('input', { type: 'checkbox', id: 'bk-' + key + '-' + it.id, 'aria-label': nameOf(it) + ' markieren', checked: st.sel.has(it.id) });
+      cb.addEventListener('click', e => {
+        if (e.shiftKey && st.last != null) { const [a, b] = [Math.min(st.last, idx), Math.max(st.last, idx)]; toggle(flat.slice(a, b + 1).map(x => x.id), cb.checked); }
+        else toggle([it.id], cb.checked);
+        st.last = idx;
+      });
+      return cb;
+    };
+    const dd = (id, label, o, v, set) => app.field(label, app.dropdown(id, o, v, x => { set(x); rerender(); }));
+    const allIds = flat.map(i => i.id);
+    const tools = h('div', { class: 'bk-tools' },
+      h('label', { class: 'check bk-all', for: 'bk-all-' + key }, triBox(allIds, 'Alle ' + allIds.length + ' Einträge markieren', 'bk-all-' + key), 'Alle markieren (' + allIds.length + ')'),
+      dd('bk-sort-' + key, 'Sortieren nach', BULK_SORT, st.sort, x => { st.sort = x; }),
+      dd('bk-group-' + key, 'Gruppieren nach', BULK_GROUP, st.group, x => { st.group = x; }));
+    const sel = Array.from(st.sel);
+    const projOpts = [['', 'Projekt wählen …']].concat(projects().sort((a, b) => str(a.name).localeCompare(str(b.name), 'de')).map(p => [p.id, str(p.name).slice(0, 50)]));
+    const catSel = app.dropdown('bk-cat-' + key, [['', 'Themengebiet setzen …']].concat(K.CATS.map(c => [c[0], c[1]])), '', v => {
+      if (v) bulkRun(sel, 'Themengebiet „' + K.catOf(v)[1] + '“ gesetzt', it => app.write('kb_items/' + it.id, 'update', { category: v, via: it.reviewedAt ? it.via : 'manuell' }));
+    }, 'Themengebiet für die Auswahl setzen');
+    const projSel = app.dropdown('bk-proj-' + key, projOpts, '', v => {
+      if (!v) return;
+      const p = projById(v);
+      bulkRun(sel, 'Projekt „' + str(p && p.name) + '“ zugeordnet', async it => {
+        const ok = await app.write('kb_items/' + it.id, 'update', { projectId: v });
+        if (ok && it.projectId && it.projectId !== v) { const old = projById(it.projectId); if (old) await app.write('kb_projects/' + old.id, 'update', { items: arr(old.items).filter(x => x !== it.id), updatedAt: Date.now() }); }
+        return ok;
+      }).then(async () => { const q = projById(v); if (q) await app.write('kb_projects/' + v, 'update', { items: Array.from(new Set(arr(q.items).concat(sel))), updatedAt: Date.now() }); });
+    }, 'Projekt für die Auswahl zuordnen');
+    catSel.disabled = projSel.disabled = ro;
+    const bar = n ? h('div', { class: 'bk-bar', role: 'region', 'aria-label': 'Aktionen für markierte Einträge' },
+      h('b', { text: n + (n === 1 ? ' markiert' : ' markiert') }),
+      h('button', { class: 'btn small primary', type: 'button', disabled: ro, onclick: () => bulkRun(sel, 'Als geprüft markiert', it => app.write('kb_items/' + it.id, 'update', { status: 'fertig', review: [], reviewedAt: Date.now(), reviewedBy: me() })) }, icon('check'), 'Geprüft'),
+      catSel, projSel,
+      h('button', { class: 'btn small', type: 'button', disabled: ro, onclick: () => bulkRun(sel, 'Neu eingeordnet', async it => { await reprocess(it.id); return true; }) }, 'Neu einordnen'),
+      opts.archived
+        ? h('button', { class: 'btn small', type: 'button', disabled: ro, onclick: () => bulkRun(sel, 'Wiederhergestellt', it => app.write('kb_items/' + it.id, 'update', { status: 'fertig' })) }, 'Wiederherstellen')
+        : h('button', { class: 'btn small', type: 'button', disabled: ro, onclick: () => bulkRun(sel, 'Archiviert', it => app.write('kb_items/' + it.id, 'update', { status: 'archiviert' })) }, 'Archivieren'),
+      h('button', { class: 'btn small danger', type: 'button', disabled: ro, onclick: async () => {
+        const go = await app.confirm({ title: n + ' Einträge endgültig löschen?', confirmLabel: 'Endgültig löschen', danger: true, text: 'Die markierten Einträge werden mit gelesenem Text und Originaldateien gelöscht. Das lässt sich nicht rückgängig machen. Zum Aufräumen genügt meist „Archivieren“.' });
+        if (go) { await bulkRun(sel, 'Gelöscht', async it => { await removeItem(it, true); return true; }); st.sel.clear(); }
+      } }, 'Löschen'),
+      h('button', { class: 'linkbtn', type: 'button', onclick: () => { st.sel.clear(); rerender(); } }, 'Auswahl aufheben')) : null;
+    let idx = 0;
+    const body = h('div', { class: 'bk-groups' }, groups.map(([g, rows]) => h('div', { class: 'bk-group' },
+      st.group ? h('div', { class: 'bk-ghead' },
+        h('label', { class: 'check', for: 'bk-g-' + key + '-' + g.replace(/\W+/g, '_') }, triBox(rows.map(r => r.id), 'Gruppe ' + g + ' markieren', 'bk-g-' + key + '-' + g.replace(/\W+/g, '_')), h('b', { text: g })),
+        h('span', { class: 'muted small', text: rows.length + (rows.length === 1 ? ' Eintrag' : ' Einträge') })) : null,
+      h('ul', { class: 'kb-review bk-list' }, rows.map(it => { const i = idx++; return h('li', { class: st.sel.has(it.id) ? 'sel' : null },
+        rowBox(it, i), thumb(it),
+        h('div', { class: 'stack', style: 'min-width:0;flex:1' },
+          h('button', { class: 'linkbtn', type: 'button', style: 'font-size:15px;font-weight:700;text-align:left', onclick: () => openDetail(it.id) }, nameOf(it)),
+          h('div', { class: 'chips' }, opts.rowMeta(it))),
+        opts.rowExtra ? h('div', { class: 'row' }, opts.rowExtra(it)) : null); })))));
+    return [tools, bar, body, h('p', { class: 'muted small', text: 'Tipp: Mit gedrückter Umschalttaste einen Bereich markieren. Gruppen haben eigene Kästchen zum Markieren.' })];
+  }
 
   /* ---------- Modul Prüfung ---------- */
   const GEO_HOW = { verzeichnis: 'Ort aus Ortsverzeichnis', mehrdeutig: 'Ortsname mehrdeutig', ki: 'Ort von KI geschätzt', land: 'nur Bundesland bekannt', manuell: 'Position gesetzt', offen: 'Position offen' };
@@ -9675,16 +9816,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
       return [
         panelHead('Prüfung', list.length + ' Einträge · ' + projOpen.length + ' Projekte', null, 'Hier landet, was das Cockpit nicht sicher einordnen konnte: unsichere Einordnung, Verdacht auf personenbezogene Daten, nicht lesbare Dateien, Originale für SharePoint, Projekte ohne gesicherten Ort.'),
         h('div', { class: 'section' }, h('h3', { text: 'Einträge' }),
-          !S.loaded.kb_items ? app.skeleton(3) : list.length ? h('ul', { class: 'kb-review' }, list.map(it => h('li', {},
-            thumb(it),
-            h('div', { class: 'stack', style: 'min-width:0;flex:1' },
-              h('button', { class: 'linkbtn', type: 'button', style: 'font-size:15px;font-weight:700;text-align:left', onclick: () => openDetail(it.id) }, str(it.title) || str(it.name)),
-              h('div', { class: 'chips' }, it.pii && it.pii.found ? chip('red', 'Personendaten') : null, (arr(it.review).length ? arr(it.review) : [str(it.error) || 'Fehler']).map(r => h('span', { class: 'chip yellow', style: 'white-space:normal', text: r })))),
-            h('div', { class: 'row' },
-              h('button', { class: 'btn small primary', type: 'button', disabled: ro, onclick: () => ok(it) }, icon('check'), 'Passt'),
+          !S.loaded.kb_items ? app.skeleton(3) : list.length ? bulkView('pruefung', list, { sort: 'alt',
+            rowMeta: it => [it.pii && it.pii.found ? chip('red', 'Personendaten') : null, it.category ? h('span', { class: 'chip soft', text: K.catOf(it.category)[1] }) : null, str(it.docType) ? h('span', { class: 'chip soft', text: str(it.docType) }) : null,
+              (arr(it.review).length ? arr(it.review) : [str(it.error) || 'Fehler']).map(r => h('span', { class: 'chip yellow', style: 'white-space:normal', text: r }))],
+            rowExtra: it => [h('button', { class: 'btn small primary', type: 'button', disabled: ro, onclick: () => ok(it) }, icon('check'), 'Passt'),
               h('button', { class: 'btn small', type: 'button', onclick: () => openDetail(it.id) }, 'Bearbeiten'),
-              it.status === 'fehler' ? h('button', { class: 'btn small', type: 'button', disabled: ro, onclick: () => reprocess(it.id) }, 'Erneut') : null,
-              h('button', { class: 'btn small ghost', type: 'button', disabled: ro, onclick: () => app.write('kb_items/' + it.id, 'update', { status: 'archiviert' }) }, 'Archivieren'))))) : h('p', { class: 'muted', text: 'Nichts zu prüfen.' })),
+              it.status === 'fehler' ? h('button', { class: 'btn small', type: 'button', disabled: ro, onclick: () => reprocess(it.id) }, 'Erneut') : null] }) : h('p', { class: 'muted', text: 'Nichts zu prüfen.' })),
         h('div', { class: 'section' }, h('h3', { text: 'Projekte bestätigen' }),
           projOpen.length ? h('ul', { class: 'kb-review' }, projOpen.map(p => h('li', {},
             h('div', { class: 'kb-thumb icon' }, app.ico('pin')),
