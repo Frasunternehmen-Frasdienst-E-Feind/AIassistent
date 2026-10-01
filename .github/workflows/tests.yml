@@ -30,7 +30,9 @@ jobs:
           node-version: "22"
       - name: Unit-Tests Feind Cockpit (FeindCore)
         run: node --test cockpit/test/*.test.mjs
-      - name: Unit-Tests Cockpit A1 (Notion-Aufgaben)
+      - name: Abhängigkeiten (jsPDF für die Brennglas-Tests)
+        run: npm ci --ignore-scripts
+      - name: Unit-Tests Cockpit A1 (Notion-Aufgaben, Brennglas-PDF)
         run: node --test cockpit-a1/test/*.test.mjs
       - name: Migrationsplan gegen Live-Fixture (Dry-Run)
         run: |

@@ -31,6 +31,7 @@
   app.taskDocs = () => (S.data.tasks || []).concat(nt.tasks);
   app.notionLinked = t => !!(t && t._nurl);
   app.notionLive = () => nt.state === 'live';
+  app.notionDbUrl = () => CFG.db;
 
   let mcpP = null;
   function useMcp() {

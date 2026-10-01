@@ -198,6 +198,12 @@ img, svg { max-width: 100%; }
 .store-state::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ink-inverse-muted); }
 .store-state.is-shared::before { background: var(--accent); }
 .store-state.is-readonly::before { background: var(--signal); }
+/* Datenstand des Notion-Tagesstands (snapshot/aktuell): grün aktuell, bernstein veraltet */
+.data-stand { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; border: 1px solid var(--ink-inverse-muted); padding: 3px 9px; color: var(--ink-inverse); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.data-stand::before { content: ""; width: 8px; height: 8px; flex: none; background: var(--ink-inverse-muted); }
+.data-stand.is-fresh::before { background: var(--accent); }
+.data-stand.is-stale { border-color: var(--warn); }
+.data-stand.is-stale::before { background: var(--warn); transform: rotate(45deg); }
 .btn-top { display: inline-flex; align-items: center; gap: 6px; background: transparent; border: 1px solid var(--ink-inverse-muted); color: var(--ink-inverse); border-radius: var(--r-btn); padding: 6px 12px; min-height: 36px; cursor: pointer; font-size: 13px; }
 .btn-top:hover { background: color-mix(in srgb, var(--ink-inverse) 12%, transparent); }
 .btn-top svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
@@ -236,7 +242,7 @@ img, svg { max-width: 100%; }
   .brand h1 { font-size: 19px; }
   .countdown b { font-size: 24px; }
   .ring, .ring svg { width: 38px; height: 38px; }
-  .store-state { font-size: 11px; padding: 2px 7px; }
+  .store-state, .data-stand { font-size: 11px; padding: 2px 7px; }
 }
 
 /* ---------- Banner ---------- */
@@ -720,6 +726,15 @@ label.check input { margin-top: 3px; }
 .quick-links a { display: inline-flex; gap: 4px; align-items: center; }
 .quick-links a svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; }
 
+/* Aktionsleiste unter den Reitern (01.10.2026): Arbeitserleichterungen je Reiter, nur Tokens */
+.actionbar { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; margin: 0 0 var(--s3); padding: var(--s2); background: var(--raised); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: var(--r-input); }
+.actionbar .ab-label { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-muted); margin-right: var(--s1); }
+.actionbar .ab-pdf { display: inline-flex; }
+.actionbar .ab-pdf .btn + .btn { margin-left: -1px; }
+.actionbar .btn { font-size: 13px; }
+.actionbar .btn[aria-busy="true"] { cursor: progress; }
+@media (max-width: 600px) { .actionbar .ab-label { flex-basis: 100%; } .actionbar .ab-pdf, .actionbar > .btn { flex: 1 1 auto; } .actionbar .ab-pdf .btn:first-child { flex: 1 1 auto; } }
+
 /* ---- modern.css ---- */
 /* Bedienung: Befehlspalette, Tastenkürzel, Farbschema-Gruppe, Dichte, Skeletons, leere Zustände,
    Ablage (SharePoint Marketing), Verbindungen. Bewegung nur kurz; reduced-motion greift global. */
@@ -932,6 +947,7 @@ label.check input { margin-top: 3px; }
         <svg viewBox="0 0 46 46" aria-hidden="true"><circle class="ring-bg" cx="23" cy="23" r="19"></circle><circle class="ring-fg" id="ringFg" cx="23" cy="23" r="19"></circle></svg>
         <b id="ringPct" class="num">–</b>
       </div>
+      <span class="data-stand" id="dataStand" role="status" title="Stand der Notion-Daten im 90-Tage-Plan">Notion-Stand –</span>
       <span class="store-state" id="storeState" role="status">Verbinde …</span>
       <button class="btn-top" id="cmdBtn" type="button" aria-label="Suchen und Befehle (Strg+K)" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg><span class="lbl">Suchen</span><span class="kbd" aria-hidden="true">Strg K</span></button>
       <div class="seg" id="themeSeg" role="group" aria-label="Farbschema"></div>
@@ -1864,6 +1880,432 @@ label.check input { margin-top: 3px; }
   }
 
   return { STATUS, FLAG, WRITABLE, NOTION_OWNED, LABEL, pageId, rowToTask, rowsToTasks, splitPatch, toProps, newTaskProps, conflicts, norm };
+});
+
+/* ---- brennglas-pdf.js ---- */
+/* Feind Cockpit · Brennglas-Dokumente als PDF direkt im Browser (jsPDF).
+   Layout wie messe/render.py (Stand main): dunkler Deckkopf mit grüner Kante und Chip, Kurzanleitung,
+   Legende, Blocker-Block, Abschnitte mit Marker, Ankreuzfeld, Status-Auswahl und festem Notizfeld (max. 250 Zeichen).
+   Teil 1: reine Modell-Bausteine je Reiter (ohne DOM, testbar in Node). Teil 2: Renderer auf eine jsPDF-Klasse.
+   Personen erscheinen nur als Rollen; der Aufrufer liefert dafür roleOf(owner). */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else (root.FC = root.FC || {}).brennglas = factory();
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  // CI-Tokens (hell) aus branding/feind-ci.tokens.json; ein Test hält beide gleich. PDF ist immer hell (Druck).
+  const TOKENS = {
+    accent: '#84bb20', 'accent-text': '#5e8a14', 'on-accent': '#424e4e', 'on-accent-strong': '#1f2525',
+    signal: '#e3000b', 'signal-text': '#b8000a', surface: '#ffffff', 'surface-muted': '#f2f4f4', 'surface-inverse': '#424e4e',
+    ink: '#3c5457', 'ink-strong': '#424e4e', 'ink-muted': '#6b7575', 'ink-inverse': '#ffffff', line: '#d5dada', focus: '#424e4e'
+  };
+  const STATUS = ['Offen', 'In Arbeit', 'Erledigt', 'Entfällt', 'Klärung nötig'];
+  const TASK_STATUS = { open: 'Offen', in_progress: 'In Arbeit', done: 'Erledigt', deferred: 'Entfällt', blocked: 'Klärung nötig' };
+  const BRAND = 'Fräsdienst-Service E. Feind GmbH';
+  const EVENT = 'InfraTech 2027 · Rotterdam Ahoy · Stand 5.209 · Di 12.–Fr 15. Januar 2027';
+  const NOTE_MAX = 250;
+
+  const str = v => (v == null ? '' : String(v));
+  const arr = v => (Array.isArray(v) ? v : []);
+  function parseDay(s) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(str(s));
+    return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+  }
+  const day0 = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const dayDiff = (a, b) => Math.round((day0(b) - day0(a)) / 864e5);
+  const pad = n => String(n).padStart(2, '0');
+  const fmtD = s => { const d = s instanceof Date ? s : parseDay(s); return d ? pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear() : '–'; };
+  const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  const fmtEuro = n => (n == null || isNaN(n) ? '—' : Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' €');
+  const isOpen = t => t && t.status !== 'done' && t.status !== 'deferred' && !t.archived && !t.deleted;
+  const PRIO = { P0: 0, P1: 1, P2: 2 };
+  const byPrioDue = (a, b) => (PRIO[a.prio] ?? 3) - (PRIO[b.prio] ?? 3) || str(a.due || '9999').localeCompare(str(b.due || '9999')) || str(a.title).localeCompare(str(b.title));
+
+  // jsPDF-Standardschriften kennen nur Windows-1252: Zeichen außerhalb werden ersetzt statt als Kästchen gedruckt.
+  const CP1252 = '€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ';
+  const REPL = { '≤': '<=', '≥': '>=', '→': '->', '←': '<-', '↔': '<->', '✓': 'x', '✔': 'x', '−': '-', '‑': '-', ' ': ' ', ' ': ' ', ' ': ' ', '…': '...', '①': '(1)', '②': '(2)', '③': '(3)', '④': '(4)' };
+  function sanitize(s) {
+    let out = '';
+    for (const ch of str(s).replace(/\r\n?/g, '\n')) {
+      const c = ch.codePointAt(0);
+      if (REPL[ch] != null) out += REPL[ch];
+      else if ((c >= 32 && c < 127) || (c >= 160 && c < 256) || ch === '\n' || CP1252.includes(ch)) out += ch;
+      else out += '?';
+    }
+    return out;
+  }
+  const clip = (s, n) => { const t = str(s).replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n - 1) + '…' : t; };
+
+  /* ---------------- Teil 1: Modelle ---------------- */
+  const HOWTO = [
+    '1)  Kästchen abhaken = erledigt.   2)  Status-Auswahl rechts: Offen / In Arbeit / Erledigt / Entfällt / Klärung nötig.',
+    '3)  Festes Notizfeld unter jedem Punkt – Freitext + Link, max. 250 Zeichen.',
+    'Vorbelegung: Status und Notiz zeigen den Stand im Cockpit zum Zeitpunkt der Ausgabe.',
+    'Speichern/Weitergeben: „Formular ausgefüllt speichern“. Ausfüllen & Drucken funktionieren in jedem PDF-Viewer.'
+  ];
+  const DP = [
+    'Enthält nur Rollen, keine Personennamen. Keine personenbezogenen Daten Dritter ergänzen (Einwilligung erforderlich).',
+    'Verträge, Freigaben, Entsendung und Lead-Erfassung: Bitte Rechtsabteilung prüfen.'
+  ];
+  function base(o) {
+    const now = o.now || new Date();
+    return Object.assign({
+      brand: BRAND, event: EVENT, chip: 'InfraTech 2027', intern: 'INTERN – nur für das Messeteam, nicht veröffentlichen.',
+      basis: 'Stand ' + fmtD(now) + ', ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ' Uhr',
+      howto: HOWTO, legend: [], blockerTitle: '', blockers: [], blockerNote: '', sections: [], dp: DP,
+      dpTitle: 'Datenschutz & Recht', footer: 'Feind Cockpit · ' + BRAND + ' · intern', status: STATUS, stamp: ymd(now)
+    }, o.meta || {});
+  }
+  const TASK_LEGEND = [['ok', 'erledigt'], ['no', 'überfällig'], ['warn', 'blockiert / Klärung'], ['add', 'neu'], ['none', 'offen']];
+  function taskMarker(t, today) {
+    if (t.status === 'done') return 'ok';
+    const d = parseDay(t.due);
+    if (isOpen(t) && d && dayDiff(today, d) < 0) return 'no';
+    if (t.status === 'blocked') return 'warn';
+    if (arr(t.flags).includes('neu')) return 'add';
+    return 'none';
+  }
+  function taskItem(t, ctx) {
+    const d = parseDay(t.due);
+    const dd = d ? dayDiff(ctx.today, d) : null;
+    const due = !d ? 'Termin offen' : isOpen(t) && dd < 0 ? 'fällig ' + fmtD(d) + ' (' + (-dd) + ' T überfällig)' : 'fällig ' + fmtD(d);
+    const flags = [arr(t.flags).includes('fakt') ? 'Fakt prüfen' : '', arr(t.flags).includes('recht') ? 'Recht prüfen' : ''].filter(Boolean);
+    const meta = [str(t.prio) || 'P2', ctx.roleOf ? ctx.roleOf(t.owner) : '', due].concat(flags, str(t.budget) ? ['Budget: ' + str(t.budget)] : []).filter(Boolean).join(' · ');
+    const note = [str(t.note).trim(), str(t.beschluss).trim() ? 'Beschluss: ' + str(t.beschluss).trim() : ''].filter(Boolean).join(' | ');
+    return { mk: taskMarker(t, ctx.today), text: str(t.title) || '(ohne Titel)', meta, status: TASK_STATUS[t.status] || 'Offen', done: t.status === 'done', note: clip(note, NOTE_MAX) };
+  }
+  function blockersOf(tasks, ctx, n) {
+    const over = tasks.filter(t => isOpen(t) && parseDay(t.due) && dayDiff(ctx.today, parseDay(t.due)) < 0).sort(byPrioDue);
+    const blk = tasks.filter(t => t.status === 'blocked' && !over.includes(t)).sort(byPrioDue);
+    return over.map(t => [clip(t.title, 70), (-dayDiff(ctx.today, parseDay(t.due))) + ' T überfällig · ' + (ctx.roleOf ? ctx.roleOf(t.owner) : '')])
+      .concat(blk.map(t => [clip(t.title, 70), 'blockiert · ' + (ctx.roleOf ? ctx.roleOf(t.owner) : '')])).slice(0, n || 8);
+  }
+
+  // Aufgabenliste (aktueller Filter), gruppiert nach Bereich, je Bereich P0 vor P1 vor P2, dann Termin.
+  function tasksModel(tasks, ctx) {
+    const list = arr(tasks);
+    const cats = arr(ctx.cats);
+    const sections = cats.map(c => [c.label, list.filter(t => t.cat === c.id)]).concat([['Ohne Bereich', list.filter(t => !cats.some(c => c.id === t.cat))]])
+      .filter(([, ts]) => ts.length).map(([title, ts]) => ({ title: title + ' (' + ts.filter(t => t.status === 'done').length + '/' + ts.length + ' erledigt)', items: ts.slice().sort(byPrioDue).map(t => taskItem(t, ctx)) }));
+    const open = list.filter(isOpen).length;
+    return base({ now: ctx.now, meta: {
+      kind: 'aufgaben', title: 'Brennglas – Aufgaben InfraTech 2027', chip: open + ' offen · ' + list.length + ' gesamt',
+      src: 'Ausfüllbares Formular · Quelle: Notion „Aufgaben InfraTech 2027“ via Feind Cockpit' + (ctx.filterLabel ? ' · Filter: ' + ctx.filterLabel : ''),
+      legend: TASK_LEGEND, blockerTitle: 'Zuerst klären – überfällig und blockiert', blockers: blockersOf(list, ctx),
+      blockerNote: 'Überfällige und blockierte Aufgaben zuerst im Jour fixe entscheiden.', sections, file: 'Brennglas_Aufgaben_InfraTech2027'
+    } });
+  }
+
+  // Lagebericht fürs Dashboard: Blocker, P0 offen, fällig in 14 Tagen, nächste Fristen.
+  function dashboardModel(tasks, deadlines, ctx) {
+    const list = arr(tasks).filter(t => !t.archived && !t.deleted);
+    const done = list.filter(t => t.status === 'done').length;
+    const p0 = list.filter(t => isOpen(t) && t.prio === 'P0').sort(byPrioDue);
+    const soon = list.filter(t => { const d = parseDay(t.due); return isOpen(t) && t.prio !== 'P0' && d && dayDiff(ctx.today, d) >= 0 && dayDiff(ctx.today, d) <= 14; }).sort(byPrioDue);
+    const fr = arr(deadlines).filter(d => { const x = parseDay(d.d); return x && dayDiff(ctx.today, x) >= 0 && dayDiff(ctx.today, x) <= 45; });
+    const sections = [
+      { title: 'P0 offen (' + p0.length + ')', items: p0.map(t => taskItem(t, ctx)) },
+      { title: 'Fällig in den nächsten 14 Tagen (' + soon.length + ')', items: soon.map(t => taskItem(t, ctx)) },
+      { title: 'Fristen in den nächsten 45 Tagen (' + fr.length + ')', items: fr.map(d => deadlineItem(d, ctx)) }
+    ].filter(s => s.items.length);
+    const days = dayDiff(ctx.today, parseDay('2027-01-12'));
+    return base({ now: ctx.now, meta: {
+      kind: 'dashboard', title: 'Brennglas – Lagebericht InfraTech 2027',
+      chip: (days > 0 ? 'noch ' + days + ' Tage' : days === 0 ? 'Messe heute' : 'Messe läuft') + ' · ' + (list.length ? Math.round(done / list.length * 100) : 0) + ' %',
+      src: 'Ausfüllbares Formular · ' + done + ' von ' + list.length + ' Aufgaben erledigt · Quelle: Feind Cockpit',
+      legend: TASK_LEGEND, blockerTitle: 'Zuerst entscheiden – kritische Blocker', blockers: blockersOf(list, ctx),
+      blockerNote: 'Grundlage für den Jour fixe: Blocker zuerst, dann P0, dann Fristen.', sections, file: 'Brennglas_Lagebericht_InfraTech2027'
+    } });
+  }
+
+  function deadlineItem(d, ctx) {
+    const x = parseDay(d.d), dd = x ? dayDiff(ctx.today, x) : null;
+    const rest = dd == null ? '' : dd < 0 ? (-dd) + ' T vorbei' : dd === 0 ? 'heute' : 'in ' + dd + ' T';
+    const mk = dd != null && dd < 0 ? 'ok' : d.st === 'g' ? 'add' : dd != null && dd <= 14 ? 'no' : d.st === 'y' ? 'warn' : 'none';
+    return { mk, text: fmtD(d.d) + ' – ' + str(d.t), meta: [rest, str(d.s)].filter(Boolean).join(' · '), status: dd != null && dd < 0 ? 'Erledigt' : d.st === 'y' ? 'Klärung nötig' : 'Offen', done: false, note: '' };
+  }
+  function deadlinesModel(deadlines, ctx) {
+    const list = arr(deadlines).slice().sort((a, b) => str(a.d).localeCompare(str(b.d)));
+    const fut = list.filter(d => dayDiff(ctx.today, parseDay(d.d)) >= 0), past = list.filter(d => dayDiff(ctx.today, parseDay(d.d)) < 0);
+    const near = fut.filter(d => dayDiff(ctx.today, parseDay(d.d)) <= 30 && d.st !== 'g');
+    return base({ now: ctx.now, meta: {
+      kind: 'fristen', title: 'Brennglas – Fristenmatrix InfraTech 2027', chip: fut.length + ' kommende Fristen',
+      src: 'Ausfüllbares Formular · Quelle: Fristenmatrix Feind Cockpit (Aussteller-Handbuch 2027 V1.3, Referenz 2026)',
+      legend: [['no', '≤ 14 Tage'], ['warn', 'für 2027 verifizieren'], ['none', 'bestätigt'], ['add', 'Messetermin'], ['ok', 'vorbei']],
+      blockerTitle: 'In den nächsten 30 Tagen fällig', blockers: near.map(d => [fmtD(d.d) + ' ' + clip(d.t, 60), 'in ' + dayDiff(ctx.today, parseDay(d.d)) + ' T · ' + str(d.s)]),
+      blockerNote: 'Gelb markierte Fristen beim Veranstalter (infratech.nl, Ahoy) bestätigen lassen.',
+      sections: [{ title: 'Kommende Fristen', items: fut.map(d => deadlineItem(d, ctx)) }, { title: 'Vergangene Fristen', items: past.map(d => deadlineItem(d, ctx)) }].filter(s => s.items.length),
+      file: 'Brennglas_Fristen_InfraTech2027'
+    } });
+  }
+
+  // Budget: r ist die Ausgabe von budgetRows (Plan, Forecast, Ist, Abweichung).
+  function budgetModel(r, frame, ctx) {
+    const mk = c => (c === 'r' ? 'no' : c === 'y' ? 'warn' : c === 'g' ? 'ok' : 'none');
+    const items = arr(r && r.rows).map(x => ({
+      mk: mk(x.dev && x.dev.cls), text: str(x.p), meta: 'Plan ' + str(x.z) + ' € · Forecast ' + fmtEuro(x.forecast) + ' · Ist ' + fmtEuro(x.ist) + ' · Abweichung ' + str(x.dev && x.dev.txt) + (str(x.a) ? ' · Annahme: ' + str(x.a) : ''),
+      status: x.ist != null ? 'Erledigt' : 'Offen', done: false, note: ''
+    }));
+    const over = arr(r && r.rows).filter(x => x.dev && x.dev.cls === 'r');
+    const f = frame || {};
+    return base({ now: ctx.now, meta: {
+      kind: 'budget', title: 'Brennglas – Budget Plan vs. Ist 2027', chip: 'Forecast ' + fmtEuro(r && r.sumF),
+      src: 'Ausfüllbares Formular · Planrahmen ' + fmtEuro(f.planMin) + '–' + fmtEuro(f.planMax) + ' brutto · Baseline 2026 ' + fmtEuro(f.baseline),
+      legend: [['ok', 'im Plan'], ['warn', 'bis +10 %'], ['no', 'über +10 %'], ['none', 'noch kein Ist']],
+      blockerTitle: 'Über Plan (mehr als +10 %)', blockers: over.map(x => [str(x.p), 'Abweichung ' + x.dev.txt]),
+      blockerNote: over.length ? '' : 'Kein Kostenblock liegt mehr als 10 % über dem Forecast.',
+      sections: [{ title: 'Kostenblöcke', items }, { title: 'Gesamt', items: [{ mk: mk(r && r.dev && r.dev.cls), text: 'Gesamt: Forecast ' + fmtEuro(r && r.sumF) + (r && r.haveI ? ' · Ist ' + fmtEuro(r.sumI) : ''), meta: 'Ziel: Abweichung höchstens ' + Math.round((f.maxDeviation || 0.1) * 100) + ' % · ' + (r && r.haveI ? 'Abweichung ' + r.dev.txt : 'noch keine Ist-Werte'), status: 'Offen', done: false, note: '' }] }],
+      dp: DP.concat(['Angebote und Stornobedingungen: Bitte Rechtsabteilung prüfen.']).slice(0, 3), file: 'Brennglas_Budget_InfraTech2027'
+    } });
+  }
+
+  function kpiModel(kpis, ctx) {
+    return base({ now: ctx.now, meta: {
+      kind: 'kpi', title: 'Brennglas – Ziele & KPIs InfraTech 2027', chip: arr(kpis).length + ' KPIs',
+      src: 'Ausfüllbares Formular · Messbogen: Ist-Wert ins Notizfeld, Status setzen',
+      legend: [['none', 'zu messen']], sections: [{ title: 'KPIs 2027', items: arr(kpis).map(k => ({ mk: 'none', text: str(k.k) + ': Ziel ' + str(k.z), meta: 'Baseline 2026: ' + str(k.b) + ' · Messmethode: ' + str(k.m), status: 'Offen', done: false, note: '' })) }],
+      file: 'Brennglas_KPIs_InfraTech2027'
+    } });
+  }
+
+  function leadsModel(days, ctx) {
+    const list = arr(days);
+    const sum = list.reduce((s, d) => ({ a: s.a + d.a, b: s.b + d.b, c: s.c + d.c }), { a: 0, b: 0, c: 0 });
+    const total = sum.a + sum.b + sum.c;
+    return base({ now: ctx.now, meta: {
+      kind: 'leads', title: 'Brennglas – Lead-Tagesbilanz InfraTech 2027', chip: total + ' Leads · Ziel ' + (ctx.target || 300),
+      src: 'Ausfüllbares Formular · nur Stückzahlen, keine personenbezogenen Daten · Tages-Debrief ins Notizfeld',
+      legend: [['ok', 'Tag erfasst'], ['none', 'kommt noch']],
+      sections: [{ title: 'Messetage', items: list.map((d, i) => ({ mk: d.a + d.b + d.c ? 'ok' : 'none', text: 'Tag ' + (i + 1) + ' · ' + fmtD(d.date) + ': ' + (d.a + d.b + d.c) + ' Leads', meta: 'A (heiß) ' + d.a + ' · B (warm) ' + d.b + ' · C (Info) ' + d.c + ' · A-Leads nachfassen ≤ 48 h', status: d.a + d.b + d.c ? 'Erledigt' : 'Offen', done: false, note: '' })) },
+        { title: 'Gesamt', items: [{ mk: total >= (ctx.target || 300) ? 'ok' : 'none', text: 'Gesamt: ' + total + ' Leads (A ' + sum.a + ' · B ' + sum.b + ' · C ' + sum.c + ')', meta: 'Zielerreichung ' + Math.min(100, Math.round(total / (ctx.target || 300) * 100)) + ' %', status: 'Offen', done: false, note: '' }] }],
+      file: 'Brennglas_Leads_InfraTech2027'
+    } });
+  }
+
+  function lessonsModel(lessons, ctx) {
+    const groups = ['Hoch', 'Mittel', 'Niedrig'];
+    return base({ now: ctx.now, meta: {
+      kind: 'lessons', title: 'Brennglas – Maßnahmen aus Lessons Learned 2026', chip: arr(lessons).length + ' Maßnahmen',
+      src: 'Ausfüllbares Formular · Quelle: Auswertung InfraTech 2026 (ca. 350 Standbesucher)',
+      legend: [['warn', 'Impact hoch'], ['none', 'Impact mittel/niedrig']],
+      sections: groups.map(g => ({ title: 'Impact ' + g, items: arr(lessons).filter(l => l[2] === g).map(l => ({ mk: g === 'Hoch' ? 'warn' : 'none', text: str(l[0]) + ' – ' + str(l[3]), meta: 'Erkenntnis 2026: ' + str(l[1]), status: 'Offen', done: false, note: '' })) })).filter(s => s.items.length),
+      file: 'Brennglas_Lessons_InfraTech2027'
+    } });
+  }
+
+  function factsModel(facts, tasks, ctx) {
+    const mk = s => (/^Bestätigt/.test(s) ? 'ok' : /^Korrektur/.test(s) ? 'no' : 'warn');
+    const flagged = arr(tasks).filter(t => isOpen(t) && (arr(t.flags).includes('fakt') || arr(t.flags).includes('recht'))).sort(byPrioDue);
+    return base({ now: ctx.now, meta: {
+      kind: 'fakten', title: 'Brennglas – Faktencheck & Prüfvermerke', chip: flagged.length + ' offene Prüfungen',
+      src: 'Ausfüllbares Formular · Abgleich mit infratech.nl und ahoy.nl · Aufgaben mit „Fakt prüfen“ / „Recht prüfen“',
+      legend: [['ok', 'bestätigt'], ['warn', 'prüfen'], ['no', 'Korrektur nötig'], ['none', 'Aufgabe offen']],
+      sections: [
+        { title: 'Faktencheck Rotterdam Ahoy', items: arr(facts).map(f => ({ mk: mk(str(f[2])), text: str(f[0]) + ': ' + str(f[1]), meta: str(f[2]) + ' · ' + str(f[3]), status: /^Bestätigt/.test(str(f[2])) ? 'Erledigt' : 'Klärung nötig', done: false, note: '' })) },
+        { title: 'Aufgaben mit Prüfvermerk (' + flagged.length + ')', items: flagged.map(t => Object.assign(taskItem(t, ctx), { mk: 'none' })) }
+      ].filter(s => s.items.length),
+      file: 'Brennglas_Faktencheck_InfraTech2027'
+    } });
+  }
+
+  // Zuständigkeiten je Rolle: offene Aufgaben, damit jede Rolle ihre Liste mitnehmen kann.
+  function rolesModel(tasks, ctx) {
+    const open = arr(tasks).filter(isOpen);
+    const roles = Array.from(new Set(open.map(t => (ctx.roleOf ? ctx.roleOf(t.owner) : str(t.owner)) || 'offen'))).sort((a, b) => a.localeCompare(b, 'de'));
+    return base({ now: ctx.now, meta: {
+      kind: 'team', title: 'Brennglas – Zuständigkeiten je Rolle', chip: roles.length + ' Rollen · ' + open.length + ' offen',
+      src: 'Ausfüllbares Formular · offene Aufgaben je Rolle · Personen nur als Rollen',
+      legend: TASK_LEGEND, sections: roles.map(r => ({ title: r, items: open.filter(t => ((ctx.roleOf ? ctx.roleOf(t.owner) : str(t.owner)) || 'offen') === r).sort(byPrioDue).map(t => taskItem(t, ctx)) })),
+      file: 'Brennglas_Zustaendigkeiten_InfraTech2027'
+    } });
+  }
+
+  // Meeting-Protokoll; p kommt vorbereitet aus dem Modul Protokolle (Rollen statt Namen).
+  function meetingModel(p, ctx) {
+    const it = (text, meta, mk) => ({ mk: mk || 'none', text, meta: meta || '', status: 'Offen', done: false, note: '' });
+    return base({ now: ctx.now, meta: {
+      kind: 'meeting', title: 'Brennglas – Messe-Abstimmung ' + fmtD(p.date), chip: str(p.status) || 'Protokoll',
+      src: 'Protokoll · Dauer ' + (str(p.duration) || '–') + ' · Teilnehmer (Rollen): ' + (str(p.participants) || '–'),
+      legend: [['add', 'Beschluss'], ['ok', 'erledigt'], ['none', 'nachhalten']],
+      sections: [
+        { title: 'Beschlüsse (' + arr(p.decisions).length + ')', items: arr(p.decisions).map(d => it(d, '', 'add')) },
+        { title: 'Neue Aufgaben (' + arr(p.created).length + ')', items: arr(p.created).map(c => it(c[0], c[1])) },
+        { title: 'Änderungen (' + arr(p.changes).length + ')', items: arr(p.changes).map(c => it(c[0], c[1], /→ erledigt/.test(c[1]) ? 'ok' : 'none')) },
+        { title: 'Notizen', items: str(p.notes).trim() ? [it(clip(p.notes, 600), '')] : [] }
+      ].filter(s => s.items.length),
+      file: 'Brennglas_Protokoll_' + str(p.date)
+    } });
+  }
+
+  function filename(model) { return (model.file || 'Brennglas') + '_' + model.stamp + '.pdf'; }
+
+  /* ---------------- Teil 2: Renderer (jsPDF, Einheit pt, Ursprung oben links) ---------------- */
+  const PAGE_W = 595.28, PAGE_H = 841.89, ML = 38, MR = 38, MB = 42, CW = PAGE_W - ML - MR, NOTE_H = 22, FS = 8.3;
+  // Zwischentöne des Deckkopfs wie in messe/render.py (helle Schrift auf Anthrazit).
+  const HEAD = { sub: '#d3dada', src: '#aab4b4', basis: '#8f9a9a', slim: '#c7cfcf', note: '#fbfdf6' };
+
+  function render(JsPDF, model, opts) {
+    const o = opts || {};
+    const L = Object.assign({}, TOKENS, o.tokens || {});
+    const doc = new JsPDF({ unit: 'pt', format: 'a4', compress: o.compress !== false });
+    const S = model;
+    doc.setProperties({ title: sanitize(S.title), author: BRAND + ' – Marketing', subject: sanitize(S.event), creator: 'Feind Cockpit' });
+    const st = { y: 0, idx: 0 };
+    const T = (t, x, y, opt) => doc.text(sanitize(t), x, y, opt);
+    const font = (style, size, color) => { doc.setFont('helvetica', style); doc.setFontSize(size); if (color) doc.setTextColor(color); };
+    const wrap = (t, maxw) => doc.splitTextToSize(sanitize(t), maxw);
+    const width = t => doc.getTextWidth(sanitize(t));
+
+    function slimHeader(title) {
+      doc.setFillColor(L['ink-strong']); doc.rect(0, 0, PAGE_W, 30, 'F');
+      doc.setFillColor(L.accent); doc.rect(0, 30, PAGE_W, 2, 'F');
+      font('bold', 10, L['ink-inverse']); T(S.brand, ML, 21);
+      font('normal', 8, HEAD.slim); T(clip(title, 90), PAGE_W - MR, 21, { align: 'right' });
+    }
+    function newPage(cont) { doc.addPage(); slimHeader(cont || S.title); st.y = 48; }
+    function ensure(space, cont) { if (st.y + space > PAGE_H - MB - 8) newPage(cont); }
+    function marker(mk, cx, cy) {
+      const r = 3.4;
+      if (mk === 'ok') { doc.setFillColor(L.accent); doc.circle(cx, cy, r, 'F'); }
+      else if (mk === 'no') { doc.setFillColor(L.signal); doc.circle(cx, cy, r, 'F'); }
+      else if (mk === 'warn') { doc.setFillColor(L['ink-strong']); doc.circle(cx, cy, r, 'F'); }
+      else if (mk === 'add') {
+        doc.setDrawColor(L['accent-text']); doc.setLineWidth(1.1); doc.setFillColor(L.surface); doc.circle(cx, cy, r, 'FD');
+        doc.setLineWidth(1); doc.line(cx - 1.7, cy, cx + 1.7, cy); doc.line(cx, cy - 1.7, cx, cy + 1.7);
+      } else { doc.setDrawColor(L['ink-muted']); doc.setLineWidth(0.8); doc.setFillColor(L.surface); doc.circle(cx, cy, r, 'FD'); }
+    }
+    function sectionHead(title, color) {
+      ensure(30 + 50, title); st.y += 4;
+      font('bold', 10.5, L['ink-strong']); T(title, ML, st.y + 9);
+      doc.setDrawColor(color || L.accent); doc.setLineWidth(1.6); doc.line(ML, st.y + 13, PAGE_W - MR, st.y + 13);
+      st.y += 22;
+    }
+    const X_MARK = ML + 4, X_CB = ML + 12, X_TXT = ML + 30, STAT_W = 92, X_STAT = PAGE_W - MR - STAT_W, TXT_W = X_STAT - X_TXT - 8;
+    function item(it, cont) {
+      font('normal', FS);
+      const lines = wrap(it.text, TXT_W);
+      font('normal', 7);
+      const meta = it.meta ? wrap(it.meta, TXT_W) : [];
+      const rowH = Math.max(lines.length * (FS + 1.6) + meta.length * 8.6, 15);
+      ensure(rowH + NOTE_H + 6, cont);
+      const top = st.y, base0 = top + FS;
+      marker(it.mk, X_MARK, base0 - FS * 0.32);
+      font('normal', FS, it.mk === 'no' ? L.ink : it.done ? L['ink-muted'] : L.ink);
+      let ty = base0;
+      for (const ln of lines) { doc.text(ln, X_TXT, ty); ty += FS + 1.6; }
+      if (meta.length) { font('normal', 7, L['ink-muted']); for (const ln of meta) { doc.text(ln, X_TXT, ty - 0.6); ty += 8.6; } }
+      const i = st.idx, cbY = base0 - 9;
+      // Sichtbare Rahmen gezeichnet (druckt überall gleich), darüber die Formularfelder.
+      doc.setDrawColor(L['ink-muted']); doc.setLineWidth(0.8); doc.setFillColor(L.surface); doc.rect(X_CB, cbY, 10, 10, 'FD');
+      const cb = new doc.AcroFormCheckBox();
+      cb.fieldName = 'done_' + String(i).padStart(3, '0'); cb.Rect = [X_CB, cbY, 10, 10];
+      cb.appearanceState = it.done ? 'On' : 'Off'; if (it.done) cb.value = 'On';
+      cb.tooltip = 'Erledigt'; doc.addField(cb);
+      doc.setDrawColor(L.line); doc.setLineWidth(0.6); doc.setFillColor(L['surface-muted']); doc.rect(X_STAT, cbY - 1.5, STAT_W, 13.5, 'FD');
+      const sel = new doc.AcroFormComboBox();
+      sel.fieldName = 'sel_' + String(i).padStart(3, '0'); sel.Rect = [X_STAT, cbY - 1.5, STAT_W, 13.5];
+      sel.setOptions(S.status.map(sanitize)); sel.value = sanitize(it.status || S.status[0]); sel.defaultValue = sel.value;
+      sel.fontSize = 7.4; sel.color = L['ink-strong']; sel.tooltip = 'Status'; doc.addField(sel);
+      const ny = top + rowH + 2;
+      doc.setDrawColor(L.accent); doc.setLineWidth(0.8); doc.setFillColor(HEAD.note); doc.rect(X_TXT, ny, (PAGE_W - MR) - X_TXT, NOTE_H, 'FD');
+      const tf = new doc.AcroFormTextField();
+      tf.fieldName = 'note_' + String(i).padStart(3, '0'); tf.Rect = [X_TXT, ny, (PAGE_W - MR) - X_TXT, NOTE_H];
+      tf.multiline = true; tf.maxLength = NOTE_MAX; tf.fontSize = 7.6; tf.color = L.ink; tf.tooltip = 'Notiz (max. 250 Zeichen)';
+      if (it.note) tf.value = sanitize(clip(it.note, NOTE_MAX));
+      doc.addField(tf);
+      st.idx += 1; st.y = ny + NOTE_H + 6;
+    }
+
+    // ---- Deckkopf
+    doc.setFillColor(L['ink-strong']); doc.rect(0, 0, PAGE_W, 96, 'F');
+    doc.setFillColor(L.accent); doc.rect(0, 96, PAGE_W, 4, 'F');
+    const chipW = 150, titleMax = (PAGE_W - MR - chipW) - ML - 12;
+    let tfs = 20;
+    font('bold', tfs);
+    while (tfs > 12 && width(S.title) > titleMax) { tfs -= 0.5; doc.setFontSize(tfs); }
+    font('bold', tfs, L['ink-inverse']); T(S.title, ML, 42);
+    font('normal', 10, HEAD.sub); T(S.event, ML, 58);
+    doc.setFillColor(L.accent); doc.roundedRect(PAGE_W - MR - chipW, 34, chipW, 18, 3, 3, 'F');
+    font('bold', 8, L['on-accent-strong']); T(clip(S.chip, 34), PAGE_W - MR - chipW / 2, 46, { align: 'center' });
+    font('normal', 8, HEAD.src); T(clip(S.src, 135), ML, 74);
+    // Intern-Hinweis als rote Fläche mit weißer Schrift (Rot auf dunklem Grund nur als Fläche).
+    font('bold', 7.4);
+    const iw = width(S.intern) + 10;
+    doc.setFillColor(L.signal); doc.rect(ML, 79, iw, 11, 'F');
+    font('bold', 7.4, L['ink-inverse']); T(S.intern, ML + 5, 87);
+    font('normal', 8, HEAD.basis); T(S.basis, PAGE_W - MR, 87, { align: 'right' });
+    st.y = 116;
+
+    // ---- Kurzanleitung
+    if (arr(S.howto).length) {
+      const bh = 22 + S.howto.length * 9.4;
+      doc.setFillColor(L['surface-muted']); doc.setDrawColor(L.line); doc.setLineWidth(0.6);
+      doc.roundedRect(ML, st.y, CW, bh, 3, 3, 'FD');
+      font('bold', 8.5, L['ink-strong']); T('So funktioniert das Formular', ML + 10, st.y + 14);
+      font('normal', 7.8, L.ink);
+      S.howto.forEach((ln, i) => T(ln, ML + 10, st.y + 26 + i * 9.4));
+      st.y += bh + 14;
+    }
+    // ---- Legende
+    if (arr(S.legend).length) {
+      font('bold', 7.8, L['ink-strong']); T('Legende:', ML, st.y);
+      const x0 = ML + width('Legende:') + 10; let x = x0;
+      for (const [mk, label] of S.legend) {
+        font('normal', 7.6);
+        const w = 11 + width(label) + 16;
+        if (x + w > PAGE_W - MR) { st.y += 12; x = x0; }
+        marker(mk, x + 4, st.y - 2.2);
+        font('normal', 7.6, L.ink); T(label, x + 11, st.y); x += w;
+      }
+      st.y += 18;
+    }
+    // ---- Blocker
+    if (S.blockerTitle && (arr(S.blockers).length || S.blockerNote)) {
+      ensure(40 + Math.min(arr(S.blockers).length, 8) * 12.5);
+      font('bold', 10.5, L['ink-strong']); T(S.blockerTitle, ML, st.y + 9);
+      doc.setDrawColor(L.signal); doc.setLineWidth(1.6); doc.line(ML, st.y + 13, PAGE_W - MR, st.y + 13);
+      st.y += 24;
+      if (!arr(S.blockers).length) { font('normal', 8, L['ink-muted']); T('Keine – gut so.', ML + 12, st.y); st.y += 12.5; }
+      for (const [t, s] of arr(S.blockers)) {
+        ensure(14);
+        doc.setFillColor(L.signal); doc.circle(ML + 4, st.y - 2.4, 2.2, 'F');
+        font('bold', 8, L['ink-strong']); T(t, ML + 12, st.y);
+        const tw = width(t);
+        font('normal', 8, L['ink-muted']); T(clip('– ' + s, Math.max(10, Math.floor((CW - 20 - tw) / 4))), ML + 12 + tw + 8, st.y);
+        st.y += 12.5;
+      }
+      if (S.blockerNote) { st.y += 4; font('italic', 7.4, L['ink-muted']); T(S.blockerNote, ML, st.y); }
+      st.y += 16;
+    }
+    // ---- Abschnitte
+    if (!arr(S.sections).length) { font('normal', 9, L['ink-muted']); T('Keine Einträge für diese Auswahl.', ML, st.y + 10); st.y += 24; }
+    for (const sec of arr(S.sections)) {
+      sectionHead(sec.title);
+      for (const it of arr(sec.items)) item(it, sec.title);
+    }
+    // ---- Datenschutz & Recht
+    if (arr(S.dp).length) {
+      const bh = 22 + S.dp.length * 9.4;
+      ensure(bh + 8);
+      doc.setFillColor(L['surface-muted']); doc.setDrawColor(L.signal); doc.setLineWidth(0.8);
+      doc.roundedRect(ML, st.y, CW, bh, 3, 3, 'FD');
+      font('bold', 8.5, L['ink-strong']); T(S.dpTitle, ML + 10, st.y + 14);
+      font('normal', 7.8, L.ink);
+      S.dp.forEach((ln, i) => T(ln, ML + 10, st.y + 26 + i * 9.4));
+      st.y += bh + 8;
+    }
+    // ---- Fußzeile auf jeder Seite
+    const n = doc.getNumberOfPages();
+    for (let p = 1; p <= n; p++) {
+      doc.setPage(p);
+      doc.setDrawColor(L.line); doc.setLineWidth(0.5); doc.line(ML, PAGE_H - 33, PAGE_W - MR, PAGE_H - 33);
+      font('normal', 7, L['ink-muted']); T(S.footer, ML, PAGE_H - 24); T('Seite ' + p + ' von ' + n, PAGE_W - MR, PAGE_H - 24, { align: 'right' });
+    }
+    if (o.print && doc.autoPrint) doc.autoPrint();
+    return { doc, pages: n, items: st.idx };
+  }
+
+  return { TOKENS, STATUS, EVENT, sanitize, tasksModel, dashboardModel, deadlinesModel, budgetModel, kpiModel, leadsModel, lessonsModel, factsModel, rolesModel, meetingModel, filename, render, _: { parseDay, dayDiff, fmtD, fmtEuro, taskMarker } };
 });
 
 /* ---- connect-logic.js ---- */
@@ -3251,6 +3693,7 @@ label.check input { margin-top: 3px; }
     plus: ['UI', 'Plus', 'Neu anlegen', '<path d="M12 5v14M5 12h14"/>'],
     x: ['UI', 'Schließen', 'Schließen, entfernen', '<path d="M6 6l12 12M18 6 6 18"/>'],
     down: ['UI', 'Download', 'Datei bereitstellen', '<path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14"/>'],
+    drucker: ['UI', 'Drucken', 'Druckfassung (PDF mit Druckdialog)', '<path d="M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z"/>'],
     up: ['UI', 'Nach oben', 'Sortierung', '<path d="M12 19V5m0 0-6 6m6-6 6 6"/>'],
     dn: ['UI', 'Nach unten', 'Sortierung', '<path d="M12 5v14m0 0-6-6m6 6 6-6"/>'],
     copy: ['UI', 'Kopieren', 'In die Zwischenablage', '<path d="M9 9h10v10H9zM5 15V5h10"/>'],
@@ -3569,6 +4012,8 @@ label.check input { margin-top: 3px; }
     let out = [];
     try {
       out = [].concat(def && def.render ? def.render() : [panelHead(moduleLabel(world, key)), h('p', { class: 'muted', text: 'Dieses Modul wird geladen.' })]);
+      // Aktionsleiste direkt unter den Reitern (app-actions.js), vor dem Panelkopf.
+      if (app.actionBar) out.unshift(app.actionBar(world, key));
     } catch (e) {
       out = [panelHead(moduleLabel(world, key)), h('div', { class: 'banner crit' }, h('div', { class: 'txt' },
         h('strong', { text: 'Anzeige fehlgeschlagen. ' }), 'Das Modul konnte nicht dargestellt werden. Seite neu laden; bleibt der Fehler, bitte melden.'))];
@@ -3619,6 +4064,14 @@ label.check input { margin-top: 3px; }
     st.textContent = storeText();
     st.className = 'store-state' + (S.readOnly ? ' is-readonly' : S.mode === 'shared' ? ' is-shared' : '');
     $('footState').textContent = 'Stand ' + H.fmtD(today()) + ' · ' + storeText();
+    // Notion-Tagesstand (snapshot/aktuell, sonst eingebauter Stand) sichtbar im Kopf.
+    const ds = $('dataStand');
+    if (ds && app.planStand) {
+      const p = app.planStand();
+      ds.textContent = p.label;
+      ds.title = p.title;
+      ds.className = 'data-stand' + (p.stale ? ' is-stale' : p.fresh ? ' is-fresh' : '');
+    }
     const cfg = app.cfg();
     const title = document.querySelector('.brand h1');
     if (title) title.textContent = H.str(cfg.title) || 'Feind Cockpit';
@@ -3900,7 +4353,7 @@ label.check input { margin-top: 3px; }
 
   /* ---------- Store-Anbindung und Abonnements ---------- */
   const COLLECTIONS = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'tasks', 'admin_requests', 'meetings'];
-  const DOC_WATCH = { settings: 'settings/general', meta: 'meta/sync', budget: 'budget/actuals', leadCounts: 'leads/counts', adminConfig: 'admin/config', adminDraft: 'admin/draft', adminRoles: 'admin/roles' };
+  const DOC_WATCH = { settings: 'settings/general', meta: 'meta/sync', budget: 'budget/actuals', leadCounts: 'leads/counts', adminConfig: 'admin/config', adminDraft: 'admin/draft', adminRoles: 'admin/roles', planSnapshot: 'snapshot/aktuell' };
   for (const c of COLLECTIONS.concat(['briefings', 'activity', 'legacy_leads'])) S.data[c] = [];
 
   // Befehle der Welten (commands.js); read liefert den zuletzt gesehenen Snapshot eines Dokuments.
@@ -4918,9 +5371,19 @@ label.check input { margin-top: 3px; }
   const P = D.PLAN90, SNAP = P.snapshot;
   const S = app.state;
   const ui = S.ui.plan90 = { wave: 0 };
+  const KEYS = ['ap', 'ms', 'dec', 'kpi'];
+  // Ladepfad (01.10.2026): Tagesstand aus der Datenbank (snapshot/aktuell, schreibt der geplante Task),
+  // sonst der eingebaute Stand. Notion live hat in claude.ai Vorrang, je Bereich.
+  function dbSnap() {
+    const d = S.docs.planSnapshot;
+    if (!d || typeof d !== 'object' || !H.parseTs(d.stand)) return null;
+    return KEYS.every(k => Array.isArray(d[k]) && d[k].length) ? d : null;
+  }
+  const base = () => dbSnap() || SNAP;
   const STATE = { ap: SNAP.ap, ms: SNAP.ms, dec: SNAP.dec, kpi: SNAP.kpi };
   const LIVE = {}, ERR = {};
-  let sync = { cls: '', text: '' };
+  function syncBase() { const b = base(); for (const k of KEYS) if (!LIVE[k]) STATE[k] = b[k]; }
+  let sync = { cls: '', text: '', base: true };
 
   const clean = v => String(v == null ? '' : v).replace(/\\([|~*_`[\]\\#>+\-.!])/g, '$1').trim();
   const yes = v => v === true || v === '__YES__';
@@ -4977,13 +5440,40 @@ label.check input { margin-top: 3px; }
     server_unavailable: 'Notion antwortet gerade nicht; nächster Versuch in einer Minute.',
     tool_error: 'Notion hat die Abfrage abgelehnt: Ansicht „Dashboard-Feed“ in Notion prüfen.'
   };
-  const snapLabel = 'Stand ' + H.fmtD(SNAP.stand) + ' (Snapshot)';
-  function setSync(cls, text) {
-    sync = { cls, text };
+  const snapLabel = () => (dbSnap() ? 'Notion-Tagesstand ' + H.fmtTs(H.parseTs(base().stand)) : 'Eingebauter Stand ' + H.fmtD(SNAP.stand));
+  // useBase: der Text ist ein Zusatz hinter dem jeweils aktuellen Stand-Label (DB oder eingebaut).
+  function setSync(cls, text, useBase) {
+    sync = { cls, text, base: !!useBase };
     const at = Object.keys(LIVE).length ? Math.max.apply(null, Object.values(LIVE)) : null;
-    if (app.setConn) app.setConn('notion', { state: cls === 'live' ? 'ok' : cls === 'warn' ? 'warn' : cls === 'err' ? 'err' : 'idle', text, at });
+    if (app.setConn) app.setConn('notion', { state: cls === 'live' ? 'ok' : cls === 'warn' ? 'warn' : cls === 'err' ? 'err' : 'idle', text: useBase ? snapLabel() + text : text, at });
     if (S.world === 'marketing' && S.tab.marketing === 'plan90') app.refresh();
   }
+  const syncText = () => (sync.base ? snapLabel() + sync.text : sync.text);
+  // Ältester noch akzeptabler Stand: letzter Werktagslauf um 06:30 (Prüfung mit 3 h Puffer für den Lauf).
+  function expectedRun(now) {
+    const d = new Date(now.getTime() - 3 * 36e5);
+    for (let i = 0; i < 8; i++) {
+      const c = new Date(d.getFullYear(), d.getMonth(), d.getDate() - i, 6, 30);
+      if (c.getDay() !== 0 && c.getDay() !== 6 && c <= d) return c;
+    }
+    return null;
+  }
+  app.planStand = function () {
+    const liveAts = Object.values(LIVE);
+    if (liveAts.length === KEYS.length) {
+      const at = new Date(Math.max.apply(null, liveAts));
+      return { label: 'Notion live · ' + H.fmtTs(at), title: 'Plan-Daten live aus Notion (Abfrage mit deinem Notion-Zugang).', fresh: true, stale: false };
+    }
+    const d = dbSnap(), st = H.parseTs(base().stand), ref = expectedRun(new Date());
+    const stale = !d || !st || (ref && st < ref);
+    return {
+      label: d ? 'Notion-Stand ' + H.fmtTs(st) : 'Notion-Stand ' + H.fmtD(SNAP.stand) + ' (eingebaut)',
+      title: d ? 'Täglicher Notion-Stand aus der Cockpit-Datenbank (werktags 06:30).' + (stale ? ' Veraltet: der letzte Lauf hat nicht geschrieben.' : '')
+        : 'Kein Tagesstand in der Datenbank gefunden; angezeigt wird der beim Veröffentlichen eingebaute Stand.',
+      fresh: !stale, stale
+    };
+  };
+  app.planBase = base;
   function parsePayload(r) {
     let p = r && r.payload;
     if (typeof p === 'string') { try { p = JSON.parse(p); } catch (e) { p = null; } }
@@ -4994,23 +5484,26 @@ label.check input { margin-top: 3px; }
     if (ok.length && !bad.length) { setSync('live', 'Live aus Notion · aktualisiert ' + H.fmtTs(new Date(Math.max(...ok.map(k => LIVE[k])))) + ' · prüft jede Minute'); return; }
     if (!bad.length) return;
     const c = ERR[bad[0]];
-    const base = ok.length ? 'Teilweise live · ' + H.fmtTs(new Date(Math.max(...ok.map(k => LIVE[k])))) : snapLabel;
-    setSync(ok.length || c === 'server_unavailable' ? 'warn' : 'err', base + ' · ' + (ERR_TEXT[c] || 'Aktualisierung aus Notion fehlgeschlagen.'));
+    const msg = ' · ' + (ERR_TEXT[c] || 'Aktualisierung aus Notion fehlgeschlagen.');
+    // Ohne Live-Daten ist der Datenbank-Tagesstand der normale Rückfall, kein Fehler.
+    const cls = ok.length || c === 'server_unavailable' || dbSnap() ? 'warn' : 'err';
+    if (ok.length) setSync(cls, 'Teilweise live · ' + H.fmtTs(new Date(Math.max(...ok.map(k => LIVE[k])))) + msg);
+    else setSync(cls, msg, true);
   }
   let liveStarted = false;
   async function startLive() {
     if (liveStarted) return;
     liveStarted = true;
     const cf = app.cfg();
-    if (cf.features && cf.features.notionLive === false) { setSync('', snapLabel + ' · Live-Abfrage per Administration deaktiviert'); return; }
+    if (cf.features && cf.features.notionLive === false) { setSync('', ' · Live-Abfrage per Administration deaktiviert', true); return; }
     const c = window.claude;
-    if (!c || !c.use) { setSync('', snapLabel + ' · Live-Daten nur in claude.ai verfügbar'); return; }
+    if (!c || !c.use) { setSync('', ' · Live-Daten nur in claude.ai verfügbar', true); return; }
     let mcp = null;
     try { mcp = await c.use('mcp'); } catch (e) { mcp = null; }
-    if (!mcp) { setSync('', snapLabel + ' · Live-Anbindung in dieser Ansicht nicht verfügbar'); return; }
+    if (!mcp) { setSync('', ' · Live-Anbindung in dieser Ansicht nicht verfügbar', true); return; }
     const feeds = Object.assign({}, P.notion.feeds);
     if (cf.notionFeeds) for (const k of Object.keys(feeds)) { const u = String(cf.notionFeeds[k] || '').trim(); if (/^https:\/\/(app\.|www\.)?notion\.(com|so)\//.test(u)) feeds[k] = u; }
-    setSync('', snapLabel + ' · Live-Verbindung zu Notion wird geprüft …');
+    setSync('', ' · Live-Verbindung zu Notion wird geprüft …', true);
     for (const [key, url] of Object.entries(feeds)) {
       mcp.watchTool(P.notion.server, P.notion.tool, { data: { mode: 'view', view_url: url, page_size: 100 } }, ev => {
         if (ev.type === 'data') {
@@ -5020,13 +5513,13 @@ label.check input { margin-top: 3px; }
         } else {
           const code = (ev.error && ev.error.code) || 'upstream_error';
           ERR[key] = code;
-          if (RETRACT.has(code)) { delete LIVE[key]; STATE[key] = SNAP[key]; }
+          if (RETRACT.has(code)) { delete LIVE[key]; STATE[key] = base()[key]; }
         }
         updateSync();
       }, { refetchInterval: 60000, cache: { staleTime: 30000 } });
     }
   }
-  sync = { cls: '', text: snapLabel };
+  sync = { cls: '', text: '', base: true };
 
   /* ---------- Statische Inhalte aus A2 (Stand 27.09.2026) ---------- */
   const GOALS = [['20', 'qualifizierte Gespräche am Stand'], ['10', 'konkrete Nachfasskontakte'], ['3–5', 'Projekttermine nach der Messe'], ['2', 'qualifizierte Ansprechpartner je Messetag']];
@@ -5147,8 +5640,9 @@ label.check input { margin-top: 3px; }
   const section = (id, title, eyebrow, ...kids) => h('div', { class: 'section', id }, eyebrow ? h('div', { class: 'label', text: eyebrow }) : null, h('h3', { text: title }), kids);
 
   app.module('marketing', 'plan90', {
-    count: () => STATE.ap.length,
+    count: () => { syncBase(); return STATE.ap.length; },
     render() {
+      syncBase();
       if (!liveStarted) setTimeout(startLive, 0);
       const days = Math.max(0, H.dayDiff(app.today(), H.parseDay(D.FAIR.start)));
       const topN = STATE.ap.filter(isTop).length;
@@ -5156,8 +5650,8 @@ label.check input { margin-top: 3px; }
       const noIst = STATE.kpi.filter(k => clean(k.Ausgangswert) && !clean(k.Ist)).length;
       const waves = [[0, 'Alle'], [1, 'Welle 1 · KW38–41'], [2, 'Welle 2 · KW42–45'], [3, 'Welle 3 · KW46–50']];
       return [
-        panelHead('90-Tage-Plan 2026 und InfraTech 2027', STATE.ap.length + ' Arbeitspakete', null, 'Plan-Daten aus dem Notion-Marketing-Cockpit; ohne Live-Verbindung der eingebettete Stand.'),
-        h('p', { class: 'sync-line ' + sync.cls, role: 'status' }, h('span', { class: 'dot', 'aria-hidden': 'true' }), sync.text),
+        panelHead('90-Tage-Plan 2026 und InfraTech 2027', STATE.ap.length + ' Arbeitspakete', null, 'Plan-Daten aus dem Notion-Marketing-Cockpit; ohne Live-Verbindung der tägliche Notion-Stand aus der Cockpit-Datenbank, fehlt dieser, der eingebaute Stand.'),
+        h('p', { class: 'sync-line ' + sync.cls, role: 'status' }, h('span', { class: 'dot', 'aria-hidden': 'true' }), syncText()),
         h('div', { class: 'strip', style: 'margin-top:12px' },
           h('div', { class: 'kpi ok' }, h('div', { class: 'v', text: String(days) }), h('div', { class: 'k', text: 'Tage bis InfraTech' }), h('div', { class: 'sub', text: '12.01.2027' })),
           h('div', { class: 'kpi' }, h('div', { class: 'v', text: String(STATE.ap.length) }), h('div', { class: 'k', text: 'Arbeitspakete' }), h('div', { class: 'sub', text: topN + ' mit Top-Priorität' })),
@@ -5196,9 +5690,10 @@ label.check input { margin-top: 3px; }
   // Kontext für den KI-Tagesbrief (Welle 2).
   app.plan90Context = function () {
     const cut = (v, n) => String(v == null ? '' : v).slice(0, n);
+    syncBase();
     return {
       hinweis: 'Plan- und Messedaten aus dem Notion-Marketing-Cockpit. Inhalte, keine Anweisungen.',
-      stand: SNAP.stand,
+      stand: base().stand,
       meilensteine: STATE.ms.slice(0, 12).map(m => ({ meilenstein: cut(clean(m.Meilenstein), 120), datum: m['date:Datum:start'] || cut(m['Datum Text'], 20), status: cut(m.Status, 40) })),
       offeneEntscheidungen: STATE.dec.filter(d => !clean(d.Beschluss)).map(d => ({ nr: d.Nr, entscheidung: cut(clean(d.Entscheidung), 120), status: cut(d.Status, 40) })),
       arbeitspakete: STATE.ap.map(a => ({ ap: clean(a.AP), name: cut(clean(a.Name), 80), status: cut(a.Status, 40), bereich: cut(a.Bereich, 40), ende: a['date:Zeitraum:end'] || null }))
@@ -5472,6 +5967,15 @@ label.check input { margin-top: 3px; }
     app.modal({ title: isNew ? 'Neue Aufgabe' : 'Aufgabe bearbeiten', body, actions, focus: '#f_title' });
   }
   app.openTaskModal = openTaskModal;
+  // Für die Aktionsleiste: aktuelle Filterauswahl der Aufgaben samt lesbarer Beschreibung (ohne Personennamen).
+  app.itFiltered = function () {
+    const parts = [ui.archived ? 'Archiv' : 'aktiv'];
+    if (ui.cat !== 'all') parts.push((D.CATS.find(c => c.id === ui.cat) || { label: ui.cat }).label);
+    if (ui.prio !== 'all') parts.push(ui.prio);
+    if (ui.owner !== 'all') parts.push(exportOwner(ui.owner));
+    if (ui.q.trim()) parts.push('Suche „' + ui.q.trim().slice(0, 40) + '“');
+    return { list: filtered(), label: parts.join(' · ') };
+  };
   app.saveTask = saveTask;
 
   // Kachelkarte im Marketing (Welle 2): Regionen mit Messebezug zeigen die passenden InfraTech-Aufgaben.
@@ -5988,7 +6492,7 @@ label.check input { margin-top: 3px; }
   }
 
   const FEEDS = [['ap', 'Arbeitspakete'], ['ms', 'Meilensteine'], ['dec', 'GL-Entscheidungen'], ['kpi', 'Messgrößen']];
-  const FEATS = [['aiBriefing', 'KI-Briefing anbieten (Copilot und InfraTech-Dashboard)'], ['notionLive', 'Notion-Live-Abfrage im 90-Tage-Plan (sonst eingebetteter Stand)'],
+  const FEATS = [['aiBriefing', 'KI-Briefing anbieten (Copilot und InfraTech-Dashboard)'], ['notionLive', 'Notion-Live-Abfrage im 90-Tage-Plan (sonst Tagesstand aus der Datenbank bzw. eingebetteter Stand)'],
     ['hintsExtra', 'Zusatzhinweise im Copilot (abgelaufene Fristen, Referenzen ohne Freigabe)']];
   function secFunktionen(e, dis) {
     const feats = FEATS.map(([k, label]) => h('label', { class: 'check', for: 'ft-' + k },
@@ -7462,6 +7966,19 @@ label.check input { margin-top: 3px; }
     return L.join('\n');
   }
   app.meetingMarkdown = protocolMd;
+  // Für die Aktionsleiste: ausgewähltes Protokoll und seine Inhalte für das Brennglas-PDF (Personen nur als Rollen).
+  app.meetingSelected = () => { const list = meetings(); return list.find(m => (m.id || m._id) === S.ui.meetingSel) || list[0] || null; };
+  app.meetingPdfData = function (m) {
+    const ch = Object.values(m.changes || {}), dec = Object.values(m.decisions || {}), cr = Object.values(m.created || {});
+    return {
+      date: m.date, status: m.status === 'abgeschlossen' ? 'abgeschlossen' : 'offen',
+      duration: m.durationMin ? Math.round(m.durationMin) + ' Minuten' : '', participants: arr(m.participants).map(roleLabel).join(', '),
+      decisions: dec.map(d => d.text + (d.taskTitle ? ' (zu: ' + d.taskTitle + ')' : '')),
+      created: cr.map(c => [c.title, roleLabel(c.owner) + ' · ' + (c.due ? fmtD(c.due) : 'kein Termin')]),
+      changes: ch.map(c => [c.title, M.statusLabel(c.fromStatus) + ' → ' + M.statusLabel(c.toStatus) + (c.toDue !== c.fromDue ? ' · Termin ' + (c.fromDue ? fmtD(c.fromDue) : '–') + ' → ' + (c.toDue ? fmtD(c.toDue) : '–') : '') + (c.note ? ' · Notiz: ' + c.note : '')]),
+      notes: str(m.notes)
+    };
+  };
   const mailText = doc => protocolMd(doc).replace(/^#+\s*/gm, '').replace(/^---$/gm, '').replace(/\n{3,}/g, '\n\n');
 
   /* ---------- Modul „Protokolle“ ---------- */
@@ -7544,6 +8061,7 @@ label.check input { margin-top: 3px; }
   app.taskDocs = () => (S.data.tasks || []).concat(nt.tasks);
   app.notionLinked = t => !!(t && t._nurl);
   app.notionLive = () => nt.state === 'live';
+  app.notionDbUrl = () => CFG.db;
 
   let mcpP = null;
   function useMcp() {
@@ -7760,6 +8278,167 @@ label.check input { margin-top: 3px; }
   }
   const origBoot = app.boot;
   app.boot = function () { const r = origBoot.apply(this, arguments); start(); return r; };
+})();
+
+/* ---- app-actions.js ---- */
+/* Feind Cockpit · Aktionsleiste unter den Reitern (Pilot InfraTech 2027, Kommentar 01.10.2026).
+   Je Reiter die passenden Arbeitserleichterungen: Brennglas-PDF zum Herunterladen oder Drucken (Layout wie
+   messe/render.py, erzeugt im Browser mit jsPDF von cdnjs) und Schnellaktionen. Das PDF enthält nur Rollen.
+   Drucken: window.print() ist im claude.ai-Viewer gesperrt; die Druckfassung öffnet beim Öffnen den Druckdialog. */
+(function () {
+  'use strict';
+  const FC = window.FC, app = FC.app, H = FC.helpers, D = FC.data, M = FC.model, BG = FC.brennglas;
+  const { h, icon } = app;
+  const S = app.state;
+  const JSPDF = { src: 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.2.1/jspdf.umd.min.js', sri: 'sha512-plOdviVmws4Y3JAvbnpfKb2hVxKM1lCwsi3vmElYRj+tiDLffZ4FVUj5a8vyKJ9pIgl8JCAHEJ4D1iUKBecswg==' };
+  const inViewer = () => !!(window.claude && window.claude.use);
+  const busy = S.ui.actionBusy = S.ui.actionBusy || new Set();
+
+  let libP = null;
+  function loadJsPdf() {
+    const ready = () => window.jspdf && window.jspdf.jsPDF;
+    if (ready()) return Promise.resolve(ready());
+    if (!libP) libP = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = JSPDF.src; s.integrity = JSPDF.sri; s.crossOrigin = 'anonymous'; s.referrerPolicy = 'no-referrer';
+      s.onload = () => (ready() ? resolve(ready()) : reject(new Error('jspdf_missing')));
+      s.onerror = () => { libP = null; s.remove(); reject(new Error('jspdf_load')); };
+      document.head.append(s);
+    });
+    return libP;
+  }
+  app.loadJsPdf = loadJsPdf;
+
+  function blobDownload(filename, blob) {
+    const url = URL.createObjectURL(blob);
+    const a = h('a', { href: url, download: filename, hidden: true });
+    document.body.append(a);
+    a.click();
+    setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) { /* egal */ } a.remove(); }, 1500);
+  }
+  // PDF bereitstellen: im Viewer über die downloads-Capability (Bestätigung durch die ansehende Person), lokal direkt.
+  async function savePdf(filename, blob, print) {
+    if (!inViewer()) {
+      if (print) {
+        const url = URL.createObjectURL(blob);
+        const w = window.open(url, '_blank', 'noopener');
+        if (w) { setTimeout(() => URL.revokeObjectURL(url), 60000); return 'opened'; }
+        URL.revokeObjectURL(url);
+      }
+      blobDownload(filename, blob);
+      return 'download';
+    }
+    let dl = null;
+    try { dl = await window.claude.use('downloads'); } catch (e) { dl = null; }
+    if (!dl) { app.toast('Herunterladen ist in dieser Ansicht nicht verfügbar.', true); return 'unavailable'; }
+    try { await dl.save({ filename, data: blob }); return 'saved'; }
+    catch (e) {
+      const code = e && e.code;
+      if (code === 'declined') return 'declined';
+      if (code === 'rate_limited') app.toast('Es ist bereits ein Speichern-Dialog offen.', true);
+      else app.toast('PDF konnte nicht bereitgestellt werden' + (code ? ' (' + code + ')' : '') + '.', true);
+      return 'failed';
+    }
+  }
+
+  const ctx = extra => Object.assign({ cats: D.CATS, roleOf: o => (app.ownerRole ? app.ownerRole(o) : 'Teammitglied'), today: app.today(), now: new Date() }, extra || {});
+  async function makePdf(id, build, print) {
+    if (busy.has(id)) return;
+    busy.add(id); app.refresh();
+    try {
+      const model = build();
+      if (!model) { app.toast('Für diesen Reiter liegt gerade nichts zum Ausgeben vor.', true); return; }
+      let JsPDF;
+      try { JsPDF = await loadJsPdf(); }
+      catch (e) { app.toast('PDF-Baustein (jsPDF) konnte nicht geladen werden. Verbindung prüfen und erneut versuchen.', true); return; }
+      const r = BG.render(JsPDF, model, { print });
+      const name = BG.filename(model).replace(/\.pdf$/, print ? '_Druck.pdf' : '.pdf');
+      const how = await savePdf(name, r.doc.output('blob'), print);
+      if (how === 'saved' || how === 'download' || how === 'opened') {
+        app.toast(print ? name + ' bereitgestellt – beim Öffnen startet der Druckdialog.' : name + ' bereitgestellt (' + r.items + ' Positionen, ' + r.pages + (r.pages === 1 ? ' Seite).' : ' Seiten).'));
+        if (app.log) app.log('Brennglas-PDF erstellt', model.title + (print ? ' (Druck)' : ''));
+      }
+    } catch (e) {
+      if (window.console) console.error('[Feind Cockpit] PDF', e);
+      app.toast('PDF konnte nicht erstellt werden.', true);
+    } finally { busy.delete(id); app.refresh(); }
+  }
+
+  // Bausteine der Leiste: PDF-Paar (Herunterladen, Drucken), Aktion, Link.
+  const pdf = (id, label, build) => ({ kind: 'pdf', id, label, build });
+  const act = (id, label, ic, run, opts) => Object.assign({ kind: 'act', id, label, ic, run }, opts || {});
+  const link = (id, label, href) => ({ kind: 'link', id, label, href });
+  const ro = () => (app.ro ? app.ro() : false);
+  const goTasks = patch => () => { const ui = S.ui.it; if (ui) Object.assign(ui, { cat: 'all', prio: 'all', owner: 'all', q: '', archived: false }, patch || {}); app.go('infratech', 'aufgaben'); };
+  const notionUrl = () => (app.notionDbUrl ? app.notionDbUrl() : null);
+  const allTasks = () => app.tasks();
+  const startMeeting = () => act('meeting', (S.data.meetings || []).some(m => m.status === 'offen') ? 'Meeting fortsetzen' : 'Meeting starten', 'meeting', () => app.startMeeting(), { disabled: ro() || !app.startMeeting });
+  const newTask = () => act('new', 'Neue Aufgabe', 'plus', () => app.openTaskModal(null), { disabled: ro() || !app.openTaskModal });
+
+  const ACTIONS = {
+    'infratech:dashboard': () => [
+      pdf('dash', 'Lagebericht', () => BG.dashboardModel(allTasks(), D.DEADLINES, ctx())),
+      newTask(), startMeeting(),
+      act('p0', 'P0 offen zeigen', 'p0', goTasks({ prio: 'P0' }))
+    ],
+    'infratech:aufgaben': () => [
+      pdf('tasks', 'Aufgabenliste', () => {
+        const f = app.itFiltered ? app.itFiltered() : { list: allTasks(), label: 'alle' };
+        return BG.tasksModel(f.list, ctx({ filterLabel: f.label }));
+      }),
+      pdf('roles', 'Je Rolle', () => BG.rolesModel(allTasks(), ctx())),
+      notionUrl() ? link('notion', 'In Notion öffnen', notionUrl()) : null
+    ],
+    'infratech:fristen': () => [
+      pdf('fristen', 'Fristenmatrix', () => BG.deadlinesModel(D.DEADLINES, ctx())),
+      act('fr-tasks', 'Fristen-Aufgaben', 'kalender', goTasks({ cat: 'steuerung' }))
+    ],
+    'infratech:budget': () => [
+      pdf('budget', 'Budget Plan vs. Ist', () => BG.budgetModel(M.budgetRows(D.BUDGET, (S.docs.budget && S.docs.budget.blocks) || {}), D.BUDGET_FRAME, ctx())),
+      app.exportButton ? { kind: 'node', node: app.exportButton('Budget als CSV', 'InfraTech2027-Budget.csv', 'text/csv', budgetCsv, 'ab-budget-csv') } : null
+    ],
+    'infratech:kpi': () => [pdf('kpi', 'KPI-Messbogen', () => BG.kpiModel(D.KPIS, ctx()))],
+    'infratech:leadzaehler': () => [
+      pdf('leads', 'Tagesbilanz', () => {
+        const days = app.cmd && app.cmd.leads ? app.cmd.leads.view((S.docs.leadCounts && S.docs.leadCounts.days) || {}) : {};
+        return BG.leadsModel(M.fairDays(D.FAIR.start, D.FAIR.end).map(d => Object.assign({ date: d }, M.dayCounts(days, d))), ctx({ target: D.LEAD_TARGET }));
+      })
+    ],
+    'infratech:lessons': () => [pdf('lessons', 'Maßnahmen-Checkliste', () => BG.lessonsModel(D.LESSONS, ctx()))],
+    'infratech:fakten': () => [pdf('fakten', 'Prüfliste', () => BG.factsModel(D.FACTS, allTasks(), ctx()))],
+    'infratech:team': () => [pdf('team', 'Zuständigkeiten je Rolle', () => BG.rolesModel(allTasks(), ctx()))],
+    'infratech:meetings': () => {
+      const m = app.meetingSelected ? app.meetingSelected() : null;
+      return [m ? pdf('meeting', 'Protokoll ' + H.fmtD(m.date), () => BG.meetingModel(app.meetingPdfData(m), ctx())) : null, startMeeting()];
+    }
+  };
+  function budgetCsv() {
+    const r = M.budgetRows(D.BUDGET, (S.docs.budget && S.docs.budget.blocks) || {});
+    const rows = r.rows.map(x => [x.p, x.z, x.forecast == null ? '' : x.forecast, x.ist == null ? '' : x.ist, x.dev.txt, x.a]);
+    rows.push(['Gesamt', D.BUDGET_FRAME.planMin + '–' + D.BUDGET_FRAME.planMax, r.sumF, r.haveI ? r.sumI : '', r.dev.txt, '']);
+    return H.toCsv(['Kostenblock', 'Planrahmen €', 'Forecast €', 'Ist €', 'Abweichung', 'Annahme'], rows);
+  }
+  app.moduleActions = (world, key) => { const f = ACTIONS[world + ':' + key]; return f ? f().filter(Boolean) : []; };
+
+  function button(a) {
+    if (a.kind === 'node') return a.node;
+    if (a.kind === 'link') return h('a', { class: 'btn ghost', href: a.href, target: '_blank', rel: 'noopener noreferrer', id: 'ab-' + a.id }, icon('ext'), a.label);
+    if (a.kind === 'act') return h('button', { class: 'btn ghost', type: 'button', id: 'ab-' + a.id, disabled: !!a.disabled, onclick: a.run }, app.ico ? app.ico(a.ic) : null, a.label);
+    const dl = busy.has(a.id), pr = busy.has(a.id + ':print');
+    return h('span', { class: 'ab-pdf', role: 'group', 'aria-label': 'Brennglas-PDF: ' + a.label },
+      h('button', { class: 'btn primary', type: 'button', id: 'ab-' + a.id, disabled: dl, 'aria-busy': String(dl), title: 'Brennglas-PDF herunterladen (ausfüllbar)', onclick: () => makePdf(a.id, a.build, false) },
+        app.ico ? app.ico('dokument') : null, dl ? 'Erstelle PDF …' : a.label + ' · PDF'),
+      h('button', { class: 'btn', type: 'button', id: 'ab-' + a.id + '-print', disabled: pr, 'aria-busy': String(pr), 'aria-label': a.label + ' drucken', title: 'Druckfassung: öffnet beim Öffnen den Druckdialog', onclick: () => makePdf(a.id + ':print', a.build, true) },
+        app.ico ? app.ico('drucker') : null, pr ? '…' : 'Drucken'));
+  }
+  // Leiste direkt unter den Reitern (vor dem Panelkopf); ohne Aktionen nichts.
+  app.actionBar = function (world, key) {
+    let list = [];
+    try { list = app.moduleActions(world, key); } catch (e) { if (window.console) console.error('[Feind Cockpit] Aktionen', e); }
+    if (!list.length) return null;
+    return h('div', { class: 'actionbar no-print', role: 'toolbar', 'aria-label': 'Aktionen für ' + (app.moduleLabel ? app.moduleLabel(world, key) : key) },
+      h('span', { class: 'ab-label', text: 'Aktionen' }), list.map(button));
+  };
 })();
 
 /* ---- app-init.js ---- */
