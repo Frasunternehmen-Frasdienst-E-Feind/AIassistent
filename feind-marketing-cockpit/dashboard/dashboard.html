@@ -2776,7 +2776,7 @@ label.check input { margin-top: 3px; }
   'use strict';
 
   // 1:1 übernommene Collections (mit Schema-Angleichung)
-  const COPY = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references',
+  const COPY = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'knowledge',
     'briefings', 'tasks', 'budget', 'activity', 'admin', 'admin_requests', 'meta', 'settings', 'meetings'];
   // Dokumente, die feldweise zusammengeführt werden
   const MERGE_DOCS = ['meta/sync', 'settings/general'];
@@ -3602,7 +3602,7 @@ label.check input { margin-top: 3px; }
   const WORLDS = ['marketing', 'infratech', 'admin'];
   const WORLD_LABEL = { marketing: 'Marketing', infratech: 'InfraTech 2027', admin: 'Admin' };
   const MODULES = app.MODULES = {
-    marketing: [['copilot', 'Copilot'], ['content', 'Content'], ['leads', 'Leads'], ['tenders', 'Ausschreibungen'], ['events', 'Events'], ['seo', 'SEO'], ['references', 'Referenzen'], ['plan90', '90-Tage-Plan'], ['ablage', 'Ablage']],
+    marketing: [['copilot', 'Copilot'], ['content', 'Content'], ['leads', 'Leads'], ['tenders', 'Ausschreibungen'], ['events', 'Events'], ['seo', 'SEO'], ['references', 'Referenzen'], ['bibliothek', 'Wissensbibliothek'], ['plan90', '90-Tage-Plan'], ['ablage', 'Ablage']],
     infratech: [['dashboard', 'Dashboard'], ['aufgaben', 'Aufgaben'], ['fristen', 'Fristen'], ['budget', 'Budget'], ['kpi', 'Ziele & KPIs'], ['leadzaehler', 'Lead-Zähler'], ['lessons', 'Lessons Learned'], ['fakten', 'Faktencheck'], ['team', 'Team'], ['meetings', 'Protokolle'], ['protokoll', 'Aktivität'], ['wissen', 'Wissensbasis']],
     admin: [['status', 'Status'], ['konfiguration', 'Konfiguration'], ['zugaenge', 'Zugänge'], ['daten', 'Daten'], ['icons', 'Icons']]
   };
@@ -4143,7 +4143,7 @@ label.check input { margin-top: 3px; }
   app.ro = () => (S.readOnly ? true : null);
 
   /* ---------- Store-Anbindung und Abonnements ---------- */
-  const COLLECTIONS = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'tasks', 'admin_requests', 'meetings'];
+  const COLLECTIONS = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'knowledge', 'tasks', 'admin_requests', 'meetings'];
   const DOC_WATCH = { settings: 'settings/general', meta: 'meta/sync', budget: 'budget/actuals', leadCounts: 'leads/counts', adminConfig: 'admin/config', adminDraft: 'admin/draft', adminRoles: 'admin/roles', planSnapshot: 'snapshot/aktuell' };
   for (const c of COLLECTIONS.concat(['briefings', 'activity', 'legacy_leads'])) S.data[c] = [];
 
@@ -4245,7 +4245,7 @@ label.check input { margin-top: 3px; }
   const MAP = app.ICON_MAP = {
     world: { marketing: 'megafon', infratech: 'messestand', admin: 'regler' },
     module: {
-      copilot: 'kompass', content: 'stift', leads: 'lead', tenders: 'ausschreibung', events: 'messestand', seo: 'chart', references: 'stern', plan90: 'gantt', ablage: 'ordner',
+      copilot: 'kompass', content: 'stift', leads: 'lead', tenders: 'ausschreibung', events: 'messestand', seo: 'chart', references: 'stern', bibliothek: 'buch', plan90: 'gantt', ablage: 'ordner',
       dashboard: 'dashboard', aufgaben: 'liste', fristen: 'kalender', budget: 'budget', kpi: 'ziel', leadzaehler: 'zaehler', lessons: 'lampe', fakten: 'lupe', team: 'team', meetings: 'meeting', protokoll: 'verlauf', wissen: 'buch',
       status: 'schild', konfiguration: 'regler', zugaenge: 'schluessel', daten: 'datenbank', icons: 'raster'
     },
@@ -4257,7 +4257,7 @@ label.check input { margin-top: 3px; }
     contentStatus: { idee: 'lampe', entwurf: 'stift', review: 'lupe', freigegeben: 'st-done', veroeffentlicht: 'megafon' },
     leadStage: { neu: 'flag-neu', qualifiziert: 'flag-fakt', angebot: 'dokument', verhandlung: 'handschlag', gewonnen: 'pokal', verloren: 'x' },
     kpi: { fortschritt: 'dashboard', ueberfaellig: 'warndreieck', faellig: 'kalender', p0: 'p0', blockiert: 'st-blocked', leads: 'lead', ziel: 'ziel' },
-    palette: { Module: 'go', Aktionen: 'check', 'Aufgaben InfraTech': 'liste', Content: 'stift', Leads: 'lead', Ausschreibungen: 'ausschreibung', Events: 'messestand', Referenzen: 'stern', Protokolle: 'meeting' },
+    palette: { Module: 'go', Aktionen: 'check', 'Aufgaben InfraTech': 'liste', Content: 'stift', Leads: 'lead', Ausschreibungen: 'ausschreibung', Events: 'messestand', Referenzen: 'stern', Wissen: 'buch', Protokolle: 'meeting' },
     empty: 'leer',
     section: { last: 'meeting', over: 'warndreieck', soon: 'kalender', blocked: 'st-blocked', p0: 'p0', neu: 'flag-neu' }
   };
@@ -4553,7 +4553,7 @@ label.check input { margin-top: 3px; }
   app.mkCurrentBriefing = currentBriefing;
   function freshness() {
     const meta = S.docs.meta || {};
-    const keys = [['content', 'Content'], ['leads', 'Leads'], ['tenders', 'Ausschreibungen'], ['events', 'Events'], ['seo', 'SEO'], ['references', 'Referenzen']];
+    const keys = [['content', 'Content'], ['leads', 'Leads'], ['tenders', 'Ausschreibungen'], ['events', 'Events'], ['seo', 'SEO'], ['references', 'Referenzen'], ['knowledge', 'Wissen']];
     return h('div', { class: 'chips', role: 'list', 'aria-label': 'Datenstand je Bereich' }, keys.map(([k, lbl]) => {
       const e = meta[k] && typeof meta[k] === 'object' ? meta[k] : null;
       const at = e ? parseTs(e.at) : null;
@@ -6430,9 +6430,9 @@ label.check input { margin-top: 3px; }
 
   /* ---------- Status ---------- */
   const COUNTED = [['content', 'Content'], ['mkt_leads', 'Marketing-Leads'], ['tenders', 'Ausschreibungen'], ['events', 'Events'], ['seo_keywords', 'SEO-Keywords'],
-    ['seo_traffic', 'SEO-Traffic'], ['seo_gaps', 'SEO-Lücken'], ['references', 'Referenzen'], ['tasks', 'InfraTech-Aufgaben (Änderungen)'], ['briefings', 'Tagesbriefe (letzte 14)'],
+    ['seo_traffic', 'SEO-Traffic'], ['seo_gaps', 'SEO-Lücken'], ['references', 'Referenzen'], ['knowledge', 'Wissensbibliothek'], ['tasks', 'InfraTech-Aufgaben (Änderungen)'], ['briefings', 'Tagesbriefe (letzte 14)'],
     ['activity', 'Protokoll (Tagesdokumente)'], ['admin_requests', 'Zugangsanfragen'], ['legacy_leads', 'Alte Marketing-Leads']];
-  const META_KEY = { content: 'content', mkt_leads: 'leads', tenders: 'tenders', events: 'events', seo_keywords: 'seo', seo_traffic: 'seo', seo_gaps: 'seo', references: 'references' };
+  const META_KEY = { content: 'content', mkt_leads: 'leads', tenders: 'tenders', events: 'events', seo_keywords: 'seo', seo_traffic: 'seo', seo_gaps: 'seo', references: 'references', knowledge: 'knowledge' };
   app.module('admin', 'status', {
     render() {
       const l = live();
@@ -6541,7 +6541,7 @@ label.check input { margin-top: 3px; }
   });
 
   /* ---------- Daten: Sicherung, Import über den Migrationsplan, alte Marketing-Leads ---------- */
-  const ALL_COLLECTIONS = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'tasks', 'briefings', 'activity',
+  const ALL_COLLECTIONS = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'knowledge', 'tasks', 'briefings', 'activity',
     'admin_requests', 'leads', 'settings', 'meta', 'budget', 'admin', 'meetings'];
   const strip = r => { const d = Object.assign({}, r); delete d._id; return d; };
   async function dumpAll() {
@@ -6653,7 +6653,7 @@ label.check input { margin-top: 3px; }
     rerender();
   }
   /* ---------- Datenpflege (aus A2): Datensätze ansehen, korrigieren, anlegen, löschen ---------- */
-  const EDITABLE = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'tasks', 'briefings', 'meetings'];
+  const EDITABLE = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'knowledge', 'tasks', 'briefings', 'meetings'];
   const ID_RE = /^[A-Za-z0-9_\-.~:@+]{1,200}$/;
   // Keine Kontaktdaten in Datensätzen: E-Mail-Adressen und Telefonnummern werden abgewiesen.
   function personalHint(obj) {
@@ -6953,6 +6953,7 @@ label.check input { margin-top: 3px; }
     for (const t of S.data.tenders || []) out.push({ group: 'Ausschreibungen', ic: 'ausschreibung', title: str(t.title) || '(ohne Titel)', sub: 'Frist ' + H.fmtD(t.deadline) + (str(t.region) ? ' · ' + str(t.region) : ''), run: goMk('tenders', { region: '', range: 'all' }) });
     for (const e of S.data.events || []) out.push({ group: 'Events', ic: 'messestand', title: str(e.title) || '(ohne Titel)', sub: H.fmtD(e.date) + (str(e.location) ? ' · ' + str(e.location) : ''), run: goMk('events', { range: 'all' }) });
     for (const m of S.data.meetings || []) out.push({ group: 'Protokolle', ic: 'meeting', title: 'Messe-Abstimmung ' + H.fmtD(m.date) + (m.status === 'offen' ? ' (offen)' : ''), sub: Object.keys(m.decisions || {}).length + ' Beschlüsse · ' + Object.keys(m.changes || {}).length + ' Änderungen', run: () => { S.ui.meetingSel = m.id || m._id; app.go('infratech', 'meetings'); } });
+    for (const d of S.data.knowledge || []) out.push({ group: 'Wissen', ic: 'buch', title: str(d.title) || str(d.originalName) || '(ohne Titel)', sub: [app.kbCatLabel ? app.kbCatLabel(d.category) : str(d.category), str(d.topic)].filter(Boolean).join(' · '), run: () => { const ui = S.ui.kb; if (ui) { ui.q = str(d.title); ui.cat = ''; ui.status = ''; ui.tag = ''; } app.go('marketing', 'bibliothek'); } });
     for (const r of S.data.references || []) out.push({ group: 'Referenzen', ic: 'stern', title: str(r.title) || '(ohne Titel)', sub: [str(r.year), str(r.region)].filter(Boolean).join(' · '), run: () => { const ui = S.ui.mk2; if (ui) { ui.refQ = str(r.title); ui.refService = ''; ui.refYear = ''; } app.go('marketing', 'references'); } });
     return out;
   }
@@ -7476,6 +7477,126 @@ label.check input { margin-top: 3px; }
         recent(),
         h('div', { class: 'section' }, h('h3', { text: 'Verbindungen' }), app.connStatus())
       ];
+    }
+  });
+})();
+
+/* ---- app-bibliothek.js ---- */
+/* Feind Cockpit · Modul Wissensbibliothek: Dokumente aus dem Dropbox-Upload-Ordner
+   „Marketing/KI-Agent/Datenbank-UPLOADs“. Eine geplante Claude-Routine analysiert neue Dateien, sortiert sie in
+   die Kategorieordner und schreibt je Dokument knowledge/<id> (Titel, Kurzfassung, Tags, Pfad). Das Cockpit
+   zeigt, sucht, filtert und verlinkt nur; Inhalte bleiben in Dropbox. Keine personenbezogenen Daten. */
+(function () {
+  'use strict';
+  const FC = window.FC, app = FC.app, H = FC.helpers;
+  const { h, icon, panelHead, chip } = app;
+  const S = app.state;
+  const { str, arr, parseTs, fmtD, fmtTs } = H;
+  const INBOX = '/Marketing/KI-Agent/Datenbank-UPLOADs';
+  const WEB = 'https://www.dropbox.com/home';
+  const enc = p => str(p).split('/').map(encodeURIComponent).join('/');
+  const folderUrl = p => WEB + enc(p);
+  // Datei im Ordner mit Vorschau öffnen (Dropbox-Weboberfläche, Anmeldung der ansehenden Person).
+  function fileUrl(p) {
+    const s = str(p), i = s.lastIndexOf('/');
+    return i < 0 ? folderUrl(INBOX) : folderUrl(s.slice(0, i)) + '?preview=' + encodeURIComponent(s.slice(i + 1));
+  }
+  const CATS = [['knowledge', 'Wissen'], ['projects', 'Projekte'], ['templates', 'Vorlagen'], ['reference', 'Referenzmaterial'], ['_archive', 'Archiv'], ['_failed', 'Nicht verarbeitet']];
+  const catLabel = c => (CATS.find(x => x[0] === c) || [0, str(c) || 'ohne Kategorie'])[1];
+  const STATUS = { einsortiert: ['green', 'einsortiert'], duplikat: ['gone', 'Duplikat'], fehlgeschlagen: ['red', 'nicht verarbeitet'] };
+  const CONF = { intern: 'intern', vertraulich: 'vertraulich', oeffentlich: 'öffentlich' };
+  const SCHEDULE = 'werktags gegen 06:50 und 12:50 Uhr';
+  const SYNC_CMD = '/wissensbibliothek-sync';
+  const ui = S.ui.kb = { q: '', cat: '', status: '', tag: '' };
+  const rerender = () => app.refresh();
+  const docs = () => S.data.knowledge || [];
+  const when = d => parseTs(d.processedAt) || parseTs(d.createdAt);
+
+  function filtered() {
+    const q = ui.q.trim().toLowerCase();
+    return docs().filter(d => {
+      if (ui.cat && d.category !== ui.cat) return false;
+      if (ui.status && (d.status || 'einsortiert') !== ui.status) return false;
+      if (ui.tag && !arr(d.tags).map(str).includes(ui.tag)) return false;
+      if (q) {
+        const hay = [d.title, d.summary, d.topic, d.originalName, d.dropboxPath, ...arr(d.tags)].map(str).join(' ').toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    }).sort((a, b) => (when(b) || 0) - (when(a) || 0) || str(a.title).localeCompare(str(b.title), 'de'));
+  }
+  app.kbFiltered = filtered;
+  app.kbCatLabel = catLabel;
+  app.kbFileUrl = fileUrl;
+  app.kbInboxUrl = () => folderUrl(INBOX);
+  app.kbSyncCmd = SYNC_CMD;
+  app.kbRunInfo = function () {
+    const m = S.docs.meta && typeof S.docs.meta.knowledge === 'object' ? S.docs.meta.knowledge : null;
+    return { at: m ? parseTs(m.at) : null, processed: m ? +m.processed || 0 : 0, failed: m ? +m.failed || 0 : 0, inbox: m && m.inbox != null ? +m.inbox : null, source: m ? str(m.source) : '' };
+  };
+
+  function card(d) {
+    const st = STATUS[d.status] || STATUS.einsortiert;
+    const t = when(d);
+    const url = d.dropboxPath ? fileUrl(d.dropboxPath) : null;
+    return h('article', { class: 'card' },
+      h('div', { class: 'meta', text: [catLabel(d.category), str(d.topic), t ? fmtD(t) : ''].filter(Boolean).join(' · ') }),
+      h('div', { class: 't', text: str(d.title) || str(d.originalName) || '(ohne Titel)' }),
+      h('div', { class: 'chips' },
+        d.status && d.status !== 'einsortiert' ? chip(st[0], st[1], str(d.reason) || null) : null,
+        str(d.docType) ? h('span', { class: 'chip soft', text: str(d.docType).toUpperCase() }) : null,
+        CONF[d.confidentiality] ? h('span', { class: 'chip' + (d.confidentiality === 'vertraulich' ? ' yellow' : ''), text: CONF[d.confidentiality] }) : null),
+      str(d.summary) ? h('div', { class: 'small', text: str(d.summary) }) : null,
+      str(d.reason) && d.status !== 'einsortiert' ? h('div', { class: 'small muted', text: 'Grund: ' + str(d.reason) }) : null,
+      arr(d.tags).length ? h('div', { class: 'chips' }, arr(d.tags).slice(0, 8).map(x => h('button', { class: 'fchip', type: 'button', 'aria-pressed': String(ui.tag === str(x)), onclick: () => { ui.tag = ui.tag === str(x) ? '' : str(x); rerender(); } }, str(x)))) : null,
+      h('div', { class: 'row small' },
+        url ? h('a', { href: url, target: '_blank', rel: 'noopener noreferrer' }, icon('ext'), ' In Dropbox öffnen') : null,
+        str(d.dropboxPath) ? h('span', { class: 'path', text: str(d.dropboxPath).replace(INBOX + '/', '') }) : null));
+  }
+
+  function uploadBox() {
+    const r = app.kbRunInfo();
+    return h('div', { class: 'card accentbar' },
+      h('h3', { text: 'Neue Datei in die Bibliothek' }),
+      h('p', { class: 'small', text: 'Datei in den Dropbox-Ordner „KI-Agent/Datenbank-UPLOADs“ legen, am PC per Explorer oder im Browser. Claude prüft den Ordner ' + SCHEDULE + ', analysiert jede neue Datei, sortiert sie in Wissen, Projekte, Vorlagen oder Referenzmaterial und trägt sie hier ein. Nichts wird gelöscht; jede Verschiebung steht im Protokoll.' }),
+      h('div', { class: 'row' },
+        h('a', { class: 'btn primary', href: folderUrl(INBOX), target: '_blank', rel: 'noopener noreferrer', id: 'kb-upload' }, icon('ext'), 'Upload-Ordner öffnen'),
+        h('button', { class: 'btn', type: 'button', id: 'kb-sync', 'data-tip': 'Kopiert den Befehl für eine sofortige Verarbeitung. In Claude einfügen; sonst läuft die Routine zum nächsten Termin.', onclick: async () => { try { await app.copyText(SYNC_CMD); app.toast('„' + SYNC_CMD + '“ kopiert. In Claude einfügen.'); } catch (e) { app.toast('Kopieren nicht möglich. Befehl: ' + SYNC_CMD, true); } } }, icon('copy'), 'Sofort verarbeiten')),
+      h('p', { class: 'muted small', text: r.at ? 'Letzter Lauf ' + fmtTs(r.at) + ': ' + r.processed + ' verarbeitet' + (r.failed ? ', ' + r.failed + ' nicht verarbeitet' : '') + (r.inbox != null ? ' · im Eingang: ' + r.inbox : '') : 'Noch kein Lauf protokolliert.' }),
+      h('p', { class: 'muted small', text: 'Bewerbungen, Kundendaten und Verträge nur pseudonymisiert ablegen. Personenbezogene Inhalte erscheinen hier nie; bei Datenschutzfragen: Bitte Rechtsabteilung prüfen.' }));
+  }
+
+  app.module('marketing', 'bibliothek', {
+    count: () => docs().filter(d => (d.status || 'einsortiert') === 'einsortiert').length || null,
+    render() {
+      const all = docs();
+      const items = filtered();
+      const t = new Date();
+      const recent = all.filter(d => { const w = when(d); return w && (t - w) <= 7 * 864e5; }).length;
+      const failed = all.filter(d => d.status === 'fehlgeschlagen').length;
+      const usedCats = new Set(all.map(d => d.category).filter(Boolean));
+      const tags = Array.from(new Set(all.flatMap(d => arr(d.tags).map(str)).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'de'));
+      const q = h('input', { type: 'search', id: 'kb-q', placeholder: 'Titel, Thema, Tag …', value: ui.q, autocomplete: 'off' });
+      q.addEventListener('input', () => { ui.q = q.value; rerender(); });
+      const tools = h('div', { class: 'tools' },
+        h('div', { class: 'field', style: 'flex:1 1 220px' }, h('label', { for: 'kb-q', text: 'Suche' }), q),
+        app.field('Kategorie', app.dropdown('kb-cat', [['', 'Alle Kategorien']].concat(CATS), ui.cat, v => { ui.cat = v; rerender(); })),
+        app.field('Status', app.dropdown('kb-status', [['', 'Alle'], ['einsortiert', 'einsortiert'], ['duplikat', 'Duplikat'], ['fehlgeschlagen', 'nicht verarbeitet']], ui.status, v => { ui.status = v; rerender(); })),
+        app.field('Tag', app.dropdown('kb-tag', [['', 'Alle Tags']].concat(tags.map(x => [x, x])), ui.tag, v => { ui.tag = v; rerender(); })));
+      const kpi = (cls, v, k, sub, ic) => h('div', { class: 'kpi' + (cls ? ' ' + cls : '') }, app.ico(ic), h('div', { class: 'v', text: String(v) }), h('div', { class: 'k', text: k }), h('div', { class: 'sub', text: sub }));
+      const head = panelHead('Wissensbibliothek', items.length + ' von ' + all.length, null, app.mkSrcNote ? app.mkSrcNote('knowledge') : null);
+      const strip = h('div', { class: 'strip' },
+        kpi('', all.filter(d => (d.status || 'einsortiert') === 'einsortiert').length, 'Dokumente', 'einsortiert', 'buch'),
+        kpi('', usedCats.size, 'Kategorien', 'belegt', 'ordner'),
+        kpi(recent ? 'ok' : '', recent, 'Neu in 7 Tagen', 'verarbeitet', 'flag-neu'),
+        kpi(failed ? 'warn' : '', failed, 'Nicht verarbeitet', 'liegen in _failed', 'warndreieck'));
+      let body;
+      if (!S.loaded.knowledge) body = app.skeleton(4, 'Lade Wissensbibliothek');
+      else if (!all.length) body = h('div', { class: 'empty' }, app.ico('leer'), h('strong', { text: 'Noch keine Dokumente erfasst. ' }), 'Die Routine trägt hier jede verarbeitete Datei aus dem Upload-Ordner ein. Für den ersten Lauf sofort: Befehl „' + SYNC_CMD + '“ in Claude ausführen.');
+      else if (!items.length) body = h('div', { class: 'empty' }, h('strong', { text: 'Keine Treffer für die aktuellen Filter. ' }),
+        h('button', { class: 'linkbtn', type: 'button', onclick: () => { ui.q = ''; ui.cat = ''; ui.status = ''; ui.tag = ''; rerender(); } }, 'Filter zurücksetzen'));
+      else body = h('div', { class: 'refs' }, items.map(card));
+      return [head, h('div', { class: 'section' }, h('div', { class: 'grid2' }, uploadBox(), h('div', {}, h('h3', { style: 'margin-bottom:8px', text: 'Bestand' }), strip))), tools, h('div', { class: 'section' }, body)];
     }
   });
 })();
@@ -8881,6 +9002,28 @@ label.check input { margin-top: 3px; }
     (app.mkFilteredRefs ? app.mkFilteredRefs() : S.data.references).map(r => [str(r.year), str(r.title), str(r.region), r.clientApproved === true ? str(r.client) : 'nicht freigegeben',
       arr(r.services).map(str).join(', '), str(r.summary), str(r.source)].map(scrub)));
 
+
+  function specBibliothek() {
+    const items = app.kbFiltered ? app.kbFiltered() : [];
+    const r = app.kbRunInfo();
+    const fail = items.filter(d => d.status === 'fehlgeschlagen').length;
+    return {
+      name: 'Wissensbibliothek Bestand', subtitle: 'Dropbox KI-Agent/Datenbank-UPLOADs · ' + (r.at ? 'letzter Lauf ' + fmtTs(r.at) : 'noch kein Lauf') + ' · ' + stand(), meta: false,
+      kpis: [{ v: n(items.length), k: 'Dokumente in der Auswahl' }, { v: n(fail), k: 'nicht verarbeitet', signal: fail > 0 }, { v: r.inbox == null ? '–' : n(r.inbox), k: 'im Eingang' }],
+      blocks: [
+        { p: 'Nur Metadaten und Kurzfassungen; die Dateien liegen in Dropbox. Keine personenbezogenen Daten.', style: 'muted' },
+        { h: 'Dokumente' },
+        { table: { cols: [{ t: 'Datum', w: 22 }, { t: 'Dokument' }, { t: 'Kategorie', w: 32 }, { t: 'Status', w: 28 }, { t: 'geprüft', w: 17, align: 'center' }],
+          rows: items.map((d, k) => [fmtD(d.processedAt), { t: str(d.title) || str(d.originalName), sub: [str(d.topic), arr(d.tags).join(', ')].filter(Boolean).join(' · ') }, app.kbCatLabel(d.category),
+            d.status === 'fehlgeschlagen' ? sig('nicht verarbeitet') : d.status === 'duplikat' ? mut('Duplikat') : 'einsortiert', chk('Dok_' + k)]), empty: 'Noch keine Dokumente erfasst.' } },
+        { field: { label: 'Fehlende Unterlagen oder Korrekturen', name: 'Korrekturen', h: 54, optional: true } }
+      ],
+      approval: 'Geprüft (Kürzel)'
+    };
+  }
+  const kbCsv = () => H.toCsv(['Verarbeitet', 'Titel', 'Kategorie', 'Thema', 'Tags', 'Status', 'Vertraulichkeit', 'Dropbox-Pfad', 'Originalname'],
+    (app.kbFiltered ? app.kbFiltered() : []).map(d => [fmtD(d.processedAt), str(d.title), app.kbCatLabel(d.category), str(d.topic), arr(d.tags).join(', '), str(d.status || 'einsortiert'), str(d.confidentiality), str(d.dropboxPath), str(d.originalName)].map(scrub)));
+
   function specPlan90() {
     const p = app.plan90State();
     const t = today();
@@ -9169,8 +9312,8 @@ label.check input { margin-top: 3px; }
 
   /* ---------- Admin ---------- */
   const COUNTED = [['content', 'Content'], ['mkt_leads', 'Marketing-Leads'], ['tenders', 'Ausschreibungen'], ['events', 'Events'], ['seo_keywords', 'SEO-Keywords'], ['seo_traffic', 'SEO-Traffic'],
-    ['seo_gaps', 'SEO-Lücken'], ['references', 'Referenzen'], ['tasks', 'InfraTech-Aufgaben (Änderungen)'], ['briefings', 'Tagesbriefe (letzte 14)'], ['meetings', 'Protokolle'], ['admin_requests', 'Zugangsanfragen']];
-  const metaKey = { content: 'content', mkt_leads: 'leads', tenders: 'tenders', events: 'events', seo_keywords: 'seo', seo_traffic: 'seo', seo_gaps: 'seo', references: 'references' };
+    ['seo_gaps', 'SEO-Lücken'], ['references', 'Referenzen'], ['knowledge', 'Wissensbibliothek'], ['tasks', 'InfraTech-Aufgaben (Änderungen)'], ['briefings', 'Tagesbriefe (letzte 14)'], ['meetings', 'Protokolle'], ['admin_requests', 'Zugangsanfragen']];
+  const metaKey = { content: 'content', mkt_leads: 'leads', tenders: 'tenders', events: 'events', seo_keywords: 'seo', seo_traffic: 'seo', seo_gaps: 'seo', references: 'references', knowledge: 'knowledge' };
   function specStatus() {
     const cfg = FC.config ? FC.config.merge(S.docs.adminConfig) : {};
     const m = S.docs.meta || {};
@@ -9210,6 +9353,11 @@ label.check input { margin-top: 3px; }
       ics('e-ics', 'Events in den Kalender (ICS)', 'Feind-Events.ics', eventsIcs), print('e', 'Event-Checklisten', specEvents)],
     'marketing:seo': () => [pdf('s', 'SEO-Bericht (PDF)', 'SEO-Bericht', specSeo), csv('s-csv', 'Keywords als CSV', 'Feind-SEO-Keywords.csv', seoCsv), print('s', 'SEO-Bericht', specSeo)],
     'marketing:references': () => [pdf('r', 'Referenzmappe (PDF)', 'Referenzmappe', specRefs), csv('r-csv', 'Referenzen als CSV', 'Feind-Referenzen.csv', refsCsv), print('r', 'Referenzmappe', specRefs)],
+    'marketing:bibliothek': () => [{ id: 'kb-open', label: 'Upload-Ordner öffnen', short: 'Upload', icon: 'ext', main: true, tip: 'Öffnet den Dropbox-Ordner KI-Agent/Datenbank-UPLOADs in einem neuen Tab. Dort abgelegte Dateien verarbeitet Claude zum nächsten Termin.', run: () => { const w = window.open(app.kbInboxUrl(), '_blank', 'noopener'); if (!w) copy(app.kbInboxUrl(), 'Link zum Upload-Ordner kopiert.'); } },
+      pdf('kb', 'Bestandsliste (PDF)', 'Wissensbibliothek', specBibliothek),
+      csv('kb-csv', 'Bestand als CSV', 'Feind-Wissensbibliothek.csv', kbCsv),
+      { id: 'kb-sync', label: 'Befehl ' + app.kbSyncCmd + ' kopieren', short: 'Sofort', icon: 'refresh', tip: 'Kopiert den Befehl für eine sofortige Verarbeitung des Upload-Ordners.', run: () => copy(app.kbSyncCmd, '„' + app.kbSyncCmd + '“ kopiert. In Claude einfügen.') },
+      print('kb', 'Wissensbibliothek', specBibliothek)],
     'marketing:plan90': () => [pdf('p90', '90-Tage-Plan (PDF)', '90-Tage-Plan', specPlan90), ics('p90-ics', 'Meilensteine (ICS)', 'Feind-90-Tage-Meilensteine.ics', plan90Ics), print('p90', '90-Tage-Plan', specPlan90)],
     'marketing:ablage': () => [pdf('ab', 'Ablage-Spickzettel (PDF)', 'Ablage-Marketing', specAblage),
       { id: 'ab-name', label: 'Dateinamen kopieren', short: 'Dateiname', icon: 'copy', tip: 'Kopiert den Dateinamen aus dem Generator unten (Datum_Thema_Kürzel_vNN).', run: () => copy(app.buildFileName(S.ui.ablage.fn), 'Dateiname kopiert: ' + app.buildFileName(S.ui.ablage.fn)) },
@@ -9254,7 +9402,7 @@ label.check input { margin-top: 3px; }
     if (!f) return [];
     try { return f().filter(Boolean); } catch (e) { if (window.console) console.error('[Aktionen]', e); return []; }
   };
-  app.ACTION_SPECS = { specCopilot, specContent, specLeads, specTenders, specEvents, specSeo, specRefs, specPlan90, specAblage, specDashboard, specAufgaben, specFristen, specBudget, specKpi, specLeadzaehler, specLessons, specFakten, specTeam, specProtokoll, specAgenda, specWissen, specStatus };
+  app.ACTION_SPECS = { specCopilot, specContent, specLeads, specTenders, specEvents, specSeo, specRefs, specBibliothek, specPlan90, specAblage, specDashboard, specAufgaben, specFristen, specBudget, specKpi, specLeadzaehler, specLessons, specFakten, specTeam, specProtokoll, specAgenda, specWissen, specStatus };
 
   /* ---------- Darstellung und Bedienung ---------- */
   const ab = { open: false, busy: null };

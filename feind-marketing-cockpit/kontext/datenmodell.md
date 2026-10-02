@@ -49,9 +49,10 @@ Grundregeln
 | `seo_traffic/<JJJJ-MM>` | `month, clicks, impressions, ctr, avgPosition, sessions?, source` |
 | `seo_gaps/<id>` | `topic, service, region, reason, priority ("hoch"\|"mittel"\|"niedrig"), source` |
 | `references/<id>` | `title, region, client?, clientApproved: bool, services: [string], year, facts: [string], files: [string], summary, feedback?, source` |
+| `knowledge/<id>` | Wissensbibliothek (Skill `wissensbibliothek`, Eingang Dropbox `/Marketing/KI-Agent/Datenbank-UPLOADs`): `title, category ("knowledge"\|"projects"\|"templates"\|"reference"\|"_archive"\|"_failed"), topic, docType, summary (max. 600 Zeichen, ohne Personendaten), tags: [string], status ("einsortiert"\|"duplikat"\|"fehlgeschlagen"), reason?, duplicateOf?, confidentiality ("oeffentlich"\|"intern"\|"vertraulich"), dropboxPath, fromPath, originalName, sizeBytes, contentHash?, processedAt, source` |
 | `briefings/<JJJJ-MM-TT>` | `date, summary, items: [{module, severity ("info"\|"warnung"\|"kritisch"), text}], weekPlan?: [{day, task, module}], generatedBy ("copilot"\|"dashboard"), createdAt` |
 | `budget/actuals` | `{ blocks: { <Schlüssel>: { ist?: number, forecast?: number } }, updatedAt }` – Euro brutto, ganze Zahlen; Schlüssel: `messestand-standbau`, `technik-strom-tv-parken-muell`, `logistik-spedition`, `hotel-aufbaupersonal`, `catering-geschirr`, `werbemittel-print`, `reserve` |
-| `meta/sync` | `{ content: {at, source}, leads: {…}, tenders: {…}, events: {…}, seo: {…}, references: {…}, budget: {…} }` (Schlüssel `leads` bezeichnet den Bereich, die Daten liegen in `mkt_leads`) |
+| `meta/sync` | `{ content: {at, source}, leads: {…}, tenders: {…}, events: {…}, seo: {…}, references: {…}, budget: {…}, knowledge: {at, source, processed, failed, duplicates, inbox} }` (Schlüssel `leads` bezeichnet den Bereich, die Daten liegen in `mkt_leads`) |
 | `settings/general` | `staleDraftDays: 14, followupDays: 5, tenderRedDays: 3, tenderYellowDays: 7, regions: [string]` |
 
 Schwellen (aus `settings/general`, Standardwerte oben)

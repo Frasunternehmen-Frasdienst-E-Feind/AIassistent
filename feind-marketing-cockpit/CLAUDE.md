@@ -1,8 +1,8 @@
 # Feind Marketing Cockpit – Plugin-Anweisungen
 
-Gilt für den Subagenten `feind-copilot`, alle Slash-Commands und die 8 Skills
+Gilt für den Subagenten `feind-copilot`, alle Slash-Commands und die 9 Skills
 (`dashboard-builder`, `content-pipeline`, `lead-tracking`, `tender-monitoring`,
-`event-planning`, `seo-local`, `reference-library`).
+`event-planning`, `seo-local`, `reference-library`, `messe-budget`, `wissensbibliothek`).
 Nutzer: David, Marketing & Eventmanager, Fräsdienst-Service E. Feind GmbH.
 
 ## Output-Regeln
