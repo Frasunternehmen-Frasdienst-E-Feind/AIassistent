@@ -137,7 +137,10 @@ zu höchstens 50 Schreibvorgängen für `ArtifactData batch`. Eingaben: Cockpit-
 
 ## Live-Artefakt
 
-- Adresse: https://claude.ai/artifact/4zX58mseXB9vbspN8xAzJ2 (ersetzt das bisherige InfraTech-2027-Cockpit A4)
+- Adresse: https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd (A1, seit 30.09.2026 live und führend;
+  Quelle `cockpit-a1/`). Diese Adresse nutzt auch der Skill `cockpit-sync`.
+- Historisch: A4 (https://claude.ai/artifact/4zX58mseXB9vbspN8xAzJ2) ist gelöscht; die folgenden
+  Angaben beziehen sich auf A4.
 - Veröffentlicht am: 28.09.2026 (Version 13, Laufzeitvertrag 0.2.61)
 - Capabilities geprüft: 28.09.2026 – Lesen als Contributor ok, Schreiben unter `admin/*` als Contributor
   abgewiesen, Notion-View liefert `results` wie erwartet
