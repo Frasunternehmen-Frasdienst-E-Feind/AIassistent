@@ -1905,8 +1905,9 @@ label.check input { margin-top: 3px; }
     return p;
   }
 
-  // Neue Aufgabe aus dem Cockpit als Notion-Zeile (Titel, Bereich, Rolle nur beim Anlegen).
-  function newTaskProps(id, t, cats, roleLabel, source) {
+  // Neue Aufgabe aus dem Cockpit als Notion-Zeile (Titel, Bereich, Rolle, Abhängigkeiten nur beim Anlegen).
+  // depUrls: Notion-URLs der Aufgaben unter „Blockiert durch“ (vom Aufrufer aus den Cockpit-IDs aufgelöst).
+  function newTaskProps(id, t, cats, roleLabel, source, depUrls) {
     const cat = (cats || []).find(c => c.id === t.cat);
     const p = Object.assign({
       Aufgabe: str(t.title).slice(0, 200) || '(ohne Titel)',
@@ -1922,6 +1923,8 @@ label.check input { margin-top: 3px; }
     const fl = list(t.flags).map(f => FLAG[f]).filter(Boolean);
     p.Hinweis = JSON.stringify(Array.from(new Set(fl.concat(['neu']))));
     if (str(t.budget)) p.Budget = str(t.budget).slice(0, 200);
+    const deps = list(depUrls).map(str).filter(u => pageId(u));
+    if (deps.length) p['Blockiert durch'] = JSON.stringify(Array.from(new Set(deps)));
     return p;
   }
 
@@ -2973,7 +2976,7 @@ label.check input { margin-top: 3px; }
   const str = v => (v == null ? '' : String(v));
   const LEVELS = { info: 'info', warn: 'warnung', warnung: 'warnung', err: 'kritisch', crit: 'kritisch', kritisch: 'kritisch' };
   const TAB_RE = /^(marketing|infratech|admin)-[a-z0-9]+$/;
-  const FEATURES = { aiBriefing: true, notionLive: true, hintsExtra: true };
+  const FEATURES = { aiBriefing: true, notionLive: true, notionTasks: true, hintsExtra: true };
 
   function modules(m) {
     const out = {};
@@ -6138,6 +6141,7 @@ label.check input { margin-top: 3px; }
 
   const FEEDS = [['ap', 'Arbeitspakete'], ['ms', 'Meilensteine'], ['dec', 'GL-Entscheidungen'], ['kpi', 'Messgrößen']];
   const FEATS = [['aiBriefing', 'KI-Briefing anbieten (Copilot und InfraTech-Dashboard)'], ['notionLive', 'Notion-Live-Abfrage im 90-Tage-Plan (sonst Tagesstand aus der Datenbank bzw. eingebetteter Stand)'],
+    ['notionTasks', 'InfraTech-Aufgaben live aus Notion lesen und zurückschreiben (sonst letzter gespeicherter Stand, nur lesen)'],
     ['hintsExtra', 'Zusatzhinweise im Copilot (abgelaufene Fristen, Referenzen ohne Freigabe)']];
   function secFunktionen(e, dis) {
     const feats = FEATS.map(([k, label]) => h('label', { class: 'check', for: 'ft-' + k },
@@ -7826,7 +7830,8 @@ label.check input { margin-top: 3px; }
     const mcp = await useMcp();
     if (!mcp) return false;
     const source = H.str(t.note).startsWith(MEETING_NOTE) ? 'Meeting' : 'Cockpit';
-    const props = N.newTaskProps(id, t, D.CATS, roleLabel(t.owner), source);
+    const depUrls = (Array.isArray(t.deps) ? t.deps : []).map(d => nt.byId.get(d)).filter(x => x && x._nurl).map(x => x._nurl);
+    const props = N.newTaskProps(id, t, D.CATS, roleLabel(t.owner), source, depUrls);
     nt.busy++;
     try {
       await mcp.callTool(CFG.server, CFG.create, { parent: { type: 'data_source_id', data_source_id: CFG.ds }, pages: [{ properties: props }], allow_async: false }, { cache: false });
@@ -7837,9 +7842,20 @@ label.check input { margin-top: 3px; }
     finally { nt.busy--; }
   }
 
+  // Schreibvorgänge je Aufgabe strikt nacheinander: Eine zweite Änderung startet erst, wenn die erste
+  // (Neu-Lesen, Konfliktprüfung, Update) fertig ist – sonst könnte der ältere Wert zuletzt ankommen.
+  const queues = new Map();
+  function serial(id, fn) {
+    const run = (queues.get(id) || Promise.resolve()).catch(() => {}).then(fn);
+    queues.set(id, run);
+    run.finally(() => { if (queues.get(id) === run) queues.delete(id); }).catch(() => {});
+    return run;
+  }
+
   // Alle Aufgaben-Schreibvorgänge (Liste, Dialog, Meeting-Modus) laufen hier durch.
   const origPatch = app.cmd.tasks.patch;
-  app.cmd.tasks.patch = async function (id, patch) {
+  app.cmd.tasks.patch = function (id, patch) { return serial(id, () => patchTask(id, patch)); };
+  async function patchTask(id, patch) {
     const cur = findTask(id);
     const linked = app.notionLinked(cur);
     if (linked) {
@@ -7862,18 +7878,24 @@ label.check input { margin-top: 3px; }
       else app.toast('Aufgabe im Cockpit gespeichert, aber noch nicht in Notion. Über „Nach Notion übertragen“ nachholen.', true);
     }
     return ok;
-  };
+  }
 
   // Im Cockpit angelegte Aufgaben, die (noch) nicht in Notion stehen.
   function pending() {
     if (nt.state !== 'live') return [];
     return FC.model.allTasks(D.TASKS, S.data.tasks || []).filter(t => t.custom && !nt.byId.has(t.id));
   }
+  let pushing = false;
   async function pushPending() {
-    const list = pending();
-    let n = 0;
-    for (const t of list) { if (await createNotion(t.id, t)) { n++; await origPatch(t.id, { notionPending: false }); } else break; }
-    app.toast(n + ' von ' + list.length + ' Aufgaben nach Notion übertragen.', n < list.length);
+    if (pushing) return;
+    pushing = true;
+    app.refresh();
+    try {
+      const list = pending();
+      let n = 0;
+      for (const t of list) { if (await createNotion(t.id, t)) { n++; await origPatch(t.id, { notionPending: false }); } else break; }
+      app.toast(n + ' von ' + list.length + ' Aufgaben nach Notion übertragen.', n < list.length);
+    } finally { pushing = false; app.refresh(); }
   }
 
   /* ---------- Statuszeile im Aufgaben-Modul ---------- */
@@ -7884,7 +7906,7 @@ label.check input { margin-top: 3px; }
       h('span', { class: 'dot', 'aria-hidden': 'true' }),
       h('span', { text: nt.text || 'Notion-Anbindung wird geprüft …' }),
       nt.dupes.length ? h('span', { class: 'pill flag', text: 'Doppelte Cockpit-ID in Notion: ' + Array.from(new Set(nt.dupes)).join(', ') }) : null,
-      pend.length && !app.ro() ? h('button', { class: 'btn small', type: 'button', onclick: pushPending }, pend.length + ' nach Notion übertragen') : null,
+      pend.length && !app.ro() ? h('button', { class: 'btn small', type: 'button', disabled: pushing, 'aria-busy': String(pushing), onclick: pushPending }, pushing ? 'Wird übertragen …' : pend.length + ' nach Notion übertragen') : null,
       inViewer() ? h('button', { class: 'linkbtn', type: 'button', onclick: () => load(true) }, 'Neu laden') : null,
       h('a', { href: CFG.db, target: '_blank', rel: 'noopener', class: 'small' }, 'In Notion öffnen'));
   };

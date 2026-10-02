@@ -2,6 +2,10 @@
 
 **Live:** https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd (Version 17 vom 01.10.2026, Veröffentlichung nach Freigabe)
 
+> **Stand Repo 02.10.2026: vor der Live-Version.** Korrekturen aus dem Code-Review zu PR #36 (Schreibreihenfolge je
+> Aufgabe, „Blockiert durch“ beim Anlegen, Übertragen-Sperre, Admin-Schalter `notionTasks`) sind hier enthalten und
+> gehen erst mit der nächsten freigegebenen Veröffentlichung live.
+
 `Feind-Cockpit-A1.html` ist der veröffentlichte Stand des Artefakts. A1 ist die führende Codebasis;
 der Ordner `cockpit/` ist der ältere A4-Stand und nur noch Archiv.
 
@@ -17,10 +21,18 @@ Die ClickUp-Liste ist als „[ARCHIV] …“ umbenannt, die alte Notion-Checklis
 | Schreiben | Status, Fällig, Priorität, Notiz, Beschluss, Archiviert | `notion-update-page` |
 | Anlegen | neue Aufgaben aus Liste und Meeting-Modus (Quelle „Cockpit“/„Meeting“) | `notion-create-pages` |
 
+Das Capability-Manifest des Artefakts muss alle drei Werkzeuge deklarieren, sonst lehnt claude.ai das Schreiben
+mit `not_in_manifest` ab (Stand v17: deklariert):
+`"mcp": { "servers": [ { "server": "Notion", "tools": ["notion-query-data-sources", "notion-update-page", "notion-create-pages"] } ] }`
+(plus die Werkzeuge für Microsoft 365 und Canva).
+
 Regeln:
 - Notion ist führend. Titel, Bereich, Zuständig (Rolle), Budget und „Blockiert durch“ werden nur in Notion gepflegt.
 - Zuordnung über das Feld „Cockpit-ID“; Zeilen ohne ID erscheinen als `n-<Nr>`.
 - Vor jedem Schreiben wird neu gelesen; ein inzwischen in Notion geändertes Feld wird nur nach Rückfrage überschrieben.
+- Änderungen an derselben Aufgabe laufen nacheinander; eine zweite schnelle Änderung wartet auf die erste.
+- Beim Anlegen geht „Blockiert durch“ als Notion-Relation mit; danach wird es nur in Notion gepflegt.
+- Abschaltbar unter Admin → Funktionen („InfraTech-Aufgaben live aus Notion“, `features.notionTasks`).
 - „Person (intern)“ wird nie gelesen oder angezeigt (Datenschutz). Im Cockpit stehen nur Rollen.
 - Geschrieben wird mit dem Notion-Zugang der ansehenden Person. Ohne Zugang: letzter Notion-Stand
   aus dem Artefakt-Speicher (`notion/tasks`), nur lesend.

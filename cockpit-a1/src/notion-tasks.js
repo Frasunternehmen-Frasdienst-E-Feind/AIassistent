@@ -120,8 +120,9 @@
     return p;
   }
 
-  // Neue Aufgabe aus dem Cockpit als Notion-Zeile (Titel, Bereich, Rolle nur beim Anlegen).
-  function newTaskProps(id, t, cats, roleLabel, source) {
+  // Neue Aufgabe aus dem Cockpit als Notion-Zeile (Titel, Bereich, Rolle, Abhängigkeiten nur beim Anlegen).
+  // depUrls: Notion-URLs der Aufgaben unter „Blockiert durch“ (vom Aufrufer aus den Cockpit-IDs aufgelöst).
+  function newTaskProps(id, t, cats, roleLabel, source, depUrls) {
     const cat = (cats || []).find(c => c.id === t.cat);
     const p = Object.assign({
       Aufgabe: str(t.title).slice(0, 200) || '(ohne Titel)',
@@ -137,6 +138,8 @@
     const fl = list(t.flags).map(f => FLAG[f]).filter(Boolean);
     p.Hinweis = JSON.stringify(Array.from(new Set(fl.concat(['neu']))));
     if (str(t.budget)) p.Budget = str(t.budget).slice(0, 200);
+    const deps = list(depUrls).map(str).filter(u => pageId(u));
+    if (deps.length) p['Blockiert durch'] = JSON.stringify(Array.from(new Set(deps)));
     return p;
   }
 

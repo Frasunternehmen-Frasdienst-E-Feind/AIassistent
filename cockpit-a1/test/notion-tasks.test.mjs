@@ -71,3 +71,11 @@ test('Artefakt enthält genau diese Modulstände', () => {
     assert.ok(html.includes(src), f + ' weicht vom veröffentlichten Artefakt ab');
   }
 });
+
+test('newTaskProps: „Blockiert durch“ beim Anlegen als Notion-Relation, ungültige URLs fallen weg', () => {
+  const t = { title: 'T', cat: 'standbau', status: 'open', prio: 'P1', flags: [], deps: ['s1'] };
+  const dep = U + '3eb40f8bbabb8100b95edf623f827608';
+  const p = N.newTaskProps('u2', t, CATS, 'Messeteam', 'Cockpit', [dep, dep, 'kein-link']);
+  assert.deepEqual(JSON.parse(p['Blockiert durch']), [dep]);
+  assert.equal('Blockiert durch' in N.newTaskProps('u3', t, CATS, 'Messeteam', 'Cockpit'), false);
+});

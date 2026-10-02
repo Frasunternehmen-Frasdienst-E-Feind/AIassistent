@@ -11,7 +11,9 @@ await p.addInitScript(mode => {
   const mcp={
     async callTool(server,tool,input){ window.__calls.push([tool,JSON.parse(JSON.stringify(input))]);
       if(tool==='notion-query-data-sources') return {payload:{results:JSON.parse(JSON.stringify(rows)),has_more:false}};
-      if(tool==='notion-update-page'){ return {payload:{ok:true}}; }
+      if(tool==='notion-update-page'){
+        if(window.__delay){ const d=Array.isArray(window.__delay)?(window.__delay.shift()||50):window.__delay; await new Promise(r=>setTimeout(r,d)); const row=rows.find(x=>x.url.replace(/-/g,'').includes(input.page_id)); if(row&&input.properties.Status) row.Status=input.properties.Status; }
+        return {payload:{ok:true}}; }
       if(tool==='notion-create-pages'){ const pr=input.pages[0].properties; rows.push(Object.assign({Nr:String(200+rows.length),url:U+'3eb40f8bbabb8100b95edf62300000'+rows.length.toString().padStart(2,'0')},pr)); return {payload:{pages:[]}}; }
       throw {code:'bad_request'}; },
     watchTool(){ return ()=>{}; }, invalidate: async()=>{} };
@@ -41,6 +43,14 @@ if (mode==='live') {
   await p.fill('#f_title','TEST neue Aufgabe'); await p.locator('.modal button', { hasText: 'Anlegen' }).click(); await p.waitForTimeout(1200);
   const cr = (await p.evaluate(()=>window.__calls)).filter(c=>c[0]==='notion-create-pages');
   console.log('Create-Aufruf:', cr.length, JSON.stringify(cr[0] && cr[0][1].pages[0].properties));
+  // Zwei schnelle Änderungen an derselben Aufgabe: müssen nacheinander und in Reihenfolge ankommen
+  await p.evaluate(()=>{ window.__delay=[900,100]; document.querySelectorAll('details.it-cat').forEach(x=>x.open=true); });
+  const before = (await p.evaluate(()=>window.__calls)).length;
+  await p.selectOption('#st-n-98', 'done'); await p.waitForTimeout(50); await p.selectOption('#st-n-98', 'in_progress'); await p.waitForTimeout(2500);
+  const seq = (await p.evaluate(()=>window.__calls)).slice(before).filter(c=>c[0]==='notion-update-page').map(c=>c[1].properties.Status);
+  const modal = await p.locator('.modal').count();
+  console.log('Reihenfolge schneller Änderungen:', JSON.stringify(seq), '| ok:', JSON.stringify(seq)==='["erledigt","in Arbeit"]' && modal===0 && (await p.evaluate(()=>window.__rows()[1].Status))==='in Arbeit', '| Endwert in Notion:', await p.evaluate(()=>window.__rows()[1].Status));
+  await p.evaluate(()=>{ window.__delay=0; });
   // Bearbeiten-Dialog: Titel gesperrt
   await p.evaluate(()=>{ document.querySelectorAll('details.it-cat').forEach(x=>x.open=true); });
 }
