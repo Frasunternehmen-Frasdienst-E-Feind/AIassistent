@@ -24,7 +24,7 @@ Einstieg/Überblick über das Gesamtsystem: **`SYSTEM-UEBERSICHT.md`**.
 
 - **Führendes Cockpit:** „Feind Cockpit (Copy)“ – https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i (privat, angepinnt; festgelegt am 02.10.2026).
   Seit 02.10.2026 wieder mit dem Reiter **„Checkliste 26→27“** (64 Punkte der ToDo-Liste `2FT2wp…`).
-  Hinweis: Der Live-Stand ist neuer als `feind-cockpit-v3.html` im Repo (Checkliste und Änderungen vom 02.10. fehlen dort noch).
+  `feind-cockpit-v3.html` entspricht dem Live-Stand vom 02.10.2026 (inkl. Checkliste, db `checkliste/<Kategorie-Punkt>`).
 - Das frühere Cockpit `4zX58…` existiert nicht mehr; „Feind Cockpit“ (`TfuzbGa…`) ist eine Nebenversion.
 - Datenhaltung: geteilte Artefakt-Datenbank (`db`): `tasks/<id>` (Aufgaben), `checkliste/<Kategorie-Punkt>` = `{ status, rolle, frist, budget, beschluss, notiz }` (Checkliste 26→27), Alt-Bestand `overrides/<taskId>`.
   Fällt die Datenbank aus, speichert die Seite pro Gerät lokal (localStorage).
