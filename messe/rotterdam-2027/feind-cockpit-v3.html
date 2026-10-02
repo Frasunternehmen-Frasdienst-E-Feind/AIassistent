@@ -1615,6 +1615,112 @@ svg.leaflet-image-layer.leaflet-interactive path {
 @media (pointer: coarse) { .bk-list > li > input[type="checkbox"], .bk-ghead input, .bk-all input { width: 24px; height: 24px; } }
 @media print { .bk-bar, .bk-tools { display: none !important; } }
 
+/* ---- overview.css ---- */
+/* „Auf einen Blick“ und Design-Veredelung. CI-Farben aus den Tokens (Grün, Anthrazit, Rot); Bewegung nur als
+   Transform/Opacity und bei prefers-reduced-motion abgeschaltet. */
+
+/* Eintritt: nur beim Modulwechsel (Klasse .enter am main, nach 600 ms entfernt), nie bei Hintergrund-Aktualisierung */
+@keyframes fc-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fc-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes fc-draw { from { stroke-dashoffset: var(--full); } }
+main.enter .panel > * { animation: fc-rise .38s cubic-bezier(.2, .7, .2, 1) both; }
+main.enter .panel > :nth-child(2) { animation-delay: 40ms; }
+main.enter .panel > :nth-child(3) { animation-delay: 80ms; }
+main.enter .panel > :nth-child(4) { animation-delay: 120ms; }
+main.enter .panel > :nth-child(5) { animation-delay: 160ms; }
+main.enter .panel > :nth-child(n+6) { animation-delay: 200ms; }
+main.enter .ov-bar .trk i { animation: fc-grow .7s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(120ms + var(--i, 0) * 60ms); transform-origin: left; }
+main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both; --full: 339.3; }
+
+/* Kopf-Band mit Bogen */
+.ov-hero { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s4); padding: var(--s4); margin-bottom: var(--s3);
+  color: var(--ink-inverse); border-bottom: 4px solid var(--accent);
+  background: linear-gradient(135deg, var(--surface-inverse) 0%, color-mix(in srgb, var(--surface-inverse) 82%, var(--accent)) 140%); position: relative; overflow: hidden; }
+.ov-hero::after { content: ''; position: absolute; right: -40px; top: -40px; width: 220px; height: 220px; border: 24px solid color-mix(in srgb, var(--accent) 22%, transparent); border-radius: 50%; pointer-events: none; }
+.ov-ring { position: relative; width: 132px; height: 132px; flex: none; }
+.ov-arc { width: 132px; height: 132px; transform: rotate(-90deg); }
+.ov-arc circle { fill: none; stroke-width: 9; }
+.ov-arc .bg { stroke: var(--ink-inverse-muted); opacity: .28; }
+.ov-arc .fg { stroke: var(--accent); stroke-linecap: butt; }
+.ov-ring .in { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.ov-ring .in b { font-family: var(--font-display); font-size: 40px; line-height: 1; }
+.ov-ring .in span { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-inverse-muted); font-weight: 700; }
+.ov-hero-txt { flex: 1 1 280px; min-width: 0; position: relative; z-index: 1; }
+.ov-hero .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-inverse-muted); font-weight: 700; }
+.ov-hero h2 { color: var(--ink-inverse); font-size: 26px; line-height: 1.15; margin: 4px 0 var(--s2); }
+.ov-hero .lead { color: var(--ink-inverse-muted); margin-bottom: var(--s3); }
+.ov-hero .row { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.btn.ghost-inv { background: transparent; border-color: var(--ink-inverse-muted); color: var(--ink-inverse); }
+.btn.ghost-inv:hover { background: color-mix(in srgb, var(--ink-inverse) 12%, transparent); border-color: var(--ink-inverse); }
+.ov-hero .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); border-bottom-color: var(--ink-inverse); }
+.ov-hero :focus-visible { outline-color: var(--accent); }
+.ov-quick { display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s3); }
+
+/* Kennzahlen mit Quelle */
+.ov-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--s2); }
+.ov-stat { text-align: left; font: inherit; color: inherit; cursor: pointer; background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--line);
+  padding: 12px 14px; min-width: 0; display: flex; flex-direction: column; gap: 2px; transition: transform .14s ease, box-shadow .14s ease, border-color .12s ease; }
+.ov-stat:hover { transform: translateY(-2px); box-shadow: 0 6px 14px -8px var(--shadow); border-color: var(--ink-muted); }
+.ov-stat:active { transform: translateY(0) scale(.99); }
+.ov-stat.ok { border-top-color: var(--accent); }
+.ov-stat.warn { border-top-color: var(--warn); }
+.ov-stat.crit { border-top-color: var(--signal); }
+.ov-stat .k { font-weight: 700; color: var(--ink-strong); font-size: 13.5px; }
+.ov-stat .v { font-family: var(--font-display); font-size: 34px; line-height: 1.05; color: var(--ink-strong); }
+.ov-stat.crit .v { color: var(--signal-text); }
+.ov-stat .sub { font-size: 12px; color: var(--ink-muted); }
+.ov-stat .src { font-size: 11px; color: var(--ink-muted); border-top: 1px dashed var(--line); margin-top: 6px; padding-top: 4px; }
+
+/* Verlässlichkeit: Ampel als Form + Wort, nicht nur Farbe */
+.ov-dot { width: 12px; height: 12px; flex: none; border-radius: 50%; border: 2px solid var(--ink-muted); background: transparent; }
+.ov-dot.ok { background: var(--accent); border-color: var(--accent-ink); }
+.ov-dot.warn { background: var(--warn); border-color: var(--warn-text); border-radius: 2px; transform: rotate(45deg) scale(.85); }
+.ov-dot.crit { background: var(--signal); border-radius: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%); border: 0; width: 14px; height: 13px; }
+.ov-dot.none { background: repeating-linear-gradient(45deg, var(--line) 0 3px, transparent 3px 6px); }
+.ov-verdict { display: flex; gap: var(--s3); align-items: center; padding: var(--s3); border: 1px solid var(--line); border-left: 6px solid var(--ink-muted); background: var(--panel); margin-bottom: var(--s2); }
+.ov-verdict.ok { border-left-color: var(--accent); background: var(--accent-soft); }
+.ov-verdict.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+.ov-verdict.crit { border-left-color: var(--signal); background: var(--signal-soft); }
+.ov-verdict h3 { margin: 0; }
+.ov-verdict p { margin: 2px 0 0; }
+.ov-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border: 1px solid var(--line); background: var(--surface); }
+.ov-row { display: flex; align-items: center; gap: var(--s2); padding: 9px var(--s3); border-bottom: 1px solid var(--line-soft); min-width: 0; }
+.ov-row:last-child { border-bottom: 0; }
+.ov-row .tx { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.ov-next { list-style: none; margin: 0 0 var(--s2); padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.ov-next li { display: flex; gap: var(--s2); align-items: baseline; }
+.ov-next .tx { min-width: 0; overflow-wrap: anywhere; }
+
+/* Balken je Bereich */
+.ov-bars { display: flex; flex-direction: column; gap: 10px; }
+.ov-bar .lbl { display: flex; justify-content: space-between; gap: var(--s2); font-size: 13px; color: var(--ink-strong); font-weight: 600; }
+.ov-bar .trk { height: 8px; background: var(--raised); border: 1px solid var(--line-soft); margin-top: 3px; overflow: hidden; }
+.ov-bar .trk i { display: block; height: 100%; background: var(--warn); }
+.ov-bar .trk i.g { background: var(--accent); }
+.ov-bar .trk i.r { background: var(--signal); }
+
+/* Veredelung des Bestands: Tiefe und Griffigkeit, ohne die CI-Kanten aufzuweichen */
+.card, .kpi, .kb-card { transition: box-shadow .16s ease, transform .16s ease, border-color .12s ease; }
+.kpi:hover, .kb-card:hover { box-shadow: 0 6px 14px -8px var(--shadow); }
+.tab[aria-selected="true"] { box-shadow: inset 0 -1px 0 var(--accent); }
+.top { background-image: linear-gradient(120deg, transparent 55%, color-mix(in srgb, var(--accent) 14%, transparent) 130%); }
+.brand .mark { animation: fc-mark 1.2s ease-out 1; transform-origin: bottom; }
+@keyframes fc-mark { 0% { transform: scaleY(.3); } 60% { transform: scaleY(1.08); } 100% { transform: scaleY(1); } }
+
+@media (max-width: 640px) {
+  .ov-hero { padding: var(--s3); gap: var(--s3); }
+  .ov-ring, .ov-arc { width: 104px; height: 104px; }
+  .ov-ring .in b { font-size: 32px; }
+  .ov-hero h2 { font-size: 21px; }
+  .ov-row { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  main.enter .panel > *, main.enter .ov-bar .trk i, main.enter .ov-arc .fg, .brand .mark { animation: none !important; }
+  .ov-stat, .card, .kpi, .kb-card { transition: none; }
+  .ov-stat:hover { transform: none; }
+}
+@media print { .ov-hero { background: none; color: var(--print-ink); border: 2px solid var(--print-line); } .ov-hero h2, .ov-hero .lead, .ov-hero .eyebrow, .ov-ring .in b, .ov-ring .in span { color: var(--print-ink); } .ov-hero::after { display: none; } }
+
 /* ---- geomap.css ---- */
 .gm-wrap { display: flex; flex-direction: column; gap: var(--s2); min-width: 0; }
 .gm-bar { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); align-items: center; }
@@ -1793,6 +1899,21 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .kb-drop > :last-child { flex: 1 1 100%; flex-direction: row; display: flex; gap: var(--s2); }
   .kb-drop > :last-child > .btn { flex: 1 1 0; }
 }
+
+/* ---- checkliste.css: Checkliste 2026→27 (übernommene ToDo-Liste, Artefakt 2FT2wp) ---- */
+.cl-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; background: var(--ink-muted); }
+.cl-dot.keep { background: var(--accent); } .cl-dot.drop { background: var(--signal); } .cl-dot.warn { background: var(--warn); }
+.pill.cl-typ { text-transform: none; letter-spacing: 0; border-color: var(--line); color: var(--ink-strong); background: var(--panel); }
+.pill.cl-typ.warn { border-style: dashed; border-color: var(--warn); } .pill.cl-typ.drop { border-color: var(--signal); }
+.pill.cl-cu { white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
+.cl-legend { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); font-size: 13px; color: var(--ink); }
+.cl-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.cl-panel { margin-top: var(--s2); padding: 12px var(--s3); background: var(--raised); border: 1px solid var(--line); border-left: 3px solid var(--accent); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: var(--s2) var(--s3); }
+.cl-panel .field.wide { grid-column: 1 / -1; } .cl-panel textarea { min-height: 52px; }
+.cl-kpibox { border-left: 4px solid var(--accent); background: var(--raised); padding: 12px var(--s3); }
+.cl-kpibox ul { margin: 6px 0 0; padding-left: 18px; } .cl-kpibox li { font-size: 14px; margin-bottom: 4px; }
+.task.cl-drop .tt { color: var(--ink-muted); }
+.cathead.cl-head { flex-wrap: wrap; } .cathead.cl-head h3 { min-width: 12ch; }
 
 </style>
 <a class="skip" href="#main">Zum Inhalt springen</a>
@@ -4293,7 +4414,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   /* ---------- Zustand ---------- */
   const S = app.state = {
     world: 'marketing',
-    tab: { marketing: 'copilot', infratech: 'dashboard', wissen: 'eingang', admin: 'status' },
+    tab: { marketing: 'heute', infratech: 'dashboard', wissen: 'eingang', admin: 'status' },
     store: null, mode: 'connecting', readOnly: false, me: null, isOwner: false, canEdit: false,
     data: {}, docs: {}, loaded: {}, profiles: {}, ui: {}
   };
@@ -4304,8 +4425,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
   const WORLDS = ['marketing', 'infratech', 'wissen', 'admin'];
   const WORLD_LABEL = { marketing: 'Marketing', infratech: 'InfraTech 2027', wissen: 'Wissen', admin: 'Admin' };
   const MODULES = app.MODULES = {
-    marketing: [['copilot', 'Copilot'], ['content', 'Content'], ['leads', 'Leads'], ['tenders', 'Ausschreibungen'], ['events', 'Events'], ['seo', 'SEO'], ['references', 'Referenzen'], ['plan90', '90-Tage-Plan'], ['ablage', 'Ablage']],
-    infratech: [['dashboard', 'Dashboard'], ['aufgaben', 'Aufgaben'], ['fristen', 'Fristen'], ['budget', 'Budget'], ['kpi', 'Ziele & KPIs'], ['leadzaehler', 'Lead-Zähler'], ['lessons', 'Lessons Learned'], ['fakten', 'Faktencheck'], ['team', 'Team'], ['meetings', 'Protokolle'], ['protokoll', 'Aktivität'], ['wissen', 'Wissensbasis']],
+    marketing: [['heute', 'Auf einen Blick'], ['copilot', 'Copilot'], ['content', 'Content'], ['leads', 'Leads'], ['tenders', 'Ausschreibungen'], ['events', 'Events'], ['seo', 'SEO'], ['references', 'Referenzen'], ['plan90', '90-Tage-Plan'], ['ablage', 'Ablage']],
+    infratech: [['dashboard', 'Dashboard'], ['aufgaben', 'Aufgaben'], ['checkliste', 'Checkliste 26→27'], ['fristen', 'Fristen'], ['budget', 'Budget'], ['kpi', 'Ziele & KPIs'], ['leadzaehler', 'Lead-Zähler'], ['lessons', 'Lessons Learned'], ['fakten', 'Faktencheck'], ['team', 'Team'], ['meetings', 'Protokolle'], ['protokoll', 'Aktivität'], ['wissen', 'Wissensbasis']],
     wissen: [['eingang', 'Eingang'], ['archiv', 'Archiv'], ['pruefung', 'Prüfung'], ['karte', 'Projektkarte']],
     admin: [['status', 'Status'], ['konfiguration', 'Konfiguration'], ['zugaenge', 'Zugänge'], ['daten', 'Daten'], ['icons', 'Icons']]
   };
@@ -4355,6 +4476,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
   app.storeGet = storeGet;
   app.storeSet = storeSet;
 
+  // Eintritts-Animation nur beim Modulwechsel; Hintergrund-Aktualisierungen lassen sie nicht erneut laufen.
+  let enterT = 0;
+  function enterFx() {
+    const m = $('main'); if (!m) return;
+    m.classList.remove('enter'); void m.offsetWidth; m.classList.add('enter');
+    clearTimeout(enterT); enterT = setTimeout(() => m.classList.remove('enter'), 700);
+  }
   function navigate(world, key, opts) {
     const o = opts || {};
     if (!WORLDS.includes(world)) world = 'marketing';
@@ -4374,6 +4502,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     renderTabs();
     renderPanel();
     updatePrintHead();
+    enterFx();
     if (o.focusTab) { const t = $('tab-' + world + '-' + key); if (t) t.focus(); }
     if (o.scroll) { const m = $('main'); if (m && m.scrollIntoView) m.scrollIntoView({ block: 'start', behavior: 'auto' }); }
   }
@@ -4821,7 +4950,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   app.ro = () => (S.readOnly ? true : null);
 
   /* ---------- Store-Anbindung und Abonnements ---------- */
-  const COLLECTIONS = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'tasks', 'admin_requests', 'meetings', 'kb_items', 'kb_projects'];
+  const COLLECTIONS = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'tasks', 'checkliste', 'admin_requests', 'meetings', 'kb_items', 'kb_projects'];
   const DOC_WATCH = { settings: 'settings/general', meta: 'meta/sync', budget: 'budget/actuals', leadCounts: 'leads/counts', adminConfig: 'admin/config', adminDraft: 'admin/draft', adminRoles: 'admin/roles' };
   for (const c of COLLECTIONS.concat(['briefings', 'activity', 'legacy_leads'])) S.data[c] = [];
 
@@ -4896,7 +5025,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     if (saved && saved.tab) Object.assign(S.tab, saved.tab);
     const fromHash = parseHash();
     S.ui.navChosen = !!(fromHash || (saved && saved.world));
-    const start = fromHash || (saved && saved.world ? { world: saved.world, key: S.tab[saved.world] } : { world: 'marketing', key: 'copilot' });
+    const start = fromHash || (saved && saved.world ? { world: saved.world, key: S.tab[saved.world] } : { world: 'marketing', key: 'heute' });
     navigate(start.world, start.key || S.tab[start.world]);
     window.addEventListener('hashchange', () => { const p = parseHash(); if (p) navigate(p.world, p.key || S.tab[p.world]); });
     updateHeader();
@@ -4924,7 +5053,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     world: { marketing: 'megafon', infratech: 'messestand', wissen: 'buch', admin: 'regler' },
     module: {
       copilot: 'kompass', content: 'stift', leads: 'lead', tenders: 'ausschreibung', events: 'messestand', seo: 'chart', references: 'stern', plan90: 'gantt', ablage: 'ordner',
-      dashboard: 'dashboard', aufgaben: 'liste', fristen: 'kalender', budget: 'budget', kpi: 'ziel', leadzaehler: 'zaehler', lessons: 'lampe', fakten: 'lupe', team: 'team', meetings: 'meeting', protokoll: 'verlauf', wissen: 'buch', eingang: 'ablegen', archiv: 'buch', pruefung: 'lupe', karte: 'karte',
+      dashboard: 'dashboard', aufgaben: 'liste', checkliste: 'st-done', fristen: 'kalender', budget: 'budget', kpi: 'ziel', leadzaehler: 'zaehler', lessons: 'lampe', fakten: 'lupe', team: 'team', meetings: 'meeting', protokoll: 'verlauf', wissen: 'buch', eingang: 'ablegen', archiv: 'buch', pruefung: 'lupe', karte: 'karte',
       status: 'schild', konfiguration: 'regler', zugaenge: 'schluessel', daten: 'datenbank', icons: 'raster'
     },
     cat: { steuerung: 'uhr', innovation: 'pokal', standbau: 'messestand', logistik: 'lkw', reise: 'hotel', material: 'paket', catering: 'kaffee', marketing: 'megafon', leads: 'lead', rotterdam: 'pin', ablauf: 'schichtplan', dokumente: 'ordner' },
@@ -7116,7 +7245,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   });
 
   /* ---------- Daten: Sicherung, Import über den Migrationsplan, alte Marketing-Leads ---------- */
-  const ALL_COLLECTIONS = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'tasks', 'briefings', 'activity',
+  const ALL_COLLECTIONS = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'tasks', 'checkliste', 'briefings', 'activity',
     'admin_requests', 'leads', 'settings', 'meta', 'budget', 'admin', 'meetings', 'kb_items', 'kb_text', 'kb_projects', 'notion'];
   const strip = r => { const d = Object.assign({}, r); delete d._id; return d; };
   async function dumpAll() {
@@ -8921,6 +9050,193 @@ svg.leaflet-image-layer.leaflet-interactive path {
     ADMIN1, loadGazetteer, gazReady, geocode, findPlaceInText, stateCentroid, project, unproject };
 });
 
+/* ---- overview.js ---- */
+/* Feind Cockpit · „Auf einen Blick“: Startseite mit Messe-Countdown, Kennzahlen, Verlässlichkeits-Ebene.
+   Grundsatz: Das Cockpit zeigt nichts als „gut“, was es nicht selbst geprüft hat. Jede Zahl nennt Quelle und Stand;
+   Anbindungen ohne eigene Prüfung stehen als „nicht geprüft“, fehlende Daten als „keine Daten“. */
+(function () {
+  'use strict';
+  const FC = window.FC, app = FC.app, H = FC.helpers, D = FC.data, M = FC.model;
+  const { h, panelHead, chip } = app;
+  const S = app.state;
+  const { str, fmtD, fmtTs } = H;
+  const STALE_DAYS = 14;
+  const counted = new Set();           // Zahlen, die schon einmal hochgezählt wurden (Animation nur beim ersten Zeigen)
+  const reduce = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const inViewer = () => !!(window.claude && window.claude.use);
+  const cap = { sample: null, mcp: null };
+  if (inViewer()) {
+    ['sample', 'mcp'].forEach(n => Promise.resolve().then(() => window.claude.use(n)).then(v => { cap[n] = !!v; app.refresh(); }, () => { cap[n] = false; app.refresh(); }));
+  }
+
+  /* ---------- Hilfen ---------- */
+  const lenOf = c => (S.data[c] || []).length;
+  const loaded = c => !!(S.loaded && S.loaded[c]);
+  const ageDays = v => { const d = H.parseTs(v); return d ? (Date.now() - d.getTime()) / 864e5 : null; };
+  const tone = t => ({ ok: 'green', warn: 'yellow', crit: 'red', none: 'gone' })[t] || 'gone';
+  const toneWord = t => ({ ok: 'in Ordnung', warn: 'Hinweis', crit: 'Handlungsbedarf', none: 'nicht geprüft' })[t];
+  const dot = t => h('span', { class: 'ov-dot ' + t, 'aria-hidden': 'true' });
+
+  // Zahl mit Quelle und Stand. Zählt beim ersten Zeigen hoch (nicht bei Hintergrund-Aktualisierungen, nicht bei reduzierter Bewegung).
+  function stat(id, cls, value, label, sub, src, go) {
+    const v = h('div', { class: 'v num', text: String(value) });
+    if (typeof value === 'number' && !counted.has(id) && !reduce() && value > 0 && value < 100000) {
+      counted.add(id);
+      const t0 = performance.now();
+      const step = now => { const p = Math.min(1, (now - t0) / 700); v.textContent = String(Math.round(value * (1 - Math.pow(1 - p, 3)))); if (p < 1 && v.isConnected) requestAnimationFrame(step); else v.textContent = String(value); };
+      v.textContent = '0';
+      requestAnimationFrame(step);
+    } else counted.add(id);
+    return h('button', { class: 'ov-stat ' + cls, type: 'button', onclick: go, 'aria-label': label + ': ' + value + '. ' + src + '. Öffnen' },
+      h('div', { class: 'k', text: label }), v, h('div', { class: 'sub', text: sub }), h('div', { class: 'src', text: src }));
+  }
+
+  /* ---------- Messe-Kopf: Countdown als Bogen ---------- */
+  function hero(pr, days) {
+    const R = 54, C = 2 * Math.PI * R;
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 128 128'); svg.setAttribute('class', 'ov-arc'); svg.setAttribute('aria-hidden', 'true');
+    const mk = (cls, extra) => { const c = document.createElementNS(NS, 'circle'); c.setAttribute('cx', '64'); c.setAttribute('cy', '64'); c.setAttribute('r', String(R)); c.setAttribute('class', cls); if (extra) for (const k in extra) c.setAttribute(k, extra[k]); return c; };
+    svg.append(mk('bg'), mk('fg', { 'stroke-dasharray': C.toFixed(1), 'stroke-dashoffset': (C * (1 - pr.pct / 100)).toFixed(1) }));
+    return h('section', { class: 'ov-hero', 'aria-label': 'InfraTech 2027' },
+      h('div', { class: 'ov-ring' }, svg, h('div', { class: 'in' }, h('b', { class: 'num', text: days >= 0 ? String(days) : '–' }), h('span', { text: days > 0 ? 'Tage' : days === 0 ? 'heute' : 'läuft' }))),
+      h('div', { class: 'ov-hero-txt' },
+        h('p', { class: 'eyebrow', text: 'InfraTech 2027 · Rotterdam Ahoy · 12.–15.01.2027' }),
+        h('h2', { text: days > 0 ? 'Noch ' + days + ' Tage bis zum Messebeginn' : days === 0 ? 'Die Messe beginnt heute' : 'Die Messe läuft' }),
+        h('p', { class: 'lead', text: pr.done + ' von ' + pr.total + ' Aufgaben erledigt (' + pr.pct + ' %). Stand der Aufgabenliste: ' + fmtD(app.today()) + '.' }),
+        h('div', { class: 'row' },
+          h('button', { class: 'btn primary', type: 'button', onclick: () => app.go('infratech', 'dashboard') }, 'InfraTech-Dashboard'),
+          h('button', { class: 'btn ghost-inv', type: 'button', onclick: () => app.go('infratech', 'aufgaben') }, 'Alle Aufgaben'))));
+  }
+
+  /* ---------- Plausibilitätsprüfung: nur, was das Cockpit selbst nachrechnen kann ---------- */
+  function checks(at) {
+    const t = app.today();
+    const out = [];
+    const notLoaded = ['tasks', 'kb_items', 'kb_projects', 'content', 'mkt_leads', 'tenders', 'events', 'references'].filter(c => !loaded(c));
+    if (notLoaded.length) out.push({ t: 'warn', text: 'Noch nicht geladen: ' + notLoaded.length + ' Datenbereiche. Zahlen darunter können unvollständig sein.', go: () => app.go('admin', 'status'), label: 'Status' });
+    const open = at.filter(x => M.isOpen(x));
+    const noDue = open.filter(x => !x.due);
+    out.push(noDue.length ? { t: 'warn', text: noDue.length + ' offene Aufgaben ohne Termin: Fristen sind dort nicht überwachbar.', go: () => app.go('infratech', 'aufgaben'), label: 'Aufgaben' }
+      : { t: 'ok', text: 'Alle offenen Aufgaben haben einen Termin (' + open.length + ' geprüft).' });
+    const over = M.overdue(at, t);
+    out.push(over.length ? { t: 'crit', text: over.length + ' Aufgaben sind überfällig.', go: () => app.go('infratech', 'aufgaben'), label: 'Ansehen' } : { t: 'ok', text: 'Keine überfälligen Aufgaben.' });
+    const kb = (S.data.kb_items || []);
+    if (loaded('kb_items')) {
+      const rev = kb.filter(i => i.status === 'pruefen').length, err = kb.filter(i => i.status === 'fehler').length;
+      const pii = kb.filter(i => i.pii && i.pii.found && i.status !== 'archiviert').length;
+      out.push(rev ? { t: 'warn', text: rev + ' Archiv-Einträge warten auf deine Prüfung.', go: () => app.go('wissen', 'pruefung'), label: 'Prüfen' } : { t: 'ok', text: 'Keine Archiv-Einträge in der Prüfliste (' + kb.length + ' im Archiv).' });
+      if (err) out.push({ t: 'crit', text: err + ' Archiv-Einträge mit Fehler (nicht lesbar oder Einordnung fehlgeschlagen).', go: () => app.go('wissen', 'pruefung'), label: 'Ansehen' });
+      if (pii) out.push({ t: 'crit', text: 'Verdacht auf personenbezogene Daten in ' + pii + ' Einträgen. Einwilligung erforderlich bzw. entfernen.', go: () => app.go('wissen', 'pruefung'), label: 'Prüfen' });
+    }
+    if (loaded('kb_projects')) {
+      const pr = S.data.kb_projects || [];
+      const noPos = pr.filter(p => typeof p.lat !== 'number' || typeof p.lon !== 'number').length;
+      const draft = pr.filter(p => p.status !== 'geprueft').length;
+      if (pr.length) out.push(noPos ? { t: 'warn', text: noPos + ' Projekte ohne Position: sie fehlen auf der Karte.', go: () => app.go('wissen', 'karte'), label: 'Karte' }
+        : { t: draft ? 'warn' : 'ok', text: draft ? draft + ' von ' + pr.length + ' Kartenpositionen sind Schätzungen und noch nicht von dir bestätigt.' : 'Alle ' + pr.length + ' Kartenpositionen sind bestätigt.', go: draft ? () => app.go('wissen', 'karte') : null, label: 'Bestätigen' });
+    }
+    if (S.viewerLocal) out.unshift({ t: 'crit', text: 'Geteilte Datenbank nicht erreichbar: Änderungen bleiben nur auf diesem Gerät.', go: () => { try { location.reload(); } catch (e) { /* ohne Reload weiter */ } }, label: 'Neu laden' });
+    if (S.readOnly) out.unshift({ t: 'warn', text: 'Nur Lesezugriff: du siehst Daten, kannst sie aber nicht ändern.', go: () => app.go('admin', 'zugaenge'), label: 'Zugang' });
+    return out;
+  }
+  const worst = list => (list.some(c => c.t === 'crit') ? 'crit' : list.some(c => c.t === 'warn') ? 'warn' : 'ok');
+
+  /* ---------- Datenstand je Bereich: Menge, letzter Abgleich, Quelle ---------- */
+  const AREAS = [['content', 'Content', 'content'], ['mkt_leads', 'Marketing-Leads', 'leads'], ['tenders', 'Ausschreibungen', 'tenders'], ['events', 'Events', 'events'],
+    ['seo_keywords', 'SEO', 'seo'], ['references', 'Referenzen', 'references'], ['kb_items', 'Wissensarchiv', null]];
+  function freshness() {
+    const meta = S.docs.meta || {};
+    return AREAS.map(([c, label, mk]) => {
+      const n = lenOf(c), m = mk && meta[mk] && typeof meta[mk] === 'object' ? meta[mk] : null;
+      let t = 'ok', word = 'aktuell', stand = '—';
+      if (!loaded(c)) { t = 'none'; word = 'lädt …'; }
+      else if (!n) { t = 'none'; word = 'keine Daten'; }
+      else if (mk) {
+        const age = m && m.at ? ageDays(m.at) : null;
+        if (age == null) { t = 'warn'; word = 'Abgleich unbekannt'; }
+        else { stand = fmtTs(H.parseTs(m.at)); if (age > STALE_DAYS) { t = 'warn'; word = 'älter als ' + STALE_DAYS + ' Tage'; } }
+      } else {
+        const last = (S.data[c] || []).reduce((a, i) => Math.max(a, i.createdAt || 0, i.processedAt || 0), 0);
+        stand = last ? fmtTs(new Date(last)) : '—';
+      }
+      return { c, label, n, t, word, stand, src: m && m.source ? str(m.source).slice(0, 60) : mk ? 'kein Abgleich vermerkt' : 'direkt im Cockpit abgelegt' };
+    });
+  }
+
+  /* ---------- Anbindungen: nur Belegtes als „ok“ ---------- */
+  function connections() {
+    const rows = [];
+    const store = S.mode === 'connecting' ? { t: 'none', w: 'verbindet …' } : S.viewerLocal ? { t: 'crit', w: 'nur dieses Gerät' } : S.readOnly ? { t: 'warn', w: 'nur Lesezugriff' } : { t: 'ok', w: app.storeText() };
+    rows.push({ name: 'Cockpit-Datenbank', t: store.t, w: store.w, note: 'Hier liegen alle Zahlen dieser Seite.' });
+    rows.push({ name: 'Claude-KI (Einordnung, Fragen)', t: cap.sample == null ? 'none' : cap.sample ? 'ok' : 'warn', w: cap.sample == null ? (inViewer() ? 'wird geprüft …' : 'nur in claude.ai') : cap.sample ? 'verfügbar' : 'nicht verfügbar', note: cap.sample === false ? 'Einordnung nach festen Regeln.' : 'Nutzt dein Claude-Kontingent.' });
+    rows.push({ name: 'Live-Zugriff auf Connectors', t: cap.mcp == null ? 'none' : cap.mcp ? 'ok' : 'warn', w: cap.mcp == null ? (inViewer() ? 'wird geprüft …' : 'nur in claude.ai') : cap.mcp ? 'in dieser Ansicht möglich' : 'nicht möglich', note: 'Das sagt nur, ob die Ansicht Connectors aufrufen darf, nicht ob sie verbunden sind.' });
+    for (const n of ['Notion', 'Microsoft 365', 'Canva', 'Firecrawl']) rows.push({ name: n, t: 'none', w: 'nicht geprüft', note: 'Wird erst beim ersten Abruf getestet. Bis dahin gilt die Verbindung als unbestätigt.' });
+    return rows;
+  }
+
+  /* ---------- Bausteine ---------- */
+  function checkRow(c) {
+    return h('li', { class: 'ov-row ' + c.t }, dot(c.t), h('span', { class: 'sr', text: toneWord(c.t) + ': ' }), h('span', { class: 'tx', text: c.text }),
+      c.go ? h('button', { class: 'btn small', type: 'button', onclick: c.go }, c.label || 'Öffnen') : null);
+  }
+  function catBars(at, t) {
+    const rows = M.catStats(at, D.CATS, t);
+    return h('div', { class: 'ov-bars', role: 'list' }, rows.map((r, i) => h('div', { class: 'ov-bar', role: 'listitem', style: '--i:' + i },
+      h('div', { class: 'lbl' }, h('span', { text: r.cat.label }), h('span', { class: 'num', text: r.done + '/' + r.total })),
+      h('div', { class: 'trk', 'aria-hidden': 'true' }, h('i', { class: r.st, style: 'width:' + Math.max(2, r.pct) + '%' })),
+      h('span', { class: 'sr', text: r.pct + ' Prozent' }))));
+  }
+
+  app.module('marketing', 'heute', {
+    count: () => { try { const c = checks(app.tasks()).filter(x => x.t === 'crit' || x.t === 'warn').length; return c || null; } catch (e) { return null; } },
+    render() {
+      const at = app.tasks(), t = app.today();
+      const pr = M.progress(at), over = M.overdue(at, t), soon = M.dueSoon(at, t, 14);
+      const days = H.dayDiff(t, H.parseDay(D.FAIR.start));
+      const list = checks(at), w = worst(list), fr = freshness(), cn = connections();
+      const kb = S.data.kb_items || [];
+      const rev = kb.filter(i => i.status === 'pruefen').length;
+      const next = M.upcomingReminders(at, [14, 7, 3, 1], t).slice(0, 5);
+      const stamp = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+      const verdict = w === 'ok' ? 'Alle geprüften Punkte sind in Ordnung.' : w === 'warn' ? 'Es gibt Hinweise, die du ansehen solltest.' : 'Es gibt Punkte mit Handlungsbedarf.';
+      return [
+        panelHead('Auf einen Blick', null, h('span', { class: 'muted small', text: fmtD(t) })),
+        hero(pr, days),
+        h('div', { class: 'ov-quick', role: 'group', 'aria-label': 'Schnellzugriff' },
+          h('button', { class: 'btn', type: 'button', onclick: () => app.go('wissen', 'eingang') }, 'Ablegen'),
+          h('button', { class: 'btn', type: 'button', onclick: () => { const b = document.getElementById('cmdBtn'); if (b) b.click(); } }, 'Suchen (Strg K)'),
+          h('button', { class: 'btn', type: 'button', onclick: () => app.go('wissen', 'karte') }, 'Projektkarte'),
+          h('button', { class: 'btn', type: 'button', onclick: () => app.go('wissen', 'pruefung') }, 'Prüfliste' + (rev ? ' (' + rev + ')' : ''))),
+        h('div', { class: 'section' }, h('h3', { text: 'Kennzahlen' }),
+          h('div', { class: 'ov-stats' },
+            stat('s-over', over.length ? 'crit' : 'ok', over.length, 'Überfällig', 'Frist verstrichen', 'Quelle: Aufgabenliste · heute', () => app.go('infratech', 'aufgaben')),
+            stat('s-soon', soon.length ? 'warn' : 'ok', soon.length, 'Fällig in 14 Tagen', 'demnächst', 'Quelle: Aufgabenliste · heute', () => app.go('infratech', 'fristen')),
+            stat('s-pct', pr.pct >= 50 ? 'ok' : '', pr.pct, 'Fortschritt in %', pr.done + ' von ' + pr.total + ' erledigt', 'Quelle: Aufgabenliste · heute', () => app.go('infratech', 'dashboard')),
+            stat('s-kb', '', kb.filter(i => i.status !== 'archiviert').length, 'Im Wissensarchiv', rev + ' warten auf Prüfung', loaded('kb_items') ? 'Quelle: Archiv · live' : 'lädt …', () => app.go('wissen', 'archiv')),
+            stat('s-lead', '', lenOf('mkt_leads'), 'Marketing-Leads', 'nur Zählung, keine Namen', loaded('mkt_leads') ? 'Quelle: Datenbank · live' : 'lädt …', () => app.go('marketing', 'leads')))),
+        h('div', { class: 'section' },
+          h('div', { class: 'ov-verdict ' + w, role: 'status' }, dot(w), h('div', {}, h('h3', { text: 'Verlässlichkeit' }), h('p', { text: verdict + ' Geprüft um ' + stamp + ' Uhr, jede Zeile ist nachrechenbar.' }))),
+          h('ul', { class: 'ov-list' }, list.map(checkRow))),
+        h('div', { class: 'section' }, h('div', { class: 'grid2' },
+          h('div', { class: 'card accentbar' }, h('h3', { text: 'Heute zuerst' }),
+            next.length ? h('ul', { class: 'ov-next' }, next.map(o => h('li', {}, h('span', { class: 'pill due ' + (o.dd < 0 ? 'over' : 'soon'), text: o.dd < 0 ? (-o.dd) + ' T überfällig' : o.dd === 0 ? 'heute' : 'in ' + o.dd + ' T' }), h('span', { class: 'tx', text: o.task.title })))) : h('p', { class: 'muted', text: 'Keine Fristen in den nächsten 14 Tagen.' }),
+            h('div', {}, h('button', { class: 'btn small', type: 'button', onclick: () => app.go('infratech', 'aufgaben') }, 'Alle Aufgaben'))),
+          h('div', { class: 'card accentbar' }, h('h3', { text: 'Fortschritt je Bereich' }), catBars(at, t)))),
+        h('div', { class: 'section' }, h('h3', { text: 'Datenstand' }),
+          h('p', { class: 'muted small', text: 'Menge, letzter Abgleich und Herkunft je Bereich. „Abgleich unbekannt“ heißt: Es ist nicht vermerkt, woher und wann die Daten kamen. Dann nicht als gesichert behandeln.' }),
+          h('div', { class: 'tbl-wrap' }, h('table', { class: 'data' },
+            h('thead', {}, h('tr', {}, ['Bereich', 'Einträge', 'Stand', 'Quelle', 'Zustand'].map((x, i) => h('th', { scope: 'col', class: i === 1 ? 'n' : '', text: x })))),
+            h('tbody', {}, fr.map(r => h('tr', {}, h('td', { text: r.label }), h('td', { class: 'n num', text: String(r.n) }), h('td', { text: r.stand }), h('td', { text: r.src }), h('td', {}, chip(tone(r.t), r.word)))))))),
+        h('div', { class: 'section' }, h('h3', { text: 'Anbindungen' }),
+          h('p', { class: 'muted small', text: 'Ehrlicher Stand: „in Ordnung“ steht nur da, wo das Cockpit es selbst belegen kann. Connectors zeigen „nicht geprüft“, bis ein echter Abruf gelungen ist.' }),
+          h('ul', { class: 'ov-list' }, cn.map(c => h('li', { class: 'ov-row ' + c.t }, dot(c.t), h('span', { class: 'tx' }, h('b', { text: c.name + ': ' }), c.w, h('span', { class: 'muted small', text: ' · ' + c.note })))))),
+      ];
+    }
+  });
+})();
+
 /* ---- app-wissen.js ---- */
 /* ---- app-wissen.js ---- */
 /* Feind Cockpit · Welt „Wissen“: Wissensarchiv mit Drag & Drop, Einfügen und Links, automatischer Einordnung
@@ -10537,6 +10853,161 @@ svg.leaflet-image-layer.leaflet-interactive path {
     }));
     return wrap;
   };
+})();
+
+/* ---- app-checkliste.js ---- */
+/* Feind Cockpit · InfraTech 2027 · Checkliste 2026→27: die ToDo-Liste (Artefakt 2FT2wp, Stand 29.09.2026) 1:1 übernommen.
+   Einzige inhaltliche Ausnahme: Klarnamen Dritter (¹) entfernt. Erfassung je Punkt in checkliste/<Kategorie-Punkt>
+   (gleiche IDs wie im Original, z. B. „0-0“); Verantwortliche nur als Rolle. */
+(function () {
+  'use strict';
+  const FC = window.FC, app = FC.app, H = FC.helpers, D = FC.data;
+  const { h, panelHead } = app;
+  const { str, arr, fmtD } = H;
+  const S = app.state;
+  const ui = S.ui.cl = { q: '', sec: 'all', st: 'all', meeting: false, open: {}, drafts: {} };
+  const rerender = () => app.refresh();
+  const ro = () => app.ro();
+  const SOURCE = 'https://claude.ai/artifact/2FT2wp4m4YfwJvU1Hj5vFd';
+  const SECTIONS = [["Logistik & Anreise", [["open", "Fahrzeug festlegen: V-Klasse mit Anhänger oder LKW mit Anhänger (2026 offen)"], ["open", "Bedarf Kompaktlader / „Ameise“ für Rotterdam klären (2026: „?“)"], ["open", "Anlieferung/Parkplatz-Prozess bei Rotterdam Ahoy klären (2026 Essen: 200 € Kaution, rückerstattet)"], ["open", "Dauerausweise / Parkausweise organisieren"]]], ["Standbau & Exponate", [["keep", "Schleifwelle groß + Pflasterfläche — Kernexponat; Aufbau ggf. vereinfachen (z. B. Steinmatte statt Pflasterfläche)"], ["keep", "Schleifwelle klein mit Tisch (wenn Platz vorhanden)"], ["keep", "Exponat „Ungeschliffen“/„Geschliffen“"], ["keep", "Exponat Horizontalschleifen mit Flammen"], ["keep", "Aufsteller mit Flyerspendern (Kundenstopper) — mit Beleuchtung versehen"], ["keep", "Leuchtendes Grinding-Schild — Blickfang"], ["open", "2× Schleifscheibe — optional, nur wenn kleine Schleifscheibe ohnehin dabei"], ["drop", "2× kleine Exponate + Aschenbecher — 2026 ungenutzt, nicht mitnehmen"], ["warn", "Standflächen-Bedarf realistisch planen — 2026: von 2 Stehtischen passte nur 1 auf die Fläche"]]], ["Equipment & Verbrauchsmaterial", [["warn", "Kaffeemaschine, Kaffeekapseln — Sortenanzahl reduzieren"], ["open", "Kaffeesahne / Zucker / Kekse"], ["keep", "Servietten klein — nötig"], ["drop", "Servietten groß — 2026: zu groß, kein Einsatz"], ["warn", "Reinigungsset + Mülltüten — mehr Feuchttücher einpacken"], ["open", "Molton-Tuch — passend für Tisch zuschneiden, mit Klettband"], ["open", "Hussen (wenn Tisch dabei)"], ["open", "Staubsauger"], ["open", "Fugenmaterial (zum Ausbessern)"], ["open", "Tischmülleimer, Müllsäcke 120L"], ["open", "Deko optional (frische Blumen/Pflanze, wenn Platz)"], ["drop", "Wein — 2026: kaum getrunken, streichen"]]], ["Technik", [["warn", "TV klären — 2026 als offene Frage stehengeblieben, für Rotterdam Bedarf neu entscheiden"], ["warn", "Mobile Daten / WLAN-Box klären"], ["open", "Laptop, Stick mit Präsentation"], ["open", "Verlängerungskabel/Verteiler, Ladekabel (Handy, Kamera)"], ["warn", "Präsentation aktualisieren — Option Kopfhörer anbieten, etwas kürzer fassen"], ["open", "Bühnenmolton, LED Band"]]], ["Marketing & Werbemittel", [["warn", "Flyer überarbeiten — Format überdenken"], ["keep", "Steine mit rückseitigem Aufkleber — kommen gut an"], ["keep", "Zollstöcke, Feuerzeuge, Kugelschreiber, Schlüsselbänder, Einkaufswagenlöser — alle beibehalten"], ["drop", "Minz-Spender — 2026: nicht attraktiv, streichen"], ["warn", "Goodie-Bags kleiner/handlicher packen — Kalenderbücher zu wertig & Transport unpraktisch"], ["warn", "Vorab-Bewerbung der Teilnahme planen — 2026 komplett gefehlt: Social Media, Mail-Signatur, Prä-Mail, Website"], ["open", "Infobroschüren, Aufsteller+Infoblatt, Prospektständer, magn. Flyerbox"]]], ["Personal & Auftritt", [["warn", "Namensschilder konsequent einsetzen — 2026 nur an einem Tag genutzt, Position vermerken"], ["warn", "Visitenkarten-Verteilung optimieren — 2026: 100 VK durch [Name entfernt¹], an Flyer geheftet"], ["warn", "Kleidung: andere Farbe als Weiß prüfen — 2026 keine Differenzierung zu anderen Ausstellern"], ["warn", "Einheitliches, sauberes Schuhwerk festlegen"]]], ["Akquise & Lead-Erfassung", [["open", "Ansprache auf die Messefläche ausweiten — nicht nur am Stand warten"], ["keep", "Digitales Gesprächsnotiz-Formular nutzen — bereits als ClickUp-Ticket angelegt (2026: kaum systematisch erfasst)"], ["open", "Gezielt Visitenkarten von Kommunen/Städten sammeln — 2026 kaum vorhanden"]]], ["Offene „zu Buchen/zu klären“-Punkte aus 2026", [["open", "Catering — Prozess wie 2026 (Aramark-Bestellung) oder neuer Anbieter in Rotterdam?"], ["open", "Anlieferung/Parkplätze final klären (s. Logistik oben)"]]], ["Team (Referenz 2026)", [["open", "Teilnehmerliste final bestätigen — 2026: [Namen der Standbesetzung 2026 entfernt¹ – siehe Original-ToDo-Liste]"], ["open", "Übernachtende final abgleichen mit Hotelkontingent-Ticket"]]], ["Veranstalter, Verträge & Fristen — ergänzt aus Manus-Analyse", [["open", "2027-Handbuch, Standnummer und Portalzugänge bei Rotterdam Ahoy anfordern"], ["open", "Standdesign-Abweichungen (>2,75 m) genehmigen lassen"], ["open", "Katalogdaten/Produkte fristgerecht einreichen"], ["open", "Verträge/Bestellungen mit Belegnummer, Betrag, Frist archivieren"], ["warn", "Eskalationsregel festlegen: nach 72 Stunden ohne Antwort dokumentieren und nachfassen — 2026 neu erkannt"]]], ["Lead-Erfassung & Nachfassprozess — neu, aus Manus-Analyse", [["warn", "Leadformular mit Pflichtfeldern einführen: Firma, Name, Funktion, Segment, Bedarf, Priorität, Einwilligung, nächster Schritt, Owner, Fälligkeit"], ["open", "Zielkundenliste (Kommunen, Straßenbau, Infrastruktur, Partner) vorab erstellen"], ["open", "Zwei aktive Akquise-Slots pro Messetag außerhalb des eigenen Standes einplanen"], ["open", "Tagesziel für qualifizierte Leads festlegen"], ["warn", "Follow-up-SLA einhalten: A-Leads binnen 48 Std., B-Leads binnen 5 Arbeitstagen kontaktieren — 2026: erste Nachfassmail erst am 26.01."]]], ["Durchführung & Nachbereitung — neu, aus Manus-Analyse", [["open", "Morgenbriefing mit Rollen, Zielen und Eskalationsweg pro Messetag"], ["open", "Besucherzahl stündlich erfassen, Auslastung je Messetag auswerten"], ["open", "Standabbau nicht vor dem zulässigen Zeitpunkt beginnen"], ["open", "Fotodokumentation von Stand/Team/Besucherinteraktion — nur mit Einwilligung der Abgebildeten"], ["warn", "Abschlussbericht (KPI, Kosten, Leads, Risiken, Lessons Learned) innerhalb 14 Tagen nach der Messe erstellen"]]]];
+  const TYP = { keep: 'bewährt', drop: '2026 gestrichen', warn: '2026 offen — klären', open: 'Aufgabe' };
+  const TYP_LEGEND = { keep: 'bewährt, beibehalten', drop: '2026 gestrichen', warn: '2026 offen — für Rotterdam klären', open: 'Aufgabe' };
+  const STATUS = [['offen', 'offen'], ['inArbeit', 'in Arbeit'], ['erledigt', 'erledigt'], ['zurueckgestellt', 'zurückgestellt']];
+  const STL = Object.fromEntries(STATUS);
+  const EPICS = { '869f0h26d': 'EPIC-01 Messestand & Design', '869f0h28k': 'EPIC-02 Logistik & Transport', '869f0h2ba': 'EPIC-03 Personal & Team', '869f0h2dh': 'EPIC-04 Marketing & Kommunikation', '869f0h2j2': 'EPIC-06 Lead-Management', '869f0h2m2': 'EPIC-07 Nachbereitung' };
+  const CAT_EPIC = { 0: '869f0h28k', 1: '869f0h26d', 2: '869f0h26d', 3: '869f0h26d', 4: '869f0h2dh', 5: '869f0h2ba', 6: '869f0h2j2', 7: '869f0h28k', 8: '869f0h2ba', 10: '869f0h2j2', 11: '869f0h2m2' };
+  const TICKETS = { '869f0h3m1': 'Vorab-Marketingkampagne planen (Social Media, Newsletter, Signatur)', '869f0h3hj': 'Standpersonal 2027 festlegen', '869f0h3ce': 'Digitales Lead-Erfassungsformular einführen', '869f0h2yq': 'Rotterdam Ahoy: Sales-Kontakt, Hallenzuteilung & Anmeldefristen 2027 einholen', '869f0h2vw': 'Hotelkontingent anfragen (ibis Styles Rotterdam Ahoy)' };
+  const ITEM_TICKET = { '4-5': '869f0h3m1', '6-1': '869f0h3ce', '10-0': '869f0h3ce', '8-0': '869f0h3hj', '8-1': '869f0h2vw', '9-0': '869f0h2yq' };
+  const KPI_BOX = ['2026-Ist-Kosten laut Manus-Auswertung: 21.023 € brutto (präziser als die vorherige Schätzung ~19.970 €)', '2027-Planrahmen: 24.200–26.500 € brutto, inkl. ca. 12–13 % Reserve', 'Standbesucher 2026: ca. 350 bei 8.146 Fachbesuchern gesamt — Ziel 2027: ≥ 450 Standbesucher', 'KPI-Ziele 2027: ≥ 300 qualifizierte Leads · ≥ 90 % A-Leads mit nächstem Schritt'];
+  const ISO = /^\d{4}-\d{2}-\d{2}$/;
+
+  const items = () => SECTIONS.flatMap(([sec, its], si) => its.map(([typ, text], ii) => ({ id: si + '-' + ii, si, sec, typ, text })));
+  const recOf = id => Object.assign({ status: 'offen', rolle: '', frist: '', budget: '', beschluss: '', notiz: '' }, (S.data.checkliste || []).find(r => r._id === id) || {});
+  const captured = r => !!(str(r.rolle) || str(r.frist) || str(r.budget) || str(r.beschluss) || str(r.notiz) || (r.status !== 'offen' && r.status !== 'erledigt'));
+  const roles = () => D.ROLES.map(r => [r.key, r.label]).concat(arr(S.docs.settings && S.docs.settings.team).filter(m => m && m.id).map(m => [m.id, str(m.role) || 'Team']));
+  const roleLabel = k => { const r = roles().find(x => x[0] === k); return r ? r[1] : (k ? 'Teammitglied' : ''); };
+  function progress() { const all = items(), done = all.filter(x => recOf(x.id).status === 'erledigt').length; return { done, total: all.length, pct: all.length ? Math.round(done / all.length * 100) : 0, captured: all.filter(x => captured(recOf(x.id))).length }; }
+  app.checklistProgress = progress;
+  function filtered() {
+    const q = ui.q.trim().toLowerCase();
+    return items().filter(x => {
+      const r = recOf(x.id);
+      if (ui.sec !== 'all' && String(x.si) !== ui.sec) return false;
+      if (ui.meeting && (r.status === 'erledigt' || x.typ === 'drop')) return false;
+      if (ui.st === 'open' && r.status === 'erledigt') return false;
+      if (ui.st === 'done' && r.status !== 'erledigt') return false;
+      if (ui.st === 'warn' && x.typ !== 'warn') return false;
+      if (ui.st === 'captured' && !captured(r)) return false;
+      if (q && !(x.text + ' ' + x.sec + ' ' + str(r.notiz) + ' ' + str(r.beschluss)).toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }
+  async function save(id, patch, action) {
+    const cur = recOf(id); delete cur._id;
+    const ok = await app.write('checkliste/' + id, 'set', Object.assign(cur, patch, { updatedAt: Date.now() }));
+    if (ok) app.log(action || 'Checkliste', id + ' · ' + (STL[patch.status || cur.status] || ''));
+    rerender();
+    return ok;
+  }
+  function dueText(iso, done) {
+    if (!ISO.test(str(iso))) return null;
+    const d = H.parseDay ? H.parseDay(iso) : new Date(iso), t = app.today(), dd = Math.round((d - t) / 864e5);
+    if (done) return { t: fmtD(iso), c: '' };
+    return { t: fmtD(iso) + (dd < 0 ? ' · ' + (-dd) + ' T überfällig' : dd === 0 ? ' · heute' : ' · in ' + dd + ' T'), c: dd < 0 ? 'over' : dd <= 14 ? 'soon' : '' };
+  }
+  function row(x) {
+    const r = recOf(x.id), done = r.status === 'erledigt', open = !!ui.open[x.id], tk = ITEM_TICKET[x.id], du = dueText(r.frist, done);
+    const dr = ui.drafts[x.id] || (ui.drafts[x.id] = { status: r.status, rolle: str(r.rolle), frist: ISO.test(str(r.frist)) ? r.frist : '', budget: str(r.budget), beschluss: str(r.beschluss), notiz: str(r.notiz) });
+    const inp = (k, el) => { el.addEventListener('input', () => { dr[k] = el.value; }); el.addEventListener('change', () => { dr[k] = el.value; }); return el; };
+    const panel = open ? h('div', { class: 'cl-panel', id: 'clp-' + x.id },
+      app.field('Status', inp('status', app.dropdown('cls-' + x.id, STATUS, dr.status))),
+      app.field('Verantwortlich (Rolle)', inp('rolle', app.dropdown('clr-' + x.id, [['', '– offen –']].concat(roles()), dr.rolle))),
+      app.field('Frist', inp('frist', h('input', { type: 'date', id: 'clf-' + x.id, value: dr.frist }))),
+      app.field('Budget', inp('budget', h('input', { type: 'text', id: 'clb-' + x.id, value: dr.budget, placeholder: 'z. B. 1.500 €' }))),
+      app.field('Beschluss', inp('beschluss', Object.assign(h('textarea', { id: 'cle-' + x.id, placeholder: 'Beschluss / Entscheidung der GL' }), { value: dr.beschluss })), { wide: true }),
+      app.field('Notiz', inp('notiz', Object.assign(h('textarea', { id: 'cln-' + x.id, placeholder: 'Anmerkung – keine personenbezogenen Daten Dritter' }), { value: dr.notiz })), { wide: true }),
+      h('div', { class: 'field wide' }, h('div', { class: 'row' },
+        h('button', { class: 'btn primary', type: 'button', disabled: ro(), onclick: async () => { const ok = await save(x.id, { status: dr.status || 'offen', rolle: dr.rolle, frist: dr.frist, budget: dr.budget.trim(), beschluss: dr.beschluss.trim(), notiz: dr.notiz.trim() }, 'Checkliste erfasst'); if (ok) { ui.open[x.id] = false; delete ui.drafts[x.id]; rerender(); } } }, 'Speichern'),
+        h('button', { class: 'btn ghost', type: 'button', onclick: () => { ui.open[x.id] = false; delete ui.drafts[x.id]; rerender(); } }, 'Schließen')))) : null;
+    return h('li', { class: 'task' + (done ? ' done' : '') + (x.typ === 'drop' ? ' cl-drop' : '') },
+      h('button', { class: 'cb', type: 'button', disabled: ro(), 'aria-pressed': String(done), 'aria-label': x.text + ': ' + (done ? 'als offen markieren' : 'als erledigt markieren'),
+        onclick: () => { delete ui.drafts[x.id]; save(x.id, { status: done ? 'offen' : 'erledigt' }); } }, done ? app.icon('check') : null),
+      h('div', { class: 'tbody' },
+        h('span', { class: 'tt', text: x.text }),
+        h('div', { class: 'tmeta' },
+          h('span', { class: 'pill cl-typ ' + x.typ }, h('i', { class: 'cl-dot ' + x.typ, 'aria-hidden': 'true' }), TYP[x.typ] || x.typ),
+          r.status !== 'offen' && !done ? h('span', { class: 'pill ' + (r.status === 'zurueckgestellt' ? 'block' : 'wait'), text: STL[r.status] || r.status }) : null,
+          str(r.rolle) ? h('span', { class: 'pill own', text: roleLabel(r.rolle) }) : null,
+          du ? h('span', { class: 'pill due ' + du.c, text: du.t }) : null,
+          str(r.budget) ? h('span', { class: 'pill att', text: '€ ' + r.budget }) : null,
+          tk ? h('span', { class: 'pill att cl-cu', title: 'ClickUp-Ticket (Snapshot 27.09.2026)', text: 'CU · ' + TICKETS[tk] }) : null),
+        str(r.beschluss) ? h('div', { class: 'tnote', text: 'Beschluss: ' + r.beschluss }) : null,
+        str(r.notiz) ? h('div', { class: 'tnote', text: r.notiz }) : null,
+        panel),
+      h('div', { class: 'acts' }, h('button', { class: 'btn small', type: 'button', 'aria-expanded': String(open), 'aria-controls': 'clp-' + x.id,
+        onclick: () => { ui.open[x.id] = !open; if (!ui.open[x.id]) delete ui.drafts[x.id]; rerender(); } }, captured(r) ? 'Erfasst ✎' : 'Erfassen')));
+  }
+  function buildCsv() {
+    const cell = v => { const s = v == null ? '' : String(v); return /[";\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    const rows = [['Kategorie', 'Aufgabe', 'Typ', 'Status', 'Verantwortlich (Rolle)', 'Frist', 'Budget', 'Beschluss', 'Notiz']].concat(items().map(x => { const r = recOf(x.id); return [x.sec, x.text, TYP[x.typ] || x.typ, STL[r.status] || r.status, roleLabel(r.rolle), ISO.test(str(r.frist)) ? fmtD(r.frist) : '', str(r.budget), str(r.beschluss), str(r.notiz)]; }));
+    return '﻿' + rows.map(r => r.map(cell).join(';')).join('\r\n') + '\r\n';
+  }
+  function buildMd() {
+    const pr = progress(), out = ['# InfraTech 2027 – Ergebnisbericht Checkliste 2026→27', 'Stand ' + fmtD(app.today()) + ' · ' + pr.done + '/' + pr.total + ' erledigt (' + pr.pct + ' %) · ' + pr.captured + ' erfasst', ''];
+    SECTIONS.forEach(([name, its], si) => { out.push('## ' + name); its.forEach(([typ, text], ii) => { const r = recOf(si + '-' + ii);
+      out.push('- ' + (r.status === 'erledigt' ? '[x]' : '[ ]') + ' ' + text + ' _(' + (TYP[typ] || typ) + (r.status !== 'offen' && r.status !== 'erledigt' ? ', ' + STL[r.status] : '') + ')_');
+      const d = [str(r.rolle) && 'Rolle: ' + roleLabel(r.rolle), ISO.test(str(r.frist)) && 'Frist: ' + fmtD(r.frist), str(r.budget) && 'Budget: ' + r.budget, str(r.beschluss) && 'Beschluss: ' + r.beschluss, str(r.notiz) && 'Notiz: ' + r.notiz].filter(Boolean);
+      if (d.length) out.push('  - ' + d.join(' · ').replace(/\s*\n+\s*/g, ' ')); }); out.push(''); });
+    out.push('_Automatisch aus dem Feind Cockpit erzeugt – keine personenbezogenen Daten._');
+    return out.join('\n');
+  }
+  app.checklistExports = { csv: buildCsv, md: buildMd };
+
+  app.module('infratech', 'checkliste', {
+    count() { const p = progress(); return p.total - p.done; },
+    render() {
+      const pr = progress(), list = filtered();
+      const kpi = (cls, v, k, sub) => h('div', { class: 'kpi' + (cls ? ' ' + cls : '') }, h('div', { class: 'v', text: String(v) }), h('div', { class: 'k', text: k }), h('div', { class: 'sub', text: sub }));
+      const q = h('input', { type: 'search', id: 'cl-q', placeholder: 'Aufgabe suchen …', value: ui.q });
+      q.addEventListener('input', () => { ui.q = q.value; rerender(); });
+      const secSel = app.dropdown('cl-sec', [['all', 'Alle Kategorien']].concat(SECTIONS.map(([n], i) => [String(i), n])), ui.sec, v => { ui.sec = v; rerender(); });
+      const chips = [['all', 'Alle'], ['open', '☐ Offen'], ['done', '☑ Erledigt'], ['warn', '⚠ Zu klären'], ['captured', '✎ Erfasst']].map(([k, l]) => h('button', { class: 'fchip', type: 'button', 'aria-pressed': String(ui.st === k), onclick: () => { ui.st = k; rerender(); } }, l));
+      const groups = SECTIONS.map(([name, its], si) => {
+        const shown = list.filter(x => x.si === si); if (!shown.length) return null;
+        const dn = its.filter((_, ii) => recOf(si + '-' + ii).status === 'erledigt').length, ep = CAT_EPIC[si];
+        return h('div', { class: 'catgroup' },
+          h('div', { class: 'cathead cl-head' }, h('span', { class: 'catdot tone-accent', 'aria-hidden': 'true' }), h('h3', { text: name }),
+            ep ? h('span', { class: 'pill att cl-cu', title: 'ClickUp-Epic (Snapshot 27.09.2026, ClickUp wird stillgelegt)', text: 'CU · ' + EPICS[ep] }) : null,
+            h('span', { class: 'cnt num', text: dn + '/' + its.length })),
+          h('ul', { class: 'tasklist' }, shown.map(row)));
+      });
+      return [
+        panelHead('ToDo-Liste InfraTech 2027 · Rotterdam Ahoy', pr.done + ' / ' + pr.total + ' erledigt', null, 'Basis: reale Checkliste der InfraTech 2026 (Essen) — angepasst um die Lessons Learned. Unverändert übernommen aus der ToDo-Liste (Artefakt); Erfassung wird geteilt im Cockpit gespeichert.'),
+        h('div', { class: 'strip' },
+          kpi(pr.pct >= 50 ? 'ok' : '', pr.done + ' / ' + pr.total, 'Fortschritt', pr.pct + ' % erledigt'),
+          kpi('', pr.captured, 'erfasst', 'mit Status/Rolle/Frist/Notiz'),
+          kpi('warn', items().filter(x => x.typ === 'warn' && recOf(x.id).status !== 'erledigt').length, 'zu klären', '2026 offen'),
+          kpi('', items().filter(x => x.typ === 'drop').length, 'gestrichen', 'nicht mitnehmen')),
+        h('div', { class: 'section' },
+          h('div', { class: 'ptrack', role: 'progressbar', 'aria-label': 'Fortschritt Checkliste', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(pr.pct) }, h('span', { class: 'pfill', style: 'width:' + pr.pct + '%' })),
+          h('div', { class: 'cl-legend' }, Object.keys(TYP_LEGEND).map(k => h('span', {}, h('i', { class: 'cl-dot ' + k, 'aria-hidden': 'true' }), TYP_LEGEND[k]))),
+          ui.meeting ? null : h('p', { class: 'small muted', text: 'ClickUp-Status (Snapshot, zuletzt geprüft 27.09.2026, Liste „Messe Rotterdam 2027 – InfraTech“, nicht live): „CU“ an der Kategorie = Epic, am Punkt = zugeordnetes Einzelticket. ClickUp wird stillgelegt – gepflegt wird hier und im Team-Sheet.' }),
+          ui.meeting ? null : h('div', { class: 'cl-kpibox' }, h('strong', { text: 'Kennzahlen & Budget 2027 (Quelle: Manus-Analyse, nicht separat nachgerechnet)' }), h('ul', {}, KPI_BOX.map(k => h('li', { text: k }))),
+            h('div', { class: 'small muted', text: 'Quelle: MANUS_Stapeldownload_Infratec2027.zip, Datei „Projektgrundgerüst InfraTech 2027.md“ — von uns nicht separat nachgerechnet.' })),
+          h('div', { class: 'tools' },
+            app.exportButton('Als CSV exportieren', 'InfraTech2027-Checkliste.csv', 'text/csv', buildCsv, 'cl-csv'),
+            app.exportButton('Ergebnisbericht (Markdown)', 'InfraTech2027-Checkliste-Bericht.md', 'text/markdown', buildMd, 'cl-md'),
+            h('a', { class: 'btn ghost', href: SOURCE, target: '_blank', rel: 'noopener noreferrer' }, 'Original-ToDo-Liste ↗')),
+          h('div', { class: 'filters' }, app.field('Suche', q), app.field('Kategorie', secSel)),
+          h('div', { class: 'row' }, h('div', { class: 'chipset', role: 'group', 'aria-label': 'Status filtern' }, chips,
+            h('button', { class: 'fchip', type: 'button', id: 'cl-meet', 'aria-pressed': String(ui.meeting), onclick: () => { ui.meeting = !ui.meeting; rerender(); } }, '🎤 Meeting-Modus: nur offene Punkte')),
+            h('span', { class: 'muted small', text: list.length + ' von ' + pr.total + ' Punkten' })),
+          ui.meeting ? h('p', { class: 'small muted', text: 'Erledigte und 2026-gestrichene Punkte ausgeblendet — Fokus auf Offenes.' }) : null),
+        h('div', { class: 'section' }, groups.filter(Boolean).length ? groups : h('p', { class: 'muted', text: 'Keine Treffer für die aktuelle Auswahl.' })),
+        h('p', { class: 'small muted', text: '¹ Klarnamen Dritter aus Datenschutzgründen nicht ins Cockpit übernommen (Original-ToDo-Liste bleibt unverändert). Verantwortliche werden als Rolle erfasst. Vertragliches: Bitte Rechtsabteilung prüfen.' })
+      ];
+    }
+  });
 })();
 
 /* ---- app-init.js ---- */

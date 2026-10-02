@@ -44,7 +44,7 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
 - **Rechtliches:** Bei arbeitsrechtlichen/vertraglichen/zoll-/versicherungsbezogenen Fragen stets
   „Bitte Rechtsabteilung prüfen" ergänzen.
 - **Corporate Design:** Farben/Schriften ausschließlich aus `branding/feind-ci.tokens.json`.
-- **Zuständigkeit / keine Kollision:** Das Cockpit-HTML (`feind-cockpit.html`, Artefakt 4zX58) wird von der
+- **Zuständigkeit / keine Kollision:** Das Cockpit-HTML (`feind-cockpit-v3.html`, Artefakt GRG81 „Feind Cockpit (Copy)“) wird von der
   Claude-Code-Session gepflegt. Du schreibst **nicht** in diese Datei; deine Änderungen laufen über
   die geteilte DB (`tasks`, `overrides`, `settings/general`), Recherche-Notizen und Erinnerungen.
   So vermeiden wir parallele, widersprüchliche Stände.
@@ -52,7 +52,7 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
   Innovationspreis-Frist), nicht ungeprüft übernehmen – verifizieren und markieren.
 
 ## Kontextdateien
-- `messe/rotterdam-2027/feind-cockpit.html` – das Live-Cockpit (Quelle, v1.1); `infratech-2027-liste.html` = Altstand
+- `messe/rotterdam-2027/feind-cockpit-v3.html` – Quelle des führenden Cockpits (https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i); `feind-cockpit.html` (v1.1) und `infratech-2027-liste.html` = Altstände
 - `messe/rotterdam-2027/MASTER-TODO.md` – Aufgabenquelle
 - `messe/rotterdam-2027/FUNKTIONS-BACKLOG.md` – Feature-Backlog
 - `messe/rotterdam-2027/KATEGORISIERUNG-MANUS.md` – Herkunft/Integration der Daten
