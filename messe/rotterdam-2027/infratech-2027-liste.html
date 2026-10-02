@@ -320,13 +320,13 @@ function t(id,cat,prio,due,owner,title,note,flags){return {id,cat,prio,due,owner
 const TASKS=[
  t("s1","steuerung","P0","2026-10-02","David","2027-Handbuch, Standnummer & Portalzugänge bei Rotterdam Ahoy anfordern/bestätigen","Voraussetzung für alle weiteren Fristen.",[]),
  t("s2","steuerung","P0","2026-10-09","David","Verbindliche 2027-Fristenmatrix mit Ahoy verifizieren","Standentwurf-Genehmigung, Anmeldeschluss, VRS/Slot, Auf-/Abbauzeiten – 2027 offiziell noch nicht publiziert.",["fakt"]),
- t("s3","steuerung","P1","2026-10-02","David","Offizielle 2027-Sales-Kontaktperson bei infratech.nl erfragen","„k.vlot@ahoy.nl\" laut Faktencheck unbestätigt; Ahoy-Adressen enden auf @ahoy.nl.",["fakt"]),
+ t("s3","steuerung","P1","2026-10-02","David","Offizielle 2027-Sales-Kontaktperson bei infratech.nl erfragen","BESTÄTIGT: Account Manager Meindert Schermer, m.schermer@ahoy.nl, +31 6 43 29 30 95 (infratech.nl/contact). „k.vlot@ahoy.nl\" nicht verifizierbar – nicht verwenden.",[]),
  t("s4","steuerung","P2","2026-10-16","David","Rechtsform des Vertragspartners (Rotterdam Ahoy N.V.?) prüfen","Gegen die tatsächliche 2027-Teilnahmevereinbarung abgleichen.",["recht"]),
  t("s5","steuerung","P1",null,"David","Verträge/Bestellungen mit Belegnr., Betrag, Frist, Kündigungs- & Lieferbedingung archivieren","Laufend – zentrale Ablage.",[]),
  t("s6","steuerung","P2",null,"David","Eskalationskontakt + 72-Stunden-Regel dokumentieren","Bei Nicht-Antwort des Veranstalters.",[]),
  t("s7","steuerung","P1","2026-09-30","Team","Wöchentlichen 15-min-Sync + Kanal „Messe2027_INFRATEC\" einrichten","Fester Jour fixe bis Messe.",[]),
  t("s8","steuerung","P1","2026-10-23","David","Budget-Forecast (24.200–26.500 € brutto) + Freigabegrenzen einrichten","Ziel: max. 10 % Abweichung. Bei Vertragsfragen Rechtsabteilung prüfen.",["recht"]),
- t("i1","innovation","P0","2026-09-25","David","Innovationspreis-Einsendung abschließen","KONFLIKT: ToDo nannte 31.10.2026, Faktencheck nennt 25.09.2026. Datum SOFORT verifizieren!",["fakt"]),
+ t("i1","innovation","P0","2026-09-25","David","Innovationspreis-Einsendung abschließen","GEKLÄRT: Einsendeschluss offiziell 25.09.2026, 17:00 (Reglement 2027) – abgelaufen. Alte 31.10.-Angabe war falsch. Nächste Chance Edition 2029.",[]),
  t("i2","innovation","P0","2026-09-23","David","Problemdefinition & Nutzen formulieren",""),
  t("i3","innovation","P0","2026-09-24","Team","Video mit 3 Kernbotschaften erstellen",""),
  t("i4","innovation","P1","2026-09-24","David","Partner & Entwicklung dokumentieren",""),
@@ -397,7 +397,9 @@ const TASKS=[
 ];
 
 const DEADLINES=[
- {d:"2026-09-25",t:"Innovationspreis – Einsendung",s:"2027 bestätigt (Faktencheck)",st:"r"},
+ {d:"2026-09-25",t:"Innovationspreis – Einsendeschluss (17:00 Uhr)",s:"Offiziell bestätigt (Reglement 2027); abgelaufen",st:"r"},
+ {d:"2026-12-11",t:"Innovationspreis – öffentliche Pitch-Sitzung (Rotterdam Ahoy)",s:"Offiziell bestätigt (Reglement 2027)",st:"g"},
+ {d:"2027-01-13",t:"Innovationspreis – Bekanntgabe der Gewinner (Messe)",s:"Offiziell bestätigt (Reglement 2027)",st:"g"},
  {d:"2026-11-21",t:"Standentwurf-Genehmigung (>2,75 m) + Katalog-Firmendaten + Produkte/Dienstleistungen",s:"Referenz 2026 – 2027 verifizieren",st:"y"},
  {d:"2026-12-01",t:"Bestellungen im Webshop vor Zuschlagsfrist",s:"Referenz 2026 – 2027 verifizieren",st:"y"},
  {d:"2026-12-12",t:"Namensblende, Teppichfarbe & Grafikdatei an Standbauer",s:"Referenz 2026 – 2027 verifizieren",st:"y"},
@@ -435,12 +437,15 @@ const LESSONS=[
  ["E10","Ausstellerabend laut/zu wenig Sitzplätze – kaum Networking.","Niedrig","Gezielte Termine außerhalb des Abends."],
 ];
 const FACTS=[
- ["Messedatum","12.–15. Januar 2027 (Di–Fr), Rotterdam Ahoy","Bestätigt","ToDo nannte 12.–14.01. → Aufbau/Abbau-Plan an 4 Messetage anpassen."],
- ["Innovationspreis","Einsendung vóór 25.09.2026","Bestätigt (2027)","ToDo nannte 31.10.2026 – DRINGEND verifizieren, Frist ggf. in Tagen!"],
+ ["Messedatum","12.–15. Januar 2027 (Di–Fr), Rotterdam Ahoy (17. Edition)","Bestätigt","Offiziell (infratech.nl/ahoy.nl). ToDo nannte 12.–14.01. → Auf-/Abbauplan auf 4 Messetage anpassen."],
+ ["Öffnungszeiten","Di 10–18 · Mi 10–21 · Do 10–18 · Fr 10–16","Bestätigt","Offiziell bestätigt (infratech.nl). Mittwoch langer Abend."],
+ ["Innovationspreis","Einsendeschluss 25.09.2026, 17:00 Uhr","Bestätigt","Offiziell im Reglement 2027 belegt. Alte ToDo-Angabe 31.10.2026 war falsch. Frist ist abgelaufen – nächste Chance Edition 2029. Pitch 11.12.2026, Gewinner-Bekanntgabe 13.01.2027."],
+ ["Turnus","InfraTech ist zweijährlich (ungerade Jahre); letzte Edition 2025","Bestätigt","Es gibt keine Edition 2026. Intern als „Referenz 2026\" geführte Termine stammen aus Edition 2025 – für 2027 verifizieren."],
+ ["Ansprechpartner","Account Manager Meindert Schermer · m.schermer@ahoy.nl · +31 6 43 29 30 95","Bestätigt","Offizieller Ausstellerkontakt (infratech.nl/contact). Verbindliche 2027-Fristen/Preise nur hierüber bzw. im Exposanten-Portaal. „k.vlot@ahoy.nl\" nicht verifizierbar – nicht verwenden."],
+ ["Standpreis","Teilnahme ab 250 €/m² (2027 offiziell)","Bestätigt","Aufschlüsselung nicht öffentlich – nur über Account Manager. Referenz 2025: Fläche 230 €/m² + Paket + Pflicht-Marketingpaket 275 €."],
  ["Hotels","Nur ibis Styles Rotterdam Ahoy fußläufig (~2 min)","Korrektur","Hilton/Postillion WTC/DoubleTree ~5 km Zentrum; „The Manhattan\" = Rotterdam Marriott."],
- ["Kennzahlen","500 Aussteller / >23.000 Besucher","Fortschreibung","2025-Werte (23.344), keine testierte 2027-Prognose."],
- ["Dienstleister","Global Expo Stand B.V. & LOCO verifiziert","Prüfen","Whimsical Exhibits & LIVE Event Staffing schwach belegt; „ExproGloble\" nicht auffindbar – streichen."],
- ["Öffnungszeiten","Di 10–18 · Mi 10–21 · Do 10–18 · Fr 10–16","Bestätigt","Mittwoch langer Abend."],
+ ["Kennzahlen","Ist 2025: 23.344 Besucher / >500 Aussteller","Fortschreibung","Werte der Edition 2025 als Referenz auf der 2027-Seite; keine testierte 2027-Prognose."],
+ ["Dienstleister","Global Expo Stand B.V. & LOCO verifiziert","Prüfen","Whimsical Exhibits & LIVE Event Staffing schwach belegt; „ExproGloble\" nicht auffindbar – streichen. Status im Tab „Faktencheck“ → Dienstleister pflegen."],
 ];
 const SOURCES=[
  ["Ausstellerhandbuch InfraTech 2026","PDF","Aufbau/Abbau, Lieferungen, Ansprechpartner – Checklistenbasis"],
@@ -720,8 +725,8 @@ function viewDashboard(pr){
      <button class="btn ghost" id="reportBtn" title="Statusbericht als Markdown">Statusbericht (Markdown)</button>
      <button class="btn ghost" id="printBtn" title="Druckansicht / als PDF speichern">Drucken / PDF</button>
    </div>
-   <div class="alert"><span class="ic">⚠️</span><div><h3>Sofort prüfen: Innovationspreis-Frist</h3>
-     <p>Faktencheck nennt Einsendeschluss <strong>25.09.2026</strong>, die alte ToDo-Liste 31.10.2026. Umgehend beim Veranstalter verifizieren.</p></div></div>
+   <div class="alert info"><span class="ic">✓</span><div><h3>Innovationspreis-Frist geklärt</h3>
+     <p>Einsendeschluss war offiziell <strong>25.09.2026, 17:00 Uhr</strong> (Reglement 2027) – die alte 31.10.-Angabe war falsch. Die Frist ist <strong>abgelaufen</strong>; nächste Teilnahmechance: Edition 2029.</p></div></div>
    <div class="alert warn"><span class="ic">📅</span><div><h3>Messedatum korrigiert</h3>
      <p>InfraTech 2027 läuft <strong>12.–15. Januar 2027 (Di–Fr)</strong> – nicht 12.–14. Auf-/Abbauplan auf vier Messetage anpassen.</p></div></div>
 
