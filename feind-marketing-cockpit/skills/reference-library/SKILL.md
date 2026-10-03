@@ -54,7 +54,8 @@ was aus Ordnername und Dateien eindeutig hervorgeht, und liste den Rest als Rüc
 
 ## Datensatz `references/<id>`
 
-`title, region, client?, clientApproved, services, year, facts, files, summary, feedback?, source`
+`title, region, client?, clientApproved, services, year, facts, files, summary, feedback?, source,
+place?, lat?, lng?, geo?, date?, projectUrl?`
 
 * `facts`: Liste von Strings, jeder Fakt mit Dateipfad, z. B.
   `"Frästiefe <Wert> auf <Fläche> (05_Referenzen/<Ordner>/abnahme.pdf, S. 2)"` (Formatbeispiel, keine Projektangabe).
@@ -63,6 +64,11 @@ was aus Ordnername und Dateien eindeutig hervorgeht, und liste den Rest als Rüc
 * `feedback`: Kundenzitat nur mit Freigabe und mit Quelle, ohne Personennamen.
 * `source`: Projektordner, z. B. `"05_Referenzen/2025_ludwigslust-parchim_b-bundesstrasse-deckschicht/"`.
 * ID: Ordnername in kleinbuchstaben-mit-bindestrich, Umlaute ausgeschrieben.
+* Referenzkarte (Spec `konzepte/referenzkarte.md`): `place` (Ortsangabe), `lat`/`lng` (WGS84, 3 Nachkommastellen),
+  bei Streckenprojekten `geo: {kind: "strecke", to: {lat, lng}}`, `date` (`JJJJ-MM` oder `JJJJ-MM-TT`, Ende der
+  Ausführung) und `projectUrl` (Referenzseite auf fraesdienst-feind.de, nur `https://`). Koordinaten nur aus
+  Projektakte oder belegtem Ort; Gemeindekoordinaten in `source` als „ungefähr“ kennzeichnen. Fehlt der Ort, Felder
+  weglassen: Das Projekt erscheint dann in der Liste unter der Karte statt als Punkt.
 
 ## Arbeitsablauf A – Einlesen und spiegeln
 

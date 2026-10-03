@@ -541,6 +541,24 @@ button.kpi:hover { border-color: var(--ink-muted); }
 .refs { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--s2); }
 .refs .card ul { margin: 0; padding-left: 18px; font-size: 13.5px; }
 .noclient { font-style: italic; color: var(--ink-muted); }
+/* Referenzkarte: schematischer Umriss, Projektpunkte als Knöpfe über der Karte (Spec konzepte/referenzkarte.md) */
+.refmap { display: grid; grid-template-columns: minmax(0, 340px) 1fr; gap: var(--s3); align-items: start; }
+.refmap-stage { position: relative; width: 100%; max-width: 340px; }
+.refmap-stage svg { display: block; width: 100%; height: auto; }
+.refmap-stage .land { fill: var(--surface-muted); stroke: var(--ink-muted); stroke-width: 1.5; stroke-linejoin: round; }
+.refmap-stage .site { fill: var(--accent); stroke: var(--ink-strong); stroke-width: 1; }
+.refmap-stage .route { stroke: var(--accent); stroke-width: 4; stroke-linecap: square; }
+.refmap-stage .site-l { fill: var(--ink-muted); font: 11px var(--font-sans); }
+.refpin { position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; padding: 0; border: 0; background: transparent; cursor: pointer; display: grid; place-items: center; }
+.refpin i { display: block; width: 12px; height: 12px; background: var(--accent); border: 2px solid var(--ink-strong); transform: rotate(45deg); }
+.refpin[aria-pressed="true"] i { width: 16px; height: 16px; background: var(--ink-strong); border-color: var(--accent); }
+.refpin:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.refmap-legend { display: flex; flex-wrap: wrap; gap: var(--s3); font-size: 12px; color: var(--ink-muted); margin-top: var(--s2); }
+.refmap-legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; background: var(--accent); border: 1px solid var(--ink-strong); }
+.refmap-legend i.pin { transform: rotate(45deg); }
+.refmap-detail .t { font-weight: 700; color: var(--ink-strong); }
+@media (max-width: 720px) { .refmap { grid-template-columns: 1fr; } .refmap-stage { margin: 0 auto; } }
+@media print { .refpin i { border-color: #1f2626; } }
 
 /* ---------- InfraTech: Aufgaben ---------- */
 .catgroup { display: flex; flex-direction: column; gap: 4px; }
@@ -4914,7 +4932,7 @@ label.check input { margin-top: 3px; }
   const { h, s, chip, panelHead } = app;
   const { str, arr, numOr, parseDay, dayDiff, fmtD, fmtDs, fmtN, tageText } = H;
   const S = app.state;
-  const ui = S.ui.mk2 = { showPast: true, openEvents: new Set(), pending: new Set(), metric: 'clicks', refQ: '', refService: '', refYear: '' };
+  const ui = S.ui.mk2 = { showPast: true, openEvents: new Set(), pending: new Set(), metric: 'clicks', refQ: '', refService: '', refYear: '', refSel: null };
   const rerender = () => app.refresh();
   const today = () => app.today();
   const uniq = values => Array.from(new Set(values.map(str).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'de'));
@@ -5221,13 +5239,77 @@ label.check input { margin-top: 3px; }
       if (ui.refService && !arr(r.services).map(str).includes(ui.refService)) return false;
       if (ui.refYear && String(r.year) !== ui.refYear) return false;
       if (q) {
-        const hay = [r.title, r.region, r.clientApproved === true ? r.client : '', r.summary, r.feedback, ...arr(r.services), ...arr(r.facts)].map(str).join(' ').toLowerCase();
+        const hay = [r.title, r.region, r.place, r.clientApproved === true ? r.client : '', r.summary, r.feedback, ...arr(r.services), ...arr(r.facts)].map(str).join(' ').toLowerCase();
         if (!hay.includes(q)) return false;
       }
       return true;
     });
   }
   app.mkFilteredRefs = filteredRefs;
+  /* ---------- Referenzkarte (Spec konzepte/referenzkarte.md) ----------
+     Schematischer Umriss Deutschlands [Länge, Breite], Plattkarte 47,2–55,1° N, 5,8–15,1° O. Genau genug für
+     Projektpunkte, keine Landkarte für Entfernungen. Punkte nur aus lat/lng im Datensatz, nie geraten. */
+  const DE_OUTLINE = [[8.6, 55.05], [9.4, 54.83], [10.0, 54.55], [11.1, 54.45], [10.8, 53.95], [11.5, 54.05], [12.1, 54.18], [12.9, 54.45], [13.4, 54.68],
+    [13.7, 54.3], [14.2, 53.95], [14.4, 53.3], [14.15, 52.85], [14.6, 52.6], [14.75, 52.1], [14.7, 51.6], [15.04, 51.27], [14.8, 50.85], [14.3, 50.9],
+    [13.9, 50.75], [13.0, 50.45], [12.5, 50.35], [12.1, 50.25], [12.3, 50.0], [12.5, 49.7], [12.9, 49.35], [13.4, 49.05], [13.85, 48.75], [13.5, 48.57],
+    [12.9, 48.2], [12.95, 47.95], [13.05, 47.45], [12.75, 47.65], [12.2, 47.7], [11.6, 47.58], [11.0, 47.4], [10.45, 47.55], [10.2, 47.28], [9.7, 47.55],
+    [9.0, 47.65], [8.6, 47.65], [8.4, 47.58], [7.6, 47.58], [7.55, 48.0], [7.8, 48.6], [8.2, 48.97], [7.4, 49.17], [6.75, 49.15], [6.4, 49.45],
+    [6.5, 49.8], [6.15, 50.15], [6.4, 50.35], [6.0, 50.75], [5.95, 51.05], [6.2, 51.4], [5.95, 51.8], [6.8, 51.95], [6.75, 52.25], [7.05, 52.4],
+    [6.75, 52.65], [7.2, 53.25], [7.0, 53.65], [7.4, 53.72], [8.0, 53.7], [8.5, 53.55], [8.65, 53.9], [9.0, 53.85], [8.6, 54.3], [8.9, 54.6], [8.6, 54.9]];
+  const MAP_K = 40, MAP_C = Math.cos(51.2 * Math.PI / 180);
+  const MAP_W = Math.round(9.3 * MAP_C * MAP_K), MAP_H = Math.round(7.9 * MAP_K);
+  const proj = (lat, lng) => [(lng - 5.8) * MAP_C * MAP_K, (55.1 - lat) * MAP_K];
+  // Standorte: ungefähre Gemeindekoordinaten (D.HOME_SITES), als Fräszahn markiert.
+  const SITES = [['Lübben', 51.94, 13.89, 'end'], ['Wittenburg', 53.51, 11.07, 'start']];
+  const num = v => typeof v === 'number' && isFinite(v);
+  const hasGeo = r => num(r.lat) && num(r.lng) && r.lat > 47 && r.lat < 55.2 && r.lng > 5.5 && r.lng < 15.3;
+  const refDate = r => { const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(str(r.date)); return m ? (m[3] ? m[3] + '.' : '') + m[2] + '.' + m[1] : (r.year ? String(r.year) : ''); };
+  const refUrl = r => { const u = H.safeUrl(r.projectUrl); return u && /^https:\/\//i.test(u) ? u : null; };
+  const firstSentence = t => str(t).replace(/\s+/g, ' ').trim().replace(/^(.{20,}?[.!?])\s.*$/, '$1');
+  const refTip = r => [str(r.title) || '(ohne Titel)', [str(r.place) || str(r.region), refDate(r) || 'Datum offen'].filter(Boolean).join(' · '), firstSentence(r.summary)].filter(Boolean).join('\n');
+  app.refGeo = { DE_OUTLINE, proj, hasGeo, refDate, refUrl, MAP_W, MAP_H };
+
+  function refMap(items) {
+    const geo = items.filter(hasGeo), noGeo = items.filter(r => !hasGeo(r));
+    const sel = items.find(r => r._id === ui.refSel) || null;
+    const svg = s('svg', { viewBox: '0 0 ' + MAP_W + ' ' + MAP_H, 'aria-hidden': 'true', focusable: 'false' });
+    svg.append(s('path', { class: 'land', d: 'M' + DE_OUTLINE.map(([lng, lat]) => proj(lat, lng).map(v => v.toFixed(1)).join(',')).join('L') + 'Z' }));
+    for (const r of geo) {
+      const to = r.geo && r.geo.kind === 'strecke' && r.geo.to && hasGeo(r.geo.to) ? r.geo.to : null;
+      if (to) { const [x1, y1] = proj(r.lat, r.lng), [x2, y2] = proj(to.lat, to.lng); svg.append(s('line', { class: 'route', x1, y1, x2, y2 })); }
+    }
+    for (const [name, lat, lng, anchor] of SITES) {
+      const [x, y] = proj(lat, lng);
+      svg.append(s('rect', { class: 'site', x: (x - 4).toFixed(1), y: (y - 4).toFixed(1), width: 8, height: 8 }), s('text', { class: 'site-l', 'text-anchor': anchor, x: (x + (anchor === 'end' ? -7 : 7)).toFixed(1), y: (y + 4).toFixed(1) }, name));
+    }
+    const stage = h('div', { class: 'refmap-stage', role: 'group', 'aria-label': 'Deutschlandkarte, schematisch, ' + geo.length + (geo.length === 1 ? ' Referenzprojekt' : ' Referenzprojekte') }, svg,
+      geo.map(r => {
+        const [x, y] = proj(r.lat, r.lng);
+        return h('button', { class: 'refpin', type: 'button', id: 'refpin-' + r._id, style: 'left:' + (x / MAP_W * 100).toFixed(2) + '%;top:' + (y / MAP_H * 100).toFixed(2) + '%',
+          'data-tip': refTip(r), 'aria-pressed': String(ui.refSel === r._id), 'aria-label': (str(r.title) || 'Referenz') + (str(r.place) ? ', ' + str(r.place) : '') + ', Details anzeigen',
+          onclick: () => { ui.refSel = ui.refSel === r._id ? null : r._id; rerender(); } }, h('i', { 'aria-hidden': 'true' }));
+      }));
+    let detail;
+    if (sel) {
+      const url = refUrl(sel);
+      detail = h('article', { class: 'card accentbar refmap-detail', 'aria-live': 'polite' },
+        h('div', { class: 'meta', text: [str(sel.place) || str(sel.region), refDate(sel) || 'Datum offen'].filter(Boolean).join(' · ') }),
+        h('div', { class: 't', text: str(sel.title) || '(ohne Titel)' }),
+        str(sel.summary) ? h('p', { class: 'small', text: str(sel.summary) }) : null,
+        sel.clientApproved === true && str(sel.client) ? h('div', { class: 'small' }, h('span', { class: 'label', text: 'Kunde ' }), str(sel.client)) : h('div', { class: 'noclient small', text: 'Kunde nicht freigegeben' }),
+        h('div', { class: 'row' },
+          url ? h('a', { class: 'btn primary', href: url, target: '_blank', rel: 'noopener noreferrer' }, app.icon('ext'), 'Mehr zum Projekt') : h('span', { class: 'muted small', text: 'Projektseite auf fraesdienst-feind.de noch nicht hinterlegt (Feld projectUrl).' }),
+          h('button', { class: 'btn ghost', type: 'button', onclick: () => { ui.refSel = null; rerender(); } }, 'Schließen')));
+    } else detail = h('p', { class: 'muted small', text: geo.length ? 'Punkt überfahren für Kurzinfo, anklicken oder antippen für Details und den Link zur Projektseite.' : 'Noch kein Projekt mit Koordinaten. Ort und Koordinaten (lat, lng) je Referenz ergänzen, dann erscheinen die Punkte hier.' });
+    const without = noGeo.length ? h('div', { class: 'stack' }, h('span', { class: 'label', text: 'Ohne Ortsangabe, nicht auf der Karte (' + noGeo.length + ')' }),
+      h('ul', { class: 'small', style: 'margin:0;padding-left:18px' }, noGeo.map(r => h('li', {}, h('button', { class: 'linkbtn', type: 'button', onclick: () => { ui.refSel = r._id; rerender(); } }, str(r.title) || '(ohne Titel)'))))) : null;
+    return h('div', { class: 'section' }, h('h3', { text: 'Referenzkarte' }),
+      h('div', { class: 'refmap' },
+        h('div', {}, stage, h('div', { class: 'refmap-legend' }, h('span', {}, h('i', { class: 'pin' }), 'Referenzprojekt'), h('span', {}, h('i'), 'Standort (Lübben, Wittenburg)'))),
+        h('div', { class: 'stack' }, detail, without,
+          h('p', { class: 'muted small', text: 'Schematische Karte; Orte nur aus den Referenzdaten. Gemeindekoordinaten gelten als ungefähr.' }))));
+  }
+
   app.module('marketing', 'references', {
     count: () => filteredRefs().length,
     render() {
@@ -5243,8 +5325,8 @@ label.check input { margin-top: 3px; }
       const head = panelHead('Referenz-Bibliothek', items.length + ' von ' + S.data.references.length, null, app.mkSrcNote('references') + ' · Kundennamen nur mit Freigabe (clientApproved)');
       if (!items.length) return [head, tools, app.mkEmpty('references', S.data.references.length > 0)];
       const list = items.slice().sort((a, b) => (parseInt(b.year, 10) || 0) - (parseInt(a.year, 10) || 0) || str(a.title).localeCompare(str(b.title), 'de'));
-      return [head, tools, h('div', { class: 'refs' }, list.map(r => h('article', { class: 'card' },
-        h('div', { class: 'meta', text: [str(r.year), str(r.region)].filter(Boolean).join(' · ') || 'Jahr und Region offen' }),
+      return [head, tools, refMap(list), h('div', { class: 'refs' }, list.map(r => h('article', { class: 'card' },
+        h('div', { class: 'meta', text: [refDate(r) || str(r.year), str(r.place) || str(r.region)].filter(Boolean).join(' · ') || 'Jahr und Region offen' }),
         h('div', { class: 't', text: str(r.title) || '(ohne Titel)' }),
         r.clientApproved === true && str(r.client) ? h('div', {}, h('span', { class: 'label', text: 'Kunde ' }), str(r.client)) : h('div', { class: 'noclient small', text: 'Kunde nicht freigegeben' }),
         arr(r.services).length ? h('div', { class: 'chips' }, arr(r.services).map(x => h('span', { class: 'chip soft', text: str(x) }))) : null,
@@ -5252,6 +5334,7 @@ label.check input { margin-top: 3px; }
         arr(r.facts).length ? h('ul', {}, arr(r.facts).map(f => h('li', { text: str(f) }))) : null,
         str(r.feedback) ? h('div', { class: 'small muted', text: 'Feedback: ' + str(r.feedback) }) : null,
         arr(r.files).length ? h('div', { class: 'stack' }, h('span', { class: 'label', text: 'Dateien' }), arr(r.files).map(f => h('span', { class: 'path', text: str(f) }))) : null,
+        refUrl(r) ? h('div', { class: 'small' }, h('a', { href: refUrl(r), target: '_blank', rel: 'noopener noreferrer' }, app.icon('ext'), ' Mehr zum Projekt')) : null,
         str(r.source) ? h('div', { class: 'muted small', text: 'Quelle: ' + str(r.source) }) : null)))];
     }
   });
@@ -9001,16 +9084,16 @@ label.check input { margin-top: 3px; }
       blocks: [
         { p: 'Kundennamen erscheinen nur mit dokumentierter Freigabe (clientApproved). Preise und Beträge gehören nicht in Marketing-Material.', style: 'muted' },
         { h: 'Referenzen' },
-        { table: { cols: [{ t: 'Jahr', w: 14 }, { t: 'Projekt' }, { t: 'Kunde', w: 40 }, { t: 'Leistungen', w: 36 }, { t: 'geprüft', w: 17, align: 'center' }],
-          rows: items.map((r, k) => [str(r.year) || '–', { t: str(r.title) || '(ohne Titel)', sub: [str(r.region), str(r.summary), ...arr(r.facts).map(str)].filter(Boolean).join(' · ') },
+        { table: { cols: [{ t: 'Datum', w: 20 }, { t: 'Projekt' }, { t: 'Kunde', w: 40 }, { t: 'Leistungen', w: 36 }, { t: 'geprüft', w: 17, align: 'center' }],
+          rows: items.map((r, k) => [(app.refGeo ? app.refGeo.refDate(r) : '') || str(r.year) || '–', { t: str(r.title) || '(ohne Titel)', sub: [str(r.place) || str(r.region), str(r.summary), ...arr(r.facts).map(str)].filter(Boolean).join(' · ') },
             r.clientApproved === true ? client(r) : mut(client(r)), arr(r.services).map(str).join(', ') || '–', chk('Ref_' + k)]), empty: 'Keine Referenzen für die aktuellen Filter.' } },
         { field: { label: 'Fehlende Freigaben und Fotos', name: 'Freigaben', h: 54, optional: true } }
       ]
     };
   }
-  const refsCsv = () => H.toCsv(['Jahr', 'Titel', 'Region', 'Kunde', 'Leistungen', 'Zusammenfassung', 'Quelle'],
-    (app.mkFilteredRefs ? app.mkFilteredRefs() : S.data.references).map(r => [str(r.year), str(r.title), str(r.region), r.clientApproved === true ? str(r.client) : 'nicht freigegeben',
-      arr(r.services).map(str).join(', '), str(r.summary), str(r.source)].map(scrub)));
+  const refsCsv = () => H.toCsv(['Jahr', 'Datum', 'Titel', 'Region', 'Ort', 'Breite', 'Länge', 'Kunde', 'Leistungen', 'Zusammenfassung', 'Projektseite', 'Quelle'],
+    (app.mkFilteredRefs ? app.mkFilteredRefs() : S.data.references).map(r => [str(r.year), str(r.date), str(r.title), str(r.region), str(r.place), typeof r.lat === 'number' ? r.lat : '', typeof r.lng === 'number' ? r.lng : '',
+      r.clientApproved === true ? str(r.client) : 'nicht freigegeben', arr(r.services).map(str).join(', '), str(r.summary), H.safeUrl(r.projectUrl) || '', str(r.source)].map(v => (typeof v === 'string' ? scrub(v) : v))));
 
 
   function specBibliothek() {
