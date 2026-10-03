@@ -10,8 +10,9 @@ Cockpits** (`cockpit/Feind-Cockpit.html`). Verbindliches Schema: `cockpit/docs/S
 
 ## Ziel-Artefakt
 
-- URL: **die in `cockpit/README.md` unter „Live-Artefakt“ eingetragene Adresse** (nach dem Go-Live).
-  Ist dort noch keine eingetragen, frage David nach der Adresse und schreibe nichts.
+- URL: **https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd** (Cockpit A1, live und führend; ebenso in
+  `cockpit/README.md` unter „Live-Artefakt“). A4 ist gelöscht – nie dorthin schreiben.
+  Weicht die Adresse in `cockpit/README.md` ab, frage David und schreibe nichts.
 - Werkzeug: `ArtifactData` (`list`/`get` zum Lesen, `batch` mit höchstens 50 Schreibvorgängen zum Schreiben).
   Jeden Schreibvorgang auf ein vorher gelesenes Dokument mit `if_version` absichern.
 
