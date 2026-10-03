@@ -5,8 +5,8 @@
 **Zielgruppe:** Geschäftsführung, Datenschutzbeauftragte(r) (intern/extern), IT-Verantwortliche, ggf. Aufsichtsbehörde (LDA Brandenburg)
 **Erstellt von:** David Halko (Marketing & Eventmanagement) mit KI-Unterstützung
 **Berichtsdatum:** 14.09.2026
-**Version:** 1.3 (Entwurf)
-**Änderungsvermerk v1.4 (01.10.2026):** Abschnitt 12.1 (Kartenansicht im internen Feind Cockpit: Kachelanbieter, Einwilligung, lokal eingebettete Schrift) und Zeile „Kartenkachel-Anbieter“ in 7.1 ergänzt. HTML-, DOCX- und PDF-Fassung sind noch auf Stand v1.3.
+**Version:** 1.4 (Entwurf)
+**Änderungsvermerk v1.4 (01.10.2026):** Abschnitt 12.1 (Kartenansicht im internen Feind Cockpit: Kachelanbieter, Einwilligung, lokal eingebettete Schrift) und Zeile „Kartenkachel-Anbieter“ in 7.1 ergänzt. Alle Fassungen (MD, HTML, DOCX, PDF) aus der Markdown-Quelle neu erzeugt; dabei im HTML „Datenschutzbeauftragte(r)“ korrigiert (stand dort als „®“) und in v1.3 verlorene Hervorhebungen wiederhergestellt.
 **Änderungsvermerk v1.3 (21.09.2026):** Unternehmensprofil korrigiert (Kaltfräsarbeiten im Straßen-/Tiefbau statt CNC-Fertigung), Standorte Lübben (Brandenburg) und Wittenburg (Mecklenburg-Vorpommern) sowie zuständige Aufsichtsbehörde (LDA Brandenburg statt LDI NRW), Datenkategorien und Empfänger an das Baugeschäft angepasst.
 **Änderungsvermerk v1.2:** Aufgewertete Ausgabe (klickbares Inhaltsverzeichnis mit Anker-Links, verbesserte Tabellen-Darstellung, **Fußnoten** zu Rechtsquellen) sowie zusätzliche browserfreundliche HTML-Ansicht mit Navigations-Seitenleiste.
 **Änderungsvermerk v1.1:** Durchgängige `Annahme:`/`Offene Frage:`-Kennzeichnung, `{{PLATZHALTER}}`-Mechanismus in allen Vorlagen, neuer Abschnitt zur `.env`-Ableitungslogik, 4-spaltige Offene-Fragen-Tabelle, ergänzte kostengünstige/Open-Source-Optionen.
