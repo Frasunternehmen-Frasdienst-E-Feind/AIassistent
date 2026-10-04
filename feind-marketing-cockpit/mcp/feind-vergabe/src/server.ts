@@ -86,7 +86,8 @@ Standard-Stichworte: fräs, asphalt, fahrbahn, deckschicht, straßenbau, straße
   server.registerTool('vergabe_prepare_tenders', {
     title: 'Treffer fürs Cockpit vorbereiten',
     description: `Wandelt Treffer (notices aus den Such-Tools) in Entwürfe für tenders/<id> um und trennt neu / aktualisiert (geänderte Frist) / Dublette.
-existing: vorher mit ArtifactData list tenders geholte {id,url,deadline}. Schreibt NICHTS – das Schreiben erfolgt erst nach Freigabe durch David per ArtifactData batch. fit bleibt "pruefen"; die Bewertung macht der Skill tender-monitoring.`,
+existing: vorher mit ArtifactData list tenders geholte {id,url,deadline,title,status} – deadline immer mitgeben (auch null), sonst wird keine Friständerung erkannt.
+aktualisiert enthält nur {deadline,url,source} als update-Daten; Status und Eignung im Cockpit nicht überschreiben. Schreibt NICHTS – das Schreiben erfolgt erst nach Freigabe durch David per ArtifactData batch. fit bleibt "pruefen"; die Bewertung macht der Skill tender-monitoring.`,
     inputSchema: {
       notices: z.array(noticeShape),
       existing: z.array(z.object({ id: z.string(), url: z.string().optional(), deadline: z.string().nullable().optional(), title: z.string().optional(), status: z.string().optional() })).default([]).describe('Vorhandene tenders mit id, url, deadline, title, status'),

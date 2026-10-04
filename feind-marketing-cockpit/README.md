@@ -13,7 +13,7 @@ Plugin für Cowork bzw. Claude Code, Version 1.0.0.
 ```
 feind-marketing-cockpit/
 ├── .claude-plugin/plugin.json      Plugin-Beschreibung
-├── .mcp.json                       leer; Connectors werden in der App verbunden
+├── .mcp.json                       lokaler MCP-Server feind-vergabe (Ausschreibungen, nur lesend); weitere Dienste über Connectors
 ├── CLAUDE.md                       Regeln für alle Ausgaben (Ton, Quellen, Datenschutz, CI)
 ├── README.md                       diese Anleitung
 ├── connectors.md                   welche Dienste verbunden sind und welche fehlen

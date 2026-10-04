@@ -53,9 +53,11 @@ export interface FetchResult { status: number; text: string }
 export async function httpGet(url: string, init: RequestInit = {}, timeoutMs = 20000): Promise<FetchResult> {
   const u = new URL(url);
   if (!ALLOWED_HOSTS.includes(u.hostname)) throw new Error(`Host ${u.hostname} ist nicht freigegeben. Erlaubt: ${ALLOWED_HOSTS.join(', ')}.`);
-  const wait = (lastCall.get(u.hostname) ?? 0) + MIN_GAP_MS - Date.now();
+  // Zeitfenster sofort reservieren, damit parallele Aufrufe nacheinander starten.
+  const slot = Math.max(Date.now(), (lastCall.get(u.hostname) ?? 0) + MIN_GAP_MS);
+  lastCall.set(u.hostname, slot);
+  const wait = slot - Date.now();
   if (wait > 0) await new Promise(r => setTimeout(r, wait));
-  lastCall.set(u.hostname, Date.now());
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), timeoutMs);
   try {

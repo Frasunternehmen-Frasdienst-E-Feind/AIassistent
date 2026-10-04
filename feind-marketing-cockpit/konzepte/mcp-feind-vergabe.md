@@ -42,7 +42,7 @@
 | `vergabe_fetch_bekanntmachungen` | Tagesexport von oeffentlichevergabe.de laden und im Server filtern | `pubDay` (JJJJ-MM-TT), `cpv[]`, `nuts[]`, `limit` | Normalformat, `skippedCount`, `parseErrors[]` | ja |
 | `vergabe_fetch_bund_rss` | RSS von service.bund.de lesen (Gesamtfeed oder gespeicherter Such-Feed) | `feedUrl?` (nur Hosts auf der Allowlist), `since?` | Normalformat. `deadline` fehlt oft im Feed und wird dann `null` gesetzt | ja |
 | `vergabe_get_notice` | Einzelne Bekanntmachung mit Details holen | `source` (`ted`\|`bkms`\|`bund`), `noticeId` | Ein Datensatz mit Frist, Vergabestelle, CPV, NUTS, Links (HTML/PDF/XML) | ja |
-| `vergabe_prepare_tenders` | Treffer ins Cockpit-Format bringen, Dubletten erkennen, CPV/Region-Abgleich | `notices[]`, `existingIds[]` (vorher per `ArtifactData list` geholt), `regions[]`, `cpvWatchlist[]` | `{neu[], dubletten[], aktualisiert[]}`, je Eintrag ein `tenders/<id>`-Entwurf plus `matchInfo` | ja (rechnet nur) |
+| `vergabe_prepare_tenders` | Treffer ins Cockpit-Format bringen, Dubletten erkennen, CPV/Region-Abgleich | `notices[]`, `existing[]` mit `{id, url, deadline, title, status}` (vorher per `ArtifactData list` geholt), `regions[]`, `cpvWatchlist[]` | `{neu[], dubletten[], aktualisiert[]}`; neu mit vollständigem `tenders/<id>`-Entwurf, aktualisiert nur `{deadline, url, source}` plus `vorher`, je Eintrag `matchInfo` | ja (rechnet nur) |
 | `vergabe_source_status` | Erreichbarkeit der Quellen, letzte Abrufe, Hinweise auf Limits | – | Je Quelle `{ok, lastFetch, httpStatus, hinweis}` | ja |
 
 **Normalformat eines Treffers:**

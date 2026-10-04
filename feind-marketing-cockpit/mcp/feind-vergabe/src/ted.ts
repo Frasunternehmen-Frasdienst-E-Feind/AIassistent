@@ -46,8 +46,10 @@ export function normalizeTed(n: Record<string, unknown>): Notice {
   const nuts = uniq(((n['place-of-performance'] as string[]) ?? []).filter(x => x !== 'DEU'));
   const raw = ((n['deadline-receipt-tender-date-lot'] as string[]) ?? []).concat((n['deadline-receipt-request-date-lot'] as string[]) ?? []);
   const deadlines = raw.map(isoDay).filter((x): x is string => !!x).sort();
-  // Titel ohne vorangestelltes „Deutschland – Bauarbeiten – “
-  const title = pickLang(n['notice-title']).split(' – ').slice(-1)[0] || pickLang(n['notice-title']);
+  // Titel ohne vorangestelltes „Deutschland – <Kategorie> – “; Gedankenstriche im eigentlichen Titel bleiben erhalten.
+  const full = pickLang(n['notice-title']);
+  const parts = full.split(' – ');
+  const title = parts.length > 2 && /^(Deutschland|Germany)$/i.test(parts[0].trim()) ? parts.slice(2).join(' – ') : full;
   return {
     source: 'ted', noticeId: id, title: scrub(title),
     authority: scrub(pickLang(n['buyer-name'])).slice(0, 200),

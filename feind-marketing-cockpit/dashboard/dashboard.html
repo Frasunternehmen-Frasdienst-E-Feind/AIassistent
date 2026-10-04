@@ -2108,8 +2108,9 @@ label.check input { margin-top: 3px; }
      Schema. want nennt, was übergeben werden soll (start, end, limit, query, id, uri); jede Angabe landet
      beim ersten passenden Schemafeld. Ohne Schema gilt die Standardbelegung fallback. */
   const SYN = {
-    start: /^(start|after|from|begin|min|time_?min)|start(date)?(time)?$|^since/i,
-    end: /^(end|before|to|until|max|time_?max)|end(date)?(time)?$/i,
+    // Ganze Namen bzw. Endungen, damit „top“, „total“ oder „token“ nicht als Ende gelten.
+    start: /^(start|after|from|begin|since|time_?min)$|(start|after|from)_?(date)?_?(time)?$/i,
+    end: /^(end|before|to|until|time_?max)$|(end|before|until)_?(date)?_?(time)?$/i,
     limit: /^(limit|top|count|max_?results|page_?size|size|n)$/i,
     query: /^(q|query|search|search_?query|keyword|text|term)$/i,
     id: /^(id|design_?id|item_?id|resource_?id)$/i,
@@ -2595,8 +2596,17 @@ label.check input { margin-top: 3px; }
             await wait(retryMs());
             try { await run(); return true; } catch (e2) { err = e2; }
           }
-          if (err && err.code === 'invalid_argument' && s.mode === 'shared') s.setReadOnly('write-rejected');
-          else onError(err);
+          if (err && err.code === 'invalid_argument' && s.mode === 'shared') {
+            // invalid_argument heißt nicht immer „keine Rechte“: update auf ein inzwischen gelöschtes Dokument
+            // wird als set nachgeholt; schreibgeschützt nur, wenn die Plattform das Schreibrecht verneint.
+            if (op === 'update') {
+              const snap = await safe(() => s.db.doc(path).get(), null);
+              if (snap && !snap.exists) { try { await s.db.doc(path).set(data); return true; } catch (e3) { err = e3; } }
+            }
+            const allowed = user && user.can ? await safe(() => user.can('data.write'), null) : null;
+            if (allowed === false) s.setReadOnly('write-rejected');
+            else onError(err);
+          } else onError(err);
           return false;
         }
       },

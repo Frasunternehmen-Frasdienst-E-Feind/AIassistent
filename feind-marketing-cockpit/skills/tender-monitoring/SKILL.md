@@ -29,8 +29,10 @@ die Vergabeunterlagen selbst bleiben im Vertrieb und werden nicht in diesen Ordn
 | Weitere Norddeutschland (Schleswig-Holstein, Niedersachsen, Hamburg, Sachsen-Anhalt) | Landesportale bzw. Plattformbetreiber | zu verifizieren |
 
 Ablauf mit dem MCP-Server: Such-Tools aufrufen → `vergabe_prepare_tenders` mit den vorhandenen
-`tenders`-IDs → Tabelle neu / Frist geändert / Dublette an David → erst nach Freigabe
-`ArtifactData batch`. Ist der Server nicht erreichbar, weiter über Firecrawl.
+`tenders` als `{id, url, deadline, title, status}` (deadline immer mitgeben, auch `null`) → Tabelle
+neu / Frist geändert / Dublette an David → erst nach Freigabe `ArtifactData batch`. Einträge unter
+„aktualisiert“ nur mit ihren Feldern `deadline`, `url`, `source` per `update` schreiben; Status und
+Eignung im Cockpit bleiben. Ist der Server nicht erreichbar, weiter über Firecrawl.
 
 Kennzeichne jede Portal-URL, die du nicht in der laufenden Sitzung aufgerufen und bestätigt
 hast, im Ergebnis als „zu verifizieren“. Bevorzuge offizielle Portale; Aggregatoren nur als

@@ -76,6 +76,22 @@ test('Vorbereitung: neu, Frist geändert, Dublette', () => {
   // gleiche Maßnahme mit neuer Nummer (Änderungsbekanntmachung), bereits verworfen
   const r5 = prepareTenders([n], [{ id: 'ted-666551-2026-kassel', url: 'https://ted.europa.eu/en/notice/-/detail/666551-2026', title: n.title, status: 'verworfen' }], [], [], '2026-09-30');
   assert.equal(r5.neu.length, 0); assert.match(r5.dubletten[0].grund, /verworfen/);
+  // nur IDs ohne Frist: kein „Frist geändert“
+  const r6 = prepareTenders([n], [{ id: 'ted-600374-2026' }], [], [], '2026-09-30');
+  assert.equal(r6.aktualisiert.length, 0); assert.equal(r6.dubletten.length, 1);
+  // Aktualisierung trägt nur Frist, Link und Quelle (Status und Eignung bleiben im Cockpit)
+  assert.deepEqual(Object.keys(r2.aktualisiert[0].data).sort(), ['deadline', 'source', 'url']);
+  assert.equal(r2.aktualisiert[0].vorher, '2026-09-28');
+  // Änderungsbekanntmachung mit neuer Frist: Frist wird übernommen statt verworfen
+  const r7 = prepareTenders([n], [{ id: 'ted-666551-2026', url: 'https://ted.europa.eu/de/notice/-/detail/666551-2026', title: n.title, deadline: '2026-09-01', status: 'angebot' }], [], [], '2026-09-30');
+  assert.equal(r7.aktualisiert.length, 1); assert.equal(r7.aktualisiert[0].id, 'ted-666551-2026');
+});
+
+test('TED-Titel: nur Länder- und Kategoriepräfix entfernen', () => {
+  const t = normalizeTed({ 'publication-number': '2-2026', 'notice-title': { deu: 'Deutschland – Bauarbeiten – B 96 Los 2 – Deckenerneuerung' } });
+  assert.equal(t.title, 'B 96 Los 2 – Deckenerneuerung');
+  const u = normalizeTed({ 'publication-number': '3-2026', 'notice-title': { deu: 'Berliner Brücke – Gleiserneuerung' } });
+  assert.equal(u.title, 'Berliner Brücke – Gleiserneuerung');
 });
 
 test('Vorbereitung: ähnliche Titel und mehrere Bekanntmachungen derselben Vergabe', () => {

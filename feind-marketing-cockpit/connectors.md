@@ -45,9 +45,10 @@ GA4. Vor einer Anbindung von GA4-Daten: „Bitte Rechtsabteilung prüfen.“
 
 ## Datei `.mcp.json`
 
-Die Datei `.mcp.json` im Plugin-Ordner ist absichtlich leer (`{"mcpServers": {}}`).
-Es wurde kein Server eingetragen, weil für die fehlenden Dienste in diesem Auftrag
-kein offizieller Remote-MCP-Endpunkt geprüft und belegt wurde.
+Die Datei `.mcp.json` im Plugin-Ordner trägt nur den lokalen Server `feind-vergabe`
+(`mcp/feind-vergabe`, öffentliche Ausschreibungen aus TED und service.bund.de, nur lesend).
+Er startet aus `dist/src/index.js`; `build-zip.sh` baut ihn beim Paketieren. Für die übrigen
+Dienste wurde kein offizieller Remote-MCP-Endpunkt geprüft und belegt, deshalb steht dort nichts.
 
 ### Server ergänzen
 

@@ -7,6 +7,8 @@ export interface TenderDraft {
     fit: 'pruefen'; fitReason: string; status: 'neu'; foundAt: string; source: string };
   matchInfo: string;
 }
+// Aktualisierung: nur Frist, Link und Quelle; Status, Eignung und Bewertung im Cockpit bleiben unberührt.
+export interface TenderUpdate { id: string; data: { deadline: string; url: string; source: string }; vorher: string | null; matchInfo: string }
 export interface Existing { id: string; url?: string; deadline?: string | null; title?: string; status?: string }
 
 export const tenderId = (n: Notice) => (n.source === 'ted' ? 'ted-' : 'bund-') + n.noticeId.toLowerCase().replace(/[^a-z0-9-]+/g, '-');
@@ -38,7 +40,7 @@ export function prepareTenders(notices: Notice[], existing: Existing[], cpvWatch
   const byUrl = new Map(existing.filter(e => e.url).map(e => [normUrl(e.url), e]));
   const byKey = new Map(existing.map(e => [noticeKey(e.url), e] as const).filter(([k]) => !!k));
   const titled = existing.filter(e => e.title);
-  const neu: TenderDraft[] = [], aktualisiert: TenderDraft[] = [], dubletten: { id: string; grund: string; notice?: string }[] = [];
+  const neu: TenderDraft[] = [], aktualisiert: TenderUpdate[] = [], dubletten: { id: string; grund: string; notice?: string }[] = [];
   const seen = new Set<string>();
   for (const n of notices) {
     const id = tenderId(n);
@@ -54,9 +56,17 @@ export function prepareTenders(notices: Notice[], existing: Existing[], cpvWatch
       status: 'neu', foundAt: today, source: (n.source === 'ted' ? 'TED-API v3 ' : 'service.bund.de RSS ') + today } };
     const hit = byId.get(id) ?? byKey.get(noticeKey(n.url)) ?? byUrl.get(normUrl(n.url));
     const sameTitle = !hit ? titled.find(e => similarTitle(e.title, n.title)) : undefined;
-    if (sameTitle) { dubletten.push({ id: sameTitle.id, notice: id, grund: 'gleicher Titel wie vorhandener Eintrag' + (sameTitle.status ? ' (Status ' + sameTitle.status + ')' : '') + ', vermutlich Änderungsbekanntmachung' }); continue; }
+    const update = (e: Existing, why: string): TenderUpdate => ({ id: e.id, vorher: e.deadline ?? null, matchInfo: why,
+      data: { deadline: n.deadline as string, url: n.url, source: draft.data.source } });
+    // Frist nur vergleichen, wenn sie für den vorhandenen Eintrag mitgegeben wurde (sonst wäre jeder Treffer „geändert“).
+    const deadlineChanged = (e: Existing) => e.deadline !== undefined && !!n.deadline && (e.deadline ?? null) !== n.deadline;
+    if (sameTitle) {
+      if (deadlineChanged(sameTitle)) aktualisiert.push(update(sameTitle, 'vermutlich Änderungsbekanntmachung ' + id + ' mit neuer Frist'));
+      else dubletten.push({ id: sameTitle.id, notice: id, grund: 'gleicher Titel wie vorhandener Eintrag' + (sameTitle.status ? ' (Status ' + sameTitle.status + ')' : '') + ', vermutlich Änderungsbekanntmachung' });
+      continue;
+    }
     if (!hit) neu.push(draft);
-    else if ((hit.deadline ?? null) !== n.deadline && n.deadline) aktualisiert.push({ ...draft, id: hit.id });
+    else if (deadlineChanged(hit)) aktualisiert.push(update(hit, matchInfo));
     else dubletten.push({ id: hit.id, notice: id, grund: 'bereits im Cockpit' + (hit.status ? ' (Status ' + hit.status + ')' : '') });
   }
   // Mehrere Bekanntmachungen derselben Vergabe (Änderung, Berichtigung): nur die jüngste behalten.
