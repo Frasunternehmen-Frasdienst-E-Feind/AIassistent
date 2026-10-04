@@ -1,6 +1,6 @@
 {
   "name": "Fräsdienst-Service E. Feind GmbH – Corporate Design",
-  "source": "Design-System-Artefakt (project/tokens.json), Stand 2026-09; on-accent und Warnfarben ergänzt 04.10.2026 (Entscheidung David, Barrierefreiheit), Abstimmung mit CI-Verantwortlichem offen",
+  "source": "Design-System-Artefakt (project/tokens.json), Stand 2026-09; on-accent und Warnfarben ergänzt 04.10.2026 (Entscheidung David, Barrierefreiheit), freigegeben von David als CI-Verantwortlichem am 04.10.2026",
   "palette": {
     "feind-gruen": "#84bb20",
     "anthrazit": "#424e4e",
