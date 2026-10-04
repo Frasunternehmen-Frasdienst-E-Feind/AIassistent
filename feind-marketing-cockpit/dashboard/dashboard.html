@@ -879,7 +879,9 @@ label.check input { margin-top: 3px; }
 .mt-empty { font-size: 20px; max-width: 60ch; }
 
 /* ---------- Icons (Sprite, <use>, currentColor) ---------- */
-.ic { width: 1em; height: 1em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; vertical-align: -0.15em; overflow: visible; }
+.ic { width: 1em; height: 1em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.15em; overflow: visible; --ic-d: none; }
+/* Icons 2.0, optische Größe: Feindetails erst ab 18 px einblenden. */
+.task .tt .ic, .cathead .ic, .mt-ico .ic, .folder .ic, .kpi .ic, .iccard .icprev.big .ic { --ic-d: inline; }
 .ic-accent { --ic-accent: var(--accent); }
 /* Fräszahn (CI-Grün) in Navigation, Kennzahlen, Ablage und Aufgaben; nie in Status-, Warn- oder erledigten Elementen. */
 .tab .ic, .worldtab .ic, .kpi:not(.warn):not(.crit) .ic, .folder .ic, .task .tt .ic, .cathead .ic, .col-h .ic, .mt-ico .ic, .ab-btn.main .ic { --ic-accent: var(--accent); }
@@ -887,7 +889,7 @@ label.check input { margin-top: 3px; }
 .tab .ic, .worldtab .ic { width: 16px; height: 16px; }
 .worldtab { display: inline-flex; align-items: center; gap: 8px; }
 .tab { gap: 7px; }
-.pill .ic { width: 12px; height: 12px; stroke-width: 2.4; }
+.pill .ic { width: 12px; height: 12px; stroke-width: 2.1; }
 .chip .ic { width: 12px; height: 12px; }
 .task .tt { display: flex; gap: 8px; align-items: flex-start; }
 .task .tt .ic, .cathead .ic { width: 20px; height: 20px; margin-top: 1px; color: var(--ink-strong); }
@@ -4413,148 +4415,162 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
 });
 
 /* ---- icons.js ---- */
-/* Feind Cockpit · Icon-Basis v2 (03.10.2026): eigene Zeichnungen im Feind-CI. Raster 24×24, Strich 2 px, eckige
-   Enden (square/miter), 45°-Winkel, currentColor. Markenzeichen: der „Fräszahn“, das grüne Quadrat aus der Mitte
-   des Favicons (Fräswalze). Es sitzt in Branchen-, Messe- und Rollen-Icons genau am Arbeitspunkt des Motivs
-   (Walze, Fräskante, Standblende) und erscheint über die Variable --ic-accent (CI-Grün); ohne Akzent bleibt jedes
-   Motiv vollständig lesbar. Status-, Prioritäts- und Flag-Icons tragen bewusst keinen Akzent: Ihre Bedeutung
-   liegt allein in der Form. Jedes Icon: [Gruppe, Titel, Verwendungszweck, SVG-Inhalt]. Im Browser als FC.icons,
-   in Node per require. */
+/* Feind Cockpit · Icons 2.0 (04.10.2026, Freigabe David): eigene Zeichnungen im Feind-CI. Raster 24×24, Präzisionslinie
+   1,75 px mit runden Enden und Ecken, Feindetails 1,25 px, zarte Tonfläche (Duoton, --ic-tone / --ic-tone-c) und als
+   Markenzeichen der „Fräszahn“: die grüne Akzentfläche aus dem Favicon (Fräswalze) am Arbeitspunkt des Motivs, über
+   --ic-accent (CI-Grün); ohne Akzent bleibt jedes Motiv lesbar. Optische Größe: Feindetails tragen display:var(--ic-d)
+   und werden bei Kleinstgrößen (<= 16 px, Variable --ic-d:none) ausgeblendet. Status-, Prioritäts- und Flag-Icons
+   tragen keinen Akzent, ihre Bedeutung liegt in der Form. Jedes Icon: [Gruppe, Titel, Verwendungszweck, SVG-Inhalt].
+   Im Browser als FC.icons, in Node per require. */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
   else (root.FC = root.FC || {}).icons = factory();
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   const AC = 'style="fill:var(--ic-accent,none);stroke:none"';
-  // Fräszahn: Akzentfläche (zuerst gezeichnet, damit die Linien darüber liegen).
-  const Z = (x, y, w, hh) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + (hh == null ? w : hh) + '" ' + AC + '/>';
+  const TN = 'style="fill:var(--ic-tone-c,currentColor);fill-opacity:var(--ic-tone,.22);stroke:none"';
+  const DT = 'stroke-width="1.25" style="display:var(--ic-d,inline)"';
+  const Z = (x, y, w, h, r) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + (h == null ? w : h) + '" rx="' + (r == null ? 0.75 : r) + '" ' + AC + '/>';
   const ZP = d => '<path d="' + d + '" ' + AC + '/>';
+  const ZC = (cx, cy, r) => '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" ' + AC + '/>';
+  const T = d => '<path d="' + d + '" ' + TN + '/>';
+  const TR = (x, y, w, h, r) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + (r || 0) + '" ' + TN + '/>';
+  const TC = (cx, cy, r) => '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" ' + TN + '/>';
+  const D = d => '<path d="' + d + '" ' + DT + '/>';
+  const DOT = d => '<path d="' + d + '" stroke-width="2.25" style="display:var(--ic-d,inline)"/>';
+  const L = (d, w) => '<path d="' + d + '"' + (w ? ' stroke-width="' + w + '"' : '') + '/>';
+  const R = (x, y, w, h, r) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + (r || 0) + '"/>';
+  const C = (cx, cy, r) => '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '"/>';
+  
+  const MEGA = 'M3 10v4a1 1 0 0 0 1 1h3l8 4.5V4.5L7 9H4a1 1 0 0 0-1 1z';
+  const HAND = 'M3 8l4-3 5 3 3-3 6 3v7l-5 4-5-3-4 1-4-4z';
+  const PARA = 'M15 6a3 3 0 0 0-6 0c0 3 6 3 6 6a3 3 0 0 1-3 3M9 18a3 3 0 0 0 6 0c0-3-6-3-6-6a3 3 0 0 1 3-3';
   const DEFS = {
-    /* ---------- Branche: Fräsen, Grinding, Grooving, Straßenbau ---------- */
-    fraese: ['Branche', 'Kaltfräse (seitlich)', 'Kaltfräsen, Maschinenpark, Werkstatt', Z(9.5, 16.5, 4) + '<rect x="2" y="17" width="6" height="3"/><rect x="15" y="17" width="6" height="3"/><path d="M3 17v-6h15v6"/><path d="M7 11V7h5v4"/><path d="M18 13l4-6"/>'],
-    fraeswalze: ['Branche', 'Fräswalze mit Meißeln', 'Marke, Favicon, Exponat Fräswalze', Z(10, 10, 4) + '<rect x="4" y="7" width="16" height="10"/><path d="M2 12h2M20 12h2"/><path d="M7 7l1-3M11 7l1-3M15 7l1-3M9 17l1 3M13 17l1 3M17 17l1 3"/><path d="M8 7l4 10M12 7l4 10" stroke-width="1.5"/>'],
-    schleifwelle: ['Branche', 'Schleifwelle über geschliffener Fläche', 'Grinding-Leistungen, Exponat Schleifwelle', Z(10.5, 15, 3) + '<rect x="5" y="4" width="14" height="10"/><path d="M8 4v10M11 4v10M14 4v10M17 4v10" stroke-width="1.5"/><path d="M2 9h3M19 9h3"/><path d="M2 18h20"/><path d="M5 21h14" stroke-width="1.5"/>'],
-    grooving: ['Branche', 'Grooving: Rillen und Entwässerung', 'Grooving-Leistungen, Griffigkeit, Entwässerung', ZP('M12 1c-2 2.7-3 4-3 5.5a3 3 0 0 0 6 0c0-1.5-1-2.8-3-5.5z') + '<path d="M2 10h3v3h2v-3h3v3h2v-3h3v3h2v-3h5"/><path d="M2 10v10h20V10"/><path d="M12 1c-2 2.7-3 4-3 5.5a3 3 0 0 0 6 0c0-1.5-1-2.8-3-5.5z" stroke-width="1.5"/>'],
-    asphalt: ['Branche', 'Asphaltaufbau, Deckschicht abgefräst', 'Straßenbau, Deckenerneuerung, Fräskante', Z(12, 7, 4, 3) + '<path d="M2 8h9v3h11"/><path d="M2 15h20M2 20h20M2 8v12M22 11v9"/>'],
-    pflaster: ['Branche', 'Pflasterfläche im Läuferverband', 'Exponat Pflasterfläche, Standboden', Z(13, 10, 4) + '<rect x="3" y="3" width="18" height="18"/><path d="M3 9h18M3 15h18M9 3v6M15 3v6M6 9v6M12 9v6M18 9v6M9 15v6M15 15v6"/>'],
-    leitkegel: ['Branche', 'Leitkegel mit Reflexband', 'Baustelle, Verkehrssicherung', Z(10, 9, 4) + '<path d="M10 3h4l4 16H6z"/><path d="M8.5 9h7M7.5 13h9" stroke-width="1.5"/><path d="M3 21h18"/>'],
-    helm: ['Branche', 'Schutzhelm mit Kamm', 'Arbeitsschutz, Aufbau', Z(11, 8, 2, 7) + '<path d="M4 15a8 8 0 0 1 16 0"/><path d="M2 15h20v3H2z"/><path d="M10 15V7h4v8"/>'],
-    warnweste: ['Branche', 'Warnweste mit Reflexstreifen', 'Standkleidung, Wiedererkennung', Z(5, 14, 14, 3) + '<path d="M7 3l3 3h4l3-3 3 2v16H4V5z"/><path d="M10 6l2 4 2-4M12 10v4M12 17v4" stroke-width="1.5"/><path d="M4 14h16M4 17h16"/>'],
-    zollstock: ['Branche', 'Zollstock, aufgeklappt', 'Giveaway Zollstock, Maße', Z(3, 15, 10, 2) + '<path d="M2 14h12v4H2z"/><path d="M5 14v2M8 14v2M11 14v2" stroke-width="1.5"/><path d="M14 14l6-10 3 1.8-6 10.2"/><path d="M16.5 10.3l1.5.9M18 7.8l1.5.9" stroke-width="1.5"/>'],
-    kompaktlader: ['Branche', 'Kompaktlader mit Schaufel', 'Maschinen anmelden, Logistik', ZP('M18 11h4l-1 5h-4z') + '<path d="M18 11h4l-1 5h-4z"/><path d="M3 16V9h9v7H3z"/><path d="M5 9V5h5v4"/><path d="M12 10l6 2"/><circle cx="6" cy="18" r="2"/><circle cx="11" cy="18" r="2"/>'],
-    ameise: ['Branche', 'Hubwagen mit Palette', 'Hubwagen, Paletten', Z(13, 8, 4) + '<rect x="10" y="7" width="10" height="6"/><path d="M3 3l4 10v6M7 18h14"/><path d="M9 13h12v2H9z" stroke-width="1.5"/><circle cx="20" cy="20" r="1"/>'],
-    lkw: ['Branche', 'Kipper mit Fräsgut', 'Spedition, Lieferung, Rücktransport', ZP('M3 8c2-4 7-4 9 0z') + '<path d="M3 8c2-4 7-4 9 0" stroke-width="1.5"/><path d="M2 8h11l-1 8H3z"/><path d="M13 10h4l3 3v3h-7"/><path d="M2 16h18"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>'],
-    anhaenger: ['Branche', 'Tieflader mit Maschine', 'Transportplan, Anhänger, Maschinentransport', ZP('M10 14v-4h6l2 4z') + '<path d="M10 14v-4h6l2 4"/><path d="M8 14h14v3H8z"/><path d="M2 15.5h6M2 14v3"/><circle cx="13" cy="19" r="2"/><circle cx="18" cy="19" r="2"/>'],
-    'kran-verbot': ['Branche', 'Kran-Verbot', 'Eigene Stapler/Krane nicht erlaubt', '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/><path d="M9 18V7M7 7h10M15 7v5" stroke-width="1.5"/><path d="M14 12h2v1.5" stroke-width="1.5"/>'],
-    /* ---------- Messe und Organisation ---------- */
-    messestand: ['Messe', 'Messestand mit Banner und Theke', 'Standbau, InfraTech-Welt', Z(4, 5, 16, 2) + '<path d="M3 21V4h18v17"/><path d="M3 8h18"/><path d="M7 15h10M8 15v6M16 15v6"/>'],
-    standplan: ['Messe', 'Standplan / Grundriss', 'Layout, Fläche, Wegeführung', Z(13, 13, 7) + '<rect x="3" y="3" width="18" height="18"/><path d="M3 12h9v9M12 12V3M12 7h9"/>'],
-    stecker: ['Messe', 'Strom / Stecker', 'Stromanschluss, Steckdosen', Z(10, 10, 4, 3) + '<path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/>'],
-    display: ['Messe', 'Display / Monitor', 'TV, Präsentation, Loop', ZP('M10 7.5l5 3-5 3z') + '<rect x="2" y="4" width="20" height="13"/><path d="M8 21h8M12 17v4"/>'],
-    wlan: ['Messe', 'WLAN', 'Mobile Daten, Router', Z(11, 19, 2) + '<path d="M2 9a14 14 0 0 1 20 0"/><path d="M6 13a9 9 0 0 1 12 0"/><path d="M9.5 16.5a4.5 4.5 0 0 1 5 0"/><rect x="11" y="19" width="2" height="2"/>'],
-    hotel: ['Messe', 'Hotel / Bett', 'Hotel, Zimmerliste', Z(6, 9, 3, 2) + '<path d="M3 18V7"/><path d="M3 12h18v6"/><path d="M3 15h18"/><rect x="5" y="8" width="5" height="4"/>'],
-    anreise: ['Messe', 'Anreise', 'Anreisezeiten, Parken, Zufahrt', Z(11, 10, 2, 3) + '<path d="M4 20l4-16h8l4 16"/><path d="M12 5v2M12 16v2"/>'],
-    kaffee: ['Messe', 'Kaffee / Catering', 'Catering, Getränke, Kaffee-Bar', Z(6, 10, 8, 3) + '<path d="M4 8h12v7a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M16 10h2a2 2 0 0 1 0 4h-2"/><path d="M4 22h14M8 3v2M12 3v2"/>'],
-    paket: ['Messe', 'Paket / Packliste', 'Packliste, Material, Lieferetikett', ZP('M6 6.3l9 5v3.4l-9-5z') + '<path d="M3 8l9-5 9 5v9l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v9M7.5 5.5l9 5"/>'],
-    giveaway: ['Messe', 'Werbemittel / Giveaway', 'Streuartikel, Goodie-Bags', Z(4, 14, 7) + '<rect x="3" y="9" width="18" height="12"/><path d="M3 13h18M12 9v12"/><path d="M12 9H8V5h4zM12 9h4V5h-4z"/>'],
-    flyer: ['Messe', 'Flyer', 'Flyer DIN lang, Prospekte, Print', Z(7, 4, 10, 5) + '<path d="M6 3h12v18H6z"/><path d="M6 10h12M9 14h6M9 17h6"/>'],
-    megafon: ['Messe', 'Megafon / Social', 'Marketing, Social Media, Kampagnen', ZP('M8 10.6l6-3.8v10.4l-6-3.8z') + '<path d="M3 10v4h4l8 5V5L7 10z"/><path d="M18 9v6M21 7v10"/><path d="M6 14v6h3v-5"/>'],
-    presse: ['Messe', 'Presse', 'Pressemitteilung, Fachmedien, Katalog', Z(7, 9, 3) + '<rect x="3" y="4" width="18" height="16"/><path d="M6 8h5v5H6zM14 8h4M14 12h4M6 16h12"/>'],
-    pokal: ['Messe', 'Pokal / Innovationspreis', 'Innovationspreis, Auszeichnung', Z(10, 5, 4) + '<path d="M7 3h10v6a5 5 0 0 1-10 0z"/><path d="M7 5H4v2a3 3 0 0 0 3 3M17 5h3v2a3 3 0 0 1-3 3"/><path d="M12 14v4M8 21h8M9 18h6v3"/>'],
-    kalender: ['Messe', 'Kalender mit Frist', 'Fristen, Termine, Handbuch-Fristen', Z(15, 16, 3) + '<rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M7 14h2M11 14h2M15 14h2M7 17.5h2M11 17.5h2" stroke-width="1.5"/>'],
-    uhr: ['Messe', 'Uhr / Öffnungszeit', 'Öffnungszeiten, Steuerung, Zeitplan', Z(11, 11, 2) + '<circle cx="12" cy="12" r="9"/><path d="M12 7v5h4"/><path d="M12 3v1M21 12h-1M12 21v-1M3 12h1"/>'],
-    schichtplan: ['Messe', 'Schichtplan', 'Standbesetzung, Durchführung', Z(10, 13, 4, 2) + '<rect x="3" y="4" width="18" height="16"/><path d="M3 9h18M9 9v11M15 9v11"/><rect x="9" y="12" width="6" height="4"/>'],
-    team: ['Messe', 'Team mit Helmen', 'Messeteam, Standpersonal', ZP('M5 7.5a3 3 0 0 1 6 0z') + '<path d="M2 20v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3M14 13h2a4 4 0 0 1 4 4v3"/><circle cx="8" cy="9" r="2.5" stroke-width="1.5"/><circle cx="16" cy="9" r="2.5" stroke-width="1.5"/><path d="M5 7.5a3 3 0 0 1 6 0M13 7.5a3 3 0 0 1 6 0M4.5 7.5h7M12.5 7.5h7"/>'],
-    handschlag: ['Messe', 'Handschlag / Termin', 'Vertrieb, Gesprächstermine, Verhandlung', Z(11, 10, 2) + '<path d="M3 8l4-3 5 3 3-3 6 3v7l-5 4-5-3-4 1-4-4z"/><path d="M12 8l-3 4 3 2 3-3"/>'],
-    lead: ['Messe', 'Visitenkarte (Lead)', 'Leads, Kontakte, CRM', Z(6, 9, 3) + '<rect x="2" y="5" width="20" height="14"/><rect x="5" y="8" width="5" height="5"/><path d="M13 9h6M13 12h6M5 16h14" stroke-width="1.5"/>'],
-    qr: ['Messe', 'Scanner / QR', 'QR-Code, Landingpage, Badge-Scanner, Ausweise', Z(5.5, 5.5, 2) + '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM19 14h2M14 19h2M19 19h2v2"/><path d="M17 6h1M6 17h1"/>'],
-    trichter: ['Messe', 'Trichter / Pipeline', 'Lead-Pipeline, Pipeline-Tracking', ZP('M8 9h8l-3 3.4V17l-2 1v-5.6z') + '<path d="M3 4h18l-7 8v7l-4 2v-9z"/><path d="M6.5 8h11"/>'],
-    ziel: ['Messe', 'Zielscheibe mit Pfeil', 'Ziele, KPIs, Messgrößen', Z(10, 10, 4) + '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l7-7M16 4h4v4" stroke-width="1.5"/>'],
-    budget: ['Messe', 'Münze mit Euro (Budget)', 'Budget, Forecast, Kosten', '<circle cx="15" cy="10" r="6"/><path d="M17 7.5a3 3 0 1 0 0 5M12 9.2h4M12 10.8h4" stroke-width="1.5"/><path d="M3 17h9M3 20h14"/>'],
-    dokument: ['Messe', 'Dokument / Vertrag', 'Verträge, Bestellungen, Angebote', Z(14, 16, 3) + '<path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5M8 12h8M8 16h4"/>'],
-    ordner: ['Messe', 'Ordner mit Reiter (Ablage)', 'Ablage, Dokumente, Wissensbasis', ZP('M3 6h6l2 2H3z') + '<path d="M3 6h6l2 2h10v12H3z"/><path d="M3 10h18" stroke-width="1.5"/>'],
-    recht: ['Messe', '§ Recht', 'Rechtsprüfung, Versicherung, DSGVO', '<path d="M15 6a3 3 0 0 0-6 0c0 3 6 3 6 6a3 3 0 0 1-3 3"/><path d="M9 18a3 3 0 0 0 6 0c0-3-6-3-6-6a3 3 0 0 1 3-3"/>'],
-    lupe: ['Messe', 'Lupe mit Haken (Faktencheck)', 'Faktencheck, Prüfen, Review', Z(8, 8, 4) + '<circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/><path d="M7 10l2 2 4-4"/>'],
-    warndreieck: ['Messe', 'Warndreieck / Notfall', 'Notfallplan, Eskalation, Genehmigungen', '<path d="M12 3l10 18H2z"/><path d="M12 10v5M11 18h2"/>'],
-    erstehilfe: ['Messe', 'Erste Hilfe', 'Erste Hilfe, Sanitätskoffer', '<rect x="3" y="6" width="18" height="15"/><path d="M9 3h6v3H9z"/><path d="M12 10v7M8.5 13.5h7"/>'],
-    grenze: ['Messe', 'Grenze / Zoll', 'Zoll, Grenzübertritt, Entsendung', Z(4, 10, 2, 1) + '<path d="M3 9h18v3H3z"/><path d="M5 12v9M19 12v9"/><path d="M7 9l3 3M12 9l3 3M17 9l3 3"/>'],
-    pin: ['Messe', 'Ort / NL-Stecknadel', 'Rotterdam, NL-Spezifika', Z(10, 8, 4) + '<path d="M12 22s-7-7-7-12a7 7 0 0 1 14 0c0 5-7 12-7 12z"/>'],
-    fernglas: ['Messe', 'Wettbewerb / Fernglas', 'Wettbewerber-Rundgang, Beobachtung', Z(4, 14, 3) + Z(17, 14, 3) + '<rect x="2" y="10" width="7" height="10"/><rect x="15" y="10" width="7" height="10"/><path d="M9 13h6M6 10V5h3M18 10V5h-3"/>'],
-    hammer: ['Messe', 'Protokoll / Beschluss', 'Beschlüsse, GL-Entscheidungen', ZP('M14 5l2-2 5 5-2 2z') + '<path d="M3 21h10"/><path d="M8 18l-1-1 9-9 1 1z"/><path d="M13 5l3-3 6 6-3 3z"/>'],
-    meeting: ['Messe', 'Besprechungstisch', 'Messe-Abstimmung, Protokolle', Z(11, 6, 2) + '<rect x="3" y="11" width="18" height="3"/><path d="M6 14v6M18 14v6"/><circle cx="7" cy="6" r="2"/><circle cx="17" cy="6" r="2"/>'],
-    mail: ['Messe', 'Nachfassen / Mail', 'Nachfassmail, Einladungen', Z(16, 14, 3) + '<rect x="2" y="5" width="20" height="14"/><path d="M2 5l10 8 10-8"/>'],
-    kamera: ['Messe', 'Foto / Kamera', 'Fotodokumentation, Bildrechte', Z(11, 12, 2) + '<rect x="2" y="7" width="20" height="13"/><path d="M8 7l2-3h4l2 3"/><circle cx="12" cy="13" r="4"/><path d="M18 10h1"/>'],
-    muell: ['Messe', 'Müll / Entsorgung', 'Abfall, Sperrmüll, Reinigung', '<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/><path d="M10 11v6M14 11v6"/>'],
-    schloss: ['Messe', 'Schloss / Datenschutz', 'Datenschutz, geschützte Dateien', Z(11, 14, 2, 3) + '<rect x="4" y="10" width="16" height="11"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v3"/>'],
-    /* ---------- Status (je eigene Form, ohne Akzent) ---------- */
-    'st-open': ['Status', 'Offen', 'Status offen (leeres Quadrat)', '<rect x="4" y="4" width="16" height="16"/>'],
+    /* ---------- Branche ---------- */
+    fraese: ['Branche', 'Kaltfräse (seitlich)', 'Kaltfräsen, Maschinenpark, Werkstatt', TR(2, 9.5, 17, 6, 1.5) + Z(9.5, 15.25, 4, 4, 2) + L('M2 15.5v-4.5A1.5 1.5 0 0 1 3.5 9.5h14A1.5 1.5 0 0 1 19 11v4.5') + L('M6 9.5V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3.5') + D('M8 7.25h2') + L('M19 11.5l3.25-6.25') + D('M17.5 10.5l3-5.75') + R(2, 16, 6.5, 4, 2) + R(14.5, 16, 6.5, 4, 2) + D('M4.25 18h2M16.75 18h2')],
+    fraeswalze: ['Branche', 'Fräswalze mit Meißeln', 'Marke, Favicon, Exponat Fräswalze', TR(4, 6, 16, 12, 2.5) + Z(10.25, 10.25, 3.5) + R(4, 6, 16, 12, 2.5) + L('M1.75 12H4M20 12h2.25') + D('M7 6.5l2.6 11M11 6.5l2.6 11M15 6.5l2.6 11') + L('M7.5 6l1-2.5M12 6l1-2.5M16.5 6l1-2.5M7.5 20.5l1-2.5M12 20.5l1-2.5M16.5 20.5l1-2.5')],
+    schleifwelle: ['Branche', 'Schleifwelle über geschliffener Fläche', 'Grinding-Leistungen, Exponat Schleifwelle', TR(5, 4, 14, 9, 2) + Z(10.25, 13.75, 3.5, 3.5, 1) + R(5, 4, 14, 9, 2) + D('M8.5 4.5v8M12 4.5v8M15.5 4.5v8') + L('M2 8.5h3M19 8.5h3') + L('M2 18h20') + D('M4 21h4M10 21h4M16 21h4')],
+    grooving: ['Branche', 'Grooving: Rillen und Entwässerung', 'Grooving-Leistungen, Griffigkeit, Entwässerung', T('M2 13h20v7H2z') + ZP('M12 1.5c-2 2.6-3 4-3 5.4a3 3 0 0 0 6 0c0-1.4-1-2.8-3-5.4z') + L('M2 10h3v3h2v-3h3v3h2v-3h3v3h2v-3h5') + L('M2 10v10h20V10') + L('M12 1.5c-2 2.6-3 4-3 5.4a3 3 0 0 0 6 0c0-1.4-1-2.8-3-5.4z', 1.5) + D('M5 16.75h3M11 16.75h2M16 16.75h3')],
+    asphalt: ['Branche', 'Asphaltaufbau, Deckschicht abgefräst', 'Straßenbau, Deckenerneuerung, Fräskante', T('M2 8h9v3h11v3.5H2z') + Z(12.25, 7.25, 3.5, 3, 0.75) + L('M2 8h9v3h11') + L('M2 14.5h20M2 20h20M2 8v12M22 11v9') + DOT('M5 17.25h.01M9 17.5h.01M13 17h.01M17.5 17.5h.01M5.5 11.25h.01')],
+    pflaster: ['Branche', 'Pflasterfläche im Läuferverband', 'Exponat Pflasterfläche, Standboden', TR(9, 3, 6, 6) + TR(12, 9, 6, 6) + TR(9, 15, 6, 6) + Z(13.25, 10.25, 3.5) + R(3, 3, 18, 18, 2.5) + L('M3 9h18M3 15h18M9 3v6M15 3v6M6 9v6M12 9v6M18 9v6M9 15v6M15 15v6', 1.5)],
+    leitkegel: ['Branche', 'Leitkegel mit Reflexband', 'Baustelle, Verkehrssicherung', T('M10.2 3h3.6l4.7 15.5h-13z') + ZP('M9 8.25h6l1.1 3.75H7.9z') + L('M10.2 3h3.6l4.7 15.5h-13z') + D('M7.1 14.75h9.8') + R(3, 18.5, 18, 2.75, 1.25)],
+    helm: ['Branche', 'Schutzhelm mit Kamm', 'Arbeitsschutz, Aufbau', T('M4 15a8 8 0 0 1 16 0z') + Z(10.9, 8, 2.2, 7, 0.5) + L('M4 15a8 8 0 0 1 16 0') + R(2, 15, 20, 3, 1.5) + L('M10 15V8M14 15V8') + D('M6.5 12.5a5.5 5.5 0 0 1 2-3')],
+    warnweste: ['Branche', 'Warnweste mit Reflexstreifen', 'Standkleidung, Wiedererkennung', T('M7 3l3 3h4l3-3 3 2v16H4V5z') + Z(4, 13.5, 16, 3, 0) + L('M7 3l3 3h4l3-3 3 2v16H4V5z') + L('M4 13.5h16M4 16.5h16', 1.25) + L('M10 6l2 4 2-4', 1.25) + D('M12 10v3.5M12 16.5V21')],
+    zollstock: ['Branche', 'Zollstock, aufgeklappt', 'Giveaway Zollstock, Maße', T('M14 14l6-10 3 1.8-6 10.2z') + Z(3, 15.25, 10, 1.5, 0.5) + R(2, 14, 12, 4, 1) + D('M5 14v1.75M8 14v1.75M11 14v1.75') + L('M14 14l6-10 3 1.8-6 10.2') + D('M16.6 10.3l1.5.9M18.1 7.8l1.5.9')],
+    kompaktlader: ['Branche', 'Kompaktlader mit Schaufel', 'Maschinen anmelden, Logistik', TR(3, 9, 9, 7, 1) + ZP('M18 10.5h4l-1 5h-4z') + R(3, 9, 9, 7, 1) + L('M5 9V5.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5V9') + D('M6.5 7h2') + L('M12 10l6 1.5') + L('M18 10.5h4l-1 5h-4z') + C(6, 18.25, 2) + C(11, 18.25, 2) + DOT('M6 18.25h.01M11 18.25h.01')],
+    ameise: ['Branche', 'Hubwagen mit Palette', 'Hubwagen, Paletten', TR(10, 6.5, 10, 6.5, 1) + Z(13.25, 8, 3.5) + R(10, 6.5, 10, 6.5, 1) + D('M15 6.5v1.5') + L('M2 2.75h2.5M3.25 2.75l3.75 10v6') + L('M7 18.5h14') + R(9, 13, 12, 2, 0.5) + C(20, 20.25, 1.25) + C(8.5, 20.25, 1.25)],
+    lkw: ['Branche', 'Kipper mit Fräsgut', 'Spedition, Lieferung, Rücktransport', T('M2.5 8h10.5l-1 8H3.5z') + ZP('M3.5 8c1.8-3.6 6.9-3.6 8.7 0z') + L('M2.5 8h10.5l-1 8H3.5z') + L('M13 9.5h4.2a1 1 0 0 1 .8.4l2.7 3.4a1 1 0 0 1 .3.7V16h-8') + D('M14.75 11.25h2.4l1.4 1.75h-3.8z') + L('M1.75 16h20.5') + C(6.25, 18.25, 2.25) + C(17.25, 18.25, 2.25) + D('M5.5 10.75l.6 2.5M8 10.75v2.5M10.5 10.75l-.6 2.5')],
+    anhaenger: ['Branche', 'Tieflader mit Maschine', 'Transportplan, Anhänger, Maschinentransport', TR(8, 14, 14, 3, 1) + ZP('M10 14v-4h6l2 4z') + L('M10 14v-4h6l2 4') + D('M11.5 10V7.75h3V10') + R(8, 14, 14, 3, 1) + L('M2 15.5h6M2 14v3') + C(13, 19.25, 1.75) + C(18, 19.25, 1.75)],
+    'kran-verbot': ['Branche', 'Kran-Verbot', 'Eigene Stapler/Krane nicht erlaubt', C(12, 12, 9) + L('M5.6 5.6l12.8 12.8') + L('M9 18V7M7 7h10M15 7v5', 1.5) + L('M14 12h2v1.5', 1.5)],
+    /* ---------- Messe ---------- */
+    messestand: ['Messe', 'Messestand mit Banner und Theke', 'Standbau, InfraTech-Welt', TR(7, 14, 10, 7, 1) + Z(3, 3, 18, 4, 1.5) + L('M3 21V4.5A1.5 1.5 0 0 1 4.5 3h15A1.5 1.5 0 0 1 21 4.5V21') + L('M6 14h12M7 14v7M17 14v7') + D('M10 17.5h4') + R(14, 9, 4.5, 3, 0.75) + D('M5.5 9.25l1.5 2M8.5 9.25L7 11.25') + L('M1.75 21h20.5')],
+    standplan: ['Messe', 'Standplan / Grundriss', 'Layout, Fläche, Wegeführung', TR(12, 3, 9, 4, 0) + Z(14, 14, 5, 5, 1) + R(3, 3, 18, 18, 2.5) + L('M3 12h9v9M12 12V3M12 7h9') + D('M6 16.5h3M7.5 15v3')],
+    stecker: ['Messe', 'Strom / Stecker', 'Stromanschluss, Steckdosen', T('M6 7h12v4a6 6 0 0 1-12 0z') + Z(10.25, 9.5, 3.5, 2.5) + L('M9 2.5V7M15 2.5V7') + L('M6 7h12v4a6 6 0 0 1-12 0z') + L('M12 17v4.5') + D('M10.5 21.5h3')],
+    display: ['Messe', 'Display / Monitor', 'TV, Präsentation, Loop', TR(2, 4, 20, 13, 2) + ZP('M10 7.5l5 3-5 3z') + R(2, 4, 20, 13, 2) + L('M8 21h8M12 17v4') + D('M4.5 14.5h3')],
+    wlan: ['Messe', 'WLAN', 'Mobile Daten, Router', ZC(12, 19.5, 1.5) + L('M2 9a14 14 0 0 1 20 0') + L('M5.5 12.75a9.5 9.5 0 0 1 13 0') + L('M9 16.25a4.5 4.5 0 0 1 6 0')],
+    hotel: ['Messe', 'Hotel / Bett', 'Hotel, Zimmerliste', TR(3, 12.5, 18, 3) + Z(6, 9.5, 3, 2, 0.5) + L('M3 18.5V6') + L('M3 12.5h18v6M3 15.5h18') + R(5, 8.5, 5, 4, 1.5) + D('M12.5 12.5v3')],
+    anreise: ['Messe', 'Anreise', 'Anreisezeiten, Parken, Zufahrt', T('M4 20l4-16h8l4 16z') + Z(11, 9.5, 2, 3.5, 0.5) + L('M4 20l4-16h8l4 16') + L('M12 5v2M12 15.5v2.5', 1.5)],
+    kaffee: ['Messe', 'Kaffee / Catering', 'Catering, Getränke, Kaffee-Bar', T('M4 8h12v7a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z') + Z(5.75, 10, 8.5, 2.5) + L('M4 8h12v7a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z') + L('M16 10h2a2 2 0 0 1 0 4h-2') + L('M3 21.5h14') + D('M8 2.5c-.8 1 .8 2 0 3M12 2.5c-.8 1 .8 2 0 3')],
+    paket: ['Messe', 'Paket / Packliste', 'Packliste, Material, Lieferetikett', T('M3 8l9-5 9 5v9l-9 5-9-5z') + ZP('M6 6.3l9 5v3.4l-9-5z') + L('M3 8l9-5 9 5v9l-9 5-9-5z') + L('M3 8l9 5 9-5M12 13v9') + D('M7.5 5.5l9 5')],
+    giveaway: ['Messe', 'Werbemittel / Giveaway', 'Streuartikel, Goodie-Bags', TR(3, 9, 18, 12, 1.5) + Z(4.5, 14.5, 6, 5) + R(3, 9, 18, 12, 1.5) + L('M3 13h18M12 9v12') + L('M12 9c-1.5-3.5-5-4-5-1.5S10 9 12 9zm0 0c1.5-3.5 5-4 5-1.5S14 9 12 9z', 1.5)],
+    flyer: ['Messe', 'Flyer', 'Flyer DIN lang, Prospekte, Print', TR(6, 3, 12, 18, 1.5) + Z(7.25, 4.25, 9.5, 5, 0.75) + R(6, 3, 12, 18, 1.5) + L('M6 10.5h12') + L('M9 13.75h6M9 16.75h6', 1.25) + D('M9 19.25h3')],
+    megafon: ['Messe', 'Megafon / Social', 'Marketing, Social Media, Kampagnen', T(MEGA) + ZP('M8 10.6l6-3.8v10.4l-6-3.8z') + L(MEGA) + L('M18 9a4 4 0 0 1 0 6M20.5 6.5a7.5 7.5 0 0 1 0 11') + L('M6 15v5h3v-4.5')],
+    presse: ['Messe', 'Presse', 'Pressemitteilung, Fachmedien, Katalog', TR(3, 4, 18, 16, 2) + Z(6.5, 8.5, 4, 4, 0.75) + R(3, 4, 18, 16, 2) + R(6, 8, 5, 5, 0.75) + L('M14 8.5h4M14 12.5h4') + D('M6 16.5h12')],
+    pokal: ['Messe', 'Pokal / Innovationspreis', 'Innovationspreis, Auszeichnung', T('M7 3h10v6a5 5 0 0 1-10 0z') + Z(10.25, 5, 3.5, 3.5) + L('M7 3h10v6a5 5 0 0 1-10 0z') + L('M7 5H4v2a3 3 0 0 0 3 3M17 5h3v2a3 3 0 0 1-3 3') + L('M12 14v4M9 18h6v3H9z') + L('M7 21h10')],
+    kalender: ['Messe', 'Kalender mit Frist', 'Fristen, Termine, Handbuch-Fristen', TR(3, 5, 18, 5, 2) + Z(14.25, 14.25, 5, 5, 1.25) + R(3, 5, 18, 16, 2.5) + L('M3 10h18M8 3v4M16 3v4') + DOT('M7 13.75h.01M10.5 13.75h.01M7 17.25h.01M10.5 17.25h.01') + '<path d="M15.6 16.9l1.1 1.1 1.9-2.2" stroke-width="1.25" style="stroke:var(--ic-on-accent,currentColor)"/>'],
+    uhr: ['Messe', 'Uhr / Öffnungszeit', 'Öffnungszeiten, Steuerung, Zeitplan', TC(12, 12, 9) + ZC(12, 12, 1.5) + C(12, 12, 9) + L('M12 7v5h4') + D('M12 3.5v1M20.5 12h-1M12 20.5v-1M3.5 12h1')],
+    schichtplan: ['Messe', 'Schichtplan', 'Standbesetzung, Durchführung', TR(3, 4, 18, 5, 2) + Z(9.75, 12, 4.5, 3.5) + R(3, 4, 18, 16, 2) + L('M3 9h18M9 9v11M15 9v11') + D('M4.5 14.5h3M16.5 17.5h3')],
+    team: ['Messe', 'Team mit Helmen', 'Messeteam, Standpersonal', T('M2 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2z') + ZP('M5 8a3 3 0 0 1 6 0z') + ZP('M13 8a3 3 0 0 1 6 0z') + L('M2 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M15.5 14h.5a4 4 0 0 1 4 4v2') + C(8, 9.5, 2.5) + C(16, 9.5, 2.5) + L('M5 8a3 3 0 0 1 6 0M13 8a3 3 0 0 1 6 0', 1.5) + D('M4.5 8h7M12.5 8h7')],
+    handschlag: ['Messe', 'Handschlag / Termin', 'Vertrieb, Gesprächstermine, Verhandlung', T(HAND) + Z(10.75, 9.75, 2.5, 2.5) + L(HAND) + L('M12 8l-3 4 3 2 3-3')],
+    lead: ['Messe', 'Visitenkarte (Lead)', 'Leads, Kontakte, CRM', TR(2, 5, 20, 14, 2) + ZC(7.5, 10, 1.5) + R(2, 5, 20, 14, 2) + R(5, 8, 5, 5, 1) + L('M13 9h6M13 12h4', 1.5) + D('M5 16h14')],
+    qr: ['Messe', 'Scanner / QR', 'QR-Code, Landingpage, Badge-Scanner, Ausweise', TR(3, 3, 7, 7, 1.5) + Z(5.25, 5.25, 2.5, 2.5, 0.5) + R(3, 3, 7, 7, 1.5) + R(14, 3, 7, 7, 1.5) + R(3, 14, 7, 7, 1.5) + L('M14 14h3v3h-3zM19 14h2M14 19.5h2M19 19h2v2') + DOT('M17.5 6.5h.01M6.5 17.5h.01')],
+    trichter: ['Messe', 'Trichter / Pipeline', 'Lead-Pipeline, Pipeline-Tracking', T('M3 4h18l-7 8v7l-4 2v-9z') + ZP('M8 9h8l-3 3.4V17l-2 1v-5.6z') + L('M3 4h18l-7 8v7l-4 2v-9z') + D('M6.5 8h11')],
+    ziel: ['Messe', 'Zielscheibe mit Pfeil', 'Ziele, KPIs, Messgrößen', TC(12, 12, 9) + ZC(12, 12, 2) + C(12, 12, 9) + C(12, 12, 5) + L('M12 12l7-7M16 4h4v4', 1.5)],
+    budget: ['Messe', 'Münze mit Euro (Budget)', 'Budget, Forecast, Kosten', TC(15, 10, 6) + ZP('M3 16h9v2H3z') + C(15, 10, 6) + L('M17 7.5a3 3 0 1 0 0 5M12 9.2h4M12 10.8h4', 1.5) + L('M3 17h9M3 20.5h14')],
+    dokument: ['Messe', 'Dokument / Vertrag', 'Verträge, Bestellungen, Angebote', T('M5 3h9l5 5v13H5z') + Z(13.75, 15.75, 3, 3) + L('M5 3h9l5 5v13H5z') + L('M14 3v5h5') + L('M8 12h8', 1.5) + D('M8 15.5h4')],
+    ordner: ['Messe', 'Ordner mit Reiter (Ablage)', 'Ablage, Dokumente, Wissensbasis', T('M3 8h18v12H3z') + ZP('M3 6h6l2 2H3z') + L('M3 5.5a.5.5 0 0 1 .5-.5H9l2 2.5h9.5a.5.5 0 0 1 .5.5v11.5a.5.5 0 0 1-.5.5h-17a.5.5 0 0 1-.5-.5z') + D('M3 10.5h18')],
+    recht: ['Messe', '§ Recht', 'Rechtsprüfung, Versicherung, DSGVO', L(PARA)],
+    lupe: ['Messe', 'Lupe mit Haken (Faktencheck)', 'Faktencheck, Prüfen, Review', TC(10, 10, 6) + ZC(10, 10, 2) + C(10, 10, 6) + L('M14.5 14.5l6 6', 2.25) + L('M7.25 10l2 2 3.5-4', 1.5)],
+    warndreieck: ['Messe', 'Warndreieck / Notfall', 'Notfallplan, Eskalation, Genehmigungen', T('M12 3.5l9.5 17h-19z') + L('M12 3.5l9.5 17h-19z') + L('M12 10v4.5') + '<path d="M12 17.5h.01" stroke-width="2.5"/>'],
+    erstehilfe: ['Messe', 'Erste Hilfe', 'Erste Hilfe, Sanitätskoffer', TR(3, 6.5, 18, 14, 2) + R(3, 6.5, 18, 14, 2) + L('M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2') + L('M12 10.5v6M9 13.5h6', 2.25)],
+    grenze: ['Messe', 'Grenze / Zoll', 'Zoll, Grenzübertritt, Entsendung', TR(3, 9, 18, 3, 1.5) + ZP('M7.5 9h3l3 3h-3z') + R(3, 9, 18, 3, 1.5) + L('M5 12v9M19 12v9') + D('M13 9l3 3M17.5 9l2.5 2.5') + L('M3 21h4M17 21h4', 1.5)],
+    pin: ['Messe', 'Ort / NL-Stecknadel', 'Rotterdam, NL-Spezifika', T('M12 21.5s-7-6.6-7-11.5a7 7 0 0 1 14 0c0 4.9-7 11.5-7 11.5z') + ZC(12, 10, 2.5) + L('M12 21.5s-7-6.6-7-11.5a7 7 0 0 1 14 0c0 4.9-7 11.5-7 11.5z')],
+    fernglas: ['Messe', 'Wettbewerb / Fernglas', 'Wettbewerber-Rundgang, Beobachtung', TR(2, 10, 7, 10, 1.5) + TR(15, 10, 7, 10, 1.5) + ZC(5.5, 16, 1.75) + ZC(18.5, 16, 1.75) + R(2, 10, 7, 10, 1.5) + R(15, 10, 7, 10, 1.5) + L('M9 13h6') + L('M4.5 10V6a1 1 0 0 1 1-1H8M19.5 10V6a1 1 0 0 0-1-1H16')],
+    hammer: ['Messe', 'Protokoll / Beschluss', 'Beschlüsse, GL-Entscheidungen', ZP('M14 5l2-2 5 5-2 2z') + L('M8 18l-1-1 9-9 1 1z') + L('M13 5l3-3 6 6-3 3z') + TR(3, 19.5, 10, 2, 1) + R(3, 19.5, 10, 2, 1)],
+    meeting: ['Messe', 'Besprechungstisch', 'Messe-Abstimmung, Protokolle', TR(3, 11, 18, 3, 1.5) + Z(10.5, 8.75, 3, 2.25, 0.5) + R(3, 11, 18, 3, 1.5) + L('M6 14v6M18 14v6') + C(7, 5.5, 2) + C(17, 5.5, 2) + D('M4 10a3 3 0 0 1 6 0M14 10a3 3 0 0 1 6 0')],
+    mail: ['Messe', 'Nachfassen / Mail', 'Nachfassmail, Einladungen', TR(2, 5, 20, 14, 2) + Z(16.25, 14.25, 3, 2.5, 0.5) + R(2, 5, 20, 14, 2) + L('M2.5 6l9.5 7.5L21.5 6')],
+    kamera: ['Messe', 'Foto / Kamera', 'Fotodokumentation, Bildrechte', TR(2, 7, 20, 13, 2.5) + ZC(12, 13.5, 1.75) + R(2, 7, 20, 13, 2.5) + L('M8 7l1.5-2.5h5L16 7') + C(12, 13.5, 4) + DOT('M18.5 10h.01')],
+    muell: ['Messe', 'Müll / Entsorgung', 'Abfall, Sperrmüll, Reinigung', T('M6 7l1 14h10l1-14z') + L('M3.5 7h17M9 7V4h6v3M6 7l1 14h10l1-14') + L('M10 11v6M14 11v6', 1.5)],
+    schloss: ['Messe', 'Schloss / Datenschutz', 'Datenschutz, geschützte Dateien', TR(4, 10, 16, 11, 2) + ZC(12, 14.5, 1.5) + R(4, 10, 16, 11, 2) + L('M8 10V7a4 4 0 0 1 8 0v3') + L('M12 15.5v2.5', 1.5)],
+    /* ---------- Status ---------- */
+    'st-open': ['Status', 'Offen', 'Status offen (leeres Quadrat)', R(4, 4, 16, 16, 2.5)],
     'st-progress': ['Status', 'In Arbeit', 'Status in Arbeit (halb gefüllter Kreis)', '<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" style="fill:currentColor;stroke:none"/>'],
     'st-blocked': ['Status', 'Blockiert', 'Status blockiert (Achteck mit Balken)', '<path d="M8 3h8l5 5v8l-5 5H8l-5-5V8z"/><path d="M8 12h8"/>'],
     'st-deferred': ['Status', 'Zurückgestellt', 'Status zurückgestellt (Pause im Kreis)', '<circle cx="12" cy="12" r="8"/><path d="M9.5 8v8M14.5 8v8"/>'],
-    'st-done': ['Status', 'Erledigt', 'Status erledigt (Quadrat mit Haken)', '<rect x="4" y="4" width="16" height="16"/><path d="M8 12l3 3 5-6"/>'],
-    /* ---------- Priorität, Flags (ohne Akzent) ---------- */
+    'st-done': ['Status', 'Erledigt', 'Status erledigt (Quadrat mit Haken)', R(4, 4, 16, 16, 2.5) + L('M8 12l3 3 5-6')],
+    /* ---------- Priorität ---------- */
     p0: ['Priorität', 'P0 – kritisch', 'Prio P0 (Doppelpfeil nach oben)', '<path d="M5 11l7-7 7 7M5 19l7-7 7 7"/>'],
     p1: ['Priorität', 'P1 – wichtig', 'Prio P1 (Pfeil nach oben)', '<path d="M5 15l7-7 7 7"/>'],
     p2: ['Priorität', 'P2 – normal', 'Prio P2 (Strich)', '<path d="M5 12h14"/>'],
+    /* ---------- Flag ---------- */
     'flag-neu': ['Flag', 'Neu', 'Flag neu (Funken)', '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/>'],
     'flag-fakt': ['Flag', 'Fakt prüfen', 'Flag fakt (Lupe mit Haken)', '<circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/><path d="M7 10l2 2 4-4"/>'],
     'flag-recht': ['Flag', 'Recht prüfen', 'Flag recht (§)', '<path d="M15 6a3 3 0 0 0-6 0c0 3 6 3 6 6a3 3 0 0 1-3 3"/><path d="M9 18a3 3 0 0 0 6 0c0-3-6-3-6-6a3 3 0 0 1 3-3"/>'],
-    /* ---------- Rollen (Fräszahn als Namensschild) ---------- */
-    'rolle-mkt': ['Rolle', 'Marketing & Event', 'Rolle Marketing (Megafon)', ZP('M8 10.6l6-3.8v10.4l-6-3.8z') + '<path d="M3 10v4h4l8 5V5L7 10z"/><path d="M18 9v6"/>'],
-    'rolle-team': ['Rolle', 'Messeteam', 'Rolle Messeteam', Z(7, 7, 2) + '<circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M2 20v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3M14 13h2a4 4 0 0 1 4 4v3"/>'],
-    'rolle-gl': ['Rolle', 'Geschäftsleitung', 'Rolle GL (Aktentasche)', Z(10, 11, 4, 3) + '<rect x="3" y="7" width="18" height="13"/><path d="M9 7V4h6v3M3 12h7M14 12h7"/>'],
-    'rolle-vertrieb': ['Rolle', 'Vertrieb', 'Rolle Vertrieb (Handschlag)', Z(11, 10, 2) + '<path d="M3 8l4-3 5 3 3-3 6 3v7l-5 4-5-3-4 1-4-4z"/><path d="M12 8l-3 4 3 2 3-3"/>'],
-    'rolle-werkstatt': ['Rolle', 'Werkstatt', 'Rolle Werkstatt (Schraubenschlüssel)', '<path d="M14 4a5 5 0 0 0-5 7L3 17l4 4 6-6a5 5 0 0 0 7-5l-3 3-3-3z"/>'],
-    'rolle-it': ['Rolle', 'IT / Webbetreuung', 'Rolle IT (Monitor mit Code)', Z(11, 10, 2) + '<rect x="2" y="4" width="20" height="13"/><path d="M8 8l-3 3 3 3M16 8l3 3-3 3M8 21h8"/>'],
-    'rolle-extern': ['Rolle', 'Dienstleister', 'Rolle Dienstleister (Gebäude)', Z(14, 16, 4, 2) + '<path d="M3 21V9h8v12M11 13h10v8"/><path d="M6 12h2M6 16h2M15 16h2M3 21h18"/>'],
-    /* ---------- Oberfläche (schlicht; Akzent nur bei Modul-Icons) ---------- */
+    /* ---------- Rolle ---------- */
+    'rolle-mkt': ['Rolle', 'Marketing & Event', 'Rolle Marketing (Megafon)', T(MEGA) + ZP('M8 10.6l6-3.8v10.4l-6-3.8z') + L(MEGA) + L('M18 9a4 4 0 0 1 0 6')],
+    'rolle-team': ['Rolle', 'Messeteam', 'Rolle Messeteam', T('M2 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2z') + Z(5.5, 16, 3, 2, 0.5) + C(8, 8, 3) + C(16, 8, 3) + L('M2 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M15.5 14h.5a4 4 0 0 1 4 4v2')],
+    'rolle-gl': ['Rolle', 'Geschäftsleitung', 'Rolle GL (Aktentasche)', TR(3, 7.5, 18, 12.5, 2.5) + Z(10, 10.75, 4, 4, 1) + R(3, 7.5, 18, 12.5, 2.5) + L('M9 7.5V5.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2') + L('M3 12.75h7M14 12.75h7') + DOT('M6 17.25h.01M18 17.25h.01')],
+    'rolle-vertrieb': ['Rolle', 'Vertrieb', 'Rolle Vertrieb (Handschlag)', T(HAND) + Z(10.75, 9.75, 2.5, 2.5) + L(HAND) + L('M12 8l-3 4 3 2 3-3')],
+    'rolle-werkstatt': ['Rolle', 'Werkstatt', 'Rolle Werkstatt (Schraubenschlüssel)', T('M14 4a5 5 0 0 0-5 7L3 17l4 4 6-6a5 5 0 0 0 7-5l-3 3-3-3z') + L('M14 4a5 5 0 0 0-5 7L3 17l4 4 6-6a5 5 0 0 0 7-5l-3 3-3-3z') + DOT('M5.5 18.5h.01')],
+    'rolle-it': ['Rolle', 'IT / Webbetreuung', 'Rolle IT (Monitor mit Code)', TR(2, 4, 20, 13, 2) + Z(10.75, 9.75, 2.5, 2.5, 0.5) + R(2, 4, 20, 13, 2) + L('M8 8l-3 2.5L8 13M16 8l3 2.5-3 2.5M8 21h8M12 17v4')],
+    'rolle-extern': ['Rolle', 'Dienstleister', 'Rolle Dienstleister (Gebäude)', TR(3, 9, 8, 12, 1) + Z(14, 16, 4, 2, 0.5) + L('M3 21V10a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v11M11 13h9a1 1 0 0 1 1 1v7') + D('M6 12.5h2M6 16h2') + L('M2 21h20')],
+    /* ---------- UI ---------- */
     check: ['UI', 'Haken', 'Bestätigen, erledigt', '<path d="M4 12.5 9.5 18 20 6"/>'],
     plus: ['UI', 'Plus', 'Neu anlegen', '<path d="M12 5v14M5 12h14"/>'],
     x: ['UI', 'Schließen', 'Schließen, entfernen', '<path d="M6 6l12 12M18 6 6 18"/>'],
     down: ['UI', 'Download', 'Datei bereitstellen', '<path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14"/>'],
     up: ['UI', 'Nach oben', 'Sortierung', '<path d="M12 19V5m0 0-6 6m6-6 6 6"/>'],
     dn: ['UI', 'Nach unten', 'Sortierung', '<path d="M12 5v14m0 0-6-6m6 6 6-6"/>'],
-    copy: ['UI', 'Kopieren', 'In die Zwischenablage', '<path d="M9 9h10v10H9zM5 15V5h10"/>'],
+    copy: ['UI', 'Kopieren', 'In die Zwischenablage', R(9, 9, 10, 10, 1.5) + L('M5 15V6.5A1.5 1.5 0 0 1 6.5 5H15')],
     ext: ['UI', 'Externer Link', 'Öffnet in neuem Tab', '<path d="M14 4h6v6M20 4 10 14M18 14v6H4V6h6"/>'],
     sun: ['UI', 'Hell', 'Farbschema hell', '<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>'],
     moon: ['UI', 'Dunkel', 'Farbschema dunkel', '<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>'],
     auto: ['UI', 'System', 'Farbschema System', '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" style="fill:currentColor;stroke:none"/>'],
     search: ['UI', 'Suchen', 'Befehlspalette, Suche', '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>'],
-    ablegen: ['UI', 'Ablegen / Eingang', 'Wissensarchiv: Dateien, Texte, Links ablegen', '<path d="M3 13h5l1 3h6l1-3h5"/><path d="M5 13 7 5h10l2 8v6H5z"/><path d="M12 3v7M9 7l3 3 3-3"/>'],
-    karte: ['UI', 'Karte', 'Projektkarte, Standorte', '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'],
+    ablegen: ['UI', 'Ablegen / Eingang', 'Wissensarchiv: Dateien, Texte, Links ablegen', T('M5 13 7 5h10l2 8v6H5z') + L('M3 13h5l1 3h6l1-3h5') + L('M5 13 7 5h10l2 8v6H5z') + L('M12 3v7M9 7l3 3 3-3')],
+    karte: ['UI', 'Karte', 'Projektkarte, Standorte', T('M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z') + L('M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z') + L('M9 4v14M15 6v14')],
     refresh: ['UI', 'Aktualisieren', 'Live-Daten neu laden', '<path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/>'],
     go: ['UI', 'Öffnen', 'Zu einem Modul springen', '<path d="M5 12h14m-6-6 6 6-6 6"/>'],
-    keys: ['UI', 'Tastenkürzel', 'Tastatur', '<path d="M3 6h18v12H3z"/><path d="M7 10h1M11 10h1M15 10h1M7 14h10"/>'],
-    dashboard: ['UI', 'Tacho (Dashboard)', 'Modul Dashboard (Tacho)', ZP('M4 18a8 8 0 0 1 4-6.9L12 18z') + '<path d="M4 18a8 8 0 0 1 16 0"/><path d="M12 10v2M17.7 12.3l-1.4 1.4M6.3 12.3l1.4 1.4" stroke-width="1.5"/><path d="M12 18l4-5"/><path d="M2 18h20"/>'],
-    liste: ['UI', 'Checkliste', 'Modul Aufgaben, Checklisten', Z(4, 5, 2) + '<rect x="3" y="4" width="4" height="4"/><rect x="3" y="10" width="4" height="4"/><rect x="3" y="16" width="4" height="4"/><path d="M10 6h11M10 12h11M10 18h11"/>'],
-    lampe: ['UI', 'Glühbirne (Lessons)', 'Lessons Learned, Ideen', Z(11, 10, 2, 3) + '<path d="M8 14a5 5 0 1 1 8 0c-1 1-1 2-1 3H9c0-1 0-2-1-3z"/><path d="M9 20h6M10 22h4"/>'],
-    buch: ['UI', 'Aufgeschlagenes Buch (Wissen)', 'Modul Wissensbasis', ZP('M16 3h3v6l-1.5-1.5L16 9z') + '<path d="M12 6c-2-2-6-2-9-1v14c3-1 7-1 9 1 2-2 6-2 9-1V5c-.7-.2-1.3-.3-2-.4"/><path d="M12 6v14"/>'],
-    chart: ['UI', 'Steigende Kurve (SEO)', 'SEO, Traffic, Auswertungen', Z(12, 13, 2) + '<path d="M3 3v18h18"/><path d="M6 15l4-4 3 3 6-7"/><path d="M16 7h3v3"/>'],
-    stift: ['UI', 'Stift mit Textzeile (Content)', 'Content-Pipeline, Entwürfe', ZP('M13 7l4 4-1.5 1.5-4-4z') + '<path d="M15 5l4 4-9 9H6v-4z"/><path d="M13 7l4 4"/><path d="M3 21h9" stroke-width="1.5"/>'],
-    ausschreibung: ['UI', 'Vergabeunterlage mit Siegel', 'Modul Ausschreibungen (Dokument mit Siegel)', Z(11, 15.5, 2) + '<path d="M5 3h10l4 4v14H5z"/><path d="M15 3v4h4"/><path d="M8 9h5M8 12h8" stroke-width="1.5"/><circle cx="12" cy="16.5" r="2.5"/>'],
-    stern: ['UI', 'Referenz-Stern', 'Referenzen, Bewertungen', Z(11, 10, 2) + '<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>'],
-    gantt: ['UI', 'Zeitplan mit Heute-Linie', 'Zeitplan, Gantt', Z(7.5, 10, 10, 4) + '<rect x="3" y="5" width="8" height="3"/><rect x="13" y="16" width="8" height="3"/><path d="M14 3v18" stroke-width="1.5"/>'],
-    kompass: ['UI', 'Kompass (Copilot)', 'Feind Copilot, Tagesbrief', ZP('M12 6l2.5 6h-5z') + '<circle cx="12" cy="12" r="9"/><path d="M12 6l2.5 6-2.5 6-2.5-6z"/><path d="M12 3v1.5M21 12h-1.5M12 21v-1.5M3 12h1.5" stroke-width="1.5"/>'],
-    verlauf: ['UI', 'Uhr mit Rückpfeil (Aktivität)', 'Aktivitätsprotokoll', Z(11, 11, 2) + '<path d="M4 12a8 8 0 1 0 2.3-5.7"/><path d="M3 4v4h4"/><path d="M12 8v4l3 2"/>'],
-    schild: ['UI', 'Schild mit Haken (Status)', 'Admin-Status', ZP('M12 4.1v15.8c-3.5-1-7-3.6-7-7.9V6.7z') + '<path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>'],
-    regler: ['UI', 'Schieberegler (Konfiguration)', 'Admin-Konfiguration', Z(14, 10, 3, 4) + '<path d="M4 7h16M4 12h16M4 17h16" stroke-width="1.5"/><rect x="7" y="5" width="3" height="4"/><rect x="14" y="10" width="3" height="4"/><rect x="9" y="15" width="3" height="4"/>'],
-    schluessel: ['UI', 'Schlüssel (Zugänge)', 'Admin-Zugänge, Rechte', Z(5.5, 13.5, 3) + '<circle cx="7" cy="15" r="4"/><path d="M10 12l10-8M17 6.5l2 2.5M14.5 8.5l2 2.5"/>'],
-    datenbank: ['UI', 'Datenbank-Zylinder', 'Admin-Daten, Sicherung', Z(15, 16, 3) + '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>'],
-    raster: ['UI', 'Raster (Icons)', 'Icon-Übersicht', Z(15, 4, 5) + '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>'],
-    zaehler: ['UI', 'Handzähler (Lead-Zähler)', 'Zählung am Messetag', Z(8, 11, 8, 2) + '<rect x="4" y="7" width="16" height="11"/><rect x="7" y="10" width="10" height="4" stroke-width="1.5"/><path d="M12 4v3M9 4h6"/><path d="M10 10v4M14 10v4" stroke-width="1.5"/>'],
+    keys: ['UI', 'Tastenkürzel', 'Tastatur', R(3, 6, 18, 12, 2) + L('M7 10h1M11 10h1M15 10h1M7 14h10')],
+    dashboard: ['UI', 'Tacho (Dashboard)', 'Modul Dashboard (Tacho)', T('M3.5 18a8.5 8.5 0 0 1 17 0z') + '<path d="M4.4 14.1a8.5 8.5 0 0 1 3.5-4.6" stroke-width="3" style="stroke:var(--ic-accent,none)"/>' + L('M3.5 18a8.5 8.5 0 0 1 17 0') + L('M2 18h20') + D('M12 9.5v1.5M17.9 11.9l-1 1M20 15.5h-1.5') + L('M12 18l4-5') + '<circle cx="12" cy="18" r="1.5" style="fill:currentColor"/>'],
+    liste: ['UI', 'Checkliste', 'Modul Aufgaben, Checklisten', Z(3.75, 4.75, 2.5, 2.5, 0.5) + R(3, 4, 4, 4, 1) + R(3, 10, 4, 4, 1) + R(3, 16, 4, 4, 1) + L('M10 6h11M10 12h11M10 18h11') + L('M3.9 12l.9.9 1.4-1.6', 1.25)],
+    lampe: ['UI', 'Glühbirne (Lessons)', 'Lessons Learned, Ideen', T('M8 14a5 5 0 1 1 8 0c-1 1-1 2-1 3H9c0-1 0-2-1-3z') + Z(10.75, 9.5, 2.5, 3.5, 0.75) + L('M8 14a5 5 0 1 1 8 0c-1 1-1 2-1 3H9c0-1 0-2-1-3z') + L('M9 20h6M10.5 22.25h3') + D('M12 1.25v.75M4.5 4.5l.6.6M19.5 4.5l-.6.6')],
+    buch: ['UI', 'Aufgeschlagenes Buch (Wissen)', 'Modul Wissensbasis', T('M12 6c-2-2-6-2-9-1v14c3-1 7-1 9 1z') + ZP('M16 3h3v6l-1.5-1.5L16 9z') + L('M12 6c-2-2-6-2-9-1v14c3-1 7-1 9 1 2-2 6-2 9-1V5c-.7-.2-1.3-.3-2-.4') + L('M12 6v14') + D('M6 9h3M6 12h3')],
+    chart: ['UI', 'Steigende Kurve (SEO)', 'SEO, Traffic, Auswertungen', T('M3 21V3M6 15l4-4 3 3 6-7v14H3z') + ZC(13, 14, 1.5) + L('M3 3v18h18') + L('M6 15l4-4 3 3 6-7') + L('M16 7h3v3')],
+    stift: ['UI', 'Stift mit Textzeile (Content)', 'Content-Pipeline, Entwürfe', T('M15 5l4 4-9 9H6v-4z') + ZP('M13 7l4 4-1.5 1.5-4-4z') + L('M15 5l4 4-9 9H6v-4z') + L('M13 7l4 4') + L('M3 21.25h9', 1.5)],
+    ausschreibung: ['UI', 'Vergabeunterlage mit Siegel', 'Modul Ausschreibungen (Dokument mit Siegel)', T('M5 3h10l4 4v14H5z') + ZC(12, 16.5, 1.25) + L('M5 3h10l4 4v14H5z') + L('M15 3v4h4') + L('M8 9h5M8 12h8', 1.5) + C(12, 16.5, 2.5) + D('M10.5 18.75l-.75 2.25M13.5 18.75l.75 2.25')],
+    stern: ['UI', 'Referenz-Stern', 'Referenzen, Bewertungen', T('M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z') + ZC(12, 12, 1.5) + L('M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z')],
+    gantt: ['UI', 'Zeitplan mit Heute-Linie', 'Zeitplan, Gantt', Z(7.5, 10, 10, 4, 1) + TR(3, 5, 8, 3, 1) + TR(13, 16, 8, 3, 1) + R(3, 5, 8, 3, 1) + R(13, 16, 8, 3, 1) + L('M14 2.5v19', 1.5)],
+    kompass: ['UI', 'Kompass (Copilot)', 'Feind Copilot, Tagesbrief', TC(12, 12, 9) + ZP('M12 6l2.5 6h-5z') + C(12, 12, 9) + L('M12 6l2.5 6-2.5 6-2.5-6z') + D('M12 3v1.5M21 12h-1.5M12 21v-1.5M3 12h1.5')],
+    verlauf: ['UI', 'Uhr mit Rückpfeil (Aktivität)', 'Aktivitätsprotokoll', TC(12, 12, 8) + ZC(12, 12, 1.25) + L('M4 12a8 8 0 1 0 2.3-5.7') + L('M3 4v4h4') + L('M12 8v4l3 2')],
+    schild: ['UI', 'Schild mit Haken (Status)', 'Admin-Status', T('M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z') + ZP('M12 4.1v15.8c-3.5-1-7-3.6-7-7.9V6.7z') + L('M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z') + L('M8.5 12l2.5 2.5 4.5-5')],
+    regler: ['UI', 'Schieberegler (Konfiguration)', 'Admin-Konfiguration', Z(14, 10, 3, 4, 1) + L('M4 7h16M4 12h16M4 17h16', 1.5) + R(7, 5, 3, 4, 1) + R(14, 10, 3, 4, 1) + R(9, 15, 3, 4, 1)],
+    schluessel: ['UI', 'Schlüssel (Zugänge)', 'Admin-Zugänge, Rechte', TC(7, 15, 4) + ZC(7, 15, 1.5) + C(7, 15, 4) + L('M10 12l10-8M17 6.5l2 2.5M14.5 8.5l2 2.5')],
+    datenbank: ['UI', 'Datenbank-Zylinder', 'Admin-Daten, Sicherung', T('M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6z') + ZP('M4 6c0 1.7 3.6 3 8 3s8-1.3 8-3-3.6-3-8-3-8 1.3-8 3z') + '<ellipse cx="12" cy="6" rx="8" ry="3"/>' + L('M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3') + DOT('M7 15.5h.01M7 9.5h.01')],
+    raster: ['UI', 'Raster (Icons)', 'Icon-Übersicht', Z(14, 3, 7, 7, 1.5) + TR(3, 14, 7, 7, 1.5) + R(3, 3, 7, 7, 1.5) + R(14, 3, 7, 7, 1.5) + R(3, 14, 7, 7, 1.5) + R(14, 14, 7, 7, 1.5)],
+    zaehler: ['UI', 'Handzähler (Lead-Zähler)', 'Zählung am Messetag', TR(4, 7, 16, 11, 2) + Z(7.75, 10.75, 8.5, 2.5, 0.5) + R(4, 7, 16, 11, 2) + R(7, 10, 10, 4, 1) + L('M12 4v3M9.5 4h5') + D('M10.33 10v4M13.67 10v4') + DOT('M7.5 16h.01')],
     info: ['UI', 'Info', 'Hinweise', '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7v1"/>'],
-    leer: ['UI', 'Leerer Zustand', 'Noch keine Daten', '<path d="M4 6h16v12H4z" stroke-dasharray="3 3"/><path d="M9 12h6"/>'],
-    drucker: ['UI', 'Drucken', 'Druckfassung, Brennglas-PDF', '<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8"/><path d="M6 14h12v7H6z"/><path d="M17 12h1"/>'],
+    leer: ['UI', 'Leerer Zustand', 'Noch keine Daten', '<rect x="4" y="6" width="16" height="12" rx="2" stroke-dasharray="3 3"/>' + L('M9 12h6')],
+    drucker: ['UI', 'Drucken', 'Druckfassung, Brennglas-PDF', L('M6 9V3h12v6') + R(3, 9, 18, 8, 1.5) + R(6, 14, 12, 7, 0.5) + L('M17 12h1')],
     mehr: ['UI', 'Mehr', 'Weitere Aktionen', '<path d="M5 12h1M11.5 12h1M18 12h1"/>']
   };
   const ORDER = Object.keys(DEFS);
   const symbol = id => '<symbol id="i-' + id + '" viewBox="0 0 24 24"><title>' + DEFS[id][1].replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</title>' + DEFS[id][3] + '</symbol>';
-  const STYLE = 'fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter';
+  const STYLE = 'fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round';
   const sprite = () => '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="' + STYLE + '">' + ORDER.map(symbol).join('') + '</svg>';
-  const standalone = (id, size, accent) => '<svg xmlns="http://www.w3.org/2000/svg" width="' + (size || 24) + '" height="' + (size || 24) + '" viewBox="0 0 24 24" style="' + STYLE + (accent ? ';--ic-accent:' + accent : '') + '"><title>' + DEFS[id][1] + '</title>' + DEFS[id][3] + '</svg>';
+  const standalone = (id, size, accent) => '<svg xmlns="http://www.w3.org/2000/svg" width="' + (size || 24) + '" height="' + (size || 24) + '" viewBox="0 0 24 24" style="' + STYLE + (accent ? ';--ic-accent:' + accent : '') + ((size || 24) <= 16 ? ';--ic-d:none' : '') + '"><title>' + DEFS[id][1] + '</title>' + DEFS[id][3] + '</svg>';
   return { DEFS, ORDER, STYLE, symbol, sprite, standalone };
 });
-
 /* ---- app-core.js ---- */
 /* Feind Cockpit · App-Kern: DOM-Helfer, Zustand, Welten und Module, Navigation mit Deep-Links,
    Farbschema, Banner, Meldungen, Dialoge, Exporte und die Anbindung an den Store.
@@ -5443,13 +5459,13 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
       const grid = h('div', { class: 'icgrid', role: 'list' }, list.map(id => {
         const [g, title, use] = I.DEFS[id];
         return h('div', { class: 'iccard', role: 'listitem' },
-          h('div', { class: 'icprev', style: 'font-size:' + ui.size + 'px' }, app.ico(id, 'ic-accent')),
+          h('div', { class: 'icprev' + (ui.size > 16 ? ' big' : ''), style: 'font-size:' + ui.size + 'px' }, app.ico(id, 'ic-accent')),
           h('div', { class: 'icname' }, h('code', { text: 'i-' + id })),
           h('b', { text: title }), h('span', { class: 'muted small', text: use }), h('span', { class: 'chip soft', text: g }),
           h('button', { class: 'btn small', type: 'button', 'aria-label': 'SVG kopieren: ' + title, onclick: () => copySvg(id) }, app.ico('copy'), 'SVG kopieren'));
       }));
       return [
-        panelHead('Icons · Feind Cockpit', I.ORDER.length + ' Icons', null, 'Eigene Zeichnungen im Feind-CI (v2, 03.10.2026): 24×24, Strich 2 px, eckige Linien, 45°-Winkel; Farbe über currentColor. Markenzeichen ist der Fräszahn, das grüne Quadrat aus dem Favicon, am Arbeitspunkt jedes Motivs (Akzent über --ic-accent). Status, Priorität und Flags bleiben ohne Akzent. Die Sprite-Datei gehört nach 04_Assets & CI.'),
+        panelHead('Icons · Feind Cockpit', I.ORDER.length + ' Icons', null, 'Icons 2.0 im Feind-CI (04.10.2026): 24×24, Präzisionslinie 1,75 px mit runden Enden, zarte Tonfläche (Duoton), Farbe über currentColor; bis 16 px werden Feindetails ausgeblendet. Markenzeichen ist der Fräszahn, die grüne Akzentfläche aus dem Favicon, am Arbeitspunkt jedes Motivs (Akzent über --ic-accent). Status, Priorität und Flags bleiben ohne Akzent. Die Sprite-Datei gehört nach 04_Assets & CI.'),
         h('div', { class: 'tools' },
           h('div', { class: 'field grow' }, h('label', { for: 'ic-q', text: 'Suche' }), search),
           h('div', { class: 'field' }, h('span', { class: 'label', text: 'Größe' }), sizes)),
@@ -5460,7 +5476,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     }
   });
   app.iconsMarkdown = function () {
-    const L = ['# Feind Cockpit – Icon-Übersicht', '', 'Eigene Zeichnungen im Feind-CI: Raster 24×24, Strich 2 px, eckige Linienenden (square/miter), currentColor; Markenzeichen „Fräszahn“: grünes Quadrat aus dem Favicon am Arbeitspunkt des Motivs, über `--ic-accent` (Token `--accent`); Status, Priorität und Flags ohne Akzent. Datei: feind-cockpit-icons.svg (Sprite mit `<symbol id="i-…">`).', '', '| Symbol-ID | Gruppe | Titel | Zweck |', '|---|---|---|---|'];
+    const L = ['# Feind Cockpit – Icon-Übersicht', '', 'Icons 2.0 im Feind-CI: Raster 24×24, Präzisionslinie 1,75 px mit runden Enden und Ecken, Feindetails 1,25 px (bis 16 px ausgeblendet über `--ic-d:none`), Tonfläche über `--ic-tone`, currentColor; Markenzeichen „Fräszahn“: grüne Akzentfläche aus dem Favicon am Arbeitspunkt des Motivs, über `--ic-accent` (Token `--accent`); Status, Priorität und Flags ohne Akzent. Datei: feind-cockpit-icons.svg (Sprite mit `<symbol id="i-…">`).', '', '| Symbol-ID | Gruppe | Titel | Zweck |', '|---|---|---|---|'];
     for (const id of I.ORDER) L.push('| `i-' + id + '` | ' + I.DEFS[id][0] + ' | ' + I.DEFS[id][1] + ' | ' + I.DEFS[id][2] + ' |');
     L.push('', 'Einbindung: `<svg class="ic" aria-hidden="true"><use href="feind-cockpit-icons.svg#i-fraeswalze"/></svg>` (gleicher Ursprung) oder Sprite inline in die Seite kopieren.', '', 'Stand ' + H.fmtD(app.today()) + ' · Feind Cockpit');
     return L.join('\n');
