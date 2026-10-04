@@ -11189,6 +11189,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
 
   /* ---------- Messe-Kopf: Countdown als Bogen ---------- */
   function hero(pr, days) {
+    const ended = H.dayDiff(app.today(), H.parseDay(D.FAIR.end)) < 0;
     const R = 54, C = 2 * Math.PI * R;
     const NS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(NS, 'svg');
@@ -11196,10 +11197,10 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     const mk = (cls, extra) => { const c = document.createElementNS(NS, 'circle'); c.setAttribute('cx', '64'); c.setAttribute('cy', '64'); c.setAttribute('r', String(R)); c.setAttribute('class', cls); if (extra) for (const k in extra) c.setAttribute(k, extra[k]); return c; };
     svg.append(mk('bg'), mk('fg', { 'stroke-dasharray': C.toFixed(1), 'stroke-dashoffset': (C * (1 - pr.pct / 100)).toFixed(1) }));
     return h('section', { class: 'ov-hero', 'aria-label': 'InfraTech 2027' },
-      h('div', { class: 'ov-ring' }, svg, h('div', { class: 'in' }, h('b', { class: 'num', text: days >= 0 ? String(days) : '–' }), h('span', { text: days > 0 ? 'Tage' : days === 0 ? 'heute' : 'läuft' }))),
+      h('div', { class: 'ov-ring' }, svg, h('div', { class: 'in' }, h('b', { class: 'num', text: days >= 0 ? String(days) : '–' }), h('span', { text: days > 0 ? 'Tage' : days === 0 ? 'heute' : ended ? 'vorbei' : 'läuft' }))),
       h('div', { class: 'ov-hero-txt' },
         h('p', { class: 'eyebrow', text: 'InfraTech 2027 · Rotterdam Ahoy · 12.–15.01.2027' }),
-        h('h2', { text: days > 0 ? 'Noch ' + days + ' Tage bis zum Messebeginn' : days === 0 ? 'Die Messe beginnt heute' : 'Die Messe läuft' }),
+        h('h2', { text: days > 0 ? 'Noch ' + days + ' Tage bis zum Messebeginn' : days === 0 ? 'Die Messe beginnt heute' : ended ? 'Die Messe ist vorbei: Zeit fürs Nachfassen' : 'Die Messe läuft' }),
         h('p', { class: 'lead', text: pr.done + ' von ' + pr.total + ' Aufgaben erledigt (' + pr.pct + ' %). Stand der Aufgabenliste: ' + fmtD(app.today()) + '.' }),
         h('div', { class: 'row' },
           h('button', { class: 'btn primary', type: 'button', onclick: () => app.go('infratech', 'dashboard') }, 'InfraTech-Dashboard'),
@@ -11349,7 +11350,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     ['USt-ID', t => t.replace(/\b(?:DE|NL|AT|PL|FR|BE)\s?\d{9,11}\b/g, v => v.slice(0, 2) + DOTS + v.slice(-2))],
     ['Telefonnummer', t => t.replace(/(?:\+\d{1,3}|\b0)[\s./-]?\(?\d{1,5}\)?[\s./-]?\d{2,}(?:[\s./-]?\d{2,}){0,3}/g, v => {
       const digits = v.replace(/\D/g, '');
-      if (digits.length < 8 || /^\d{1,2}[./-]\d{1,2}[./-]\d{2,4}$/.test(v.trim())) return v;
+      if (digits.length < 8 || /^\d{1,2}[./-]\d{1,2}[./-]\d{2,4}(?:\s+\d{1,2}(?::\d{2})?)?$/.test(v.trim())) return v;
       return v.trim().slice(0, 3) + ' ' + DOTS + digits.slice(-2);
     })],
     ['Zugangsdaten', t => t.replace(/((?:Passwort|Kennwort|Password|Zugangscode|PIN|PW)\s*[:=]\s*)(?!•)(\S+)/gi, (m, a) => a + DOTS + DOTS)]
@@ -11524,7 +11525,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     const dup = items().find(i => i.sha256 === hash && i.status !== 'archiviert');
     if (dup) return { dup };
     const first = t.split(/\n/).map(x => x.trim()).find(Boolean) || 'Notiz';
-    const doc = await newItem({ kind: 'text', source, name: 'Eingefügter Text', title: first.slice(0, 90), mime: 'text/plain', size: t.length, sha256: hash, original: 'gespeichert' });
+    const doc = await newItem({ kind: 'text', source, name: 'Eingefügter Text', title: G.mask(first).slice(0, 90), mime: 'text/plain', size: t.length, sha256: hash, original: 'gespeichert' });
     if (!doc) return null;
     W.texts.set(doc.id, t.slice(0, MAX_TEXT));
     await app.write('kb_text/' + doc.id, 'set', { text: t.slice(0, MAX_TEXT), chars: t.length, at: Date.now() });
@@ -11764,7 +11765,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     const ref = (S.data.references || []).find(r => { const n = K.tokens(r.title).filter(w => tk.has(w)).length; return n >= 2 || (n >= 1 && place && K.fold(r.title + ' ' + r.region).includes(K.fold(place))); });
     const id = H.uid('p');
     const doc = { id, name, place: (g && g.place) || place || '', state: (g && g.state) || p.state || '', country: p.country || (g ? 'Deutschland' : ''), lat: g ? g.lat : null, lon: g ? g.lon : null, geoHow: g ? g.how : 'offen',
-      year: p.year || c.year || null, services: c.services, machine: p.machine || '', areaM2: p.areaM2 || null, summary: str(c.summary).slice(0, 400), client: '', clientApproved: false,
+      year: p.year || c.year || null, services: c.services, machine: p.machine || '', areaM2: p.areaM2 || null, summary: G.mask(str(c.summary)).slice(0, 400), client: '', clientApproved: false,
       status: 'entwurf', items: [it.id], refId: ref ? (ref._id || ref.id) : null, createdAt: Date.now(), updatedAt: Date.now(), auto: true };
     return (await app.write('kb_projects/' + id, 'set', doc)) ? id : null;
   }
@@ -11805,7 +11806,8 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
       const rel = K.related(draft, items());
       const links = K.cockpitLinks(draft, { references: S.data.references, events: S.data.events, tenders: S.data.tenders });
       const review = [];
-      if (kinds.length) review.push('Personenbezogene Daten: ' + (kinds.join(', ') || 'Verdacht'));
+      const piiFound = kinds.length > 0 || !!(c.pii && c.pii.found);
+      if (piiFound) review.push('Personenbezogene Daten: ' + (kinds.join(', ') || 'Verdacht'));
       if (c.via === 'regeln') review.push(sampleOk === false || !inViewer() ? 'Ohne KI eingeordnet (KI hier nicht verfügbar)' : 'Ohne KI eingeordnet');
       else if (c.confidence < 0.6) review.push('Einordnung unsicher (' + Math.round(c.confidence * 100) + ' %)');
       if (ex.note) review.push(ex.note);
@@ -11814,11 +11816,12 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
       if (it.original === 'nur Text') review.push('Original (' + (it.ext || 'Datei').toUpperCase() + ') bitte in SharePoint ablegen; das Archiv hält den gelesenen Text');
       if (proj && proj.lat == null) review.push('Projektort nicht gefunden: Position auf der Karte setzen');
       const patch = {
-        title: c.title, summary: c.summary, category: c.category, docType: c.docType, services: c.services, tags: c.tags, entities: c.entities, year: c.year, language: c.language,
-        confidence: Math.round(c.confidence * 100) / 100, via: c.via, pii: { found: kinds.length > 0, kinds }, vertraulich: !!(it.vertraulich || G.confidential(text, kinds)), projectId, related: rel, links,
+        title: G.mask(c.title), summary: G.mask(c.summary), category: c.category, docType: c.docType, services: c.services, tags: c.tags, entities: c.entities, year: c.year, language: c.language,
+        confidence: Math.round(c.confidence * 100) / 100, via: c.via, pii: { found: piiFound, kinds }, vertraulich: !!(it.vertraulich || G.confidential(text, kinds)), projectId, related: rel, links,
         sharepoint: shareSuggestion(it, c, proj), extract: ex.how, textChars: str(ex.text).length, review,
         status: review.length ? 'pruefen' : 'fertig', lock: null, error: null, processedAt: Date.now(), processedBy: c.via
       };
+      if (!byId(id)) return; // inzwischen gelöscht: nichts zurückschreiben
       await app.write('kb_items/' + id, 'update', patch);
       // Rückverknüpfung: die drei engsten Verwandten kennen den neuen Eintrag (nur Kennung).
       for (const r of rel.slice(0, 3)) {
@@ -11828,7 +11831,8 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     } catch (e) {
       W.skip.add(id);
       const rl = e && (e.code === 'rate_limited' || e.code === 'queue_overflow');
-      await app.write('kb_items/' + id, 'update', { status: rl || (it.attempts || 0) + 1 < 3 ? 'neu' : 'fehler', lock: null, error: rl ? 'KI-Nutzungsgrenze erreicht, später erneut' : str(e && (e.message || e.code)).slice(0, 200) || 'unbekannt' });
+      if (!byId(id)) return;
+      await app.write('kb_items/' + id, 'update', { status: rl || (it.attempts || 0) + 1 < 3 ? 'neu' : 'fehler', attempts: rl ? (it.attempts || 0) : (it.attempts || 0) + 1, lock: null, error: rl ? 'KI-Nutzungsgrenze erreicht, später erneut' : str(e && (e.message || e.code)).slice(0, 200) || 'unbekannt' });
       if (rl) { W.pauseUntil = Date.now() + 10 * 60000; W.skip.delete(id); app.toast('KI-Nutzungsgrenze erreicht. Die Einordnung macht in 10 Minuten weiter.', true); }
     } finally { setStep(id, null); }
   }
@@ -11894,7 +11898,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
   const statusChip = it => chip(W.steps.has(it.id) ? 'yellow' : STATUS_CHIP[it.status] || 'soft', W.steps.get(it.id) || K.statusLabel(it.status));
   const kindIcon = it => (it.kind === 'link' ? 'ext' : it.kind === 'text' ? 'stift' : /^image\//.test(str(it.mime)) ? 'kamera' : /^video\//.test(str(it.mime)) ? 'display' : K.catOf(it.category)[3] || 'dokument');
   function thumb(it, big) {
-    if (isImage(it)) return h('div', { class: 'kb-thumb' + (big ? ' big' : '') }, h('img', { src: blobUrl(it.assetId), alt: '', loading: 'lazy' }));
+    if (isImage(it) && (app.isAdmin() || !(G.isConf(it) || (it.pii && it.pii.found)))) return h('div', { class: 'kb-thumb' + (big ? ' big' : '') }, h('img', { src: blobUrl(it.assetId), alt: '', loading: 'lazy' }));
     return h('div', { class: 'kb-thumb icon' + (big ? ' big' : '') }, app.ico(kindIcon(it)), h('span', { text: (it.kind === 'datei' ? it.ext : it.kind === 'link' ? 'web' : 'text').toUpperCase().slice(0, 5) }));
   }
   function itemCard(it) {
@@ -12683,7 +12687,7 @@ let shown = false, hideT = null;
           p.kind === 'proj' ? ['Auftraggeber', d.clientApproved === true && str(d.client) ? str(d.client) : 'nicht freigegeben'] : null,
           p.kind === 'event' ? ['Termin', H.fmtD(d.date) + (d.endDate ? ' bis ' + H.fmtD(d.endDate) : '')] : null].filter(Boolean).map(([k, v]) => [h('dt', { text: k }), h('dd', { text: v })])),
         str(d.summary) ? h('p', { class: 'small', text: str(d.summary) }) : null,
-        imgs.length ? h('div', { class: 'mp-gallery' }, imgs.map(i => h('button', { type: 'button', 'aria-label': 'Foto öffnen: ' + str(i.title), onclick: () => app.kbOpen(i.id) }, h('img', { src: '/_blob/' + encodeURIComponent(i.assetId), alt: '', loading: 'lazy' })))) : null,
+        imgs.length ? h('div', { class: 'mp-gallery' }, imgs.filter(i => app.isAdmin() || !((FC.guard && FC.guard.isConf(i)) || (i.pii && i.pii.found))).map(i => h('button', { type: 'button', 'aria-label': 'Foto öffnen: ' + str(i.title), onclick: () => app.kbOpen(i.id) }, h('img', { src: '/_blob/' + encodeURIComponent(i.assetId), alt: '', loading: 'lazy' })))) : null,
         items.length ? h('div', {}, h('span', { class: 'label', text: items.length + ' Unterlagen im Archiv' }), h('ul', { class: 'mp-docs' }, items.slice(0, 8).map(i => h('li', {}, h('button', { class: 'linkbtn', type: 'button', onclick: () => app.kbOpen(i.id) }, str(i.title)))))) : null,
         h('div', { class: 'stack' },
           p.kind === 'proj' ? h('button', { class: 'btn small', type: 'button', onclick: () => editProject(p.data) }, 'Bearbeiten') : null,
@@ -12891,6 +12895,7 @@ let shown = false, hideT = null;
   const CONSENT_KEY = 'feind-cockpit:osm-consent';
   const DE_BOUNDS = [[47.2, 5.6], [55.15, 15.3]];
   const maps = {};
+  const views = {}; // letzter Ausschnitt je Karte, damit ein Neuzeichnen Zoom und Lage behält
   const failedHosts = new Set();
   let geo = null, asking = '';
   // Schalter aus Version 3 („1“ = an) war keine Einwilligung im Sinne der DSGVO: entfernen, neu fragen.
@@ -12946,7 +12951,7 @@ let shown = false, hideT = null;
   // opts: { id, height, label, states: { name: { n, home, sel } } | null, onState(name), points: [{ lat, lon, label, sub, kind, approx, onClick }], note }
   app.geoMap = function (opts) {
     const id = opts.id || 'map';
-    if (maps[id]) { const old = maps[id]; delete maps[id]; try { if (old._fcObs) old._fcObs.forEach(o => o.disconnect()); old.stop(); old.remove(); } catch (e) { /* schon weg */ } }
+    if (maps[id]) { const old = maps[id]; delete maps[id]; try { if (old._fcMoved) views[id] = { c: old.getCenter(), z: old.getZoom() }; } catch (e) { /* ohne Ausschnitt */ } try { if (old._fcObs) old._fcObs.forEach(o => o.disconnect()); old.stop(); old.remove(); } catch (e) { /* schon weg */ } }
     const p = provider(), c = consentOf(p), on = tilesOn(p);
     const box = h('div', { class: 'gm-map', style: 'height:' + (opts.height || 420) + 'px', role: 'region', 'aria-label': (opts.label || 'Karte') + '. Mit Pfeiltasten verschieben, Plus und Minus zoomen.' });
     const info = h('div', { class: 'gm-info muted small', role: 'status' });
@@ -13031,6 +13036,8 @@ let shown = false, hideT = null;
       const b = L.latLngBounds(DE_BOUNDS);
       for (const q of pts) b.extend([q.lat, q.lon]);
       map.fitBounds(b, { padding: [12, 12], animate: false });
+      if (views[id]) { map.setView(views[id].c, views[id].z, { animate: false }); map._fcMoved = true; }
+      map.on('dragend zoomend', () => { map._fcMoved = true; views[id] = { c: map.getCenter(), z: map.getZoom() }; });
       box.dataset.zoom = String(map.getZoom());
       if (window.ResizeObserver) { const ro = new ResizeObserver(() => { if (maps[id] === map && box.isConnected) { try { map.invalidateSize({ animate: false }); } catch (e) { /* entfernt */ } } }); ro.observe(box); map._fcObs.push(ro); }
       if (opts.note && !info.textContent) info.textContent = opts.note;
@@ -13141,9 +13148,8 @@ let shown = false, hideT = null;
         onclick: () => { ui.open[x.id] = !open; if (!ui.open[x.id]) delete ui.drafts[x.id]; rerender(); } }, captured(r) ? 'Erfasst ✎' : 'Erfassen')));
   }
   function buildCsv() {
-    const cell = v => { const s = v == null ? '' : String(v); return /[";\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
     const rows = [['Kategorie', 'Aufgabe', 'Typ', 'Status', 'Verantwortlich (Rolle)', 'Frist', 'Budget', 'Beschluss', 'Notiz']].concat(items().map(x => { const r = recOf(x.id); return [x.sec, x.text, TYP[x.typ] || x.typ, STL[r.status] || r.status, roleLabel(r.rolle), ISO.test(str(r.frist)) ? fmtD(r.frist) : '', str(r.budget), str(r.beschluss), str(r.notiz)]; }));
-    return '﻿' + rows.map(r => r.map(cell).join(';')).join('\r\n') + '\r\n';
+    return H.toCsv(rows[0], rows.slice(1));
   }
   function buildMd() {
     const pr = progress(), out = ['# InfraTech 2027 – Ergebnisbericht Checkliste 2026→27', 'Stand ' + fmtD(app.today()) + ' · ' + pr.done + '/' + pr.total + ' erledigt (' + pr.pct + ' %) · ' + pr.captured + ' erfasst', ''];
@@ -13193,7 +13199,7 @@ let shown = false, hideT = null;
             h('a', { class: 'btn ghost', href: SOURCE, target: '_blank', rel: 'noopener noreferrer' }, 'Original-ToDo-Liste ↗')),
           h('div', { class: 'filters' }, app.field('Suche', q), app.field('Kategorie', secSel)),
           h('div', { class: 'row' }, h('div', { class: 'chipset', role: 'group', 'aria-label': 'Status filtern' }, chips,
-            h('button', { class: 'fchip', type: 'button', id: 'cl-meet', 'aria-pressed': String(ui.meeting), onclick: () => { ui.meeting = !ui.meeting; rerender(); } }, '🎤 Meeting-Modus: nur offene Punkte')),
+            h('button', { class: 'fchip', type: 'button', id: 'cl-meet', 'aria-pressed': String(ui.meeting), onclick: () => { ui.meeting = !ui.meeting; rerender(); } }, 'Meeting-Modus: nur offene Punkte')),
             h('span', { class: 'muted small', text: list.length + ' von ' + pr.total + ' Punkten' })),
           ui.meeting ? h('p', { class: 'small muted', text: 'Erledigte und 2026-gestrichene Punkte ausgeblendet — Fokus auf Offenes.' }) : null),
         h('div', { class: 'section' }, groups.filter(Boolean).length ? groups : h('p', { class: 'muted', text: 'Keine Treffer für die aktuelle Auswahl.' })),
