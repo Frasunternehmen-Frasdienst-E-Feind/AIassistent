@@ -36,6 +36,15 @@ Nutzer: David, Marketing & Eventmanager, Fräsdienst-Service E. Feind GmbH.
   (jedes Modul, Desktop/Tablet/Handy, hell/dunkel: JS-Fehler, seitlicher Überlauf,
   Reiterleiste, Tastatur). Nur mit „OK“ in allen Zeilen wird veröffentlicht.
 
+## Cockpit-Änderungen: ein Branch pro Sitzung (Wunsch von David, 04.10.2026)
+* Jede Sitzung ändert das Cockpit nur auf ihrem eigenen Branch und veröffentlicht von dort.
+* Was veröffentlicht ist, steht immer auch im Repo: `dashboard/dashboard.html` mit genau dem
+  Stand der Artefakt-Version, im selben Commit oder direkt danach, mit Versionsnummer in der
+  Commit-Message.
+* Meldet die Veröffentlichung eine neuere Version einer anderen Sitzung, deren Stand zuerst
+  übernehmen, die eigenen Änderungen darauf setzen und den Abschlusstest wiederholen. Ungeprüfter
+  fremder Code wird vor dem Merge eigens reviewt.
+
 ## Datenschutz
 
 * Keine personenbezogenen Daten in `db`, Briefings, Vorlagen oder Exporten: keine
