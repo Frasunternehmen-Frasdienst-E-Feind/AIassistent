@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PROTOTYP Wissens-Upload Ablauf</title>
+<style>
+:root{--accent:#84bb20;--on-accent:#263030;--accent-text:#5e8a14;--signal:#e3000b;--signal-text:#b8000a;--warn:#b5730a;--surface:#fff;--raised:#f2f4f4;--ink:#3c5457;--ink-strong:#424e4e;--muted:#6b7575;--line:#d5dada;--inv:#424e4e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--accent-text:#84bb20;--signal-text:#ff9a9f;--warn:#f0b440;--surface:#2e3737;--raised:#384242;--ink:#e7ecec;--ink-strong:#fff;--muted:#b8bfbf;--line:#4d5858;--inv:#1f2525}}
+:root[data-theme="dark"]{--accent-text:#84bb20;--signal-text:#ff9a9f;--warn:#f0b440;--surface:#2e3737;--raised:#384242;--ink:#e7ecec;--ink-strong:#fff;--muted:#b8bfbf;--line:#4d5858;--inv:#1f2525}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface);color:var(--ink);font:15px/1.5 "Helvetica Neue",Helvetica,Arial,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 64px}
+h1,h2,h3{font-family:Exo,"Arial Black",Arial,sans-serif;color:var(--ink-strong);margin:0 0 8px}
+h1{font-size:26px}h2{font-size:18px;margin-top:24px}h3{font-size:15px}
+.tag{display:inline-block;background:var(--signal);color:#fff;font-weight:700;font-size:12px;padding:2px 8px;border-radius:2px;margin-bottom:8px}
+.q{background:var(--raised);border-left:4px solid var(--accent);padding:12px 16px;margin:8px 0 16px}
+.grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+tr.changed td{background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.st{font-weight:700}.st.neu{color:var(--muted)}.st.in_arbeit{color:var(--accent-text)}.st.fertig{color:var(--accent-text)}.st.pruefen,.st.fehler{color:var(--signal-text)}
+.meta{display:flex;flex-wrap:wrap;gap:16px;margin:8px 0;font-size:14px}
+.meta b{color:var(--ink-strong)}
+.log{max-height:260px;overflow:auto;background:var(--raised);padding:8px 12px;font-size:13px}
+.log div{padding:3px 0;border-bottom:1px dashed var(--line)}
+.log .no{color:var(--signal-text);font-weight:700}.log .ok{color:var(--accent-text);font-weight:700}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+button{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink-strong);padding:7px 12px;border-radius:4px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+button.primary{background:var(--inv);color:#fff;border-color:var(--inv);border-bottom:3px solid var(--accent);font-weight:700}
+button:disabled{opacity:.45;cursor:not-allowed}
+select{font:inherit;padding:6px;border:1px solid var(--line);border-radius:2px;background:var(--surface);color:var(--ink)}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:2px solid var(--line);margin-top:8px}
+.tabs button{border:0;border-bottom:3px solid transparent;border-radius:0;background:transparent;padding:8px 12px}
+.tabs button[aria-selected=true]{border-bottom-color:var(--accent);font-weight:700}
+.scen{padding:12px 0}
+.steps{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.steps button{text-align:left}
+.steps button.done{opacity:.55;text-decoration:line-through}
+.steps button.next{background:var(--inv);color:#fff;border-color:var(--inv);border-bottom:3px solid var(--accent)}
+.watch{color:var(--muted);font-size:14px}
+.empty{color:var(--muted);font-style:italic}
+</style>
+</head>
+<body>
+<div class="wrap">
+<span class="tag">PROTOTYP – zum Wegwerfen</span>
+<h1>Wissens-Upload: Wer bearbeitet wann welchen Eintrag?</h1>
+<div class="q"><b>Frage:</b> Die Cockpit-Seite und eine stündliche Routine ordnen dieselbe Warteschlange ein. Reichen eine <b>Sperre mit Ablaufzeit</b> (10 Minuten) und eine <b>Fassungsnummer</b>, damit kein Eintrag doppelt bearbeitet, kein Ergebnis auf eine falsche Fassung geschrieben und nach dem Löschen nichts wieder angelegt wird – auch wenn eine Seite mitten in der Arbeit geschlossen wird, eine Datei ersetzt wird oder die KI-Grenze erreicht ist? (Spec: <code>konzepte/wissens-upload.md</code>, M1/M2)</div>
+
+<div class="grid">
+<section>
+<h2>Aktueller Stand</h2>
+<div class="meta" id="meta"></div>
+<div id="table"></div>
+<h3 style="margin-top:16px">Was zuletzt passiert ist</h3>
+<div class="log" id="log"></div>
+</section>
+
+<section>
+<h2>Frei ausprobieren</h2>
+<div class="btns">
+<button class="primary" data-a="ablegen">Datei ablegen</button>
+<button data-a="ablegenScan">Scan ablegen (nur Bild)</button>
+<button data-a="zeit5">5 Min. vergehen</button>
+<button data-a="zeit60">1 Stunde vergeht</button>
+</div>
+<div class="btns"><label>Eintrag: <select id="sel"></select></label></div>
+<h3>Cockpit-Seite</h3>
+<div class="btns">
+<button data-a="greift" data-by="seite">übernimmt Eintrag</button>
+<button data-a="ok" data-by="seite">fertig (sicher)</button>
+<button data-a="unsicher" data-by="seite">fertig (unsicher)</button>
+<button data-a="fehler" data-by="seite">Fehler</button>
+<button data-a="kiGrenze" data-by="seite">KI-Grenze</button>
+</div>
+<h3>Stündliche Routine</h3>
+<div class="btns">
+<button data-a="greift" data-by="routine">übernimmt Eintrag</button>
+<button data-a="ok" data-by="routine">fertig (sicher)</button>
+<button data-a="unsicher" data-by="routine">fertig (unsicher)</button>
+<button data-a="fehler" data-by="routine">Fehler</button>
+</div>
+<h3>Mensch im Cockpit</h3>
+<div class="btns">
+<button data-a="ersetzen">neue Fassung hochladen</button>
+<button data-a="loeschen">löschen</button>
+<button data-a="erneut">erneut einordnen</button>
+</div>
+</section>
+</div>
+
+<h2>Geführte Szenarien</h2>
+<div class="tabs" id="tabs" role="tablist"></div>
+<div class="scen" id="scen"></div>
+</div>
+
+<script>
+/* ===== Reine Logik (übertragbar ins Cockpit, ohne DOM) ===== */
+const KB = (() => {
+  const LOCK_MS = 10 * 60000, MAX_TRY = 3, PAUSE_MS = 10 * 60000;
+  const init = () => ({ now: 0, seq: 0, items: {}, deleted: {}, pause: { seite: 0, routine: 0 }, log: [] });
+  const clone = s => JSON.parse(JSON.stringify(s));
+  const say = (s, ok, text) => { s.log.unshift({ t: s.now, ok, text }); return s; };
+  const who = by => by === 'seite' ? 'Seite' : 'Routine';
+  const lockFresh = (it, now) => it.lock && now - it.lock.at < LOCK_MS;
+
+  function reduce(prev, a) {
+    const s = clone(prev); const it = a.id ? s.items[a.id] : null;
+    switch (a.type) {
+      case 'ablegen': {
+        const id = 'E' + (++s.seq);
+        s.items[id] = { id, name: a.name || ('Datei ' + s.seq), scan: !!a.scan, status: 'neu', rev: 1, versions: 0, attempts: 0, lock: null, result: null };
+        return say(s, true, id + ' abgelegt' + (a.scan ? ' (Scan, Text nur per OCR auf der Seite lesbar)' : '') + '. Status: wartet.');
+      }
+      case 'zeit': s.now += a.min * 60000; return say(s, null, a.min + ' Minuten vergehen.');
+      case 'greift': {
+        if (!it) return say(s, false, who(a.by) + ': Eintrag ' + a.id + ' gibt es nicht (gelöscht?). Nichts zu tun.');
+        if (s.pause[a.by] > s.now) return say(s, false, who(a.by) + ' pausiert wegen KI-Grenze bis Minute ' + s.pause[a.by] / 60000 + '.');
+        if (lockFresh(it, s.now) && it.lock.by !== a.by) return say(s, false, who(a.by) + ' abgewiesen: ' + it.id + ' ist seit ' + Math.round((s.now - it.lock.at) / 60000) + ' Min. von ' + who(it.lock.by) + ' gesperrt (Sperre gilt 10 Min.).');
+        if (it.status !== 'neu' && !(it.status === 'in_arbeit' && !lockFresh(it, s.now))) return say(s, false, who(a.by) + ' darf ' + it.id + ' nicht übernehmen: Status ist „' + label(it.status) + '“.');
+        if (a.by === 'routine' && it.scan) return say(s, false, 'Routine überspringt ' + it.id + ': Scan ohne Text, OCR läuft nur im Browser. Bleibt wartend bis zum nächsten Öffnen der Seite.');
+        const stale = it.status === 'in_arbeit';
+        it.status = 'in_arbeit'; it.lock = { by: a.by, at: s.now, rev: it.rev }; if (!stale) it.attempts++; // Entscheidung David 06.10.: abgebrochene Bearbeitung zählt nicht als Versuch
+        return say(s, true, who(a.by) + ' übernimmt ' + it.id + ' (Fassung ' + it.rev + ', Versuch ' + it.attempts + ')' + (stale ? ' – alte Sperre war abgelaufen, der Abbruch zählt nicht als Versuch.' : '.'));
+      }
+      case 'ergebnis': {
+        if (!it) return say(s, false, who(a.by) + ' will ein Ergebnis schreiben, aber der Eintrag ist gelöscht. Ergebnis verworfen, nichts wird neu angelegt.');
+        if (!it.lock || it.lock.by !== a.by) return say(s, false, who(a.by) + ': Ergebnis für ' + it.id + ' verworfen – die Sperre gehört ' + (it.lock ? who(it.lock.by) : 'niemandem') + '.');
+        if (it.lock.rev !== it.rev) { it.lock = null; it.status = 'neu'; it.attempts = 0; return say(s, false, who(a.by) + ': Ergebnis für ' + it.id + ' verworfen – es gehört zu Fassung ' + (it.rev - 1) + ', inzwischen gibt es Fassung ' + it.rev + '. Eintrag wartet neu.'); }
+        it.lock = null;
+        if (a.kind === 'ok' || a.kind === 'unsicher') { it.status = a.kind === 'ok' ? 'fertig' : 'pruefen'; it.result = who(a.by); return say(s, true, it.id + ' ' + (a.kind === 'ok' ? 'eingeordnet' : 'eingeordnet, aber zu prüfen') + ' durch ' + who(a.by) + '.'); }
+        if (a.kind === 'kiGrenze') { it.status = 'neu'; it.attempts--; s.pause[a.by] = s.now + PAUSE_MS; return say(s, null, 'KI-Grenze: ' + it.id + ' wartet wieder, Versuch zählt nicht. ' + who(a.by) + ' pausiert 10 Min.'); }
+        it.status = it.attempts < MAX_TRY ? 'neu' : 'fehler';
+        return say(s, it.status === 'neu' ? null : false, 'Fehler bei ' + it.id + ' (Versuch ' + it.attempts + ' von 3). ' + (it.status === 'neu' ? 'Wartet auf neuen Versuch.' : 'Endgültig „Fehler“, Mensch muss entscheiden.'));
+      }
+      case 'ersetzen': {
+        if (!it) return say(s, false, 'Nichts zu ersetzen.');
+        it.versions++; it.rev++; it.status = it.lock && lockFresh(it, s.now) ? 'in_arbeit' : 'neu'; it.attempts = 0; it.result = null;
+        if (it.status === 'neu') it.lock = null;
+        return say(s, true, 'Neue Fassung ' + it.rev + ' für ' + it.id + '. Alte Fassung in der Versionsliste (' + it.versions + ').' + (it.lock ? ' Laufende Bearbeitung von ' + who(it.lock.by) + ' wird beim Zurückschreiben verworfen.' : ' Wartet auf Einordnung.'));
+      }
+      case 'loeschen': {
+        if (!it) return say(s, false, 'Nichts zu löschen.');
+        delete s.items[a.id]; s.deleted[a.id] = true;
+        return say(s, true, it.id + ' gelöscht: Eintrag, Volltext und Datei entfernt, Rückverweise bereinigt.' + (it.lock ? ' ' + who(it.lock.by) + ' arbeitet noch daran; ihr Ergebnis wird verworfen.' : ''));
+      }
+      case 'erneut': {
+        if (!it) return say(s, false, 'Nichts da.');
+        if (lockFresh(it, s.now)) return say(s, false, it.id + ' wird gerade von ' + who(it.lock.by) + ' bearbeitet – erneut einordnen erst danach.');
+        it.status = 'neu'; it.attempts = 0; it.lock = null; return say(s, true, it.id + ' wird erneut eingeordnet.');
+      }
+    }
+    return s;
+  }
+  const label = st => ({ neu: 'wartet', in_arbeit: 'in Arbeit', fertig: 'eingeordnet', pruefen: 'zu prüfen', fehler: 'Fehler' })[st] || st;
+  return { init, reduce, label, lockFresh };
+})();
+
+/* ===== Wegwerf-Oberfläche ===== */
+let S = KB.init(), before = {};
+const $ = id => document.getElementById(id);
+const mins = ms => (ms / 60000) + ' Min.';
+function act(a) { before = JSON.parse(JSON.stringify(S.items)); S = KB.reduce(S, a); render(); }
+function selId() { return $('sel').value; }
+function render() {
+  const ids = Object.keys(S.items);
+  $('meta').innerHTML = '<span>Uhr: <b>Minute ' + S.now / 60000 + '</b></span><span>Einträge: <b>' + ids.length + '</b></span>' +
+    '<span>Seite: <b>' + (S.pause.seite > S.now ? 'pausiert' : 'bereit') + '</b></span><span>Routine: <b>' + (S.pause.routine > S.now ? 'pausiert' : 'bereit') + '</b></span>';
+  $('table').innerHTML = ids.length ? '<table><thead><tr><th>Eintrag</th><th>Status</th><th>Gesperrt von</th><th>Fassung</th><th>Versuche</th><th>Eingeordnet von</th></tr></thead><tbody>' +
+    ids.map(id => { const it = S.items[id]; const ch = JSON.stringify(before[id]) !== JSON.stringify(it);
+      const lk = it.lock ? (it.lock.by === 'seite' ? 'Seite' : 'Routine') + ' seit ' + mins(S.now - it.lock.at) + (KB.lockFresh(it, S.now) ? '' : ' (abgelaufen)') : '–';
+      return '<tr class="' + (ch ? 'changed' : '') + '"><td><b>' + id + '</b> ' + it.name + (it.scan ? ' · Scan' : '') + '</td><td class="st ' + it.status + '">' + KB.label(it.status) + '</td><td>' + lk + '</td><td>' + it.rev + (it.versions ? ' (' + it.versions + ' ältere)' : '') + '</td><td>' + it.attempts + ' / 3</td><td>' + (it.result || '–') + '</td></tr>'; }).join('') + '</tbody></table>'
+    : '<p class="empty">Noch nichts abgelegt.</p>';
+  $('log').innerHTML = S.log.map(l => '<div><span class="' + (l.ok === true ? 'ok' : l.ok === false ? 'no' : '') + '">' + (l.ok === true ? '✓' : l.ok === false ? '✗' : '·') + '</span> Min. ' + l.t / 60000 + ': ' + l.text + '</div>').join('') || '<span class="empty">Noch keine Aktion.</span>';
+  const cur = selId(); $('sel').innerHTML = ids.concat(Object.keys(S.deleted).map(d => d)).map(id => '<option value="' + id + '"' + (id === cur ? ' selected' : '') + '>' + id + (S.deleted[id] ? ' (gelöscht)' : '') + '</option>').join('');
+  if (!cur && ids.length) $('sel').value = ids[ids.length - 1];
+}
+document.querySelectorAll('[data-a]').forEach(b => b.addEventListener('click', () => {
+  const a = b.dataset.a, by = b.dataset.by, id = selId();
+  if (a === 'ablegen') return act({ type: 'ablegen' });
+  if (a === 'ablegenScan') return act({ type: 'ablegen', scan: true, name: 'Scan' });
+  if (a === 'zeit5') return act({ type: 'zeit', min: 5 });
+  if (a === 'zeit60') return act({ type: 'zeit', min: 60 });
+  if (a === 'greift') return act({ type: 'greift', by, id });
+  if (['ok', 'unsicher', 'fehler', 'kiGrenze'].includes(a)) return act({ type: 'ergebnis', by, id, kind: a });
+  act({ type: a, id });
+}));
+
+const SC = [
+  { t: 'Normalfall', d: 'Eine Datei wird abgelegt, die Routine ordnet sie ein. So soll es meistens laufen.', w: 'Status geht von „wartet“ über „in Arbeit“ zu „eingeordnet“, die Sperre verschwindet.',
+    s: [['Datei ablegen', { type: 'ablegen' }], ['Routine übernimmt E1', { type: 'greift', by: 'routine', id: 'E1' }], ['Routine meldet: fertig (sicher)', { type: 'ergebnis', by: 'routine', id: 'E1', kind: 'ok' }]] },
+  { t: 'Beide gleichzeitig', d: 'Die Seite ist offen und greift zu, im selben Moment läuft die Routine.', w: 'Die Routine muss abgewiesen werden – kein Eintrag darf doppelt bearbeitet werden.',
+    s: [['Datei ablegen', { type: 'ablegen' }], ['Seite übernimmt E1', { type: 'greift', by: 'seite', id: 'E1' }], ['Routine versucht E1', { type: 'greift', by: 'routine', id: 'E1' }], ['Seite meldet: fertig', { type: 'ergebnis', by: 'seite', id: 'E1', kind: 'ok' }]] },
+  { t: 'Seite mittendrin geschlossen', d: 'Die Seite übernimmt einen Eintrag, dann wird der Laptop zugeklappt. Die Sperre bleibt stehen.', w: 'Nach 5 Min. wird die Routine noch abgewiesen, nach 10 Min. darf sie übernehmen. Kommt die alte Seite später doch noch mit einem Ergebnis, wird es verworfen.',
+    s: [['Datei ablegen', { type: 'ablegen' }], ['Seite übernimmt E1', { type: 'greift', by: 'seite', id: 'E1' }], ['5 Minuten vergehen', { type: 'zeit', min: 5 }], ['Routine versucht E1 (zu früh)', { type: 'greift', by: 'routine', id: 'E1' }], ['5 weitere Minuten', { type: 'zeit', min: 5 }], ['Routine versucht E1 erneut', { type: 'greift', by: 'routine', id: 'E1' }], ['Alte Seite meldet doch noch: fertig', { type: 'ergebnis', by: 'seite', id: 'E1', kind: 'ok' }], ['Routine meldet: fertig', { type: 'ergebnis', by: 'routine', id: 'E1', kind: 'ok' }]] },
+  { t: 'Ersetzen während der Arbeit', d: 'Die Routine ordnet Fassung 1 ein, während jemand Fassung 2 hochlädt.', w: 'Das Ergebnis der Routine gehört zur alten Fassung und darf nicht auf Fassung 2 landen. Der Eintrag wartet danach neu.',
+    s: [['Datei ablegen', { type: 'ablegen' }], ['Routine übernimmt E1', { type: 'greift', by: 'routine', id: 'E1' }], ['Mensch lädt neue Fassung hoch', { type: 'ersetzen', id: 'E1' }], ['Routine meldet: fertig', { type: 'ergebnis', by: 'routine', id: 'E1', kind: 'ok' }], ['Seite übernimmt E1 (Fassung 2)', { type: 'greift', by: 'seite', id: 'E1' }], ['Seite meldet: fertig', { type: 'ergebnis', by: 'seite', id: 'E1', kind: 'ok' }]] },
+  { t: 'Löschen während der Arbeit', d: 'Ein Eintrag wird gelöscht, während die Routine ihn noch bearbeitet.', w: 'Das späte Ergebnis darf den Eintrag nicht wieder anlegen.',
+    s: [['Datei ablegen', { type: 'ablegen' }], ['Routine übernimmt E1', { type: 'greift', by: 'routine', id: 'E1' }], ['Mensch löscht E1', { type: 'loeschen', id: 'E1' }], ['Routine meldet: fertig', { type: 'ergebnis', by: 'routine', id: 'E1', kind: 'ok' }]] },
+  { t: 'KI-Grenze und Fehler', d: 'Erst ist die KI-Grenze erreicht, dann scheitert die Seite dreimal.', w: 'Die KI-Grenze zählt nicht als Versuch und pausiert nur die Seite. Nach dem dritten echten Fehler steht der Eintrag endgültig auf „Fehler“.',
+    s: [['Datei ablegen', { type: 'ablegen' }], ['Seite übernimmt E1', { type: 'greift', by: 'seite', id: 'E1' }], ['Seite: KI-Grenze', { type: 'ergebnis', by: 'seite', id: 'E1', kind: 'kiGrenze' }], ['Seite versucht sofort wieder (pausiert)', { type: 'greift', by: 'seite', id: 'E1' }], ['10 Minuten vergehen', { type: 'zeit', min: 10 }], ['Seite übernimmt (Versuch 1)', { type: 'greift', by: 'seite', id: 'E1' }], ['Fehler', { type: 'ergebnis', by: 'seite', id: 'E1', kind: 'fehler' }], ['Seite übernimmt (Versuch 2)', { type: 'greift', by: 'seite', id: 'E1' }], ['Fehler', { type: 'ergebnis', by: 'seite', id: 'E1', kind: 'fehler' }], ['Seite übernimmt (Versuch 3)', { type: 'greift', by: 'seite', id: 'E1' }], ['Fehler', { type: 'ergebnis', by: 'seite', id: 'E1', kind: 'fehler' }]] },
+  { t: 'Scan ohne Text', d: 'Ein gescanntes PDF hat keine Textschicht. Die Routine kann nicht lesen, OCR gibt es nur auf der Seite.', w: 'Die Routine lässt den Scan liegen; erst die Seite ordnet ihn ein.',
+    s: [['Scan ablegen', { type: 'ablegen', scan: true, name: 'Scan' }], ['Routine versucht E1', { type: 'greift', by: 'routine', id: 'E1' }], ['1 Stunde vergeht', { type: 'zeit', min: 60 }], ['Seite übernimmt E1 (mit OCR)', { type: 'greift', by: 'seite', id: 'E1' }], ['Seite meldet: fertig (unsicher)', { type: 'ergebnis', by: 'seite', id: 'E1', kind: 'unsicher' }]] }
+];
+let tab = 0, step = 0;
+function renderTabs() {
+  $('tabs').innerHTML = SC.map((x, i) => '<button role="tab" aria-selected="' + (i === tab) + '" data-t="' + i + '">' + x.t + '</button>').join('');
+  $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { tab = +b.dataset.t; startScenario(); });
+  const sc = SC[tab];
+  $('scen').innerHTML = '<p>' + sc.d + '</p><p class="watch"><b>Darauf achten:</b> ' + sc.w + '</p><div class="steps">' +
+    sc.s.map((x, i) => '<button data-i="' + i + '" class="' + (i < step ? 'done' : i === step ? 'next' : '') + '"' + (i !== step ? ' disabled' : '') + '>' + (i + 1) + '. ' + x[0] + '</button>').join('') +
+    '</div><div class="btns" style="margin-top:12px"><button id="restart">Szenario neu starten</button></div>';
+  $('scen').querySelectorAll('.steps button').forEach(b => b.onclick = () => { act(sc.s[+b.dataset.i][1]); step++; renderTabs(); });
+  $('restart').onclick = startScenario;
+}
+function startScenario() { S = KB.init(); before = {}; step = 0; render(); renderTabs(); }
+startScenario();
+</script>
+</body>
+</html>
