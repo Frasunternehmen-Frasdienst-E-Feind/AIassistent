@@ -40,6 +40,7 @@
   --raised: #f2f4f4;
   --accent-soft: #eef5e1;
   --signal-soft: #fde8e8;
+  --signal-tint: #f9ccce; /* 20 % Feind-Rot auf Fläche: Prüfmeldungen (Wunsch David 06.10.2026), Text 5,6:1 */
   --warn-soft: #fbf0dc;
   --shadow: #1f252533;
   --scrim: #1f2525b3;
@@ -95,6 +96,7 @@
     --raised: #384242;
     --accent-soft: #2f3d1e;
     --signal-soft: #3d1b1c;
+    --signal-tint: #522c2e;
     --warn-soft: #352710;
     --shadow: #00000066;
     --scrim: #000000b3;
@@ -134,6 +136,7 @@
   --raised: #384242;
   --accent-soft: #2f3d1e;
   --signal-soft: #3d1b1c;
+    --signal-tint: #522c2e;
   --warn-soft: #352710;
   --shadow: #00000066;
   --scrim: #000000b3;
@@ -217,10 +220,12 @@ img, svg { max-width: 100%; }
 
 /* Top-Navigation: drei Welten als Reiter, die in die Seite übergehen */
 .topnav { display: flex; flex-wrap: wrap; gap: 4px; padding-top: var(--s1); }
-.worldtab { background: transparent; border: 0; border-top: 3px solid transparent; color: var(--ink-inverse); font-family: var(--font-display); font-weight: 700; font-size: 15px; padding: 10px 18px 12px; cursor: pointer; margin-bottom: -4px; }
-.worldtab:hover { background: color-mix(in srgb, var(--ink-inverse) 10%, transparent); }
+/* Nicht gewählte Bereiche leicht abgesetzt (Wunsch David 06.10.2026). */
+.worldtab { background: color-mix(in srgb, var(--ink-inverse) 9%, transparent); margin-right: 2px; border: 0; border-top: 3px solid transparent; color: var(--ink-inverse); font-family: var(--font-display); font-weight: 700; font-size: 15px; padding: 10px 18px 12px; cursor: pointer; margin-bottom: -4px; }
+.worldtab:hover { background: color-mix(in srgb, var(--ink-inverse) 17%, transparent); }
 .worldtab[aria-selected="true"] { background: var(--ground); color: var(--ink-strong); border-top-color: var(--accent); }
-.worldtab .cnt { font-family: var(--font-sans); font-size: 11px; margin-left: 6px; padding: 0 6px; border: 1px solid currentColor; }
+.worldtab .cnt { font-family: var(--font-sans); font-size: 11px; margin-left: 6px; padding: 1px 7px; border: 0; border-radius: 2px; background: color-mix(in srgb, var(--ink-inverse) 20%, transparent); }
+.worldtab[aria-selected="true"] .cnt { background: var(--surface-inverse); color: var(--ink-inverse); }
 
 /* Modul-Reiter: eine Zeile, horizontal scrollbar (Desktop und Mobil), klebt beim Scrollen oben */
 .tabbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--ground); padding-top: var(--s2); }
@@ -237,7 +242,9 @@ img, svg { max-width: 100%; }
 .tab { flex: none; scroll-snap-align: start; background: var(--panel); border: 1px solid var(--line); border-bottom: 4px solid transparent; padding: 9px 14px; min-height: 44px; cursor: pointer; color: var(--ink); font-size: 14px; font-weight: 600; line-height: 1.2; display: inline-flex; gap: 6px; align-items: center; white-space: nowrap; }
 .tab:hover { color: var(--ink-strong); border-color: var(--ink-muted); }
 .tab[aria-selected="true"] { background: var(--accent-soft); border-bottom-color: var(--accent); color: var(--ink-strong); font-weight: 700; }
-.tab .cnt { font-size: 12px; background: var(--raised); border: 1px solid var(--line); padding: 0 6px; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink-strong); }
+.tab .cnt { font-size: 12px; background: var(--surface-inverse); color: var(--ink-inverse); border: 0; border-radius: 2px; padding: 1px 7px; font-variant-numeric: tabular-nums; font-weight: 700; }
+/* Zähler ohne Haarlinie (Wunsch David 06.10.2026): Anthrazit-Fläche, im gewählten Reiter Feind-Grün mit on-accent. */
+.tab[aria-selected="true"] .cnt { background: var(--accent); color: var(--on-accent); }
 @media (max-width: 640px) {
   .tab { padding: 8px 12px; font-size: 13.5px; }
   .topnav { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
@@ -257,7 +264,8 @@ img, svg { max-width: 100%; }
 .banner { border: 1px solid var(--line); border-left: 6px solid var(--ink-strong); background: var(--panel); padding: var(--s2) var(--s3); display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); align-items: center; }
 .banner .txt { flex: 1 1 320px; min-width: 0; }
 .banner strong { color: var(--ink-strong); }
-.banner.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+/* Prüfmeldungen: Balken Feind-Rot, Fläche 20 % Feind-Rot; Text bleibt ink (hell 5,6:1, dunkel 10:1). */
+.banner.warn { border-left-color: var(--signal); background: var(--signal-tint); }
 .banner.crit { border-left-color: var(--signal); background: var(--signal-soft); }
 .banner.ok { border-left-color: var(--accent); background: var(--accent-soft); }
 .banner.readonly { border-left-color: var(--signal); }
@@ -1918,11 +1926,64 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
 .kb-drop { display: flex; gap: var(--s3); align-items: center; border: 2px dashed var(--line); background: var(--raised); padding: var(--s4) var(--s3); cursor: pointer; min-height: 120px; }
 .kb-drop:hover, .kb-drop:focus-visible, .kb-drop.over { border-color: var(--accent); background: var(--accent-soft); }
 .kb-drop.blocked { cursor: not-allowed; opacity: .7; }
+.kb-drop-txt { display: flex; gap: var(--s3); align-items: center; flex: 1; min-width: 0; cursor: pointer; }
+@media (max-width: 640px) { .kb-drop { flex-wrap: wrap; } .kb-drop .row { width: 100%; } .kb-drop .row label.btn { flex: 1; justify-content: center; min-height: 44px; } }
+.file-native { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); border: 0; opacity: 0; }
+label.btn { position: relative; cursor: pointer; user-select: none; }
+label.btn.is-disabled { opacity: .5; cursor: not-allowed; }
+label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .kb-drop-ic { flex: none; width: 56px; height: 56px; display: grid; place-items: center; background: var(--surface); border: 1px solid var(--line); }
 .kb-drop-ic svg { width: 30px; height: 30px; fill: none; stroke: var(--accent-ink); stroke-width: 1.8; }
 .kb-drop h3, .kb-drop p { margin: 0; }
 .kb-drop p { color: var(--ink-muted); }
 #kb-text { width: 100%; min-height: 96px; resize: vertical; font: inherit; padding: var(--s2); border: 1px solid var(--line); border-radius: var(--r-input); background: var(--surface); color: var(--ink); }
+/* Aktions-Buttons (Wunsch David 06.10.2026): beim Überfahren leicht größer, mit Schatten. */
+.btn.primary, .banner .btn, .ab-btn.main { transition: transform .16s cubic-bezier(.2,.8,.2,1), box-shadow .16s ease; }
+:is(.btn.primary, .banner .btn, .ab-btn.main):hover:not(:disabled):not(.is-disabled) { transform: scale(1.04); box-shadow: 0 6px 16px var(--shadow); }
+/* Verarbeitung: Fluss-Leiste, Zähl-Impuls, Lauf-Spur, drehendes Symbol. */
+.kb-flow { position: relative; display: flex; height: 8px; margin: var(--s2) 0 var(--s3); background: var(--raised); overflow: hidden; border-radius: 2px; }
+.kb-flow > i { display: block; height: 100%; flex-basis: 0; transition: flex-grow .7s cubic-bezier(.2,.8,.2,1); }
+.kb-flow > i + i { box-shadow: inset 2px 0 0 var(--panel); }
+.kb-flow .f-neu { background: var(--ink-muted); } .kb-flow .f-in { background: var(--accent); } .kb-flow .f-ok { background: var(--accent-ink); }
+.kb-flow .f-pr { background: color-mix(in srgb, var(--signal) 55%, var(--panel)); } .kb-flow .f-err { background: var(--signal); }
+.kb-flow.busy::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--panel) 65%, transparent), transparent); transform: translateX(-100%); animation: kb-sweep 1.6s cubic-bezier(.4,0,.2,1) infinite; }
+@keyframes kb-sweep { to { transform: translateX(100%); } }
+.kpi.bump .v { animation: kb-bump .6s cubic-bezier(.2,.8,.2,1); }
+@keyframes kb-bump { 35% { transform: scale(1.22); color: var(--accent-ink); } }
+.kpi.live { background-image: linear-gradient(var(--accent), var(--accent)); background-size: 32% 3px; background-repeat: no-repeat; background-position: -40% 100%; animation: kb-track 1.3s ease-in-out infinite; }
+@keyframes kb-track { to { background-position: 140% 100%; } }
+.btn.busy .ic { animation: kb-rot 1s linear infinite; }
+@keyframes kb-rot { to { transform: rotate(360deg); } }
+/* Ablagefläche: großes Bildfeld links, Buttons übereinander (Wunsch David 06.10.2026). */
+.kb-drop { align-items: stretch; }
+.kb-drop-txt { align-items: stretch; }
+.kb-drop-txt > div:last-child { align-self: center; }
+.kb-drop-ic { width: 128px; height: auto; min-height: 112px; background: color-mix(in srgb, var(--accent) 10%, var(--surface)); border: 0; }
+.kb-drop-ic svg { width: 64px; height: 64px; stroke-width: 1.6; --ic-d: inline; }
+.kb-drop:hover .kb-drop-ic svg, .kb-drop.over .kb-drop-ic svg { animation: kb-float 1.4s ease-in-out infinite; }
+@keyframes kb-float { 50% { transform: translateY(-4px); } }
+.kb-drop > .row { flex-direction: column; justify-content: center; align-items: stretch; gap: var(--s2); min-width: 180px; }
+.kb-drop > .row .btn { justify-content: flex-start; }
+@media (max-width: 640px) { .kb-drop-txt { flex-direction: column; } .kb-drop-ic { width: 100%; min-height: 96px; } .kb-drop > .row { min-width: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .kb-flow.busy::after, .kpi.live, .kpi.bump .v, .btn.busy .ic, .kb-drop-ic svg { animation: none !important; }
+  :is(.btn.primary, .banner .btn, .ab-btn.main):hover:not(:disabled) { transform: none; }
+}
+.kb-track { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 6px; margin-top: var(--s2); }
+.kb-track .tk { display: flex; flex-direction: column; gap: 3px; min-width: 0; font-size: 11px; color: var(--ink-muted); }
+.kb-track .tk .bar { width: 100%; }
+.kb-track .tk .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kb-track .tk .bar { position: relative; display: block; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; transition: background-color .4s ease; }
+.kb-track .tk.done { color: var(--ink); } .kb-track .tk.done .bar { background: var(--accent); }
+.kb-track .tk.active { color: var(--ink-strong); font-weight: 700; } .kb-track .tk.active .bar { background: color-mix(in srgb, var(--accent) 25%, var(--line)); }
+.kb-track .tk.active .bar::after { content: ""; position: absolute; inset: 0; width: 40%; background: var(--accent); animation: kb-run 1.1s cubic-bezier(.4,0,.2,1) infinite; }
+@keyframes kb-run { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
+.kb-track .tk.warn .bar, .kb-track .tk.err .bar { background: var(--signal); }
+.kb-track .tk.warn, .kb-track .tk.err { color: var(--signal-text); font-weight: 700; }
+.kb-track small { grid-column: 1 / -1; font-size: 11px; color: var(--ink-muted); }
+.kb-card.fresh { animation: kb-in .45s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i, 0) * 45ms); }
+@keyframes kb-in { from { opacity: 0; transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) { .kb-track .tk.active .bar::after, .kb-card.fresh { animation: none !important; } }
 .kb-steps { margin: 0; padding-left: 1.3em; display: grid; gap: 4px; color: var(--ink-muted); }
 
 /* Karten-Raster */
@@ -7353,7 +7414,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
               if (ui.personPick) entry.userId = ui.personPick;
               ui.personPick = null;
               saveSettings({ team: team().concat([entry]) }, 'Teammitglied hinzugefügt', entry.role);
-            } }, 'Hinzufügen'),
+            } }, app.ico('plus'), 'Hinzufügen'),
             h('h3', { text: 'Erinnerungen' }),
             app.field('Vorlauf in Tagen (kommagetrennt)', lead, { hint: 'Zu diesen Zeitpunkten vor Fälligkeit erscheinen Aufgaben im Dashboard.' }),
             h('button', { class: 'btn', type: 'button', disabled: ro(), onclick: () => {
@@ -7789,7 +7850,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
           S.ui.adminPreview ? 'Vorschau beenden' : 'Vorschau testen'),
         h('button', { class: 'btn', type: 'button', id: 'adm-save', disabled: !w || !S.ui.adminDirty, onclick: saveDraft }, 'Entwurf speichern'),
         note,
-        h('button', { class: 'btn primary', type: 'button', id: 'adm-publish', disabled: !w, onclick: publish }, 'Veröffentlichen'),
+        h('button', { class: 'btn primary', type: 'button', id: 'adm-publish', disabled: !w, onclick: publish }, app.ico('up'), 'Veröffentlichen'),
         h('button', { class: 'btn ghost', type: 'button', id: 'adm-discard', disabled: !w || (!hasDraft() && !S.ui.adminDirty), onclick: discard }, 'Verwerfen')));
   }
 
@@ -8036,7 +8097,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     ta.value = ui.reqText;
     ta.addEventListener('input', () => { ui.reqText = ta.value; });
     box.append(app.field('Begründung (optional)', ta),
-      h('div', {}, h('button', { class: 'btn primary', type: 'button', disabled: app.ro(), onclick: requestAccess }, 'Zugang anfragen')),
+      h('div', {}, h('button', { class: 'btn primary', type: 'button', disabled: app.ro(), onclick: requestAccess }, app.ico('schluessel'), 'Zugang anfragen')),
       h('p', { class: 'muted small', text: 'Gespeichert werden nur deine Nutzer-ID, der Zeitpunkt und die Begründung.' }));
     return box;
   }
@@ -8054,7 +8115,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
         str(r.reason) ? h('span', { text: '„' + str(r.reason) + '“' }) : h('span', { class: 'muted small', text: 'ohne Begründung' }),
         r.status === 'offen'
           ? h('div', { class: 'acts' },
-            h('button', { class: 'btn primary', type: 'button', disabled: !w, onclick: () => decide(r, true) }, 'Genehmigen'),
+            h('button', { class: 'btn primary', type: 'button', disabled: !w, onclick: () => decide(r, true) }, app.ico('check'), 'Genehmigen'),
             h('button', { class: 'btn', type: 'button', disabled: !w, onclick: () => decide(r, false) }, 'Ablehnen'))
           : chip(r.status === 'genehmigt' ? 'green' : 'gone', str(r.status)));
       return [
@@ -8151,7 +8212,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
       p.warnings.length ? h('details', {}, h('summary', { text: 'Hinweise (' + p.warnings.length + ')' }), h('ul', {}, p.warnings.map(x => h('li', { text: x })))) : null,
       p.skipped.length ? h('details', {}, h('summary', { text: 'Übersprungen (' + p.skipped.length + ')' }), h('ul', {}, p.skipped.map(x => h('li', { text: x.from + ': ' + x.reason })))) : null,
       h('div', { class: 'tools' },
-        h('button', { class: 'btn primary', type: 'button', id: 'adm-apply', disabled: !canWrite() || ui.busy || !p.ops.length || !(v && v.ok), onclick: applyImport }, 'Plan übernehmen'),
+        h('button', { class: 'btn primary', type: 'button', id: 'adm-apply', disabled: !canWrite() || ui.busy || !p.ops.length || !(v && v.ok), onclick: applyImport }, app.ico('check'), 'Plan übernehmen'),
         app.exportButton('Bericht (Markdown)', 'Migrationsbericht-' + H.ymd(app.today()) + '.md', 'text/markdown', () => MG.reportMarkdown(p, v), 'adm-report'),
         h('button', { class: 'btn ghost', type: 'button', onclick: () => { ui.plan = null; ui.planCheck = null; ui.planMsg = ''; rerender(); } }, 'Plan verwerfen')));
   }
@@ -8253,7 +8314,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
           app.field('Datensatz als JSON', ta),
           ui.dataMsg ? h('p', { class: 'small', role: 'status', text: ui.dataMsg }) : null,
           h('div', { class: 'tools' },
-            h('button', { class: 'btn primary', type: 'button', disabled: !w, onclick: saveRecord }, cur ? 'Speichern' : 'Anlegen'),
+            h('button', { class: 'btn primary', type: 'button', disabled: !w, onclick: saveRecord }, app.ico(cur ? 'check' : 'plus'), cur ? 'Speichern' : 'Anlegen'),
             cur ? h('button', { class: 'btn', type: 'button', onclick: () => pickRecord(null) }, 'Neu') : null,
             cur ? h('button', { class: 'btn ghost danger', type: 'button', disabled: !w, onclick: deleteRecord }, 'Löschen') : null))));
   }
@@ -8342,7 +8403,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
   const statusLine = job => (job.status ? h('span', { class: 'small ai-status' + (job.err ? ' err' : ''), role: 'status', text: job.status }) : null);
   function row(job, label, busy, onclick) {
     return h('div', { class: 'ai-row' },
-      h('button', { class: 'btn primary', type: 'button', disabled: job.running || null, onclick }, job.running ? busy : label),
+      h('button', { class: 'btn primary', type: 'button', disabled: job.running || null, onclick }, app.ico('go'), job.running ? busy : label),
       job.running ? h('button', { class: 'btn', type: 'button', onclick: () => job.ctl && job.ctl.abort() }, 'Stopp') : null,
       statusLine(job),
       h('span', { class: 'muted small', text: PRIVACY }));
@@ -9464,7 +9525,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     const foot = h('footer', { class: 'mt-foot' },
       h('div', { class: 'row' },
         h('button', { class: 'btn', type: 'button', disabled: mt.idx <= 0, onclick: prev }, '← Zurück'),
-        h('button', { class: 'btn primary', type: 'button', disabled: mt.idx >= list.length - 1, onclick: next }, 'Weiter →')),
+        h('button', { class: 'btn primary', type: 'button', disabled: mt.idx >= list.length - 1, onclick: next }, 'Weiter', app.ico('go'))),
       h('span', { text: 'Tasten: ←/→ blättern · 1 erledigt · 2 in Arbeit · 3 blockiert · 4 verschieben · n Notiz · b Beschluss · a Agenda · Esc beenden' }),
       h('span', { class: 'muted', text: 'Gespeichert: ' + app.storeText() }));
     const focusEl = document.activeElement && document.activeElement.id;
@@ -9516,7 +9577,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     return h('div', { class: 'stack' },
       h('div', { class: 'tools' },
         closed ? (canWrite() ? h('button', { class: 'btn', type: 'button', onclick: async () => { if (await app.write('meetings/' + id, 'update', { status: 'offen', endedAt: null, updatedAt: Date.now() })) { app.log('Meeting wieder geöffnet', fmtD(m.date)); app.toast('Protokoll wieder geöffnet.'); } } }, 'Wieder öffnen') : h('span', { class: 'chip soft', text: 'abgeschlossen · nur lesen' }))
-          : h('button', { class: 'btn primary', type: 'button', disabled: !canWrite(), onclick: () => app.resumeMeeting(m) }, 'Meeting fortsetzen'),
+          : h('button', { class: 'btn primary', type: 'button', disabled: !canWrite(), onclick: () => app.resumeMeeting(m) }, app.ico('go'), 'Meeting fortsetzen'),
         app.exportButton('Markdown', 'Messe-Abstimmung-InfraTech-2027-' + str(m.date) + '.md', 'text/markdown', () => protocolMd(m), 'mt-md'),
         h('button', { class: 'btn ghost', type: 'button', onclick: async () => { try { await app.copyText(mailText(m)); app.toast('Protokoll als Mail-Text kopiert.'); } catch (e) { app.toast('Kopieren nicht möglich. Markdown-Export nutzen.', true); } } }, icon('copy'), 'Als Mail-Text kopieren'),
         h('a', { class: 'btn ghost', href: SP_URL, target: '_blank', rel: 'noopener noreferrer' }, icon('ext'), 'Ablageort in SharePoint')),
@@ -11576,7 +11637,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
         h('h2', { text: days > 0 ? 'Noch ' + days + ' Tage bis zum Messebeginn' : days === 0 ? 'Die Messe beginnt heute' : ended ? 'Die Messe ist vorbei: Zeit fürs Nachfassen' : 'Die Messe läuft' }),
         h('p', { class: 'lead', text: pr.done + ' von ' + pr.total + ' Aufgaben erledigt (' + pr.pct + ' %). Stand der Aufgabenliste: ' + fmtD(app.today()) + '.' }),
         h('div', { class: 'row' },
-          h('button', { class: 'btn primary', type: 'button', onclick: () => app.go('infratech', 'dashboard') }, 'InfraTech-Dashboard'),
+          h('button', { class: 'btn primary', type: 'button', onclick: () => app.go('infratech', 'dashboard') }, app.ico('dashboard'), 'InfraTech-Dashboard'),
           h('button', { class: 'btn ghost-inv', type: 'button', onclick: () => app.go('infratech', 'aufgaben') }, 'Alle Aufgaben'))));
   }
 
@@ -12258,6 +12319,30 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     e.preventDefault();
     intake({ files, texts: text ? [text] : [] }, 'einfügen');
   });
+  // Schaltflächen: echtes Dateifeld im <label>, der Klick öffnet den Dialog nativ, ganz ohne Skript-Klick, den
+  // eingebettete Ansichten (Claude-Apps, WebViews) blocken können. Felder je Schaltfläche bleiben über Neuaufbauten
+  // erhalten, damit eine laufende Auswahl nicht ins Leere geht. pickFiles unten bleibt für Klicks auf die Ablagefläche.
+  const fileInputs = {};
+  function fileButton(key, dir, cls, ico, label, blocked) {
+    let inp = fileInputs[key];
+    if (!inp) {
+      inp = fileInputs[key] = h('input', { type: 'file', multiple: true, class: 'file-native', id: 'fi-' + key, tabindex: '-1', 'aria-hidden': 'true' });
+      if (dir) inp.setAttribute('webkitdirectory', '');
+      inp.addEventListener('change', () => {
+        const files = Array.from(inp.files || []).slice(0, MAX_BATCH);
+        inp.value = '';
+        if (!files.length) return;
+        app.toast(files.length === 1 ? '1 Datei übernommen, wird eingeordnet …' : files.length + ' Dateien übernommen, werden eingeordnet …');
+        intake({ files, texts: [] }, 'auswahl');
+      });
+    }
+    inp.disabled = !!blocked;
+    const lab = h('label', { class: cls + (blocked ? ' is-disabled' : ''), role: 'button', tabindex: blocked ? '-1' : '0', 'aria-disabled': blocked ? 'true' : null, title: blocked || null,
+      onkeydown: e => { if ((e.key === 'Enter' || e.key === ' ') && !blocked) { e.preventDefault(); inp.click(); } },
+      onclick: e => { if (blocked) { e.preventDefault(); app.toast(blocked, true); } } }, ico, label);
+    lab.append(inp);
+    return lab;
+  }
   // Dateiauswahl: Das Feld bleibt im Layout (nur unsichtbar). Safari, iPhone/iPad und App-Ansichten öffnen den Dialog
   // für ein Feld mit display:none (Attribut hidden) nicht; ein abgebrochener Dialog hinterlässt kein Feld.
   function pickFiles(dir) {
@@ -12279,10 +12364,10 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     if (isImage(it) && (app.isAdmin() || !(G.isConf(it) || (it.pii && it.pii.found)))) return h('div', { class: 'kb-thumb' + (big ? ' big' : '') }, h('img', { src: blobUrl(it.assetId), alt: '', loading: 'lazy' }));
     return h('div', { class: 'kb-thumb icon' + (big ? ' big' : '') }, app.ico(kindIcon(it)), h('span', { text: (it.kind === 'datei' ? it.ext : it.kind === 'link' ? 'web' : 'text').toUpperCase().slice(0, 5) }));
   }
-  function itemCard(it) {
+  function itemCard(it, idx, _arr, track) {
     const proj = it.projectId ? projById(it.projectId) : null;
     const busy = W.steps.has(it.id) || it.status === 'in_arbeit';
-    return h('button', { class: 'kb-card' + (busy ? ' busy' : ''), type: 'button', 'data-status': str(it.status), 'aria-label': (str(it.title) || str(it.name)) + ', ' + (it.category ? K.catOf(it.category)[1] + ', ' : '') + K.statusLabel(it.status) + '. Details öffnen', onclick: () => openDetail(it.id) },
+    return h('button', { class: 'kb-card' + (busy ? ' busy' : '') + (track ? ' tracked' + (Date.now() - (it.createdAt || 0) < 8000 ? ' fresh' : '') : ''), style: track ? '--i:' + idx : null, type: 'button', 'data-status': str(it.status), 'aria-label': (str(it.title) || str(it.name)) + ', ' + (it.category ? K.catOf(it.category)[1] + ', ' : '') + K.statusLabel(it.status) + '. Details öffnen', onclick: () => openDetail(it.id) },
       thumb(it),
       h('div', { class: 'kb-body' },
         h('div', { class: 'kb-t', text: str(it.title) || str(it.name) }),
@@ -12294,25 +12379,48 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
           proj ? h('span', { class: 'chip' }, app.ico('pin'), str(proj.name).slice(0, 30)) : null,
           G.isConf(it) ? chip('red', 'Vertraulich') : null,
           it.pii && it.pii.found ? chip('red', 'Personendaten') : null,
-          statusChip(it))));
+          statusChip(it)), track ? flowTrack(it) : null));
+  }
+  // Fortschrittsspur je Eintrag (Wunsch David 06.10.2026): Aufgenommen → Verarbeitet → Zugewiesen, mit Platz in der Warteschlange.
+  function flowTrack(it) {
+    const st = str(it.status), live = W.steps.has(it.id) || st === 'in_arbeit';
+    let states, note;
+    if (live) { states = ['done', 'active', '']; note = W.steps.get(it.id) || 'Wird verarbeitet …'; }
+    else if (st === 'neu') {
+      const q = items().filter(x => x.status === 'neu').sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+      states = ['done', '', '']; note = 'Platz ' + (q.findIndex(x => x.id === it.id) + 1) + ' von ' + q.length + ' in der Warteschlange';
+    } else if (st === 'fehler') { states = ['done', 'err', '']; note = 'Fehler beim Verarbeiten' + (it.attempts ? ' (' + it.attempts + '. Versuch)' : ''); }
+    else if (st === 'pruefen') { states = ['done', 'done', 'warn']; note = 'Zugewiesen, wartet auf Prüfung'; }
+    else { states = ['done', 'done', 'done']; note = 'Zugewiesen' + (it.category ? ': ' + K.catOf(it.category)[1] : ''); }
+    const steps = ['Aufgenommen', 'Verarbeitet', 'Zugewiesen'];
+    return h('div', { class: 'kb-track', 'aria-label': 'Fortschritt: ' + note },
+      steps.map((t, i) => h('span', { class: 'tk' + (states[i] ? ' ' + states[i] : '') }, h('span', { class: 'bar', 'aria-hidden': 'true' }), h('span', { class: 'lbl', text: t }))),
+      h('small', { text: note }));
   }
   function emptyArchive() {
     return h('div', { class: 'empty' }, app.ico('leer'), h('strong', { text: 'Das Archiv ist noch leer. ' }), 'Dateien, Ordner, Texte oder Links einfach irgendwo auf das Cockpit ziehen oder außerhalb von Eingabefeldern mit Strg+V einfügen. Das Cockpit liest den Inhalt, ordnet ihn ein und verknüpft ihn mit Projekten, Referenzen und Events.',
-      h('div', { class: 'acts' }, h('button', { class: 'btn small primary', type: 'button', disabled: !!intakeBlocked(), onclick: () => pickFiles(false) }, icon('plus'), 'Dateien wählen')));
+      h('div', { class: 'acts' }, fileButton('empty-files', false, 'btn small primary', icon('plus'), 'Dateien wählen', intakeBlocked())));
   }
 
   /* ---------- Modul Eingang ---------- */
+  // Touch-Geräte (iPhone, iPad, Android): kein Ordner-Dialog; die ganze Fläche öffnet die Dateiauswahl nativ.
+  const isTouch = () => { try { return matchMedia('(pointer: coarse)').matches; } catch (e) { return false; } };
   function dropZone() {
     const blocked = intakeBlocked();
+    const touch = isTouch();
     const zone = h('div', { class: 'kb-drop' + (blocked ? ' blocked' : ''), id: 'kb-drop', tabindex: '0', role: 'button', 'aria-label': 'Dateien wählen oder hierher ziehen', 'aria-describedby': 'kb-drop-hint',
-      onclick: e => { if (!e.target.closest('button') && !blocked) pickFiles(false); },
+      onclick: e => { if (!e.target.closest('button, label, input') && !blocked) pickFiles(false); },
       onkeydown: e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.id === 'kb-drop' && !blocked) { e.preventDefault(); pickFiles(false); } } },
-      h('div', { class: 'kb-drop-ic', 'aria-hidden': 'true' }, app.ico('ablegen')),
-      h('div', {}, h('b', { text: blocked ? 'Ablegen gerade nicht möglich' : 'Dateien oder Ordner hierher ziehen' }),
-        h('p', { id: 'kb-drop-hint', class: 'small', text: blocked || 'Oder klicken. Klappt überall im Cockpit: auf die Seite ziehen oder außerhalb von Eingabefeldern Strg+V. PDF, Word, Excel, PowerPoint, Bilder, Videos, Text, CSV; höchstens 20 MB je Datei, 200 je Vorgang.' })),
+      // Symbol und Text sind ein <label> für dasselbe Dateifeld wie „Dateien wählen“: Tippen öffnet den Dialog nativ.
+      h(blocked ? 'div' : 'label', { class: 'kb-drop-txt', for: blocked ? null : 'fi-zone-files' },
+        h('div', { class: 'kb-drop-ic', 'aria-hidden': 'true' }, app.ico('ablegen')),
+        h('div', {}, h('b', { text: blocked ? 'Ablegen gerade nicht möglich' : touch ? 'Dateien oder Fotos hinzufügen' : 'Dateien oder Ordner hierher ziehen' }),
+          h('p', { id: 'kb-drop-hint', class: 'small', text: blocked || (touch
+            ? 'Hier tippen: Dateien, Fotos oder Kamera. PDF, Word, Excel, PowerPoint, Bilder, Videos, Text; höchstens 20 MB je Datei. Öffnet sich in der Claude-App nichts, das Cockpit im Browser (Safari oder Chrome) öffnen.'
+            : 'Oder klicken. Klappt überall im Cockpit: auf die Seite ziehen oder außerhalb von Eingabefeldern Strg+V. PDF, Word, Excel, PowerPoint, Bilder, Videos, Text, CSV; höchstens 20 MB je Datei, 200 je Vorgang.') }))),
       h('div', { class: 'row' },
-        h('button', { class: 'btn primary', type: 'button', disabled: !!blocked, onclick: () => pickFiles(false) }, icon('plus'), 'Dateien wählen'),
-        h('button', { class: 'btn', type: 'button', disabled: !!blocked, onclick: () => pickFiles(true) }, app.ico('ordner'), 'Ordner wählen')));
+        fileButton('zone-files', false, 'btn primary', icon('plus'), 'Dateien wählen', blocked),
+        touch ? null : fileButton('zone-dir', true, 'btn', app.ico('ordner'), 'Ordner wählen', blocked)));
     zone.addEventListener('dragenter', () => zone.classList.add('over'));
     zone.addEventListener('dragleave', e => { if (!zone.contains(e.relatedTarget)) zone.classList.remove('over'); });
     zone.addEventListener('drop', () => zone.classList.remove('over'));
@@ -12337,12 +12445,17 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     const n = k => all.filter(i => i.status === k).length;
     const auto = h('label', { class: 'check', for: 'kb-auto' }, h('input', { type: 'checkbox', id: 'kb-auto', checked: W.auto, onchange: e => { W.auto = e.target.checked; app.storeSet(AUTO_KEY, W.auto ? '1' : '0'); if (W.auto) kick(); rerender(); } }), ' Automatisch einordnen');
     const ai = !inViewer() ? 'KI nur im geteilten Cockpit in claude.ai; hier ordnen Regeln ein' : !featureOn() ? 'KI-Einordnung per Administration aus' : sampleOk === false ? 'KI nicht verfügbar: Einordnung nach Regeln' : sampleOk ? 'KI bereit, nutzt dein Claude-Kontingent' : 'KI wird geprüft …';
-    const tile = (k, lbl, cls, go) => h('button', { class: 'kpi' + (cls ? ' ' + cls : ''), type: 'button', onclick: go, 'aria-label': lbl + ': ' + n(k) + '. Anzeigen' }, h('div', { class: 'v', text: String(n(k)) }), h('div', { class: 'k', text: lbl }));
+    const prev = W.prevN || {}; W.prevN = {};
+    const tile = (k, lbl, cls, go) => { const v = n(k); W.prevN[k] = v; return h('button', { class: 'kpi' + (cls ? ' ' + cls : '') + (prev[k] != null && prev[k] !== v ? ' bump' : '') + (k === 'in_arbeit' && W.busy ? ' live' : ''), type: 'button', onclick: go, 'aria-label': lbl + ': ' + n(k) + '. Anzeigen' }, h('div', { class: 'v', text: String(v) }), h('div', { class: 'k', text: lbl })); };
+    const seg = [['neu', 'f-neu'], ['in_arbeit', 'f-in'], ['fertig', 'f-ok'], ['pruefen', 'f-pr'], ['fehler', 'f-err']];
+    const flow = h('div', { class: 'kb-flow' + (W.busy ? ' busy' : ''), role: 'img', 'aria-label': 'Verteilung: ' + seg.map(([k]) => K.statusLabel(k) + ' ' + n(k)).join(', ') },
+      seg.map(([k, c]) => h('i', { class: c, style: 'flex-grow:' + n(k) })));
     const show = st => () => { W.status = st; app.go('wissen', 'archiv'); };
     return h('div', { class: 'section' },
       h('div', { class: 'tools', style: 'margin:0;justify-content:space-between' }, h('h3', { text: 'Verarbeitung' }),
         h('div', { class: 'row' }, auto,
-          h('button', { class: 'btn small', type: 'button', disabled: W.busy || !canWrite() || !n('neu'), onclick: () => processQueue(true) }, icon('refresh'), W.busy ? 'Läuft …' : 'Jetzt einordnen'))),
+          h('button', { class: 'btn small' + (W.busy ? ' busy' : ''), type: 'button', disabled: W.busy || !canWrite() || !n('neu'), onclick: () => processQueue(true) }, icon('refresh'), W.busy ? 'Läuft …' : 'Jetzt einordnen'))),
+      flow,
       h('div', { class: 'strip' },
         tile('neu', 'Warten', n('neu') ? 'warn' : '', show('neu')),
         tile('in_arbeit', 'In Arbeit', '', show('in_arbeit')),
@@ -12360,7 +12473,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
         h('div', { class: 'grid2' }, dropZone(), textBox()),
         pipeline(),
         h('div', { class: 'section' }, h('h3', { text: 'Zuletzt abgelegt' }),
-          !S.loaded.kb_items ? app.skeleton(4, 'Lade Archiv') : recent.length ? h('div', { class: 'kb-grid' }, recent.map(itemCard)) : emptyArchive()),
+          !S.loaded.kb_items ? app.skeleton(4, 'Lade Archiv') : recent.length ? h('div', { class: 'kb-grid recent' }, recent.map((it, i) => itemCard(it, i, null, true))) : emptyArchive()),
         h('div', { class: 'section' }, h('h3', { text: 'So arbeitet das Archiv' }),
           h('ol', { class: 'small kb-steps' },
             h('li', { text: 'Ablegen: PDF, Bilder, Videos und Textdateien werden als Original gespeichert; Word, Excel und PowerPoint als gelesener Text mit Ablagevorschlag für SharePoint. Doppelte Dateien erkennt das Cockpit am Fingerabdruck.' }),
@@ -12428,7 +12541,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
       a.sources.length ? h('div', { class: 'chips' }, h('span', { class: 'label', style: 'align-self:center', text: 'Quellen' }), a.sources.map((i, n) => h('button', { class: 'chip', type: 'button', onclick: () => openDetail(i.id) }, '[' + (n + 1) + '] ' + str(i.title).slice(0, 40)))) : null) : null;
     return h('div', { class: 'card accentbar kb-ask' }, h('h3', {}, app.ico('kompass'), ' Frag das Archiv'),
       h('div', { class: 'row' }, h('label', { class: 'sr', for: 'kb-ask', text: 'Frage an das Archiv' }), input,
-        h('button', { class: 'btn primary', type: 'button', disabled: a.running || !items().length, onclick: ask }, a.running ? 'Sucht …' : 'Fragen'),
+        h('button', { class: 'btn primary', type: 'button', disabled: a.running || !items().length, onclick: ask }, app.ico('search'), a.running ? 'Sucht …' : 'Fragen'),
         a.running ? h('button', { class: 'btn', type: 'button', onclick: () => a.ctl && a.ctl.abort() }, 'Stopp') : null),
       h('p', { class: 'muted small', text: 'Antwortet nur aus den abgelegten Inhalten und nennt die Quellen. Nutzt dein Claude-Kontingent.' }), out);
   }
@@ -12807,7 +12920,7 @@ let shown = false, hideT = null;
   app.addBanner(() => {
     const n = items().filter(i => i.status === 'pruefen').length;
     if (!n || S.world !== 'wissen' || S.tab.wissen === 'pruefung') return null;
-    return h('div', { class: 'banner warn', role: 'status' }, h('div', { class: 'txt' }, h('strong', { text: n + (n === 1 ? ' Eintrag wartet' : ' Einträge warten') + ' auf Prüfung. ' }), 'Unsichere Einordnung, nicht lesbare Inhalte oder Verdacht auf personenbezogene Daten.'), h('button', { class: 'btn small', type: 'button', onclick: () => app.go('wissen', 'pruefung') }, 'Zur Prüfung'));
+    return h('div', { class: 'banner warn', role: 'status' }, h('div', { class: 'txt' }, h('strong', { text: n + (n === 1 ? ' Eintrag wartet' : ' Einträge warten') + ' auf Prüfung. ' }), 'Unsichere Einordnung, nicht lesbare Inhalte oder Verdacht auf personenbezogene Daten.'), h('button', { class: 'btn small', type: 'button', onclick: () => app.go('wissen', 'pruefung') }, app.ico('lupe'), 'Zur Prüfung'));
   });
   let lastKick = 0;
   const origRefresh = app.refresh;
@@ -13140,7 +13253,7 @@ let shown = false, hideT = null;
           p.kind === 'proj' ? h('button', { class: 'btn small', type: 'button', onclick: () => editProject(p.data) }, 'Bearbeiten') : null,
           p.kind === 'proj' || p.kind === 'ref' ? h('button', { class: 'btn small', type: 'button', disabled: !canWrite(), onclick: () => startSetPos(p) }, app.ico('pin'), hasPos(p) ? 'Position korrigieren' : 'Position setzen') : null,
           p.kind === 'proj' && p.status !== 'geprueft' ? h('button', { class: 'btn small primary', type: 'button', disabled: !canWrite() || !hasPos(p), onclick: async () => { if (await app.write('kb_projects/' + p.id, 'update', { status: 'geprueft', reviewedAt: Date.now() })) app.toast('Projekt bestätigt.'); } }, icon('check'), 'Als geprüft bestätigen') : null,
-          p.kind === 'ref' ? h('button', { class: 'btn small primary', type: 'button', disabled: !canWrite(), onclick: async () => { const id = await adoptRef(p.id, { lat: p.lat, lon: p.lon, place: p.place, state: p.state, geoHow: p.how }); if (id) { MP.sel = 'p:' + id; app.refresh(); } } }, 'Als Projekt übernehmen') : null,
+          p.kind === 'ref' ? h('button', { class: 'btn small primary', type: 'button', disabled: !canWrite(), onclick: async () => { const id = await adoptRef(p.id, { lat: p.lat, lon: p.lon, place: p.place, state: p.state, geoHow: p.how }); if (id) { MP.sel = 'p:' + id; app.refresh(); } } }, app.ico('stern'), 'Als Projekt übernehmen') : null,
           p.kind === 'proj' ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => { S.ui.kb.project = p.id; S.ui.kb.status = 'aktiv'; app.go('wissen', 'archiv'); } }, app.ico('buch'), 'Unterlagen im Archiv') : null,
           p.kind === 'ref' ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => app.go('marketing', 'references') }, app.ico('stern'), 'Zur Referenz') : null,
           p.kind === 'event' ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => app.go('marketing', 'events') }, app.ico('messestand'), 'Zum Event') : null));
@@ -13370,7 +13483,7 @@ let shown = false, hideT = null;
   // Einwilligungsdialog direkt über der Karte (nicht modal): nennt Anbieter, Host, Zweck und Widerruf.
   function consentPanel(id, p) {
     const tid = 'gm-consent-' + id;
-    const yes = h('button', { class: 'btn primary', type: 'button', onclick: () => { asking = ''; failedHosts.delete(p.host); saveConsent(GL.consent.grant(p.host, new Date().toISOString())); } }, 'Einwilligen und laden');
+    const yes = h('button', { class: 'btn primary', type: 'button', onclick: () => { asking = ''; failedHosts.delete(p.host); saveConsent(GL.consent.grant(p.host, new Date().toISOString())); } }, app.ico('check'), 'Einwilligen und laden');
     const no = h('button', { class: 'btn ghost', type: 'button', onclick: () => { asking = ''; app.refresh(); } }, 'Abbrechen');
     const panel = h('div', { class: 'gm-consent', role: 'dialog', 'aria-modal': 'false', 'aria-labelledby': tid, onkeydown: ev => { if (ev.key === 'Escape') { asking = ''; app.refresh(); } } },
       h('h4', { id: tid, text: 'Einwilligung: Straßenkarte laden' }),
@@ -13574,7 +13687,7 @@ let shown = false, hideT = null;
       app.field('Beschluss', inp('beschluss', Object.assign(h('textarea', { id: 'cle-' + x.id, placeholder: 'Beschluss / Entscheidung der GL' }), { value: dr.beschluss })), { wide: true }),
       app.field('Notiz', inp('notiz', Object.assign(h('textarea', { id: 'cln-' + x.id, placeholder: 'Anmerkung – keine personenbezogenen Daten Dritter' }), { value: dr.notiz })), { wide: true }),
       h('div', { class: 'field wide' }, h('div', { class: 'row' },
-        h('button', { class: 'btn primary', type: 'button', disabled: ro(), onclick: async () => { const ok = await save(x.id, { status: dr.status || 'offen', rolle: dr.rolle, frist: dr.frist, budget: dr.budget.trim(), beschluss: dr.beschluss.trim(), notiz: dr.notiz.trim() }, 'Checkliste erfasst'); if (ok) { ui.open[x.id] = false; delete ui.drafts[x.id]; rerender(); } } }, 'Speichern'),
+        h('button', { class: 'btn primary', type: 'button', disabled: ro(), onclick: async () => { const ok = await save(x.id, { status: dr.status || 'offen', rolle: dr.rolle, frist: dr.frist, budget: dr.budget.trim(), beschluss: dr.beschluss.trim(), notiz: dr.notiz.trim() }, 'Checkliste erfasst'); if (ok) { ui.open[x.id] = false; delete ui.drafts[x.id]; rerender(); } } }, app.ico('check'), 'Speichern'),
         h('button', { class: 'btn ghost', type: 'button', onclick: () => { ui.open[x.id] = false; delete ui.drafts[x.id]; rerender(); } }, 'Schließen')))) : null;
     return h('li', { class: 'task' + (done ? ' done' : '') + (x.typ === 'drop' ? ' cl-drop' : '') },
       h('button', { class: 'cb', type: 'button', disabled: ro(), 'aria-pressed': String(done), 'aria-label': x.text + ': ' + (done ? 'als offen markieren' : 'als erledigt markieren'),
@@ -13665,4 +13778,5 @@ let shown = false, hideT = null;
   else window.FC.app.boot();
 })();
 </script>
+
 
