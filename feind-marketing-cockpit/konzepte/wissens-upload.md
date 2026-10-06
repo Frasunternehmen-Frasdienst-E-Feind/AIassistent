@@ -43,6 +43,14 @@ Der Eingang kann bereits:
 - Was die Routine nicht lesen kann (Binärdatei ohne Text), bleibt `neu`, mit dem Hinweis „beim nächsten Öffnen der Seite“.
 - Überwachung: `meta/sync.kb = {at, done, failed}`. Diesen Wert zeigt der Status im Admin-Bereich.
 
+### Geprüfter Ablauf (Prototyp vom 06.10.2026)
+Der Prototyp liegt auf dem Branch `prototyp/wissens-upload-ablauf` (`konzepte/PROTOTYP-wissens-upload-ablauf.html`, 7 Szenarien). Er ist nicht für `main` gedacht. Bestätigte Regeln:
+- **Sperre** `lock: {by, at, rev}` gilt 10 Minuten. Eine fremde, frische Sperre weist ab, eine abgelaufene darf übernommen werden.
+- **Fassungsnummer** `rev` steigt bei jeder neuen Fassung. Ein Ergebnis mit alter `rev` wird verworfen, und der Eintrag wartet neu.
+- **Gelöschte Einträge:** Ein spätes Ergebnis legt sie nie wieder an (Prüfung `byId` vor dem Schreiben).
+- **Versuche:** Nur echte Fehler zählen. Eine abgebrochene Bearbeitung (Seite geschlossen, Sperre abgelaufen) und die KI-Grenze zählen nicht. Nach drei echten Fehlern gilt `fehler` (Entscheidung David).
+- **Scans ohne Text** liest nur die Seite (OCR). Warten sie länger als 24 h, meldet die Routine das in „Prüfung“ und im Tagesbrief (Entscheidung David).
+
 ### M3 – Widersprüche, Lücken, Suche (1 Sitzung)
 - **Je Projekt:** Fakten aus allen Einträgen eines Projekts vergleichen (Fläche, Frästiefe, Datum, Ort). Abweichungen kommen in `review` mit Quelle. Lücken (fehlendes Datum, fehlender Ort) als offene Fragen.
 - **Volltextsuche** über Titel, Zusammenfassung und `kb_text` (nur für Admins), mit Treffern samt Textausschnitt.
@@ -55,6 +63,8 @@ Der Eingang kann bereits:
 | `kb_items.versions` | `[{at, by, name, sha256, size, assetId?}]` | frühere Fassungen, neueste zuerst, höchstens 10 |
 | `kb_items.extract` | `"text"\|"pdf"\|"office"\|"ocr"\|"keiner"` | um `ocr` erweitert |
 | `kb_items.ocrPages` | number? | gelesene Seiten bei OCR |
+| `kb_items.rev` | number | Fassungsnummer, steigt mit jeder neuen Fassung |
+| `kb_items.lock` | `{by, at, rev}`? | Sperre der bearbeitenden Stelle, gilt 10 Min. |
 | `kb_items.processedBy` | `"ki"\|"regeln"\|"routine"` | um `routine` erweitert |
 | `meta/sync.kb` | `{at, done, failed}` | letzter Lauf der Routine |
 
