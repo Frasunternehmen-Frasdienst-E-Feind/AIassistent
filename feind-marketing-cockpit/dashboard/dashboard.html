@@ -305,6 +305,13 @@ input:disabled, select:disabled, textarea:disabled { opacity: .7; cursor: not-al
 .check input { width: 16px; height: 16px; }
 input[type="checkbox"], input[type="radio"] { accent-color: var(--accent-ink); }
 .form-grid { display: grid; grid-template-columns: 1fr; gap: var(--s2) var(--s3); }
+.np-field { display: flex; flex-direction: column; gap: var(--s1); min-width: 0; }
+.np-field > .btn { align-self: flex-start; }
+.np-panel { border-left: 3px solid var(--accent); display: flex; flex-direction: column; gap: var(--s2); }
+.np-panel h4 { margin: 0; }
+.np-msg { margin: 0; color: var(--signal-text); }
+.np-msg:empty { display: none; }
+.kb-pick { position: fixed; left: 0; top: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 @media (min-width: 560px) { .form-grid { grid-template-columns: 1fr 1fr; } }
 
 /* ---------- Knöpfe ---------- */
@@ -748,6 +755,31 @@ table.data ul { margin: 0; padding-left: 16px; }
 .modlist .done { text-decoration: line-through; color: var(--ink-muted); }
 .ord { display: flex; gap: 4px; }
 .req-card .acts { display: flex; flex-wrap: wrap; gap: var(--s2); }
+/* Admin › Link-Protokoll */
+.lk-entry { border: 1px solid var(--line); background: var(--surface); padding: 12px; display: flex; flex-direction: column; gap: var(--s2); min-width: 0; }
+.lk-entry.fresh { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.lk-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+.lk-lbl { font-size: 12px; font-weight: 700; color: var(--ink-muted); }
+.lk-target { display: block; font-size: 12.5px; padding: 8px 10px; background: var(--raised); border: 1px solid var(--line-soft); overflow-wrap: anywhere; word-break: break-all; white-space: pre-wrap; user-select: all; }
+.lk-kv { font-size: 13px; }
+.lk-acts { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.lk-prev { margin: 0; overflow-wrap: anywhere; }
+.lk-tools { justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s2); }
+.lk-tools h3 { margin: 0; }
+.lk-tools input[type=search] { max-width: 280px; }
+.lk-mapwrap { border: 1px solid var(--line); background: var(--surface); }
+.lk-map { display: block; width: 100%; height: auto; }
+.lk-map .sea { fill: var(--surface); }
+.lk-map .grid { stroke: var(--line); stroke-width: .75; }
+.lk-map .grid.eq { stroke: var(--ink-muted); stroke-width: 1; }
+.lk-map .lbl { fill: var(--ink-muted); font-size: 9px; }
+.lk-map .land { fill: var(--surface-muted); stroke: var(--ink-muted); stroke-width: .5; stroke-linejoin: round; }
+.lk-map .dot { fill: var(--signal); fill-opacity: .35; stroke: var(--signal-text); stroke-width: 1.5; }
+.lk-map .place { fill: var(--ink-strong); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; }
+.lk-legend { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); margin-top: var(--s2); }
+.lk-legend > div { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 640px) { .lk-kv { grid-template-columns: 1fr; } .lk-tools input[type=search] { max-width: none; width: 100%; } }
+.lk-map .lead { stroke: var(--ink-muted); stroke-width: .75; }
 .link-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto; gap: var(--s2); align-items: center; margin-bottom: var(--s2); }
 .link-row .small { grid-column: 1 / -1; color: var(--warn-text); }
 @media (max-width: 560px) { .link-row { grid-template-columns: 1fr auto; } .link-row input[type="url"] { grid-column: 1; } }
@@ -4680,7 +4712,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     marketing: [['heute', 'Auf einen Blick'], ['copilot', 'Copilot'], ['content', 'Content'], ['leads', 'Leads'], ['tenders', 'Ausschreibungen'], ['events', 'Events'], ['seo', 'SEO'], ['references', 'Referenzen'], ['bibliothek', 'Wissensbibliothek'], ['plan90', '90-Tage-Plan'], ['ablage', 'Ablage']],
     infratech: [['dashboard', 'Dashboard'], ['aufgaben', 'Aufgaben'], ['checkliste', 'Checkliste 26→27'], ['fristen', 'Fristen'], ['budget', 'Budget'], ['kpi', 'Ziele & KPIs'], ['leadzaehler', 'Lead-Zähler'], ['lessons', 'Lessons Learned'], ['fakten', 'Faktencheck'], ['team', 'Team'], ['meetings', 'Protokolle'], ['protokoll', 'Aktivität'], ['wissen', 'Wissensbasis']],
     wissen: [['eingang', 'Eingang'], ['archiv', 'Archiv'], ['pruefung', 'Prüfung'], ['karte', 'Projektkarte']],
-    admin: [['status', 'Status'], ['konfiguration', 'Konfiguration'], ['zugaenge', 'Zugänge'], ['datenschutz', 'Datenschutz'], ['daten', 'Daten'], ['icons', 'Icons']]
+    admin: [['status', 'Status'], ['konfiguration', 'Konfiguration'], ['zugaenge', 'Zugänge'], ['datenschutz', 'Datenschutz'], ['links', 'Link-Protokoll'], ['daten', 'Daten'], ['icons', 'Icons']]
   };
   const registry = {};
   app.module = (world, key, def) => { registry[world + ':' + key] = def; };
@@ -5344,7 +5376,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     module: {
       heute: 'dashboard', copilot: 'kompass', content: 'stift', leads: 'lead', tenders: 'ausschreibung', events: 'messestand', seo: 'chart', references: 'stern', bibliothek: 'buch', plan90: 'gantt', ablage: 'ordner',
       dashboard: 'dashboard', aufgaben: 'liste', checkliste: 'st-done', fristen: 'kalender', budget: 'budget', kpi: 'ziel', leadzaehler: 'zaehler', lessons: 'lampe', fakten: 'lupe', team: 'team', meetings: 'meeting', protokoll: 'verlauf', wissen: 'buch', eingang: 'ablegen', archiv: 'buch', pruefung: 'lupe', karte: 'karte',
-      status: 'schild', konfiguration: 'regler', zugaenge: 'schluessel', daten: 'datenbank', icons: 'raster'
+      status: 'schild', konfiguration: 'regler', zugaenge: 'schluessel', links: 'ext', daten: 'datenbank', icons: 'raster'
     },
     cat: { steuerung: 'uhr', innovation: 'pokal', standbau: 'messestand', logistik: 'lkw', reise: 'hotel', material: 'paket', catering: 'kaffee', marketing: 'megafon', leads: 'lead', rotterdam: 'pin', ablauf: 'schichtplan', dokumente: 'ordner' },
     status: { open: 'st-open', in_progress: 'st-progress', blocked: 'st-blocked', deferred: 'st-deferred', done: 'st-done' },
@@ -7353,6 +7385,329 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
   });
 })();
 
+/* ---- app-links.js ---- */
+/* Feind Cockpit · Admin › Link-Protokoll (aus der Fuhrpark-App, app/links.py und app/geo.py).
+   Umgeschriebene Schutz-Links (Hornetsecurity, Safe Links, Weiterleitungen) entpacken und das echte Ziel festhalten.
+   Ausgewertet wird nur der Text der Adresse: das Ziel wird nie aufgerufen, es gibt keine DNS- oder Geo-IP-Abfrage.
+   E-Mail-Adressen im Ziel werden vor dem Speichern maskiert, der Original-Schutzlink wird nicht gespeichert.
+   Sammlung admin_links: in der Datenbank nur für Admins lesbar und schreibbar. */
+(function () {
+  'use strict';
+  const FC = window.FC, app = FC.app, H = FC.helpers;
+  const { h, s, panelHead, chip } = app;
+  const { str } = H;
+  const S = app.state;
+  const COLL = 'admin_links';
+  const L = S.ui.links = { rows: [], loaded: false, loading: false, err: '', url: '', note: '', q: '', fresh: '', busy: false };
+  const isAdmin = () => app.isAdmin();
+  const canWrite = () => isAdmin() && app.canWriteAdmin() && !S.readOnly;
+
+  /* ---------- Entpacken und Maskieren (wie app/links.py) ---------- */
+  const WRAPPERS = [
+    ['atpscan.global.hornetsecurity.com', 'Hornetsecurity ATP', 'u'],
+    ['safelinks.protection.outlook.com', 'Microsoft Safe Links', 'url'],
+    ['google.com', 'Google-Weiterleitung', 'q']
+  ];
+  const GENERIC = ['u', 'url', 'target', 'redirect', 'q'];
+  const MAX_UNWRAP = 5;
+  const EMAIL_RE = /([A-Za-z0-9._%+-]+)(@|%40)([A-Za-z0-9.-]+\.[A-Za-z]{2,})/g;
+  const maskEmails = t => String(t).replace(EMAIL_RE, (m, u, at, d) => u.slice(0, 2) + '***@' + d);
+  const hostMatches = (host, suffix) => host === suffix || host.endsWith('.' + suffix);
+  const parse = u => { try { return new URL(u); } catch (e) { return null; } };
+  function innerUrl(u) {
+    const p = parse(u);
+    if (!p) return null;
+    const host = p.hostname.toLowerCase();
+    for (const [suffix, name, key] of WRAPPERS) {
+      const v = p.searchParams.get(key);
+      if (hostMatches(host, suffix) && v) return [name, v];
+    }
+    for (const key of GENERIC) for (const v of p.searchParams.getAll(key)) if (/^https?:\/\//i.test(v)) return ['Weiterleitung über ' + host, v];
+    return null;
+  }
+  function unwrap(raw) {
+    let url = String(raw).trim();
+    const chain = [];
+    for (let i = 0; i < MAX_UNWRAP; i++) {
+      const inner = innerUrl(url);
+      if (!inner) break;
+      chain.push(inner[0]);
+      url = inner[1].trim();
+    }
+    const p = parse(url);
+    return { ziel: maskEmails(url), host: p ? p.hostname.toLowerCase() : '', via: chain.join(' → ') };
+  }
+
+  /* ---------- Grober Standort aus dem Hostnamen (wie app/geo.py) ---------- */
+  // Regionscodes sind je Anbieter verschieden belegt (ap-southeast-3 = Singapur bei Huawei, Jakarta bei AWS).
+  const HUAWEI = { 'ap-southeast-1': ['Hongkong', 22.32, 114.17], 'ap-southeast-2': ['Bangkok', 13.75, 100.5], 'ap-southeast-3': ['Singapur', 1.35, 103.82],
+    'ap-southeast-4': ['Jakarta', -6.21, 106.85], 'cn-north-1': ['Peking', 39.9, 116.4], 'cn-north-4': ['Peking', 39.9, 116.4], 'cn-east-2': ['Shanghai', 31.23, 121.47],
+    'cn-east-3': ['Shanghai', 31.23, 121.47], 'cn-south-1': ['Guangzhou', 23.13, 113.26], 'af-south-1': ['Johannesburg', -26.2, 28.05], 'eu-west-101': ['Dublin', 53.35, -6.26],
+    'tr-west-1': ['Istanbul', 41.01, 28.98], 'me-east-1': ['Riad', 24.71, 46.68], 'sa-brazil-1': ['São Paulo', -23.55, -46.63], 'la-south-2': ['Santiago de Chile', -33.45, -70.67], 'la-north-2': ['Mexiko-Stadt', 19.43, -99.13] };
+  const AWS = { 'us-east-1': ['Nord-Virginia', 38.95, -77.45], 'us-east-2': ['Ohio', 39.96, -83], 'us-west-1': ['Nordkalifornien', 37.35, -121.96], 'us-west-2': ['Oregon', 45.84, -119.7],
+    'ca-central-1': ['Montreal', 45.5, -73.57], 'sa-east-1': ['São Paulo', -23.55, -46.63], 'eu-central-1': ['Frankfurt', 50.11, 8.68], 'eu-central-2': ['Zürich', 47.37, 8.54],
+    'eu-west-1': ['Irland', 53.35, -6.26], 'eu-west-2': ['London', 51.51, -0.13], 'eu-west-3': ['Paris', 48.86, 2.35], 'eu-north-1': ['Stockholm', 59.33, 18.07], 'eu-south-1': ['Mailand', 45.46, 9.19],
+    'ap-east-1': ['Hongkong', 22.32, 114.17], 'ap-south-1': ['Mumbai', 19.08, 72.88], 'ap-southeast-1': ['Singapur', 1.35, 103.82], 'ap-southeast-2': ['Sydney', -33.87, 151.21],
+    'ap-southeast-3': ['Jakarta', -6.21, 106.85], 'ap-northeast-1': ['Tokio', 35.68, 139.69], 'ap-northeast-2': ['Seoul', 37.57, 126.98], 'me-south-1': ['Bahrain', 26.07, 50.56], 'af-south-1': ['Kapstadt', -33.92, 18.42] };
+  const ALIBABA = { 'cn-hangzhou': ['Hangzhou', 30.27, 120.16], 'cn-shanghai': ['Shanghai', 31.23, 121.47], 'cn-beijing': ['Peking', 39.9, 116.4], 'cn-shenzhen': ['Shenzhen', 22.54, 114.06],
+    'cn-hongkong': ['Hongkong', 22.32, 114.17], 'ap-southeast-1': ['Singapur', 1.35, 103.82], 'eu-central-1': ['Frankfurt', 50.11, 8.68], 'us-west-1': ['Silicon Valley', 37.39, -122.08] };
+  const CLOUDS = [['myhuaweicloud.com', 'Huawei Cloud', HUAWEI], ['amazonaws.com', 'Amazon AWS', AWS], ['aliyuncs.com', 'Alibaba Cloud', ALIBABA]];
+  const TLD = { de: ['Deutschland', 52.52, 13.4], at: ['Österreich', 48.21, 16.37], ch: ['Schweiz', 46.95, 7.45], nl: ['Niederlande', 52.37, 4.9], be: ['Belgien', 50.85, 4.35],
+    fr: ['Frankreich', 48.86, 2.35], uk: ['Vereinigtes Königreich', 51.51, -0.13], ie: ['Irland', 53.35, -6.26], it: ['Italien', 41.9, 12.5], es: ['Spanien', 40.42, -3.7],
+    pt: ['Portugal', 38.72, -9.14], pl: ['Polen', 52.23, 21.01], cz: ['Tschechien', 50.08, 14.44], dk: ['Dänemark', 55.68, 12.57], se: ['Schweden', 59.33, 18.07],
+    no: ['Norwegen', 59.91, 10.75], fi: ['Finnland', 60.17, 24.94], ru: ['Russland', 55.76, 37.62], ua: ['Ukraine', 50.45, 30.52], tr: ['Türkei', 39.93, 32.86],
+    cn: ['China', 39.9, 116.4], hk: ['Hongkong', 22.32, 114.17], jp: ['Japan', 35.68, 139.69], kr: ['Südkorea', 37.57, 126.98], sg: ['Singapur', 1.35, 103.82],
+    in: ['Indien', 28.61, 77.21], au: ['Australien', -35.28, 149.13], br: ['Brasilien', -15.79, -47.88], us: ['USA', 38.9, -77.04], ca: ['Kanada', 45.42, -75.7] };
+  function locate(host) {
+    host = str(host).toLowerCase().replace(/\.$/, '');
+    if (!host) return null;
+    const labels = host.split('.');
+    for (const [suffix, provider, regions] of CLOUDS) {
+      if (!hostMatches(host, suffix)) continue;
+      for (const l of labels) {
+        const r = l.replace(/^oss-/, '').replace(/^s3-/, '');
+        if (Object.prototype.hasOwnProperty.call(regions, r)) { const [ort, lat, lon] = regions[r]; return { ort, lat, lon, quelle: provider + ' ' + r }; }
+      }
+    }
+    const t = labels[labels.length - 1];
+    if (Object.prototype.hasOwnProperty.call(TLD, t)) { const [ort, lat, lon] = TLD[t]; return { ort, lat, lon, quelle: 'Länderendung .' + t }; }
+    return null;
+  }
+  app.linkTools = { unwrap, maskEmails, locate };
+
+  /* ---------- Speicher ---------- */
+  // Dokument-ID aus dem (maskierten) Ziel: gleiches Ziel = gleiches Dokument, auch wenn zwei Admins gleichzeitig melden.
+  function idFor(ziel) {
+    let a = 0x811c9dc5, b = 0x01000193;
+    for (let i = 0; i < ziel.length; i++) { const c = ziel.charCodeAt(i); a = Math.imul(a ^ c, 0x01000193) >>> 0; b = Math.imul(b ^ c, 0x5bd1e995) >>> 0; }
+    return 'l' + a.toString(16).padStart(8, '0') + b.toString(16).padStart(8, '0');
+  }
+  const rows = () => L.rows;
+  async function load() {
+    if (!S.store || !S.store.db || L.loading || !isAdmin()) return;
+    L.loading = true;
+    try {
+      const snap = await S.store.db.collection(COLL).get();
+      L.rows = snap.docs.map(d => Object.assign({ _id: d.id }, d.data())).filter(r => r && str(r.ziel));
+      L.err = '';
+    } catch (e) { L.err = 'Link-Protokoll nicht lesbar' + (e && e.code ? ' (' + e.code + ')' : '') + '.'; }
+    L.loading = false;
+    L.loaded = true;
+    app.refresh();
+  }
+  app.linksReload = () => { L.loaded = false; return load(); };
+
+  async function record() {
+    if (L.busy) return;
+    const raw = str(L.url).trim();
+    if (!/^https?:\/\/\S+$/i.test(raw) || raw.length < 10) { app.toast('Bitte eine vollständige Adresse mit http:// oder https:// einfügen (ohne Leerzeichen).', true); return; }
+    if (raw.length > 8000) { app.toast('Die Adresse ist zu lang (über 8.000 Zeichen).', true); return; }
+    const info = unwrap(raw);
+    if (!info.host) { app.toast('Das Ziel ist keine gültige Adresse.', true); return; }
+    const note = str(L.note).trim().slice(0, 500);
+    const id = idFor(info.ziel);
+    const hit = rows().find(r => r._id === id);
+    const now = new Date().toISOString();
+    const me = (S.me && S.me.id) || null;
+    L.busy = true;
+    app.refresh();
+    let ok;
+    if (hit) {
+      const upd = { anzahl: (Number(hit.anzahl) || 1) + 1, zuletzt: now, by: me };
+      if (note) upd.notiz = note;
+      if (info.via) upd.via = info.via;
+      ok = await app.write(COLL + '/' + id, 'update', upd);
+      if (ok) Object.assign(hit, upd);
+    } else {
+      const doc = { ziel: info.ziel.slice(0, 4000), host: info.host, via: info.via, notiz: note, anzahl: 1, erstmals: now, zuletzt: now, by: me };
+      ok = await app.write(COLL + '/' + id, 'set', doc);
+      if (ok) L.rows.push(Object.assign({ _id: id }, doc));
+    }
+    L.busy = false;
+    if (ok) {
+      L.url = ''; L.note = ''; L.fresh = id;
+      app.log(hit ? 'Link erneut gemeldet' : 'Link aufgezeichnet', info.host);
+      app.toast(hit ? 'Bekanntes Ziel: jetzt ' + hit.anzahl + '× gemeldet.' : 'Link aufgezeichnet. Ziel nicht im Browser öffnen.');
+    }
+    app.refresh();
+  }
+  function editNote(r) {
+    const ta = h('textarea', { id: 'lk-note-edit', rows: '3', maxlength: '500', 'aria-label': 'Notiz' });
+    ta.value = str(r.notiz);
+    app.modal({
+      title: 'Notiz zu ' + (str(r.host) || 'Link'),
+      body: [h('p', { class: 'muted small', text: 'Keine personenbezogenen Daten Dritter eintragen.' }), ta],
+      actions: [{ label: 'Abbrechen' }, {
+        label: 'Speichern', primary: true, onClick: async () => {
+          const notiz = ta.value.trim().slice(0, 500);
+          if (!await app.write(COLL + '/' + r._id, 'update', { notiz })) return true;
+          r.notiz = notiz;
+          app.log('Link-Notiz geändert', str(r.host));
+          app.refresh();
+        }
+      }],
+      focus: 'textarea'
+    });
+  }
+  async function remove(r) {
+    const ok = await app.confirm({ title: 'Eintrag löschen?', text: 'Der Eintrag zu ' + (str(r.host) || 'diesem Ziel') + ' (' + (Number(r.anzahl) || 1) + '× gemeldet) wird für alle Admins entfernt.', confirmLabel: 'Löschen', danger: true });
+    if (!ok || !await app.write(COLL + '/' + r._id, 'delete')) return;
+    L.rows = L.rows.filter(x => x._id !== r._id);
+    app.log('Link-Eintrag gelöscht', str(r.host));
+    app.toast('Eintrag gelöscht.');
+    app.refresh();
+  }
+  async function copy(r) {
+    try { await app.copyText(str(r.ziel)); app.toast('Ziel kopiert. Nicht im Browser öffnen.'); }
+    catch (e) {
+      const code = document.getElementById('lk-z-' + r._id);
+      if (code) { const rg = document.createRange(); rg.selectNodeContents(code); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rg); }
+      app.toast('Kopieren nicht möglich. Das Ziel ist markiert: mit Strg+C kopieren.', true);
+    }
+  }
+
+  /* ---------- Darstellung ---------- */
+  const ts = v => { const d = H.parseTs ? H.parseTs(v) : new Date(v); return d && !isNaN(d) ? H.fmtTs(d) : '—'; };
+  const fold = t => str(t).toLowerCase();
+  const sorted = () => rows().slice().sort((a, b) => str(b.zuletzt).localeCompare(str(a.zuletzt)));
+  function filtered() {
+    const q = fold(L.q).trim();
+    if (!q) return sorted();
+    return sorted().filter(r => { const p = locate(r.host); return (fold(r.ziel) + ' ' + fold(r.via) + ' ' + fold(r.notiz) + ' ' + (p ? fold(p.ort) : '')).includes(q); });
+  }
+  app.linksFiltered = filtered;
+
+  // Karte: gleichabstandige Projektion auf Koordinatenraster, Länderumrisse aus den eingebetteten Geodaten (Europa).
+  function mapSvg(list) {
+    // Ausschnitt 75° N bis 60° S: Polargebiete bleiben leer und kosten nur Höhe.
+    const N = 75, SO = -60, W = 720, HH = Math.round(W * (N - SO) / 360);
+    const x = lon => ((lon + 180) / 360) * W, y = lat => ((N - Math.max(SO, Math.min(N, lat))) / (N - SO)) * HH;
+    const svg = s('svg', { viewBox: '0 0 ' + W + ' ' + HH, class: 'lk-map', role: 'img', 'aria-labelledby': 'lk-map-t' });
+    const places = new Map();
+    for (const r of list) {
+      const p = locate(r.host);
+      if (!p) continue;
+      const k = p.lat + ',' + p.lon;
+      if (!places.has(k)) places.set(k, { p, n: 0, hosts: new Set() });
+      const e = places.get(k); e.n += Number(r.anzahl) || 1; e.hosts.add(r.host);
+    }
+    svg.append(s('title', { id: 'lk-map-t' }, 'Grobe Server-Standorte: ' + (places.size ? Array.from(places.values()).map(e => e.p.ort + ' (' + e.n + '×)').join(', ') : 'keine')));
+    svg.append(s('rect', { x: 0, y: 0, width: W, height: HH, class: 'sea' }));
+    for (let lon = -150; lon <= 150; lon += 30) svg.append(s('line', { x1: x(lon), y1: 0, x2: x(lon), y2: HH, class: 'grid' }), s('text', { x: x(lon) + 3, y: HH - 5, class: 'lbl' }, Math.abs(lon) + '°' + (lon < 0 ? 'W' : lon > 0 ? 'O' : '')));
+    for (let lat = -60; lat <= 60; lat += 30) svg.append(s('line', { x1: 0, y1: y(lat), x2: W, y2: y(lat), class: lat ? 'grid' : 'grid eq' }), s('text', { x: 4, y: y(lat) - 4, class: 'lbl' }, lat ? Math.abs(lat) + '°' + (lat < 0 ? 'S' : 'N') : 'Äquator'));
+    const countries = app.geoCountries || (function () { try { return JSON.parse(document.getElementById('geoData').textContent).countries || {}; } catch (e) { return {}; } })();
+    for (const rings of Object.values(countries)) {
+      for (const ring of [].concat(rings)) {
+        if (!Array.isArray(ring) || !ring.length || !Array.isArray(ring[0]) || typeof ring[0][0] !== 'number') continue;
+        svg.append(s('path', { class: 'land', d: 'M' + ring.map(([lo, la]) => x(lo).toFixed(1) + ' ' + y(la).toFixed(1)).join('L') + 'Z' }));
+      }
+    }
+    // Beschriftungen nah beieinander liegender Orte (Frankfurt, Deutschland) untereinander statt übereinander.
+    const placed = [];
+    const items = Array.from(places.values()).sort((a, b) => b.p.lat - a.p.lat);
+    for (const { p, n } of items) svg.append(s('circle', { cx: x(p.lon), cy: y(p.lat), r: 5 + Math.min(n, 10), class: 'dot' }));
+    for (const { p, n } of items) {
+      const r = 5 + Math.min(n, 10), wTxt = p.ort.length * 6.6;
+      const tx = Math.min(Math.max(x(p.lon) + r + 3, 3), W - wTxt - 3);
+      let ty = y(p.lat) + 4;
+      while (placed.some(o => Math.abs(o.y - ty) < 12 && tx < o.x + o.w && o.x < tx + wTxt)) ty += 12;
+      placed.push({ x: tx, y: ty, w: wTxt });
+      if (Math.abs(ty - (y(p.lat) + 4)) > 1) svg.append(s('line', { x1: x(p.lon), y1: y(p.lat), x2: tx - 1, y2: ty - 4, class: 'lead' }));
+      svg.append(s('text', { x: tx, y: ty, class: 'place' }, p.ort));
+    }
+    return { svg, places };
+  }
+
+  function entryRow(r, w) {
+    const p = locate(r.host);
+    const n = Number(r.anzahl) || 1;
+    return h('article', { class: 'lk-entry' + (r._id === L.fresh ? ' fresh' : ''), id: 'lk-' + r._id },
+      h('div', { class: 'lk-head' },
+        chip(n > 1 ? 'yellow' : 'green', n + '× gemeldet'),
+        h('span', { class: 'muted small', text: 'zuletzt ' + ts(r.zuletzt) + (r.erstmals && r.erstmals !== r.zuletzt ? ' · erstmals ' + ts(r.erstmals) : '') })),
+      h('div', { class: 'lk-lbl', text: 'Echtes Ziel (' + (str(r.host) || 'unbekannt') + ')' + (p ? ' · ' + p.ort : '') }),
+      h('code', { class: 'lk-target', id: 'lk-z-' + r._id, text: str(r.ziel) }),
+      h('dl', { class: 'kv lk-kv' },
+        str(r.via) ? [h('dt', { text: 'Umgeschrieben durch' }), h('dd', { text: str(r.via) })] : null,
+        h('dt', { text: 'Standort' }), h('dd', { text: p ? p.ort + ' · Quelle: ' + p.quelle : 'nicht aus dem Hostnamen ableitbar' }),
+        str(r.notiz) ? [h('dt', { text: 'Notiz' }), h('dd', { text: str(r.notiz) })] : null,
+        r.by ? [h('dt', { text: 'Zuletzt gemeldet von' }), h('dd', { text: app.ownerLabel(r.by) })] : null),
+      h('div', { class: 'lk-acts' },
+        h('button', { class: 'btn small', type: 'button', 'aria-label': 'Ziel kopieren: ' + str(r.host), onclick: () => copy(r) }, app.ico('copy'), 'Ziel kopieren'),
+        h('button', { class: 'btn small ghost', type: 'button', disabled: !w, onclick: () => editNote(r) }, app.ico('stift'), 'Notiz'),
+        h('button', { class: 'btn small ghost danger', type: 'button', disabled: !w, 'aria-label': 'Eintrag löschen: ' + str(r.host), onclick: () => remove(r) }, 'Löschen')));
+  }
+
+  app.module('admin', 'links', {
+    count: () => (isAdmin() && L.loaded && L.rows.length ? L.rows.length : null),
+    render() {
+      if (!isAdmin()) {
+        return [panelHead('Link-Protokoll'),
+          h('div', { class: 'banner warn', role: 'status' }, h('div', { class: 'txt' }, h('strong', { text: 'Nur für Admins. ' }), 'Das Link-Protokoll enthält Ziele aus gemeldeten Mails und ist in der Datenbank nur für Admins lesbar.'),
+            h('button', { class: 'btn small', type: 'button', onclick: () => app.go('admin', 'zugaenge') }, 'Zugang anfragen'))];
+      }
+      if (!L.loaded) load();
+      const w = canWrite();
+      const list = filtered();
+      const total = rows().reduce((a, r) => a + (Number(r.anzahl) || 1), 0);
+
+      const url = h('textarea', { id: 'lk-url', rows: '3', placeholder: 'Link aus der Mail hier einfügen (Rechtsklick auf den Link › Link-Adresse kopieren)', autocomplete: 'off', spellcheck: 'false', disabled: !w || L.busy });
+      url.value = L.url;
+      url.addEventListener('input', () => { L.url = url.value; showPreview(); });
+      url.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); record(); } });
+      const note = h('input', { type: 'text', id: 'lk-note', maxlength: '500', placeholder: 'z. B. Mail vom 26.09., Absender unbekannt', autocomplete: 'off', value: L.note, disabled: !w || L.busy });
+      note.addEventListener('input', () => { L.note = note.value; });
+      note.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); record(); } });
+      // Vorschau aktualisiert sich beim Tippen an Ort und Stelle (ohne Neuaufbau, der Fokus bleibt im Feld).
+      const preview = h('p', { class: 'muted small lk-prev', 'aria-live': 'polite' });
+      const showPreview = () => {
+        const raw = str(L.url).trim();
+        if (!/^https?:\/\/\S+$/i.test(raw)) { preview.replaceChildren(raw ? 'Vorschau: noch keine vollständige Adresse (http:// oder https://).' : ''); return; }
+        const info = unwrap(raw), p = locate(info.host);
+        preview.replaceChildren('Vorschau: ', h('b', { text: info.host || 'keine gültige Adresse' }), info.via ? ' · über ' + info.via : ' · kein Schutz-Link erkannt', p ? ' · ' + p.ort : '');
+      };
+      showPreview();
+
+      const q = h('input', { type: 'search', id: 'lk-q', value: L.q, placeholder: 'Ziel, Notiz oder Ort …', autocomplete: 'off', 'aria-label': 'Link-Protokoll durchsuchen' });
+      q.addEventListener('input', () => { L.q = q.value; app.refresh(); });
+      const { svg, places } = mapSvg(list);
+      const unknown = list.filter(r => !locate(r.host)).length;
+
+      return [
+        panelHead('Link-Protokoll', rows().length ? rows().length + ' Ziele · ' + total + '× gemeldet' : null,
+          h('button', { class: 'btn small ghost', type: 'button', disabled: L.loading, onclick: () => app.linksReload() }, L.loading ? 'Lädt …' : 'Neu laden'),
+          'Schutz-Links aus Mails entpacken und das echte Ziel festhalten. Keine Risikobewertung: Prüfung und Meldung laufen weiter über die IT.'),
+        w ? null : h('div', { class: 'banner warn', role: 'status' }, h('div', { class: 'txt' }, h('strong', { text: 'Nur lesend. ' }), 'Für neue Einträge braucht es Schreibrechte („Kann bearbeiten“ im Teilen-Menü).')),
+        L.err ? h('div', { class: 'banner warn', role: 'alert' }, h('div', { class: 'txt', text: L.err })) : null,
+        h('div', { class: 'grid2' },
+          h('div', { class: 'card' }, h('h3', { text: 'Link aufzeichnen' }),
+            app.field('Link aus der Mail', url, { wide: true, hint: 'Strg+Enter speichert. Der Link wird nicht geöffnet.' }),
+            preview,
+            app.field('Notiz (optional)', note, { wide: true }),
+            h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', id: 'lk-save', disabled: !w || L.busy, onclick: record }, app.ico('plus'), L.busy ? 'Speichert …' : 'Aufzeichnen'))),
+          h('div', { class: 'card' }, h('h3', { text: 'So funktioniert es' }), h('ul', { class: 'ov-list' },
+            h('li', { class: 'ov-row ok' }, h('span', { class: 'tx' }, h('b', { text: 'Nie geöffnet: ' }), 'Ausgewertet wird nur der Text der Adresse. Kein Aufruf, keine DNS- oder Geo-IP-Abfrage; der Absender erfährt nichts.')),
+            h('li', { class: 'ov-row ok' }, h('span', { class: 'tx' }, h('b', { text: 'Entpackt: ' }), 'Hornetsecurity, Microsoft Safe Links, Google und übliche Weiterleitungen, bis zu 5 Ebenen.')),
+            h('li', { class: 'ov-row ok' }, h('span', { class: 'tx' }, h('b', { text: 'Datenschutz: ' }), 'E-Mail-Adressen im Ziel werden vor dem Speichern maskiert (pe***@example.com). Der Original-Schutzlink wird nicht gespeichert.')),
+            h('li', { class: 'ov-row ok' }, h('span', { class: 'tx' }, h('b', { text: 'Gleiches Ziel: ' }), 'wird nicht doppelt angelegt, sondern hochgezählt.')),
+            h('li', { class: 'ov-row warn' }, h('span', { class: 'tx' }, h('b', { text: 'Standort: ' }), 'nur grob aus Cloud-Region oder Länderendung abgeleitet, kein exakter Serverstandort.')))))
+        ,
+        h('div', { class: 'card section lk-mapcard' }, h('h3', { text: 'Karte der Ziele' + (L.q ? ' (gefiltert)' : '') }),
+          h('div', { class: 'lk-mapwrap' }, svg),
+          h('div', { class: 'lk-legend' },
+            places.size ? Array.from(places.values()).map(({ p, n, hosts }) => h('div', {}, h('b', { text: p.ort }), h('span', { class: 'muted small', text: Array.from(hosts).join(', ') + ' · ' + n + '× gemeldet · ' + p.quelle })))
+              : h('p', { class: 'muted small', text: 'Noch keine Standorte.' }),
+            unknown ? h('p', { class: 'muted small', text: 'Ohne ableitbaren Standort: ' + unknown }) : null)),
+        h('div', { class: 'section' },
+          h('div', { class: 'row lk-tools' }, h('h3', { text: 'Aufgezeichnete Ziele (' + list.length + (L.q ? ' von ' + rows().length : '') + ')' }), q),
+          !L.loaded ? h('p', { class: 'muted', text: 'Link-Protokoll wird geladen …' })
+            : list.length ? h('div', { class: 'stack lk-list' }, list.map(r => entryRow(r, w)))
+              : h('p', { class: 'muted', text: L.q ? 'Keine Treffer.' : 'Noch keine Links aufgezeichnet. Oben einen Link aus einer Mail einfügen.' }))
+      ];
+    }
+  });
+})();
+
 /* ---- app-admin.js ---- */
 /* Feind Cockpit · Admin-Welt (aus A2): Status, Konfiguration mit Entwurf, Vorschau und Veröffentlichen,
    Zugänge (Anfragen, Admins), Daten (Sicherung, Import über den Migrationsplan, alte Marketing-Leads).
@@ -7720,7 +8075,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
 
   /* ---------- Daten: Sicherung, Import über den Migrationsplan, alte Marketing-Leads ---------- */
   const ALL_COLLECTIONS = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'knowledge', 'tasks', 'briefings', 'activity',
-    'admin_requests', 'leads', 'settings', 'meta', 'budget', 'admin', 'meetings', 'checkliste', 'kb_items', 'kb_text', 'kb_projects'];
+    'admin_requests', 'leads', 'settings', 'meta', 'budget', 'admin', 'admin_links', 'meetings', 'checkliste', 'kb_items', 'kb_text', 'kb_projects'];
   const strip = r => { const d = Object.assign({}, r); delete d._id; return d; };
   async function dumpAll(masked) {
     const out = {};
@@ -10681,6 +11036,8 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
       app.isAdmin() ? csv('ds-csv', 'Zugriffsprotokoll (CSV)', 'Feind-Cockpit-Klartextzugriffe.csv', schutzCsv) : null, print('ds', 'Datenschutz-Uebersicht', specSchutz)],
     'admin:status': () => [pdf('as', 'Statusbericht (PDF)', 'Statusbericht-Cockpit', specStatus),
       { id: 'as-backup', label: 'Sicherung herunterladen', short: 'Sicherung', icon: 'datenbank', tip: 'Alle Sammlungen als JSON-Datei; Personen nur als Kennung. Nur für Admins.', disabled: !app.isAdmin(), run: () => app.admBackup() }, print('as', 'Statusbericht-Cockpit', specStatus)],
+    'admin:links': () => (app.isAdmin() ? [csv('lk-csv', 'Link-Protokoll (CSV)', 'Feind-Cockpit-Link-Protokoll.csv', () => H.toCsv(['Zuletzt', 'Erstmals', 'Anzahl', 'Host', 'Standort (grob)', 'Standort-Quelle', 'Umgeschrieben durch', 'Ziel (E-Mails maskiert)', 'Notiz'],
+      app.linksFiltered().map(r => { const p = app.linkTools.locate(r.host); return [r.zuletzt || '', r.erstmals || '', Number(r.anzahl) || 1, r.host || '', p ? p.ort : '', p ? p.quelle : '', r.via || '', r.ziel || '', r.notiz || '']; })))] : []),
     'admin:konfiguration': () => [csv('ak-csv', 'Änderungsprotokoll (CSV)', 'Feind-Cockpit-Aenderungen.csv', changelogCsv)],
     'admin:zugaenge': () => [app.isAdmin() ? csv('az-csv', 'Anfragen als CSV', 'Feind-Cockpit-Zugangsanfragen.csv', requestsCsv) : { id: 'az-status', label: 'Eigenen Zugang prüfen', short: 'Status', icon: 'schild', run: () => app.go('admin', 'status') }],
     'admin:daten': () => [{ id: 'ad-backup', label: 'Sicherung herunterladen', short: 'Sicherung', icon: 'down', main: true, tip: 'Alle Sammlungen als JSON-Datei; Personen nur als Kennung. Nur für Admins.', disabled: !app.isAdmin(), run: () => app.admBackup() }, csv('ad-csv', 'Datenbestand (CSV)', 'Feind-Cockpit-Datenbestand.csv', dataCsv)],
@@ -10775,7 +11132,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
       more = h('div', { class: 'ab-more' + (rest.length ? '' : ' ab-mobile') }, toggle, menu);
     }
     bar.setAttribute('aria-label', 'Aktionen ' + app.moduleLabel(world, key));
-    bar.replaceChildren(h('span', { class: 'ab-label', 'aria-hidden': 'true' }, app.ico('check'), 'Aktionen'), h('div', { class: 'ab-scroll' }, vis.map(btn)), more);
+    bar.replaceChildren(h('span', { class: 'ab-label', 'aria-hidden': 'true' }, app.ico('check'), 'Aktionen'), h('div', { class: 'ab-scroll' }, vis.map(btn)), more || '');
     // Passt die Leiste nicht in eine Zeile, Kurzbeschriftungen für alle Knöpfe.
     const sc = bar.querySelector('.ab-scroll');
     bar.classList.remove('ab-compact');
@@ -11402,6 +11759,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
             ok('Schwärzung', 'IBAN, USt-ID, Telefonnummern und Passwörter erscheinen im gelesenen Text, in der KI-Abfrage und in der Sicherung nur geschwärzt.'),
             ok('Klartext', 'Nur Admins, nur nach Bestätigung, jeder Zugriff steht im Protokoll (unten). Die Anzeige blendet sich nach 60 Sekunden wieder aus.'),
             ok('Zugriffsregel', 'Der gelesene Volltext (Sammlung kb_text) ist in der Datenbank nur für Admins lesbar, nicht nur ausgeblendet.'),
+            ok('Link-Protokoll', 'Gemeldete Links werden nie geöffnet; E-Mail-Adressen im Ziel sind vor dem Speichern maskiert, der Original-Schutzlink wird nicht gespeichert. Sammlung admin_links nur für Admins lesbar.'),
             ok('Kennzeichnung', 'Einträge mit IBAN, USt-ID oder Zugangsdaten tragen „Vertraulich“. Neue Einträge werden beim Einlesen automatisch geprüft.'),
             ok('Datenminimierung', 'Lokale Schrift statt Google-Fonts, Karte offline bis zur Einwilligung, Firecrawl nur nach Erlaubnis über das eigene Konto.'),
             warn('Grenze', 'Originaldateien liegen im Dateispeicher der App. Das Cockpit zeigt den Link vertraulicher Originale nur Admins; wer die Datei-Adresse kennt, kann sie technisch öffnen. Besser: Original nach SharePoint (eingeschränkter Ordner) und hier löschen.'))),
@@ -11900,10 +12258,14 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     e.preventDefault();
     intake({ files, texts: text ? [text] : [] }, 'einfügen');
   });
+  // Dateiauswahl: Das Feld bleibt im Layout (nur unsichtbar). Safari, iPhone/iPad und App-Ansichten öffnen den Dialog
+  // für ein Feld mit display:none (Attribut hidden) nicht; ein abgebrochener Dialog hinterlässt kein Feld.
   function pickFiles(dir) {
-    const inp = h('input', { type: 'file', multiple: true, hidden: true });
+    document.querySelectorAll('input.kb-pick').forEach(x => x.remove());
+    const inp = h('input', { type: 'file', multiple: true, class: 'kb-pick', tabindex: '-1', 'aria-hidden': 'true' });
     if (dir) inp.setAttribute('webkitdirectory', '');
     inp.addEventListener('change', () => { intake({ files: Array.from(inp.files || []).slice(0, MAX_BATCH), texts: [] }, 'auswahl'); inp.remove(); });
+    inp.addEventListener('cancel', () => inp.remove());
     document.body.append(inp);
     inp.click();
   }
@@ -12120,6 +12482,73 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     if (W.fullText.has(id)) return W.fullText.get(id);
     try { const snap = await S.store.db.doc('kb_text/' + id).get(); const t = snap.exists ? str(snap.data().text) : ''; W.fullText.set(id, t); return t; } catch (e) { return ''; }
   }
+  /* ---------- Neues Projekt direkt aus dem Eintrag anlegen ---------- */
+  // Eingabemaske im selben Dialog (ein zweiter Dialog würde den offenen und seine ungespeicherten Änderungen schließen).
+  function newProjectBox(it, projSel, ro) {
+    const BL = (FC.data && FC.data.BUNDESLAENDER) || [];
+    const name = h('input', { type: 'text', id: 'np-name', maxlength: '120', required: true, 'aria-required': 'true', placeholder: 'z. B. A 14 Fahrbahnerneuerung Magdeburg' });
+    const place = h('input', { type: 'text', id: 'np-place', maxlength: '80', placeholder: 'z. B. Nossen' });
+    const state = app.dropdown('np-state', [['', '–']].concat(BL.map(b => [b, b])), '');
+    const year = h('input', { type: 'number', id: 'np-year', min: '1990', max: '2040', value: it.year ? String(it.year) : '' });
+    const services = h('select', { id: 'np-services', multiple: true, size: '4' }, K.SERVICES.map(x => h('option', { value: x, selected: arr(it.services).includes(x) }, x)));
+    const msg = h('p', { class: 'small np-msg', role: 'alert' });
+    const panel = h('div', { class: 'card np-panel', id: 'np-panel', hidden: true },
+      h('h4', {}, app.ico('pin'), ' Neues Projekt anlegen'),
+      app.field('Projektname *', name),
+      h('div', { class: 'form-grid' }, app.field('Ort', place, { hint: 'Für die Position auf der Projektkarte' }), app.field('Bundesland', state), app.field('Jahr', year), app.field('Leistungen', services, { hint: 'Mehrfachauswahl mit Strg oder Cmd' })),
+      msg,
+      h('div', { class: 'row' },
+        h('button', { class: 'btn primary', type: 'button', id: 'np-save', onclick: () => saveNew() }, app.ico('check'), 'Projekt speichern'),
+        h('button', { class: 'btn ghost', type: 'button', onclick: () => toggle(false) }, 'Abbrechen')),
+      h('p', { class: 'muted small', text: 'Das Projekt wird als Entwurf angelegt und diesem Eintrag zugeordnet. Auftraggeber und weitere Angaben später unter Wissen › Projektkarte ergänzen.' }));
+    const btn = h('button', { class: 'btn small', type: 'button', id: 'np-open', disabled: ro || null, 'aria-expanded': 'false', 'aria-controls': 'np-panel', onclick: () => toggle(panel.hidden) }, app.ico('plus'), 'Neues Projekt');
+    function toggle(open) {
+      panel.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+      msg.textContent = '';
+      if (open) { name.focus(); panel.scrollIntoView({ block: 'nearest' }); } else btn.focus();
+    }
+    name.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); saveNew(); } });
+    let busy = false;
+    async function saveNew() {
+      if (busy) return;
+      const n = name.value.trim().slice(0, 120);
+      if (!n) { msg.textContent = 'Bitte einen Projektnamen eingeben.'; name.setAttribute('aria-invalid', 'true'); name.focus(); return; }
+      name.removeAttribute('aria-invalid');
+      const f = K.fold;
+      const dup = projects().find(p => f(p.name) === f(n));
+      if (dup) {
+        projSel.value = dup.id;
+        toggle(false);
+        app.toast('Projekt „' + str(dup.name) + '“ gibt es schon: ausgewählt. Mit „Speichern“ zuordnen.');
+        return;
+      }
+      busy = true;
+      const pl = place.value.trim().slice(0, 80), st = state.value;
+      const g = pl ? locate(pl, st) : null;
+      if (pl && !g) app.toast('Ort nicht im Verzeichnis gefunden. Position später auf der Projektkarte setzen.', true);
+      const id = H.uid('p');
+      const doc = { id, name: n, place: (g && g.place) || pl, state: (g && g.state) || st, country: 'Deutschland', lat: g ? g.lat : null, lon: g ? g.lon : null, geoHow: g ? g.how : 'offen',
+        year: parseInt(year.value, 10) || null, services: Array.from(services.selectedOptions).map(o => o.value), machine: '', areaM2: null, summary: '', client: '', clientApproved: false,
+        status: 'entwurf', items: [it.id], refId: null, createdAt: Date.now(), updatedAt: Date.now(), auto: false };
+      const ok = await app.write('kb_projects/' + id, 'set', doc);
+      if (ok) {
+        const old = it.projectId && it.projectId !== id ? projById(it.projectId) : null;
+        if (await app.write('kb_items/' + it.id, 'update', { projectId: id, editedAt: Date.now() })) {
+          if (old) await app.write('kb_projects/' + old.id, 'update', { items: arr(old.items).filter(x => x !== it.id), updatedAt: Date.now() });
+          it.projectId = id;
+        }
+        projSel.append(h('option', { value: id }, n.slice(0, 50)));
+        projSel.value = id;
+        name.value = ''; place.value = ''; state.value = '';
+        toggle(false);
+        app.log('Projektkarte', 'Projekt angelegt: ' + n);
+        app.toast('Projekt „' + n + '“ angelegt und zugeordnet.');
+      }
+      busy = false;
+    }
+    return { field: h('div', { class: 'np-field' }, app.field('Projekt', projSel), ro ? null : btn), panel };
+  }
   function openDetail(id) {
     const it = byId(id);
     if (!it) return;
@@ -12132,6 +12561,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     const tags = h('input', { type: 'text', id: 'kd-tags', value: arr(it.tags).join(', '), placeholder: 'kommagetrennt', disabled: ro });
     const services = h('select', { id: 'kd-services', multiple: true, size: '4', disabled: ro }, K.SERVICES.map(x => h('option', { value: x, selected: arr(it.services).includes(x) }, x)));
     const projSel = app.dropdown('kd-proj', [['', 'kein Projekt']].concat(projects().map(p => [p.id, str(p.name).slice(0, 50)])), it.projectId || ''); projSel.disabled = ro;
+    const np = newProjectBox(it, projSel, ro);
     const summary = h('textarea', { id: 'kd-sum', rows: '3', maxlength: '800', disabled: ro }); summary.value = str(it.summary);
     const textBox = h('pre', { class: 'code kb-text', text: 'Text wird geladen …' });
 let shown = false, hideT = null;
@@ -12171,7 +12601,8 @@ let shown = false, hideT = null;
       arr(it.review).length && it.status === 'pruefen' ? h('div', { class: 'banner warn' }, h('div', { class: 'txt' }, h('strong', { text: 'Zu prüfen: ' }), arr(it.review).join(' · '))) : null,
       it.error ? h('div', { class: 'banner crit' }, h('div', { class: 'txt' }, h('strong', { text: 'Fehler: ' }), str(it.error))) : null,
       app.field('Titel', title),
-      h('div', { class: 'form-grid' }, app.field('Kategorie', cat), app.field('Dokumenttyp', type), app.field('Jahr', year), app.field('Projekt', projSel), app.field('Schlagworte', tags), app.field('Leistungen', services, { hint: 'Mehrfachauswahl mit Strg oder Cmd' })),
+      h('div', { class: 'form-grid' }, app.field('Kategorie', cat), app.field('Dokumenttyp', type), app.field('Jahr', year), np.field, app.field('Schlagworte', tags), app.field('Leistungen', services, { hint: 'Mehrfachauswahl mit Strg oder Cmd' })),
+      np.panel,
       app.field('Zusammenfassung', summary),
       it.entities ? h('div', { class: 'kb-ents' }, [['Orte', 'places'], ['Organisationen', 'orgs'], ['Projekte', 'projects'], ['Maschinen', 'machines'], ['Daten', 'dates']].map(([l, k]) => (arr(it.entities[k]).length ? h('div', {}, h('span', { class: 'label', text: l }), h('div', { class: 'chips' }, arr(it.entities[k]).map(x => h('span', { class: 'chip', text: x })))) : null))) : null,
       sp ? h('div', { class: 'card' }, h('h4', { text: 'Ablagevorschlag SharePoint Marketing' }), h('div', { class: 'fname', text: sp.path }),
@@ -13234,3 +13665,4 @@ let shown = false, hideT = null;
   else window.FC.app.boot();
 })();
 </script>
+
