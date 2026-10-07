@@ -7,8 +7,8 @@ Farbregeln: `branding/farbsystem.md` (Version 1.1) und `branding/feind-ci.tokens
 |---|---|---|
 | 0 | Führende Quelle, Regression Kachelanbieter, Text-Ausgangsmessung | erledigt |
 | 1 | `charts.js`, Diagramm-Tokens, Referenzmodul Lead-Zähler, Themenbanner-Muster | freigegeben 07.10.2026 |
-| 2 | InfraTech: Dashboard, Aufgaben, Fristen, Budget, KPI; Banner auf allen Seiten; Meeting-Modus; Exporte | **wartet auf Freigabe** |
-| 3 | Marketing: Copilot, Content, Leads, Ausschreibungen, Events, SEO; `lineChart()` → `charts.line()` | offen |
+| 2 | InfraTech: Dashboard, Aufgaben, Fristen, Budget, KPI; Banner auf allen Seiten; Meeting-Modus; Exporte | freigegeben 07.10.2026, veröffentlicht (TfuzbG v36) |
+| 3 | Marketing: Copilot, Content, Leads, Ausschreibungen, Events, SEO, 90-Tage-Plan; `lineChart()` → `charts.line()` | **wartet auf Freigabe** |
 | 4 | Abnahme: Bewegung, Druck, lokaler Modus, Viewer, Kontrast-Audit | offen |
 
 ---
@@ -164,3 +164,64 @@ Alle anderen Reiter haben jetzt etwa 40 Zeichen mehr, weil das Standardbanner da
 
 - `npm run test:cockpit`: 40 bestanden (`charts.js` 21)
 - `npm run test:cockpit:e2e`: 19 bestanden (neu: `infratech-visuell.e2e.mjs` mit 6 Tests)
+
+---
+
+## Phase 3: Marketing-Welt
+
+### Module
+
+| Modul | Primär | Sekundär | Hintergrund |
+|---|---|---|---|
+| Copilot | Hinweise als Kacheln (Symbol, Zahl, Kurzlabel, Schweregrad-Symbol; Klick öffnet das Modul) | Tagesbrief höchstens 4 Sätze, Rest aufklappbar; Wochenplan als 7-Spalten-Raster | voller Hinweistext im Tooltip; Datenstand und Verbindungen in `<details>` |
+| Content | Balken „nach Kanal“ und „nach Projekttyp“ (Klick filtert) | Kanban mit farbiger Statuskante und Mini-Balken „Tage im Status“ (Gelbgrün ab Hängt-Grenze) | Kalender in `<details>` (Zustand bleibt); Region, Projekttyp, Notiz im Tooltip |
+| Leads | Trichter Neu → Gewonnen (Klick filtert das Kanban), Verloren als Zahl | Verlauf „Neue Leads je Woche“ (5 KW, `charts.line`, Tabelle) | Karten: Organisation, Typ, Follow-up-Ampel; Kanal, Leistung, Region, Kontakte im Tooltip; Balken nach Kanal (Filter), Region, Landkreis (Top 7); neueste Leads als Tabelle in `<details>` |
+| Ausschreibungen | Karte bleibt; rechts Ampel-Donut der offenen Fristen | Liste mit Restlaufzeit-Balken statt „in X Tagen“, Balken „Nach Landkreis“ | Behörde, Region, Portal, Status im Tooltip am Titel; Kartenerklärung als Tooltip; Nachbarländer in `<details>` |
+| Events | Fortschrittsring je Event (Checkliste; bei der Messe Aufgabenfortschritt) | Mini-Kalender für Monate mit Events (Eventtage grün, Messetage mit Rahmen) | Bereichsbalken wie bisher |
+| SEO | Traffic-Verlauf über `charts.line` oben | Positions-Histogramm (Top 3, 4–10, 11–30, > 30) | Keyword-Tabelle mit Position und Ampelpfeil; Region, URL, Prüfdatum im Tooltip |
+| 90-Tage-Plan | Ring-Kacheln (Tage bis Messe, Pakete erledigt, offene Entscheidungen, Messgrößen ohne Ist) | Gantt bleibt; Fortschrittsbalken je Welle im Wellenfilter | Paket-Tabelle, Messgrößen, offene Fakten, Check-ins in `<details>`; Sprünge aus dem Zeitplan öffnen sie |
+
+`lineChart()` ist aus `app-marketing2.js` entfernt (`app.lineChart` gibt es nicht mehr). Es hatte nur das SEO-Modul genutzt.
+
+### Messung
+
+`tools/textmass.mjs` zählt jetzt nur sichtbaren Text: Bei Auswahlfeldern zählt nur die gewählte Option, Text für
+Screenreader zählt nicht. Mit `SEED=marketing` werden die Marketing-Module mit erfundenen Beispieldaten
+(`e2e/fixtures-marketing.mjs`) statt im Leerzustand gemessen. Gemessen wurden der Stand vor dem Umbau
+(Commit 8739e1f) und der Stand nach Phase 3 auf dieselbe Weise: `umbau/textmass-vorher.json` und `umbau/textmass-nachher.json`.
+
+| Reiter | vorher | nachher | Änderung |
+|---|---|---|---|
+| Copilot | 1637 | 980 | −40 % |
+| Content | 1024 | 584 | −43 % |
+| Leads | 1719 | 871 | −49 % |
+| Ausschreibungen | 1801 | 975 | −46 % |
+| SEO | 859 | 460 | −46 % |
+| 90-Tage-Plan | 10976 | 5481 | −50 % |
+| Events | 291 | 397 | **+36 %** |
+| Dashboard | 2103 | 1240 | −41 % |
+| Aufgaben | 3125 | 1623 | −48 % |
+| Fristen | 1348 | 368 | −73 % |
+| Budget | 800 | 245 | −69 % |
+| Ziele & KPIs | 499 | 253 | −49 % |
+| Lead-Zähler | 568 | 282 | −50 % |
+
+**Events:** Der Mini-Kalender (Abschnitt 5.11) fügt Tageszahlen hinzu, das Modul war vorher schon kurz. Die Zahl
+steigt, die Event-Texte selbst sind nicht länger geworden. Weitere Kürzung ginge nur auf Kosten von Bereichsnamen
+und nächstem Schritt.
+
+**Widerspruch in der Arbeitsanweisung:** Blinder Fleck 1 verlangt „sichtbaren Text um ≥ 40 % reduzieren“. Die
+Definition of Done nennt „nicht mehr als ~40 % des früheren Textes“, das wären −60 %. Umgesetzt ist −40 %, offen zur Entscheidung.
+
+### Weitere Änderungen
+
+- `charts.line` liegt in einem Scroll-Container (Mindestbreite 420 px), damit die Achsenschrift auf dem Handy lesbar bleibt.
+- `app.chartPrev`, `app.chartKeep`, `app.chartLegend` (app-core) sind gemeinsame Helfer für „nur Geändertes animieren“ und Legenden.
+- `localHints()` hat zusätzlich die Felder `s` (Kurzlabel) und `ic` (Symbol). Bestehende Felder sind unverändert.
+- „Auf einen Blick“, Referenzen, Wissensbibliothek und Ablage stehen nicht in Abschnitt 5 und sind unverändert, bis auf das Standardbanner.
+
+### Tests
+
+- `npm run test:cockpit`: 40 bestanden
+- `npm run test:cockpit:e2e`: 26 bestanden (neu: `marketing-visuell.e2e.mjs` mit 7 Tests)
+- Keine Konsolenfehler in Hell, Dunkel und bei 390 px Breite.

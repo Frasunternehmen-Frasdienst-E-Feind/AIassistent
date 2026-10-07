@@ -1031,6 +1031,7 @@ circle.fc-track { fill: none; stroke: var(--chart-track); }
 .fc-table summary { cursor: pointer; color: var(--accent-text); }
 .fc-scroll { overflow-x: auto; min-width: 0; }
 .fc-scroll > .fc-timeline { min-width: 600px; }
+.fc-scroll > .fc-line { min-width: 420px; }
 .fc-legend { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); font-size: 12.5px; color: var(--ink); }
 .fc-legend span { display: inline-flex; align-items: center; gap: 6px; }
 .fc-legend i { width: 12px; height: 12px; display: inline-block; background: var(--k); box-shadow: inset 0 0 0 1.5px var(--k-edge); }
@@ -1096,6 +1097,61 @@ circle.fc-track { fill: none; stroke: var(--chart-track); }
 .kpi-card .fc-center { font-size: 24px; }
 .it-visual { margin-bottom: var(--s3); }
 .it-visual .card { min-width: 0; }
+/* Phase 3 · Marketing */
+.hint-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--s2); margin-top: var(--s2); }
+.hint-tile { display: grid; gap: 2px; text-align: left; padding: var(--s2) var(--s3); background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--k); border-radius: var(--r-btn); cursor: pointer; color: var(--ink); font: inherit; transition: transform .12s ease-out; }
+.hint-tile:hover, .hint-tile:focus-visible { transform: scale(1.02); }
+.hint-tile:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.hint-tile .ht-top { display: flex; justify-content: space-between; align-items: center; color: var(--ink-muted); }
+.hint-tile .ht-top .ic { width: 20px; height: 20px; }
+.hint-tile .ht-sev { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 2px; font-weight: 800; font-size: 12px; background: var(--k); color: var(--on-warn); box-shadow: inset 0 0 0 1.5px var(--k-edge); }
+.hint-tile.fc-k-crit .ht-sev { color: var(--ink-inverse); }
+.hint-tile.fc-k-s2 .ht-sev, .hint-tile.fc-k-muted .ht-sev { color: var(--panel); }
+.hint-tile b { font-family: var(--font-display); font-size: 28px; font-weight: 800; color: var(--ink-strong); line-height: 1.1; }
+.hint-tile .ht-l { font-size: 12.5px; }
+.hint-tile.zero { opacity: .72; }
+.week7 { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--s1); margin-top: var(--s2); }
+.w7d { min-height: 64px; border: 1px solid var(--line-soft); background: var(--surface); padding: var(--s1); display: grid; align-content: start; gap: 2px; font-size: 12px; min-width: 0; }
+.w7d.has { border-top: 3px solid var(--accent); }
+.w7d b { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: .06em; }
+.w7t { background: var(--accent-soft); padding: 2px 4px; border-radius: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ct-card { border-left: 4px solid var(--chart-3-edge); }
+.ct-card.ct-idee { border-left-color: var(--chart-3-edge); }
+.ct-card.ct-entwurf { border-left-color: var(--chart-2); }
+.ct-card.ct-review { border-left-color: var(--warn); box-shadow: inset 1px 0 0 var(--on-warn); }
+.ct-card.ct-freigegeben { border-left-color: var(--accent-ink); }
+.ct-card.ct-veroeffentlicht { border-left-color: var(--accent); }
+.ct-age, .rl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s2); align-items: center; font-size: 12px; }
+.ct-bar, .rl-bar { display: block; height: 6px; background: var(--chart-track); }
+.ct-bar i, .rl-bar i { display: block; height: 100%; background: var(--k); box-shadow: inset 0 0 0 1px var(--k-edge); }
+.rl { min-width: 110px; margin-top: var(--s1); }
+.rl-t { font-weight: 700; color: var(--ink-strong); white-space: nowrap; }
+.tender-ampel { display: grid; justify-items: center; gap: var(--s2); }
+.tender-ampel .fc-donut { width: 150px; }
+.ev-side { display: grid; justify-items: end; gap: var(--s2); }
+.ev-side .fc-ring { width: 84px; }
+.ev-side .fc-center { font-size: 20px; }
+.mini-cals { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--s3); }
+.mini-cal .mc-h { font-family: var(--font-display); font-weight: 700; color: var(--ink-strong); margin-bottom: var(--s1); text-transform: capitalize; }
+.mc-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; font-size: 12px; text-align: center; font-variant-numeric: tabular-nums; }
+.mc-w { color: var(--ink-muted); font-size: 11px; }
+.mc-d { padding: 3px 0; border-radius: 2px; }
+.mc-d.ev { background: var(--accent); color: var(--on-accent); font-weight: 700; cursor: help; }
+.mc-d.fair { box-shadow: inset 0 0 0 2px var(--ink-strong); }
+.mc-d.today { outline: 2px solid var(--focus); outline-offset: -2px; }
+.delta-chip { font-weight: 700; }
+@media print { .hint-tile, .mc-d, .ct-bar i, .rl-bar i, .w7t { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+.ring-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--s3); margin-top: var(--s3); }
+.ring-tile { display: grid; justify-items: center; gap: var(--s1); text-align: center; }
+.ring-tile .fc-ring { width: 104px; }
+.ring-tile .fc-center { font-size: 22px; }
+.ring-tile .k { font-weight: 700; color: var(--ink-strong); font-size: 13px; }
+.wave-btn { display: inline-grid; grid-template-columns: auto 48px auto; gap: var(--s2); align-items: center; }
+.wave-bar { display: block; height: 6px; background: var(--chart-track); }
+.wave-bar i { display: block; height: 100%; background: var(--chart-1); }
+.wave-n { font-size: 11.5px; color: var(--ink-muted); }
+.cal-fold > summary, .p90-fold > summary { cursor: pointer; padding-block: var(--s1); }
+.cal-fold > summary .cal-sum, .p90-fold > summary b { font-family: var(--font-display); font-weight: 700; color: var(--ink-strong); font-size: 16px; }
 .lc-grade.lc-a::before { background: var(--chart-1); }
 .lc-grade.lc-b::before { background: var(--chart-2); }
 .lc-grade.lc-c::before { background: var(--chart-3); box-shadow: inset 0 0 0 1.5px var(--chart-3-edge); }
@@ -4983,7 +5039,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       });
       hit.addEventListener('pointerleave', () => { for (const el of [xh, hd, tt]) el.setAttribute('visibility', 'hidden'); });
     }
-    return out(d, svg, o, label, [o.xTitle || 'Punkt', o.title || 'Wert'], pts.map(p => [xl(p), f(p.v)]));
+    return out(d, o.compact ? svg : E(d, 'div', { class: 'fc-scroll' }, [svg]), o, label, [o.xTitle || 'Punkt', o.title || 'Wert'], pts.map(p => [xl(p), f(p.v)]));
   }
 
   // Mini-Verlauf ohne Achsen für KPI-Kacheln.
@@ -5686,6 +5742,12 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     'admin:status': 'Betrieb im Blick', 'admin:konfiguration': 'Cockpit einstellen', 'admin:zugaenge': 'Rollen und Rechte', 'admin:datenschutz': 'Daten schützen',
     'admin:links': 'Geprüfte Verweise', 'admin:daten': 'Bestand und Sicherung', 'admin:icons': 'Symbole der Marke'
   };
+  // Diagrammzustand je Reiter: null = Reiter neu betreten (Diagramme wachsen von 0), sonst der zuletzt gezeigte
+  // Stand, damit nach app.refresh() nur geänderte Werte sich bewegen.
+  const chartShown = {};
+  app.chartPrev = (world, key) => { const p = $('panel-' + world + '-' + key); return p && p.childElementCount ? chartShown[world + ':' + key] || null : null; };
+  app.chartKeep = (world, key, v) => { chartShown[world + ':' + key] = v; };
+  app.chartLegend = items => h('div', { class: 'fc-legend', 'aria-hidden': 'true' }, items.map(([tone, text, cls]) => h('span', { class: 'fc-k-' + tone }, h('i', { class: cls || null }), text)));
   function autoBanner(world, key) {
     return app.themeBanner({ icon: app.iconFor ? app.iconFor('module', key, 'go') : 'info', eyebrow: WORLD_LABEL[world] + ' · ' + moduleLabel(world, key), title: THEME_LINE[world + ':' + key] || moduleLabel(world, key) });
   }
@@ -6313,6 +6375,10 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   const { str, arr, parseDay, parseTs, dayDiff, fmtD, fmtDs, fmtTs, fmtN, tageText, ymd, addDays } = H;
   const S = app.state;
   const HOME_KEY = '__home__';
+  const CH = FC.charts;
+  const prevOf = key => app.chartPrev('marketing', key);
+  const keep = (key, v) => app.chartKeep('marketing', key, v);
+  const legend = items => app.chartLegend(items);
   const ui = S.ui.mk = { region: '', range: 'all', content: { channel: '', ptype: '', status: '', view: 'month', month: null, week: null }, leads: { channel: '', stage: '', dueOnly: false }, tenders: { fit: '', status: '', showClosed: false, sort: 'near' } };
   const today = () => app.today();
   const rerender = () => app.refresh();
@@ -6449,16 +6515,16 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     const noApproval = S.data.references.filter(r => matchRegion(r) && r.clientApproved !== true);
     const itOver = M.overdue(app.tasks(), t);
     const extra = app.cfg().features && app.cfg().features.hintsExtra === false ? [] : [
-      { n: overdueTenders.length, sev: overdueTenders.length ? 'kritisch' : null, go: ['marketing', 'tenders'], text: 'Ausschreibungen mit abgelaufener Frist, aber noch offenem Status (Status prüfen)' },
-      { n: noApproval.length, sev: noApproval.length ? 'info' : null, go: ['marketing', 'references'], text: 'Referenzen ohne Kundenfreigabe (Kundenname wird nicht angezeigt)' }
+      { n: overdueTenders.length, sev: overdueTenders.length ? 'kritisch' : null, go: ['marketing', 'tenders'], s: 'Frist abgelaufen', ic: 'ausschreibung', text: 'Ausschreibungen mit abgelaufener Frist, aber noch offenem Status (Status prüfen)' },
+      { n: noApproval.length, sev: noApproval.length ? 'info' : null, go: ['marketing', 'references'], s: 'Ohne Kundenfreigabe', ic: 'schloss', text: 'Referenzen ohne Kundenfreigabe (Kundenname wird nicht angezeigt)' }
     ];
     return [
-      { n: new24.length, sev: new24.length ? 'info' : null, go: ['marketing', 'leads'], text: 'neue Leads in den letzten 24 Stunden (7 Tage: ' + new7.length + ')' },
-      { n: tWeek.length, sev: tWeek.length ? (tWeek.some(x => tenderAmpel(x).level === 'red') ? 'kritisch' : 'warnung') : null, go: ['marketing', 'tenders'], text: 'Ausschreibungen mit Frist bis ' + fmtDs(weekEnd) + (tWeek.length ? ': ' + tWeek.slice(0, 3).map(x => str(x.title)).join(' · ') : '') },
-      { n: review.length, sev: review.length ? 'info' : null, go: ['marketing', 'content'], text: 'Beiträge im Status Review' },
-      { n: stale.length, sev: stale.length ? 'warnung' : null, go: ['marketing', 'content'], text: 'Entwürfe hängen länger als ' + s().staleDraftDays + ' Tage' },
-      { n: due.length, sev: due.length ? 'kritisch' : null, go: ['marketing', 'leads'], text: 'Leads ohne Kontakt seit mehr als ' + s().followupDays + ' Tagen (Follow-up fällig)' },
-      { n: itOver.length, sev: itOver.length ? 'kritisch' : null, go: ['infratech', 'aufgaben'], text: 'InfraTech-2027-Aufgaben mit überschrittener Frist' },
+      { n: new24.length, sev: new24.length ? 'info' : null, go: ['marketing', 'leads'], s: 'Neue Leads (24 h)', ic: 'lead', text: 'neue Leads in den letzten 24 Stunden (7 Tage: ' + new7.length + ')' },
+      { n: tWeek.length, sev: tWeek.length ? (tWeek.some(x => tenderAmpel(x).level === 'red') ? 'kritisch' : 'warnung') : null, go: ['marketing', 'tenders'], s: 'Fristen diese Woche', ic: 'kalender', text: 'Ausschreibungen mit Frist bis ' + fmtDs(weekEnd) + (tWeek.length ? ': ' + tWeek.slice(0, 3).map(x => str(x.title)).join(' · ') : '') },
+      { n: review.length, sev: review.length ? 'info' : null, go: ['marketing', 'content'], s: 'Content im Review', ic: 'lupe', text: 'Beiträge im Status Review' },
+      { n: stale.length, sev: stale.length ? 'warnung' : null, go: ['marketing', 'content'], s: 'Entwürfe hängen', ic: 'stift', text: 'Entwürfe hängen länger als ' + s().staleDraftDays + ' Tage' },
+      { n: due.length, sev: due.length ? 'kritisch' : null, go: ['marketing', 'leads'], s: 'Follow-up fällig', ic: 'mail', text: 'Leads ohne Kontakt seit mehr als ' + s().followupDays + ' Tagen (Follow-up fällig)' },
+      { n: itOver.length, sev: itOver.length ? 'kritisch' : null, go: ['infratech', 'aufgaben'], s: 'InfraTech überfällig', ic: 'warndreieck', text: 'InfraTech-2027-Aufgaben mit überschrittener Frist' },
       ...extra
     ];
   }
@@ -6510,6 +6576,32 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       tile(rev ? 'warn' : '', ready('content') ? work.length : dash, 'Content in Arbeit', rev + ' im Review', 'content', 'stift'));
   }
   app.mkKpiStrip = kpiStrip;
+  // Hinweis-Kacheln (statt Textzeilen): Zahl groß, Kurzlabel, Symbol; voller Satz im Tooltip; Klick öffnet das Modul.
+  const SEV_TONE = { kritisch: 'crit', warnung: 'warn', info: 's2' };
+  const SEV_SYM = { kritisch: '!', warnung: '!', info: 'i' };
+  function hintTiles(hints) {
+    return h('div', { class: 'hint-tiles', role: 'list', 'aria-label': 'Automatische Hinweise' }, hints.map(x => h('button', {
+      type: 'button', role: 'listitem', class: 'hint-tile fc-k-' + (x.n ? SEV_TONE[x.sev] || 's2' : 'muted') + (x.n ? '' : ' zero'),
+      'data-tip': x.n + ' ' + x.text, 'aria-label': (x.s || x.text) + ': ' + x.n + (x.sev ? ', ' + x.sev : '') + '. Modul öffnen', onclick: () => app.go(x.go[0], x.go[1])
+    }, h('span', { class: 'ht-top' }, app.ico(x.ic || 'info'), h('span', { class: 'ht-sev', 'aria-hidden': 'true', text: x.n ? SEV_SYM[x.sev] || 'i' : '✓' })),
+      h('b', { class: 'num', text: String(x.n) }), h('span', { class: 'ht-l', text: x.s || x.text }))));
+  }
+  // Wochenplan als 7-Spalten-Raster (Mo–So); Einträge ohne erkennbaren Tag stehen darunter.
+  function weekPlanGrid(wp) {
+    const idx = d => D.WEEKDAYS.findIndex(w => w.toLowerCase() === str(d).trim().slice(0, 2).toLowerCase());
+    const rest = wp.filter(w => idx(w.day) < 0);
+    return [h('div', { class: 'week7', role: 'list', 'aria-label': 'Wochenplan' }, D.WEEKDAYS.map((w, i) => {
+      const list = wp.filter(x => idx(x.day) === i);
+      return h('div', { class: 'w7d' + (list.length ? ' has' : ''), role: 'listitem', 'aria-label': w + ': ' + (list.length ? list.map(x => str(x.task)).join(', ') : 'frei') },
+        h('b', { text: w }), list.map(x => h('div', { class: 'w7t', tabindex: '0', 'data-tip': str(x.task) + (str(x.module) ? ' · ' + str(x.module) : ''), text: str(x.task) })));
+    })), rest.length ? h('ul', { class: 'small' }, rest.map(w => h('li', { text: str(w.day) + ': ' + str(w.task) }))) : null];
+  }
+  // Höchstens vier Sätze sichtbar, der Rest aufklappbar.
+  function shortSummary(text) {
+    const parts = str(text).split(/(?<=[.!?])\s+/).filter(Boolean);
+    if (parts.length <= 4) return h('p', { class: 'brief-summary', text: str(text) });
+    return h('div', {}, h('p', { class: 'brief-summary', text: parts.slice(0, 4).join(' ') }), h('details', {}, h('summary', { class: 'small', text: 'Weiterlesen' }), h('p', { class: 'small', text: parts.slice(4).join(' ') })));
+  }
   app.module('marketing', 'copilot', {
     render() {
       const b = currentBriefing();
@@ -6519,31 +6611,24 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         const isToday = str(b.date) === ymd(today());
         left.append(
           h('div', { class: 'label' }, isToday ? 'Tagesbrief von heute' : 'Letzter Tagesbrief vom ' + fmtD(b.date), b.generatedBy === 'dashboard' ? ' · im Cockpit erzeugt' : b.generatedBy === 'copilot' ? ' · vom Copilot' : '', b._unsaved ? ' · nicht gespeichert' : ''),
-          str(b.summary) ? h('p', { class: 'brief-summary', text: str(b.summary) }) : null,
+          str(b.summary) ? shortSummary(b.summary) : null,
           items.length ? h('ul', { class: 'sev-list' }, items.map(i => h('li', {}, sevChip(D.SEV_ORDER[i.severity] != null ? i.severity : 'info'),
-            h('span', { class: 'txt' }, str(i.text), ' ', h('span', { class: 'muted small', text: '(' + str(i.module) + ')' }))))) : null);
+            h('span', { class: 'txt', 'data-tip': str(i.module) || null }, str(i.text))))) : null);
         const wp = arr(b.weekPlan).filter(w => w && typeof w === 'object');
-        if (wp.length) left.append(h('div', { class: 'label', style: 'margin-top:16px', text: 'Wochenplan' }),
-          h('div', { class: 'tbl-wrap', style: 'border:0' }, h('table', { class: 'week' },
-            h('thead', {}, h('tr', {}, h('th', { scope: 'col', text: 'Tag' }), h('th', { scope: 'col', text: 'Aufgabe' }), h('th', { scope: 'col', text: 'Bereich' }))),
-            h('tbody', {}, wp.map(w => h('tr', {}, h('td', { text: str(w.day) }), h('td', { text: str(w.task) }), h('td', { text: str(w.module) })))))));
-        if (!isToday) left.append(h('p', { class: 'muted small', style: 'margin-top:8px', text: 'Für heute (' + fmtD(today()) + ') liegt noch kein Tagesbrief vor. Der Feind Copilot legt ihn in Claude an, oder er wird hier mit KI erzeugt.' }));
+        if (wp.length) left.append(h('div', { class: 'label', style: 'margin-top:16px', text: 'Wochenplan' }), ...weekPlanGrid(wp).filter(Boolean));
+        if (!isToday) left.append(h('p', { class: 'muted small', style: 'margin-top:8px', text: 'Für heute liegt noch kein Tagesbrief vor (Copilot in Claude oder KI unten).' }));
       } else {
-        left.append(h('div', { class: 'label', text: 'Tagesbrief' }), S.loaded.briefings ? h('p', { class: 'muted brief-summary', text: 'Noch kein Tagesbrief gespeichert (briefings/' + ymd(today()) + '). Der Feind Copilot legt ihn in Claude an, oder er wird hier mit KI erzeugt.' }) : app.skeleton(4, 'Lade Tagesbrief'));
+        left.append(h('div', { class: 'label', text: 'Tagesbrief' }), S.loaded.briefings ? h('p', { class: 'muted brief-summary', text: 'Noch kein Tagesbrief für heute. Der Feind Copilot legt ihn in Claude an, oder er wird hier mit KI erzeugt.' }) : app.skeleton(4, 'Lade Tagesbrief'));
       }
-      const right = h('div', {}, h('div', { class: 'label', text: 'Automatische Hinweise aus den Daten' }),
-        h('ul', { class: 'sev-list' }, localHints().map(x => h('li', {},
-          h('span', { class: 'hint-num', text: String(x.n) }),
-          h('span', { class: 'txt' }, x.text, ' ', x.n ? goLink(x.go[0], x.go[1]) : null),
-          sevChip(x.sev)))),
+      const right = h('div', {}, h('div', { class: 'label', text: 'Hinweise aus den Daten' }), hintTiles(localHints()),
         app.calendarBox ? app.calendarBox() : null,
         app.teamTasksBox ? app.teamTasksBox() : null);
       const ai = app.aiBox ? app.aiBox() : null;
       return [
-        panelHead('Feind Copilot · Tagesbrief', null, h('span', { class: 'muted small', text: 'Für ' + fmtD(today()) })),
-        h('div', { class: 'section' }, h('h3', { text: 'Kennzahlen' }), kpiStrip()),
-        h('div', { class: 'section' }, h('h3', { text: 'Datenstand' }), freshness(), h('div', { class: 'label', style: 'margin-top:12px', text: 'Verbindungen' }), app.connStatus()),
+        panelHead('Feind Copilot · Tagesbrief', null, h('span', { class: 'muted small', text: fmtD(today()) })),
+        h('div', { class: 'section' }, kpiStrip()),
         h('div', { class: 'section' }, h('div', { class: 'copilot-grid' }, left, right)),
+        h('details', { class: 'section' }, h('summary', { class: 'small', text: 'Datenstand und Verbindungen' }), freshness(), h('div', { class: 'label', style: 'margin-top:12px', text: 'Verbindungen' }), app.connStatus()),
         ai ? h('div', { class: 'section' }, ai) : null
       ];
     }
@@ -6552,16 +6637,18 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   /* ---------- Content ---------- */
   const statusLabel = st => { const f = D.CONTENT_STATUS.find(([k]) => k === st); return f ? f[1] : str(st); };
   const channelLabel = c => D.CHANNELS_CONTENT[c] || str(c) || 'Kanal?';
+  // Karte: farbige Statuskante, Mini-Balken „Tage im Status“ (Gelbgrün ab der Hängt-Grenze), Notiz im Tooltip.
   function contentCard(c) {
     const stale = contentStale(c), since = parseDay(c.statusSince), d = H.contentDate(c);
-    return h('article', { class: 'card' },
+    const inSt = since ? Math.max(0, dayDiff(since, today())) : null, lim = s().staleDraftDays;
+    const ageTip = inSt == null ? null : inSt + (inSt === 1 ? ' Tag' : ' Tage') + ' in diesem Status' + (stale != null ? ' · hängt (Grenze ' + lim + ' Tage)' : '');
+    const tip = [str(c.projectType), str(c.region), str(c.note)].filter(Boolean).join(' · ');
+    return h('article', { class: 'card ct-card ct-' + str(c.status), 'data-tip': tip || null, tabindex: tip ? '0' : null },
       h('div', { class: 't', text: str(c.title) || '(ohne Titel)' }),
-      h('div', { class: 'chips' }, h('span', { class: 'chip soft', text: channelLabel(c.channel) }),
-        str(c.region) ? h('span', { class: 'chip', text: str(c.region) }) : null,
-        str(c.projectType) ? h('span', { class: 'chip', text: str(c.projectType) }) : null),
-      h('div', { class: 'meta', text: (c.status === 'veroeffentlicht' ? 'veröffentlicht ' : 'geplant ') + fmtD(d) + (since && stale == null ? ' · seit ' + tageText(dayDiff(since, today())) + ' in diesem Status' : '') }),
-      stale != null ? chip('yellow', 'hängt seit ' + tageText(stale), 'Entwurf älter als ' + s().staleDraftDays + ' Tage') : null,
-      str(c.note) ? h('div', { class: 'meta', text: str(c.note) }) : null,
+      h('div', { class: 'chips' }, h('span', { class: 'chip soft', text: channelLabel(c.channel) })),
+      h('div', { class: 'meta', text: (c.status === 'veroeffentlicht' ? '✓ ' : '') + fmtDs(d) }),
+      inSt != null && c.status !== 'veroeffentlicht' ? h('div', { class: 'ct-age fc-k-' + (stale != null ? 'warn' : 's3'), role: 'img', 'aria-label': ageTip, 'data-tip': ageTip },
+        h('span', { class: 'ct-bar' }, h('i', { style: 'width:' + Math.min(100, Math.round(inSt / (lim * 2) * 100)) + '%' })), h('span', { class: 'num', text: inSt + ' T' + (stale != null ? ' !' : '') })) : null,
       c.canvaDesign && app.canvaStatus ? app.canvaStatus(c.canvaDesign) : null);
   }
   function dayItems(items) {
@@ -6662,27 +6749,35 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
           list.length ? list.map(contentCard) : h('div', { class: 'none', text: 'leer' }));
       }));
       const other = items.filter(c => !D.CONTENT_STATUS.some(([k]) => k === c.status));
-      return [head, tools,
-        h('div', { class: 'section' }, h('div', { class: 'tools', style: 'margin:0;justify-content:space-between' }, h('h3', { text: 'Kalender' }), viewToggle),
-          m.view === 'week' ? weekGrid(items) : monthCalendar(items)),
-        h('div', { class: 'section' }, h('h3', { text: 'Status: Idee → Entwurf → Review → Freigegeben → Veröffentlicht' }), cols,
+      // Verteilung nach Kanal und Projekttyp; Klick setzt den passenden Filter (zweiter Klick löst ihn).
+      const prev = prevOf('content');
+      const byCh = Object.keys(D.CHANNELS_CONTENT).map(k => ({ key: k, label: channelLabel(k), value: items.filter(c => c.channel === k).length })).filter(x => x.value);
+      const byPt = uniq(items.map(c => c.projectType)).map(k => ({ key: k, label: k, value: items.filter(c => str(c.projectType) === k).length }));
+      keep('content', { ch: Object.fromEntries(byCh.map(x => [x.key, x.value])), pt: Object.fromEntries(byPt.map(x => [x.key, x.value])) });
+      const dist = h('div', { class: 'section grid2' },
+        h('div', { class: 'card' }, h('h3', { text: 'Nach Kanal' }), byCh.length ? CH.bars(byCh, { title: 'Content nach Kanal', sort: 'desc', band: 16, from: prev && prev.ch, selected: m.channel, onSelect: k => { m.channel = m.channel === k ? '' : k; rerender(); } }) : h('p', { class: 'muted small', text: 'Keine Werte.' })),
+        h('div', { class: 'card' }, h('h3', { text: 'Nach Projekttyp' }), byPt.length ? CH.bars(byPt, { title: 'Content nach Projekttyp', sort: 'desc', limit: 7, band: 16, from: prev && prev.pt, selected: m.ptype, onSelect: k => { if (k !== '_rest') { m.ptype = m.ptype === k ? '' : k; rerender(); } } }) : h('p', { class: 'muted small', text: 'Kein Projekttyp hinterlegt.' })));
+      return [head, tools, dist,
+        (det => { det.addEventListener('toggle', () => { m.calOpen = det.open; }); return det; })(h('details', { class: 'section cal-fold', open: !!m.calOpen },
+          h('summary', {}, h('span', { class: 'cal-sum', text: 'Kalender' })),
+          h('div', { class: 'tools', style: 'margin:0;justify-content:flex-end' }, viewToggle),
+          m.view === 'week' ? weekGrid(items) : monthCalendar(items))),
+        h('div', { class: 'section' }, h('h3', { text: 'Status' }), cols,
           other.length ? h('p', { class: 'muted small', text: other.length + ' Beiträge mit unbekanntem Status werden nicht in Spalten gezeigt.' }) : null)];
     }
   });
 
   /* ---------- Leads (mkt_leads) ---------- */
+  // Karte: Organisation, Typ/Kanal und Follow-up-Ampel; Leistung, Region, Kontakte und nächster Schritt im Tooltip.
   function leadCard(l, legacy) {
     const due = leadFollowup(l), nad = parseDay(l.nextActionDate);
-    return h('article', { class: 'card' + (legacy ? ' legacy' : '') },
+    const tip = [D.LEAD_CHANNELS[l.channel] || str(l.channel), str(l.service), [str(l.region), str(l.landkreis)].filter(Boolean).join(' / '), 'Letzter Kontakt ' + fmtD(parseDay(l.lastContact)),
+      str(l.nextAction) ? 'Nächster Schritt: ' + str(l.nextAction) + (nad ? ' (' + fmtD(nad) + ')' : '') : '', str(l.valueBand)].filter(Boolean).join(' · ');
+    return h('article', { class: 'card' + (legacy ? ' legacy' : ''), 'data-tip': tip, tabindex: '0' },
       h('div', { class: 't', text: str(l.organisation) || '(ohne Organisation)' }),
       h('div', { class: 'chips' }, h('span', { class: 'chip soft', text: D.ORG_TYPES[l.orgType] || str(l.orgType) || 'Typ?' }),
-        h('span', { class: 'chip', text: D.LEAD_CHANNELS[l.channel] || str(l.channel) || 'Kanal?' }),
-        str(l.valueBand) ? h('span', { class: 'chip', text: str(l.valueBand) }) : null,
         legacy ? h('span', { class: 'chip yellow', text: 'alter Pfad leads/' }) : null),
-      h('div', { class: 'meta', text: [str(l.service), [str(l.region), str(l.landkreis)].filter(Boolean).join(' / ')].filter(Boolean).join(' · ') }),
-      h('div', { class: 'meta', text: 'Letzter Kontakt ' + fmtD(parseDay(l.lastContact)) }),
-      str(l.nextAction) ? h('div', { class: 'meta', text: 'Nächster Schritt: ' + str(l.nextAction) + (nad ? ' (' + fmtD(nad) + ')' : '') }) : null,
-      due != null ? chip('red', 'Follow-up fällig · ' + due + (due === 1 ? ' Tag' : ' Tage') + ' ohne Kontakt') : null);
+      due != null ? chip('red', 'Follow-up · ' + due + ' T', 'Seit ' + due + (due === 1 ? ' Tag' : ' Tagen') + ' ohne Kontakt') : (l.stage !== 'gewonnen' && l.stage !== 'verloren' ? chip('green', 'im Takt', 'Letzter Kontakt innerhalb von ' + s().followupDays + ' Tagen') : null));
   }
   function leadsCsv() {
     const rows = filteredLeads().map(l => [str(l.organisation), D.ORG_TYPES[l.orgType] || str(l.orgType), (D.LEAD_STAGES.find(x => x[0] === l.stage) || [0, str(l.stage)])[1],
@@ -6699,7 +6794,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         app.field('Kanal (Quelle)', app.dropdown('l-channel', [['', 'Alle Kanäle'], ...Object.entries(D.LEAD_CHANNELS)], m.channel, v => { m.channel = v; rerender(); })),
         app.field('Status', app.dropdown('l-stage', [['', 'Alle Status'], ...D.LEAD_STAGES], m.stage, v => { m.stage = v; rerender(); })),
         check('l-due', 'Nur Follow-up fällig', m.dueOnly, v => { m.dueOnly = v; rerender(); }));
-      const head = panelHead('Lead-Pipeline', items.length + ' von ' + S.data.mkt_leads.length, null, srcNote('leads') + ' · Collection mkt_leads (getrennt vom InfraTech-Zähler leads/counts)');
+      const head = panelHead('Lead-Pipeline', items.length + ' von ' + S.data.mkt_leads.length, null, srcNote('leads'));
       const legacy = S.data.legacy_leads;
       const legacySec = legacy.length ? h('div', { class: 'section legacy' },
         h('div', { class: 'banner warn' }, h('div', { class: 'txt' }, h('strong', { text: legacy.length + ' Marketing-Leads liegen noch unter dem alten Pfad leads/. ' }),
@@ -6713,29 +6808,56 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       }));
       const byCh = {}, byReg = {}, byLk = {};
       for (const l of items) {
-        const c = D.LEAD_CHANNELS[l.channel] || str(l.channel) || 'ohne Angabe'; byCh[c] = (byCh[c] || 0) + 1;
+        byCh[l.channel || ''] = (byCh[l.channel || ''] || 0) + 1;
         const r = str(l.region) || 'ohne Angabe'; byReg[r] = (byReg[r] || 0) + 1;
         const k = str(l.landkreis) || 'ohne Angabe'; byLk[k] = (byLk[k] || 0) + 1;
       }
-      const lkTop = Object.fromEntries(Object.entries(byLk).sort((a, b) => b[1] - a[1]).slice(0, 10));
+      const toItems = o => Object.entries(o).map(([k, v]) => ({ key: k, label: k, value: v }));
       const stageL = st => (D.LEAD_STAGES.find(x => x[0] === st) || [0, str(st) || '–'])[1];
+      // Trichter Neu → Gewonnen (Klick filtert das Kanban), Verloren daneben als Zahl.
+      const prev = prevOf('leads');
+      const stages = D.LEAD_STAGES.filter(([k]) => k !== 'verloren').map(([k, l]) => ({ key: k, label: l, value: items.filter(x => x.stage === k).length, tone: k === 'gewonnen' ? 's1' : 's2' }));
+      const lost = items.filter(x => x.stage === 'verloren').length;
+      // Neue Leads je Kalenderwoche (letzte 5 Wochen, aus createdAt).
+      const ws0 = H.weekStart(today());
+      const weeks = [4, 3, 2, 1, 0].map(i => { const a = addDays(ws0, -7 * i), b = addDays(a, 7); return { x: 'KW ' + H.isoWeek(a), v: items.filter(l => { const c = parseDay(l.createdAt); return c && c >= a && c < b; }).length }; });
+      const chItems = Object.entries(byCh).map(([k, v]) => ({ key: k, label: D.LEAD_CHANNELS[k] || k || 'ohne Angabe', value: v }));
+      keep('leads', { ch: byCh });
       const recent = items.slice().sort((a, b) => (parseDay(b.createdAt) || 0) - (parseDay(a.createdAt) || 0)).slice(0, 5);
-      const recentSec = h('div', { class: 'section' }, h('h3', { text: 'Aktuelle Leads' }),
+      const recentSec = h('details', { class: 'section' }, h('summary', { class: 'small', text: 'Die fünf neuesten Leads als Tabelle' }),
         h('div', { class: 'tbl-wrap' }, h('table', { class: 'data' }, h('caption', { class: 'sr', text: 'Die fünf neuesten Leads' }),
           h('thead', {}, h('tr', {}, ['Eingang', 'Organisation', 'Leistung', 'Kanal', 'Status'].map(x => h('th', { scope: 'col', text: x })))),
           h('tbody', {}, recent.map(l => h('tr', {}, h('td', { class: 'num', text: fmtD(l.createdAt) }), h('td', { text: str(l.organisation) || '(ohne Organisation)' }),
             h('td', { text: str(l.service) || '–' }), h('td', { text: D.LEAD_CHANNELS[l.channel] || str(l.channel) || '–' }), h('td', { text: stageL(l.stage) })))))));
-      return [head, tools, recentSec,
-        h('div', { class: 'section' }, h('h3', { text: 'Pipeline: Neu → Qualifiziert → Angebot → Verhandlung → Gewonnen / Verloren' }), kanban),
-        h('div', { class: 'section' }, h('div', { class: 'grid3' },
-          h('div', {}, h('h3', { style: 'margin-bottom:8px', text: 'Leads nach Kanal' }), barList(byCh, 'Leads nach Kanal')),
-          h('div', {}, h('h3', { style: 'margin-bottom:8px', text: 'Leads nach Region' }), barList(byReg, 'Leads nach Region')),
-          h('div', {}, h('h3', { style: 'margin-bottom:8px', text: 'Leads nach Landkreis' + (Object.keys(byLk).length > 10 ? ' (Top 10)' : '') }), barList(lkTop, 'Leads nach Landkreis')))),
-        legacySec];
+      return [head, tools,
+        h('div', { class: 'section grid2' },
+          h('div', { class: 'card' }, h('h3', { text: 'Pipeline' }),
+            CH.funnel(stages, { title: 'Lead-Pipeline', selected: m.stage, onSelect: k => { m.stage = m.stage === k ? '' : k; rerender(); } }),
+            lost ? h('p', { class: 'muted small', text: 'Verloren: ' + lost }) : null),
+          h('div', { class: 'card' }, h('h3', { text: 'Neue Leads je Woche' }),
+            CH.line(weeks, { title: 'Neue Leads je Woche', xTitle: 'Woche', width: 520, height: 200, table: true, format: v => fmtN(v), animate: !prev }))),
+        h('div', { class: 'section' }, h('h3', { text: 'Kanban' }), kanban),
+        h('div', { class: 'section grid3' },
+          h('div', { class: 'card' }, h('h3', { text: 'Nach Kanal' }), CH.bars(chItems, { title: 'Leads nach Kanal', sort: 'desc', limit: 7, band: 14, from: prev && prev.ch, selected: m.channel, onSelect: k => { if (k !== '_rest') { m.channel = m.channel === k ? '' : k; rerender(); } } })),
+          h('div', { class: 'card' }, h('h3', { text: 'Nach Region' }), CH.bars(toItems(byReg), { title: 'Leads nach Region', sort: 'desc', limit: 7, band: 14, animate: !prev })),
+          h('div', { class: 'card' }, h('h3', { text: 'Nach Landkreis' }), CH.bars(toItems(byLk), { title: 'Leads nach Landkreis', sort: 'desc', limit: 7, band: 14, animate: !prev }))),
+        recentSec, legacySec];
     }
   });
 
   /* ---------- Ausschreibungen mit Kachelkarte ---------- */
+  // Ampel-Übersicht der offenen Ausschreibungen als Donut (rot / gelb / grün / abgelaufen oder ohne Frist).
+  function ampelDonut(rows) {
+    const open = rows.filter(H.tenderOpen), st = s();
+    const lv = { red: 0, yellow: 0, green: 0, gone: 0 };
+    for (const t of open) lv[tenderAmpel(t).level]++;
+    const segs = [['red', 'Rot ≤ ' + st.tenderRedDays + ' T', 'crit'], ['yellow', 'Gelb ≤ ' + st.tenderYellowDays + ' T', 'warn'], ['green', 'Grün', 's1'], ['gone', 'abgelaufen / ohne Frist', 'muted']]
+      .map(([k, l, tone]) => ({ key: k, label: l, value: lv[k], tone }));
+    return h('div', { class: 'card tender-ampel', 'data-tip': 'Karte: Bundesländer nach Zahl der Ausschreibungen eingefärbt, Pins mit Ortsangabe. Klick auf ein Land setzt den Regionsfilter, ein zweiter hebt ihn auf. Zoomen mit Mausrad, zwei Fingern, +/− oder Tastatur.' },
+      h('h3', { text: 'Ampel offene Fristen' }),
+      open.length ? CH.donut(segs, { title: 'Ampel der offenen Ausschreibungen', size: 150, center: { value: open.length, label: 'offen' }, animate: !prevOf('tenders') }) : h('p', { class: 'muted small', text: 'Keine offenen Ausschreibungen.' }),
+      legend(segs.filter(x => x.value).map(x => [x.tone, x.label + ' ' + x.value])));
+  }
   function regionMap() {
     const rows = S.data.tenders, cur = ui.region;
     const pick = v => { ui.region = cur === v ? '' : v; rerender(); };
@@ -6776,9 +6898,27 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
           geoMapEl ? null : h('div', { class: 'map-legend' }, h('span', {}, h('i', { class: 'home' }), 'Standort-Bundesland (Lübben, Wittenburg)'), h('span', {}, h('i', { class: 'has', style: 'background:var(--accent)' }), 'mit Ausschreibungen (kräftiger = mehr)'), h('span', {}, h('i', { class: 'tender' }), 'Ausschreibung mit Ortsangabe')),
           geoMapEl ? h('details', { class: 'gm-tiles' }, h('summary', { text: 'Kachelansicht (per Tastatur bedienbar)' }), grid) : null),
         h('div', { class: 'stack' },
-          h('p', { class: 'muted small', text: 'Maßstabsgetreue Karte: Bundesländer nach Zahl der Ausschreibungen in Stufen eingefärbt (Legende unter der Karte), Pins für Ausschreibungen mit Ortsangabe, nahe beieinander liegende Pins als Gruppe. Klick auf ein Land setzt den Regionsfilter, ein zweiter hebt ihn auf. Zoomen: Mausrad, zwei Finger, +/− oder Tastatur (Karte anwählen, dann Plus/Minus und Pfeiltasten).' }),
-          h('div', { class: 'label', text: 'Nachbarländer (Quelle noch nicht angebunden)' }), countries,
+          ampelDonut(rows),
+          h('details', {}, h('summary', { class: 'small', text: 'Nachbarländer' }), h('p', { class: 'muted small', text: 'Quelle noch nicht angebunden.' }), countries),
           related)));
+  }
+  // Regionale Verteilung unter der Karte: Top-Landkreise (sonst Region), höchstens 7 Balken inkl. „Sonstiges“.
+  function regionBars(items) {
+    const by = {};
+    for (const t of items) { const k = str(t.landkreis) || str(t.region) || 'ohne Ortsangabe'; by[k] = (by[k] || 0) + 1; }
+    const list = Object.entries(by).map(([k, v]) => ({ key: k, label: k, value: v }));
+    keep('tenders', { reg: by });
+    return h('div', { class: 'section card' }, h('h3', { text: 'Nach Landkreis' }), CH.bars(list, { title: 'Ausschreibungen nach Landkreis', sort: 'desc', limit: 7, band: 14, animate: !prevOf('tenders') }));
+  }
+  // Restlaufzeit als Balken: voll = mindestens doppelte Gelb-Grenze, Farbe nach Ampel; Tage als Zahl daneben.
+  function restBar(t) {
+    const a = tenderAmpel(t), st = s(), span = st.tenderYellowDays * 2;
+    const tone = { red: 'crit', yellow: 'warn', green: 's1', gone: 'muted' }[a.level];
+    const pct = a.days == null || a.days < 0 ? 0 : Math.max(4, Math.min(100, Math.round(a.days / span * 100)));
+    const txt = a.days == null ? 'ohne Frist' : a.days < 0 ? 'abgelaufen' : a.days === 0 ? 'heute' : a.days + ' T';
+    return h('div', { class: 'rl fc-k-' + tone, role: 'img', tabindex: '0', 'aria-label': 'Restlaufzeit: ' + a.text,
+      'data-tip': a.text + '. Ampel: rot max. ' + st.tenderRedDays + ' Tage, gelbgrün max. ' + st.tenderYellowDays + ' Tage, sonst grün; grau: abgelaufen oder ohne Frist.' },
+      h('span', { class: 'rl-bar' }, h('i', { style: 'width:' + pct + '%' })), h('span', { class: 'rl-t num', text: (a.level === 'red' ? '! ' : '') + txt }));
   }
   app.module('marketing', 'tenders', {
     count: () => filteredTenders().length,
@@ -6792,7 +6932,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         app.field('Status', app.dropdown('t-status', [['', 'Alle Status'], ...Object.entries(D.TENDER_STATUS)], m.status, v => { m.status = v; rerender(); })),
         check('t-closed', 'Abgegebene und verworfene zeigen', m.showClosed, v => { m.showClosed = v; rerender(); }));
       const head = panelHead('Ausschreibungs-Monitor', items.length + ' von ' + S.data.tenders.length, null,
-        srcNote('tenders') + ' · Ampel: rot ≤ ' + st.tenderRedDays + ' Tage, gelb ≤ ' + st.tenderYellowDays + ' Tage, sonst grün.');
+        srcNote('tenders'));
       if (!items.length) return [head, tools, regionMap(), emptyState('tenders', S.data.tenders.length > 0)];
       const t0 = today();
       const dlRank = x => { const d = parseDay(x.deadline); return !d ? 2 : d < t0 ? 1 : 0; };
@@ -6809,18 +6949,18 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       } : byDeadline);
       const noGeo = items.filter(x => M.ringOf(x) === D.RING_UNKNOWN).length;
       return [head, tools, regionMap(),
-        h('p', { class: 'muted small', text: m.sort === 'near' ? 'Nähe aus dem Bundesland: Brandenburg und Mecklenburg-Vorpommern zuerst, dann die angrenzenden Länder, dann weiter nach außen. distanceKm ordnet innerhalb eines Rings exakt.' : 'Nach Frist sortiert: offene Fristen aufsteigend, danach abgelaufene, zuletzt Datensätze ohne Frist.' }),
+        regionBars(items),
         noGeo ? h('p', { class: 'muted small', text: noGeo + ' von ' + items.length + ' Datensätzen tragen keine zuordenbare Ortsangabe und stehen am Ende.' }) : null,
         h('div', { class: 'tlist', role: 'list' }, list.map(t => {
           const a = tenderAmpel(t), url = H.safeUrl(t.url), rl = M.ringLabel(t), k = km(t);
           const fitLvl = t.fit === 'passt' ? 'green' : t.fit === 'pruefen' ? 'yellow' : t.fit === 'passt_nicht' ? 'gone' : 'soft';
           return h('article', { class: 'trow', role: 'listitem' },
-            h('div', { class: 'when' }, h('span', { class: 'label', text: 'Frist' }), h('span', { class: 'dt', text: fmtD(t.deadline) }), (c => { c.setAttribute('data-tip', 'Ampel nach Tagen bis zur Frist: rot max. ' + st.tenderRedDays + ' Tage, gelb max. ' + st.tenderYellowDays + ' Tage, sonst grün. Grau: abgelaufen oder ohne Frist.'); return c; })(chip(a.level, a.text)),
+            h('div', { class: 'when' }, h('span', { class: 'dt', 'aria-label': 'Frist ' + fmtD(t.deadline), text: fmtD(t.deadline) }), restBar(t),
               chip(rl.level, k != null ? rl.text + ' · ' + fmtN(k) + ' km' : rl.text, 'Entfernung zu Lübben und Wittenburg')),
             h('div', { class: 'body' },
-              h('div', { class: 't', style: 'font-weight:700;color:var(--ink-strong);overflow-wrap:anywhere', text: str(t.title) || '(ohne Titel)' }),
-              h('div', { class: 'muted small', text: [str(t.authority), str(t.region), str(t.portal) ? 'Portal: ' + str(t.portal) : '', 'Status: ' + (D.TENDER_STATUS[t.status] || str(t.status) || '–')].filter(Boolean).join(' · ') }),
-              h('div', { class: 'fit' }, chip(fitLvl, 'Eignung: ' + (D.FIT[t.fit] || 'offen')), h('span', {}, str(t.fitReason) || h('span', { class: 'muted', text: 'keine Begründung hinterlegt' }))),
+              h('div', { class: 't', style: 'font-weight:700;color:var(--ink-strong);overflow-wrap:anywhere', tabindex: '0',
+                'data-tip': [str(t.authority), str(t.region), str(t.portal) ? 'Portal: ' + str(t.portal) : '', 'Status: ' + (D.TENDER_STATUS[t.status] || str(t.status) || '–')].filter(Boolean).join(' · '), text: str(t.title) || '(ohne Titel)' }),
+              h('div', { class: 'fit' }, chip(fitLvl, D.FIT[t.fit] || 'Eignung offen', 'Eignung'), str(t.fitReason) ? h('span', { text: str(t.fitReason) }) : null),
               arr(t.cpv).length ? h('div', { class: 'chips', 'aria-label': 'CPV-Codes' }, h('span', { class: 'label', style: 'align-self:center', text: 'CPV' }), arr(t.cpv).map(c => h('span', { class: 'chip num', text: str(c) }))) : null,
               url && /^https?:/i.test(url) ? h('div', { class: 'small' }, h('a', { href: url, target: '_blank', rel: 'noopener noreferrer' }, 'Zur Bekanntmachung ↗')) : null));
         }))];
@@ -6837,6 +6977,9 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   const { h, s, chip, panelHead } = app;
   const { str, arr, numOr, parseDay, dayDiff, fmtD, fmtDs, fmtN, tageText } = H;
   const S = app.state;
+  const CH = FC.charts;
+  const prevOf = key => app.chartPrev('marketing', key);
+  const keep = (key, v) => app.chartKeep('marketing', key, v);
   const ui = S.ui.mk2 = { showPast: true, openEvents: new Set(), pending: new Set(), metric: 'clicks', refQ: '', refService: '', refYear: '', refSel: null };
   const rerender = () => app.refresh();
   const today = () => app.today();
@@ -6974,9 +7117,10 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
           h('div', {}, h('div', { class: 'ev-date', text: fmtD(a) + (b && b > a ? ' – ' + fmtD(b) : '') }),
             h('h3', { style: 'font-size:17px;margin-top:2px', text: str(e.title) || '(ohne Titel)' }),
             h('div', { class: 'muted small', text: [D.EVENT_TYPES[e.type] || str(e.type), str(e.location)].filter(Boolean).join(' · ') })),
-          days != null ? h('span', { class: 'chip soft', text: days > 0 ? 'in ' + tageText(days) : days === 0 ? 'heute' : 'vor ' + tageText(-days) }) : null),
+          h('div', { class: 'ev-side' }, days != null ? h('span', { class: 'chip soft', text: days > 0 ? 'in ' + tageText(days) : days === 0 ? 'heute' : 'vor ' + tageText(-days) }) : null,
+            cl.length ? CH.progressRing(allPct, { title: 'Checkliste ' + (str(e.title) || 'Event'), size: 84, stroke: 10, sub: done + '/' + cl.length, animate: !prevOf('events') }) : null)),
         str(e.note || e.notes) ? h('p', { class: 'small', text: str(e.note || e.notes) }) : null,
-        overall, nextEl,
+        nextEl,
         cl.length ? progress : h('p', { class: 'muted small', text: 'Keine Checkliste hinterlegt.' }),
         cl.length ? det : null,
         isFairEvent(e) ? fairLink() : null,
@@ -6997,9 +7141,10 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
           h('div', {}, h('div', { class: 'ev-date', text: fmtD(a) + (b && b > a ? ' – ' + fmtD(b) : '') }),
             h('h3', { style: 'font-size:17px;margin-top:2px', text: str(e.title) || '(ohne Titel)' }),
             h('div', { class: 'muted small', text: [D.EVENT_TYPES[e.type] || str(e.type), str(e.location)].filter(Boolean).join(' · ') })),
-          days != null ? h('span', { class: 'chip soft', text: days > 0 ? 'in ' + tageText(days) : days === 0 ? 'heute' : 'vor ' + tageText(-days) }) : null),
+          h('div', { class: 'ev-side' }, days != null ? h('span', { class: 'chip soft', text: days > 0 ? 'in ' + tageText(days) : days === 0 ? 'heute' : 'vor ' + tageText(-days) }) : null,
+            CH.progressRing(M.progress(app.tasks()).pct, { title: 'Aufgaben InfraTech 2027', size: 84, stroke: 10, sub: 'Aufgaben', animate: !prevOf('events') }))),
         str(e.note || e.notes) ? h('p', { class: 'small', text: str(e.note || e.notes) }) : null,
-        f.srcLine, f.overall, f.nextEl, f.progress, f.det, f.arch,
+        f.srcLine, f.nextEl, f.progress, f.det, f.arch,
         fairLink(),
         h('div', { class: 'post' }, h('span', { class: 'label', text: 'Nachbereitung' }),
           h('span', {}, 'Erfasste Leads: ', h('b', { class: 'num', text: fmtN(numOr(e.leadsCaptured, NaN)) })),
@@ -7007,6 +7152,29 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         str(e.source) ? h('p', { class: 'muted small', text: 'Quelle: ' + str(e.source) }) : null));
   }
   app.fairChecklistParts = fairParts;
+  // Mini-Kalender: die nächsten drei Monate, Eventtage grün, Messetage InfraTech mit Kante; Tooltip nennt das Event.
+  function miniCalendar(up) {
+    const t = today(), tk = H.ymd(t), days = new Map();
+    for (const e of up) {
+      const a = parseDay(e.date); if (!a) continue;
+      const end = parseDay(e.endDate) || a;
+      for (let d = a; d <= end; d = H.addDays(d, 1)) { const k = H.ymd(d); days.set(k, (days.get(k) ? days.get(k) + ' · ' : '') + str(e.title)); }
+    }
+    const months = [0, 1, 2].map(i => new Date(t.getFullYear(), t.getMonth() + i, 1))
+      .filter(mo => Array.from(days.keys()).some(k => k.startsWith(mo.getFullYear() + '-' + H.pad(mo.getMonth() + 1))));
+    if (!months.length) return null;
+    return h('div', { class: 'section mini-cals', role: 'group', 'aria-label': 'Kalender der nächsten drei Monate' }, months.map(mo => {
+      const y = mo.getFullYear(), mi = mo.getMonth(), first = new Date(y, mi, 1), lead = (first.getDay() + 6) % 7, n = new Date(y, mi + 1, 0).getDate();
+      const cells = [];
+      for (let i = 0; i < lead; i++) cells.push(h('span', { class: 'mc-d out', 'aria-hidden': 'true' }));
+      for (let d = 1; d <= n; d++) {
+        const k = y + '-' + H.pad(mi + 1) + '-' + H.pad(d), ev = days.get(k), fair = k >= D.FAIR.start && k <= D.FAIR.end;
+        cells.push(h('span', { class: 'mc-d' + (ev ? ' ev' : '') + (fair ? ' fair' : '') + (k === tk ? ' today' : ''), 'data-tip': ev || null, tabindex: ev ? '0' : null, 'aria-label': ev ? d + '. ' + ev : null, text: String(d) }));
+      }
+      return h('div', { class: 'mini-cal card' }, h('div', { class: 'mc-h', text: mo.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' }) }),
+        h('div', { class: 'mc-grid' }, D.WEEKDAYS.map(w => h('span', { class: 'mc-w', 'aria-hidden': 'true', text: w.slice(0, 1) })), cells));
+    }));
+  }
   app.module('marketing', 'events', {
     count: () => S.data.events.length,
     render() {
@@ -7018,7 +7186,8 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       const isPast = e => { const end = parseDay(e.endDate) || parseDay(e.date); return end && end < t; };
       const up = items.filter(e => !isPast(e)).sort((a, b) => (parseDay(a.date) || 0) - (parseDay(b.date) || 0));
       const past = items.filter(isPast).sort((a, b) => parseDay(b.date) - parseDay(a.date));
-      return [head, tools,
+      keep('events', { n: items.length });
+      return [head, tools, miniCalendar(up),
         h('div', { class: 'section' }, h('h3', { text: 'Anstehend' }), up.length ? h('div', { class: 'timeline' }, up.map(e => eventCard(e, false))) : h('p', { class: 'muted', text: 'Keine anstehenden Events im Zeitraum.' })),
         ui.showPast && past.length ? h('div', { class: 'section' }, h('h3', { text: 'Vergangen · Nachbereitung' }), h('div', { class: 'timeline' }, past.map(e => eventCard(e, true)))) : null];
     }
@@ -7033,64 +7202,19 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     avgPosition: ['Ø Position', v => (typeof v === 'number' ? v.toLocaleString('de-DE', { maximumFractionDigits: 1 }) : '–')]
   };
   function monthLabel(m) { const x = /^(\d{4})-(\d{2})/.exec(m); return x ? new Date(+x[1], +x[2] - 1, 1).toLocaleDateString('de-DE', { month: 'short', year: '2-digit' }) : m; }
-  function niceStep(raw) { if (!(raw > 0)) return 1; const p = Math.pow(10, Math.floor(Math.log10(raw))); const f = raw / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p; }
-  // Einreihiges Liniendiagramm (dataviz): eine Achse, 2-px-Linie, Endpunkt beschriftet, Fadenkreuz mit Tooltip.
-  function lineChart(points, metric) {
-    const W = 720, Hh = 240, m = { l: 56, r: 64, t: 16, b: 30 };
-    const [label, fmt] = METRICS[metric];
-    const inv = metric === 'avgPosition';
-    const vals = points.map(p => p.v);
-    let lo = Math.min(...vals), hi = Math.max(...vals);
-    if (!inv) lo = 0;
-    if (hi === lo) { hi += 1; if (inv) lo = Math.max(0, lo - 1); }
-    const step = niceStep((hi - lo) / 4);
-    const ylo = inv ? Math.floor(lo / step) * step : 0, yhi = Math.ceil(hi / step) * step;
-    const x = i => m.l + (points.length === 1 ? (W - m.l - m.r) / 2 : i * (W - m.l - m.r) / (points.length - 1));
-    const y = v => inv ? m.t + (v - ylo) / (yhi - ylo) * (Hh - m.t - m.b) : Hh - m.b - (v - ylo) / (yhi - ylo) * (Hh - m.t - m.b);
-    const svg = s('svg', { viewBox: '0 0 ' + W + ' ' + Hh, role: 'img', 'aria-label': label + ' je Monat, ' + points.length + ' Monate, zuletzt ' + fmt(points[points.length - 1].v) });
-    for (let v = ylo; v <= yhi + step / 2; v += step) {
-      svg.append(s('line', { class: 'grid', x1: m.l, x2: W - m.r, y1: y(v), y2: y(v) }), s('text', { class: 'axis', x: m.l - 8, y: y(v) + 4, 'text-anchor': 'end' }, fmt(v)));
-    }
-    svg.append(s('line', { class: 'base', x1: m.l, x2: W - m.r, y1: inv ? m.t : Hh - m.b, y2: inv ? m.t : Hh - m.b }));
-    const every = Math.ceil(points.length / Math.max(2, Math.floor((W - m.l - m.r) / 70)));
-    points.forEach((p, i) => { if (i % every === 0 || i === points.length - 1) svg.append(s('text', { class: 'axis', x: x(i), y: Hh - 8, 'text-anchor': 'middle' }, monthLabel(p.m))); });
-    const d = points.map((p, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(p.v).toFixed(1)).join('');
-    if (!inv && points.length > 1) svg.append(s('path', { class: 'area', d: d + 'L' + x(points.length - 1) + ',' + y(ylo) + 'L' + x(0) + ',' + y(ylo) + 'Z' }));
-    svg.append(s('path', { class: 'line', d }));
-    const last = points[points.length - 1];
-    svg.append(s('circle', { class: 'dot end', cx: x(points.length - 1), cy: y(last.v), r: 5 }),
-      s('text', { class: 'endlbl', x: x(points.length - 1) + 9, y: y(last.v) + 4 }, fmt(last.v)));
-    const xh = s('line', { class: 'xh', y1: m.t, y2: Hh - m.b, x1: 0, x2: 0, visibility: 'hidden' });
-    const hd = s('circle', { class: 'dot', r: 5, cx: 0, cy: 0, visibility: 'hidden' });
-    const hit = s('rect', { x: m.l - 12, y: 0, width: W - m.l - m.r + 24, height: Hh, fill: 'transparent' });
-    svg.append(xh, hd, hit);
-    const tip = h('div', { class: 'tip', hidden: true });
-    hit.addEventListener('pointermove', ev => {
-      const r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) * W / r.width;
-      let bi = 0, bd = Infinity;
-      points.forEach((p, i) => { const dd = Math.abs(x(i) - px); if (dd < bd) { bd = dd; bi = i; } });
-      const p = points[bi];
-      xh.setAttribute('x1', x(bi)); xh.setAttribute('x2', x(bi)); xh.setAttribute('visibility', 'visible');
-      hd.setAttribute('cx', x(bi)); hd.setAttribute('cy', y(p.v)); hd.setAttribute('visibility', 'visible');
-      tip.textContent = monthLabel(p.m) + ': ' + label + ' ' + fmt(p.v);
-      tip.hidden = false;
-      const sx = x(bi) * r.width / W;
-      tip.style.left = Math.min(Math.max(0, sx - 60), r.width - 160) + 8 + 'px';
-      tip.style.top = '4px';
-    });
-    hit.addEventListener('pointerleave', () => { xh.setAttribute('visibility', 'hidden'); hd.setAttribute('visibility', 'hidden'); tip.hidden = true; });
-    const table = h('details', {}, h('summary', { class: 'small', text: 'Werte als Tabelle' }),
-      h('div', { class: 'tbl-wrap' }, h('table', { class: 'data' },
-        h('thead', {}, h('tr', {}, h('th', { scope: 'col', text: 'Monat' }), h('th', { scope: 'col', class: 'n', text: label }))),
-        h('tbody', {}, points.map(p => h('tr', {}, h('td', { text: monthLabel(p.m) }), h('td', { class: 'n', text: fmt(p.v) })))))));
-    return h('div', { class: 'stack' }, h('div', { class: 'chart' }, svg, tip), table);
-  }
-  app.lineChart = lineChart;
+  // Verlauf über FC.charts.line (ersetzt das frühere lineChart() dieses Moduls, gleicher Stil und Tabellenansicht).
+  const seoLine = (points, metric) => h('div', { class: 'chart' }, CH.line(points.map(p => ({ x: monthLabel(p.m), v: p.v })), {
+    title: METRICS[metric][0] + ' je Monat', xTitle: 'Monat', width: 1040, height: 300, format: METRICS[metric][1], invert: metric === 'avgPosition', table: true, animate: !prevOf('seo') }));
+  // Positionsverteilung (Histogramm) der Keywords.
+  const POS_BUCKETS = [['top3', 'Top 3', p => p <= 3], ['p10', '4–10', p => p > 3 && p <= 10], ['p30', '11–30', p => p > 10 && p <= 30], ['rest', '> 30', p => p > 30]];
   app.module('marketing', 'seo', {
     count: () => S.data.seo_keywords.length,
     render() {
       const items = S.data.seo_keywords.filter(k => app.mkMatchRegion(k) && app.mkInRange(parseDay(k.checkedAt)));
       const head = panelHead('SEO & Website', items.length + ' Keywords', null, app.mkSrcNote('seo'));
+      const posOf = k => (typeof k.position === 'number' && isFinite(k.position) ? k.position : null);
+      const hist = POS_BUCKETS.map(([k, l, f]) => ({ key: k, label: l, value: items.filter(x => posOf(x) != null && f(posOf(x))).length }));
+      keep('seo', { n: items.length });
       const tools = h('div', { class: 'tools' }, app.mkSharedFilters());
       const kwSec = h('div', { class: 'section' }, h('h3', { text: 'Keywords' }));
       if (!items.length) kwSec.append(app.mkEmpty('seo_keywords', S.data.seo_keywords.length > 0));
@@ -7098,17 +7222,17 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         const rows = items.slice().sort((a, b) => numOr(a.position, 999) - numOr(b.position, 999));
         kwSec.append(h('div', { class: 'tbl-wrap' }, h('table', { class: 'data' },
           h('caption', { class: 'sr', text: 'Keyword-Positionen' }),
-          h('thead', {}, h('tr', {}, h('th', { scope: 'col', text: 'Keyword' }), h('th', { scope: 'col', text: 'Region' }),
+          h('thead', {}, h('tr', {}, h('th', { scope: 'col', text: 'Keyword' }),
             h('th', { scope: 'col', class: 'n', text: 'Position' }), h('th', { scope: 'col', class: 'n', text: 'Veränderung' }),
-            h('th', { scope: 'col', class: 'n', text: 'Klicks' }), h('th', { scope: 'col', class: 'n', text: 'Impr.' }), h('th', { scope: 'col', text: 'URL' }), h('th', { scope: 'col', text: 'Geprüft' }))),
+            h('th', { scope: 'col', class: 'n', text: 'Klicks' }), h('th', { scope: 'col', class: 'n', text: 'Impr.' }))),
           h('tbody', {}, rows.map(k => {
             const has = typeof k.position === 'number' && typeof k.previousPosition === 'number';
             const dlt = has ? k.previousPosition - k.position : null;
-            const dEl = dlt == null ? h('span', { class: 'muted', text: 'neu' }) : dlt > 0 ? h('span', { class: 'up' }, '▲ +' + fmtN(dlt), h('span', { class: 'sr', text: ' Plätze besser' })) : dlt < 0 ? h('span', { class: 'down' }, '▼ ' + fmtN(dlt), h('span', { class: 'sr', text: ' Plätze schlechter' })) : h('span', { class: 'muted', text: '± 0' });
-            return h('tr', {}, h('td', { text: str(k.keyword) }), h('td', { text: str(k.region) }),
+            const dEl = dlt == null ? h('span', { class: 'muted', text: 'neu' }) : dlt > 0 ? h('span', { class: 'up delta-chip' }, '▲ +' + fmtN(dlt), h('span', { class: 'sr', text: ' Plätze besser' })) : dlt < 0 ? h('span', { class: 'down delta-chip' }, '▼ ' + fmtN(dlt), h('span', { class: 'sr', text: ' Plätze schlechter' })) : h('span', { class: 'muted', text: '± 0' });
+            const meta = [str(k.region), str(k.url), k.checkedAt ? 'geprüft ' + fmtDs(k.checkedAt) : ''].filter(Boolean).join(' · ');
+            return h('tr', {}, h('td', {}, h('span', { tabindex: meta ? '0' : null, 'data-tip': meta || null, text: str(k.keyword) })),
               h('td', { class: 'n', text: fmtN(numOr(k.position, NaN)) }), h('td', { class: 'n' }, dEl),
-              h('td', { class: 'n', text: fmtN(numOr(k.clicks, NaN)) }), h('td', { class: 'n', text: fmtN(numOr(k.impressions, NaN)) }),
-              h('td', { style: 'overflow-wrap:anywhere;min-width:10ch', text: str(k.url) }), h('td', { class: 'num', text: fmtDs(k.checkedAt) }));
+              h('td', { class: 'n', text: fmtN(numOr(k.clicks, NaN)) }), h('td', { class: 'n', text: fmtN(numOr(k.impressions, NaN)) }));
           })))));
       }
       const tr = S.data.seo_traffic.map(t => ({ m: str(t.month) || t._id, raw: t })).filter(t => /^\d{4}-\d{2}/.test(t.m))
@@ -7119,7 +7243,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         h('div', { class: 'tools', style: 'margin:0;justify-content:space-between;align-items:flex-end' }, h('h3', { text: 'Traffic-Verlauf: ' + METRICS[ui.metric][0] }),
           app.field('Kennzahl', app.dropdown('s-metric', Object.entries(METRICS).map(([k, v]) => [k, v[0]]), ui.metric, v => { ui.metric = v; rerender(); }))));
       if (pts.length) {
-        trSec.append(lineChart(pts, ui.metric));
+        trSec.append(seoLine(pts, ui.metric));
         if (ui.metric === 'avgPosition') trSec.append(h('p', { class: 'muted small', text: 'Position: kleiner ist besser, die Achse ist deshalb umgekehrt.' }));
       } else trSec.append(S.data.seo_traffic.length ? h('p', { class: 'muted', text: 'Keine Monatswerte für diese Kennzahl im Zeitraum.' }) : app.mkEmpty('seo_keywords', false));
       const gaps = S.data.seo_gaps.filter(app.mkMatchRegion).sort((a, b) => (D.PRIO[a.priority] ?? 3) - (D.PRIO[b.priority] ?? 3));
@@ -7129,8 +7253,10 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         h('div', { class: 't', text: str(g.topic) }),
         h('div', { class: 'meta', text: [str(g.service), str(g.region)].filter(Boolean).join(' · ') }),
         str(g.reason || g.note) ? h('div', { class: 'small', text: str(g.reason || g.note) }) : null))));
-      else gSec.append(S.data.seo_gaps.length ? h('p', { class: 'muted', text: 'Keine Content-Gaps für diese Region.' }) : app.mkEmpty('seo_keywords', false));
-      return [head, tools, kwSec, trSec, gSec];
+      else gSec.append(S.data.seo_gaps.length ? h('p', { class: 'muted', text: 'Keine Content-Gaps für diese Region.' }) : S.data.seo_keywords.length ? h('p', { class: 'muted small', text: 'Noch keine Content-Gaps erfasst.' }) : app.mkEmpty('seo_keywords', false));
+      const histSec = items.length ? h('div', { class: 'section card' }, h('h3', { text: 'Positionsverteilung' }),
+        CH.histogram(hist, { title: 'Keywords nach Position', height: 170, animate: !prevOf('seo'), table: true })) : null;
+      return [head, tools, trSec, histSec, kwSec, gSec];
     }
   });
 
@@ -7303,6 +7429,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   function jumpTo(id) {
     const el = document.getElementById(id);
     if (!el) return;
+    for (let d = el; d; d = d.parentElement && d.parentElement.closest('details')) { if (d.tagName === 'DETAILS') d.open = true; else { const c = d.closest('details'); if (c) c.open = true; break; } }
     el.scrollIntoView({ block: 'center', behavior: window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
     el.classList.remove('jump-flash'); void el.offsetWidth; el.classList.add('jump-flash');
     if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '-1');
@@ -7522,6 +7649,8 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         h('td', { class: 'n', text: clean(k.Ziel) }), h('td', { class: 'n', text: clean(k.Ist) || '–' }), h('td', { class: 'muted', text: clean(k.Quelle) }))))));
   }
   const section = (id, title, eyebrow, ...kids) => h('div', { class: 'section', id }, eyebrow ? h('div', { class: 'label', text: eyebrow }) : null, h('h3', { text: title }), kids);
+  // Nebensachen zum Aufklappen; Sprünge aus dem Zeitplan öffnen sie (jumpTo).
+  const fold = (id, title, eyebrow, ...kids) => h('details', { class: 'section p90-fold', id }, h('summary', {}, h('span', { class: 'label', text: eyebrow }), ' ', h('b', { text: title })), kids);
 
   app.module('marketing', 'plan90', {
     count: () => { syncBase(); return STATE.ap.length; },
@@ -7533,40 +7662,49 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       const openDec = STATE.dec.filter(d => ['zuerst', 'offen', 'vertagt'].includes(d.Status || 'offen')).length;
       const noIst = STATE.kpi.filter(k => clean(k.Ausgangswert) && !clean(k.Ist)).length;
       const waves = [[0, 'Alle'], [1, 'Welle 1 · KW38–41'], [2, 'Welle 2 · KW42–45'], [3, 'Welle 3 · KW46–50']];
+      // Ring-Kacheln (Arbeitsanweisung 5.13) und Fortschritt je Welle (Anteil erledigter Pakete).
+      const CH = FC.charts, prev = app.chartPrev('marketing', 'plan90');
+      const doneAp = STATE.ap.filter(a => a.Status === 'erledigt').length;
+      const waveDone = w => { const list = STATE.ap.filter(a => active(a, w)); return { n: list.length, d: list.filter(a => a.Status === 'erledigt').length }; };
+      app.chartKeep('marketing', 'plan90', { days });
+      const ringTile = (pct, center, k, sub, tip, tone) => h('div', { class: 'card ring-tile', tabindex: tip ? '0' : null, 'data-tip': tip || null },
+        CH.progressRing({ value: pct, max: 100, segments: [{ key: 'v', label: k, value: pct, tone: tone || 's1' }] }, { title: k, center, sub, size: 104, stroke: 12, animate: !prev,
+          label: k + ': ' + center + (sub ? ' ' + sub : '') }), h('div', { class: 'k', text: k }));
+      const decTotal = STATE.dec.length || 1, kpiTotal = STATE.kpi.filter(k => clean(k.Ausgangswert)).length || 1;
       return [
         panelHead('90-Tage-Plan 2026 und InfraTech 2027', STATE.ap.length + ' Arbeitspakete', null, 'Plan-Daten aus dem Notion-Marketing-Cockpit; ohne Live-Verbindung der tägliche Notion-Stand aus der Cockpit-Datenbank, fehlt dieser, der eingebaute Stand.'),
         h('p', { class: 'sync-line ' + sync.cls, role: 'status' }, h('span', { class: 'dot', 'aria-hidden': 'true' }), syncText()),
-        h('div', { class: 'strip', style: 'margin-top:12px' },
-          h('div', { class: 'kpi ok' }, h('div', { class: 'v', text: String(days) }), h('div', { class: 'k', text: 'Tage bis InfraTech' }), h('div', { class: 'sub', text: '12.01.2027' })),
-          h('div', { class: 'kpi' }, h('div', { class: 'v', text: String(STATE.ap.length) }), h('div', { class: 'k', text: 'Arbeitspakete' }), h('div', { class: 'sub', text: topN + ' mit Top-Priorität' })),
-          h('div', { class: 'kpi' + (openDec ? ' warn' : '') }, h('div', { class: 'v', text: String(openDec) }), h('div', { class: 'k', text: 'GL-Entscheidungen offen' }), h('div', { class: 'sub', text: 'zur Freigabe' })),
-          h('div', { class: 'kpi' + (noIst ? ' warn' : '') }, h('div', { class: 'v', text: String(noIst) }), h('div', { class: 'k', text: 'Messgrößen ohne Ist-Wert' }), h('div', { class: 'sub', text: 'Tracking fehlt' }))),
+        h('div', { class: 'ring-tiles' },
+          ringTile(Math.round(Math.max(0, 90 - Math.min(90, days)) / 90 * 100), String(days), 'Tage bis InfraTech', 'Tage', 'Messebeginn 12.01.2027; der Ring zeigt, wie viel der letzten 90 Tage vergangen ist.'),
+          ringTile(Math.round(doneAp / (STATE.ap.length || 1) * 100), doneAp + '/' + STATE.ap.length, 'Arbeitspakete', 'erledigt', topN + ' mit Top-Priorität'),
+          ringTile(Math.round(openDec / decTotal * 100), String(openDec), 'Entscheidungen offen', 'von ' + STATE.dec.length, 'GL-Entscheidungen zur Freigabe', openDec ? 'warn' : 's1'),
+          ringTile(Math.round(noIst / kpiTotal * 100), String(noIst), 'Messgrößen ohne Ist', 'Tracking fehlt', 'Messgrößen mit Ausgangswert, aber ohne Ist-Wert', noIst ? 'warn' : 's1')),
         h('div', { class: 'section' }, h('div', { class: 'band' },
           h('div', {}, h('div', { class: 'label', style: 'color:var(--ink-inverse-muted)', text: 'Oberste Priorität · AP0 · Messe' }),
             h('h2', {}, 'InfraTech 2027 ', h('em', { text: 'Rotterdam Ahoy' })),
-            h('p', { text: 'Fachmesse für Infrastruktur, Straßen- und Tiefbau. Alles andere im Plan ordnet sich diesem Termin unter: Anfrageseite, Referenzen und Firmenauftritt müssen bis Dezember messetauglich sein.' }),
-            h('p', { text: '12.–15.01.2027 (Di–Fr) · Ahoyweg 10, Rotterdam · Hallenzuteilung 2027 offen · 23.344 Besucher 2025 · Standbuchung unbestätigt' })),
+            h('p', { tabindex: '0', 'data-tip': 'Fachmesse für Infrastruktur, Straßen- und Tiefbau. Alles andere im Plan ordnet sich diesem Termin unter: Anfrageseite, Referenzen und Firmenauftritt müssen bis Dezember messetauglich sein. Ahoyweg 10, Rotterdam · Hallenzuteilung 2027 offen · 23.344 Besucher 2025 · Standbuchung unbestätigt', text: '12.–15.01.2027 (Di–Fr) · Rotterdam Ahoy' })),
           h('div', { class: 'count' }, h('b', { text: String(days) }), h('span', {}, 'Tage bis', h('br'), 'Messestart')))),
         section('p90-ziele', 'Ziele für die Messe', 'Quelle: Marketing-Scan Aug. 2026', h('div', { class: 'strip' }, GOALS.map(([v, k]) => h('div', { class: 'kpi' }, h('div', { class: 'v', text: v }), h('div', { class: 'sub', text: k }))))),
-        section('p90-meilensteine', 'Meilensteine bis Rotterdam', 'Rückwärtsplanung', h('p', { class: 'muted small', text: 'Termine sind Vorschläge und nach der Klärung des Buchungsstands zu bestätigen.' }), milestones()),
-        h('div', { class: 'section' }, h('div', { class: 'grid3' }, BOXES.map(([t, items]) => h('div', { class: 'card accentbar' }, h('h3', { text: t }), h('ul', {}, items.map(x => h('li', { text: x }))))))),
+        section('p90-meilensteine', 'Meilensteine bis Rotterdam', 'Rückwärtsplanung · Vorschläge, nach Klärung des Buchungsstands bestätigen', milestones()),
+        h('details', { class: 'section' }, h('summary', { class: 'small', text: BOXES.map(b => b[0]).join(' · ') }), h('div', { class: 'grid3' }, BOXES.map(([t, items]) => h('div', { class: 'card accentbar' }, h('h3', { text: t }), h('ul', {}, items.map(x => h('li', { text: x }))))))),
         section('gantt-top', 'Alle Pakete auf einer Achse', 'Zeitplan KW38 2026 bis KW2 2027',
-          h('p', { class: 'muted small', text: 'Kalenderwochen ab Montag; die letzte Spalte fasst KW51 bis zur Messe zusammen. Helle Balken bedeuten laufenden Betrieb oder Messphase. Balken und Zeilennamen führen zum Arbeitspaket in der Tabelle.' }),
+          app.tipBtn ? app.tipBtn('Kalenderwochen ab Montag; die letzte Spalte fasst KW51 bis zur Messe zusammen. Helle Balken bedeuten laufenden Betrieb oder Messphase. Balken und Zeilennamen führen zum Arbeitspaket in der Tabelle.', 'Erläuterung Zeitplan') : null,
           gantt(),
           h('div', { class: 'legend' }, [['messe', 'Messe'], ['web', 'Website & Messung'], ['marke', 'Marke & Firmendaten'], ['rec', 'Recruiting'], ['content', 'Content & Events']].map(([c, l]) => h('span', {}, h('i', { class: c }), l)))),
         section('p90-pakete', 'Wer liefert was bis wann', 'Arbeitspakete',
-          h('div', { class: 'filter-bar', role: 'group', 'aria-label': 'Nach Welle filtern' }, waves.map(([w, l]) => h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(ui.wave === w), onclick: () => { ui.wave = w; app.refresh(); } }, l))),
-          h('p', { class: 'muted small', text: 'Verantwortlich laut Plan: Marketing, bis die GL Rollen vergibt (Annahme). Bewusst nach Tag 90: regionale Landingpages, Maschinenpark-Seite mit Modelldaten, Events 2027.' }),
-          apTable()),
+          h('div', { class: 'filter-bar', role: 'group', 'aria-label': 'Nach Welle filtern' }, waves.map(([w, l]) => { const p = waveDone(w), pct = p.n ? Math.round(p.d / p.n * 100) : 0; return h('button', { class: 'btn small wave-btn', type: 'button', 'aria-pressed': String(ui.wave === w), 'aria-label': l + ', ' + p.d + ' von ' + p.n + ' Paketen erledigt', onclick: () => { ui.wave = w; app.refresh(); } }, h('span', { text: l }), h('span', { class: 'wave-bar', 'aria-hidden': 'true' }, h('i', { style: 'width:' + pct + '%' })), h('span', { class: 'wave-n num', 'aria-hidden': 'true', text: p.d + '/' + p.n })); })),
+          app.tipBtn ? app.tipBtn('Verantwortlich laut Plan: Marketing, bis die GL Rollen vergibt (Annahme). Bewusst nach Tag 90: regionale Landingpages, Maschinenpark-Seite mit Modelldaten, Events 2027.', 'Hinweis Arbeitspakete') : null,
+          // Die Pakete stehen schon im Zeitplan; die Tabelle mit Details klappt auf (Sprünge aus dem Zeitplan öffnen sie).
+          (det => { det.addEventListener('toggle', () => { ui.apOpen = det.open; }); return det; })(h('details', { class: 'ap-fold', open: !!ui.apOpen }, h('summary', { class: 'small', text: 'Arbeitspakete als Tabelle (Verantwortung, Termine, Status)' }), apTable()))),
         section('p90-entscheidungen', 'Entscheidungen der Geschäftsleitung', 'Zur Freigabe', decisions()),
         h('div', { class: 'section' }, h('div', { class: 'grid2' },
           h('div', {}, h('h3', { text: 'Blockaden' }), h('ul', { class: 'sev-list' }, BLOCKERS.map(([k, t, r]) => h('li', {}, h('span', { class: 'hint-num', text: k }), h('span', { class: 'txt' }, t, r ? h('span', { class: 'muted small', text: ' (' + r + ')' }) : null))))),
           h('div', {}, h('h3', { text: 'Vor Veröffentlichung: Bitte Rechtsabteilung prüfen.' }), h('ul', { class: 'sev-list' }, LEGAL.map(([t, r]) => h('li', {}, h('span', { class: 'hint-num', text: '§' }), h('span', { class: 'txt' }, t, r ? h('span', { class: 'muted small', text: ' (' + r + ')' }) : null))))))),
-        section('p90-kpi', 'Woran wir es messen', 'Erfolgsmessung', kpiTable()),
-        section('p90-fakten', 'Offene Fakten', 'Widersprüche in den Unterlagen', h('div', { class: 'tbl-wrap' }, h('table', { class: 'data' },
+        fold('p90-kpi', 'Woran wir es messen', 'Erfolgsmessung', kpiTable()),
+        fold('p90-fakten', 'Offene Fakten', 'Widersprüche in den Unterlagen', h('div', { class: 'tbl-wrap' }, h('table', { class: 'data' },
           h('thead', {}, h('tr', {}, ['Thema', 'Angaben', 'Wer klärt'].map(t => h('th', { scope: 'col', text: t })))),
           h('tbody', {}, FACTS.map(r => h('tr', {}, r.map(c => h('td', { text: c })))))))),
-        section('p90-checkins', 'Check-ins', 'Wochenstatus freitags (Annahme)', h('ul', { class: 'sev-list' }, CHECKINS.map(([d, k, t]) => h('li', {}, h('span', { class: 'hint-num', style: 'min-width:7ch', text: d }), h('span', { class: 'txt' }, h('b', { text: k + ': ' }), t)))))
+        fold('p90-checkins', 'Check-ins', 'Wochenstatus freitags (Annahme)', h('ul', { class: 'sev-list' }, CHECKINS.map(([d, k, t]) => h('li', {}, h('span', { class: 'hint-num', style: 'min-width:7ch', text: d }), h('span', { class: 'txt' }, h('b', { text: k + ': ' }), t)))))
       ];
     }
   });
