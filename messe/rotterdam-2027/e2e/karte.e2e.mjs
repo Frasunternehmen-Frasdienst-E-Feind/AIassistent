@@ -130,10 +130,17 @@ test('Klick auf ein Bundesland setzt den Regionsfilter', async () => {
   await ctx.close();
 });
 
-test('Pins werden geclustert, Standorte bleiben einzeln sichtbar', async () => {
+test('Übersicht: je Bundesland ein Kreis mit Anzahl; Klick zoomt hinein und zeigt die einzelnen Standorte', async () => {
   const { page, ctx } = await open();
-  assert.ok(await page.locator('.gm-map .marker-cluster').count() >= 1, 'mindestens ein Cluster');
-  assert.equal(await page.locator('.gm-map .gm-home').count(), 2, 'Lübben und Wittenburg');
+  const bubbles = page.locator('.gm-map .gm-state-bubble');
+  assert.equal(await bubbles.count(), 4, 'Sachsen, Brandenburg, Mecklenburg-Vorpommern, Hamburg');
+  assert.equal(await page.locator('.gm-map .gm-state-bubble[title^="Sachsen:"]').innerText(), '3');
+  assert.equal(await page.locator('.gm-map .marker-cluster, .gm-map .gm-pin-wrap').count(), 0, 'in der Übersicht keine Einzelpins');
+  assert.equal(await page.locator('.gm-map .gm-home').count(), 2, 'Lübben und Wittenburg bleiben sichtbar');
+  await page.locator('.gm-map .gm-state-bubble[title^="Sachsen:"]').click();
+  await page.waitForFunction(() => document.querySelector('.gm-map').dataset.detail === 'true');
+  assert.equal(await bubbles.count(), 0);
+  assert.ok(await page.locator('.gm-map .marker-cluster, .gm-map .gm-pin-wrap').count() >= 1, 'Standorte nach dem Hineinzoomen');
   await ctx.close();
 });
 

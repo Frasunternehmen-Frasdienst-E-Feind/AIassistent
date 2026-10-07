@@ -220,6 +220,21 @@ Definition of Done nennt „nicht mehr als ~40 % des früheren Textes“, das w�
 - `localHints()` hat zusätzlich die Felder `s` (Kurzlabel) und `ic` (Symbol). Bestehende Felder sind unverändert.
 - „Auf einen Blick“, Referenzen, Wissensbibliothek und Ablage stehen nicht in Abschnitt 5 und sind unverändert, bis auf das Standardbanner.
 
+### Karte Ausschreibungen: Zahl je Bundesland in der Übersicht (Artefakt-Kommentar 07.10.2026)
+
+Bei Zoom auf ganz Deutschland zeigt die Karte je Bundesland mit Ausschreibungen einen Kreis mit der Anzahl
+(Anthrazit, grüne Kante, Größe nach Anzahl). Ab Zoomstufe 7 erscheinen stattdessen die einzelnen Standorte
+(Pins, nahe beieinander gebündelt). Ein Klick oder Enter auf einen Kreis zoomt in das Land. Die Standorte
+Lübben und Wittenburg bleiben immer sichtbar. Umgesetzt in `geomap.js` (Option `stateBubbles`), geprüft in
+`karte.e2e.mjs`.
+
+### CI-Korrektur
+
+Aufklappbereiche, deren Zustand sich das Cockpit merkt (Budget-Eingaben, Content-Kalender, Paket-Tabelle), konnten
+nach einem Neuzeichnen zugehen. Das `toggle`-Ereignis kommt asynchron und kann ein Neuzeichnen verpassen. Jetzt gilt
+zusätzlich der Zustand im aktuellen Bild (`app.foldOpen`). Der Budget-Test war in CI deshalb einmal rot. Lokal liefen
+danach 5 Durchläufe in Folge grün.
+
 ### Tests
 
 - `npm run test:cockpit`: 40 bestanden

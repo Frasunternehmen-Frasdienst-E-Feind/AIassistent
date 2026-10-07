@@ -2113,6 +2113,8 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
 .gm-pin { display: block; width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--surface); background: var(--pin, var(--ink)); box-shadow: 0 1px 3px var(--shadow); }
 .gm-pin.approx { border-style: dashed; border-color: var(--ink-strong); }
 .gm-home .gm-pin { width: 16px; height: 16px; background: var(--surface-inverse); border: 3px solid var(--accent); }
+.gm-state-bubble { display: grid; place-items: center; border-radius: 50%; background: var(--surface-inverse); color: var(--ink-inverse); border: 2px solid var(--accent); box-shadow: 0 1px 4px var(--shadow); font: 700 13px var(--font-sans); font-variant-numeric: tabular-nums; cursor: zoom-in; }
+.gm-state-bubble:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .gm-cluster { display: grid; place-items: center; border-radius: 50%; background: var(--surface-inverse); color: var(--ink-inverse); border: 2px solid var(--ink-inverse-muted); box-shadow: 0 0 0 4px color-mix(in srgb, var(--warn) 45%, transparent); font: 700 13px var(--font-sans); font-variant-numeric: tabular-nums; }
 
 /* ---- wissen.css ---- */
@@ -5747,6 +5749,9 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   const chartShown = {};
   app.chartPrev = (world, key) => { const p = $('panel-' + world + '-' + key); return p && p.childElementCount ? chartShown[world + ':' + key] || null : null; };
   app.chartKeep = (world, key, v) => { chartShown[world + ':' + key] = v; };
+  // Aufklappbereich, der ein Neuzeichnen übersteht: offen, wenn der Nutzer ihn geöffnet hat (Zustand in ui) oder er
+  // im aktuellen Bild offen ist. Das toggle-Ereignis kommt asynchron und kann ein Neuzeichnen verpassen.
+  app.foldOpen = (selector, flag) => !!flag || !!document.querySelector(selector + '[open]');
   app.chartLegend = items => h('div', { class: 'fc-legend', 'aria-hidden': 'true' }, items.map(([tone, text, cls]) => h('span', { class: 'fc-k-' + tone }, h('i', { class: cls || null }), text)));
   function autoBanner(world, key) {
     return app.themeBanner({ icon: app.iconFor ? app.iconFor('module', key, 'go') : 'info', eyebrow: WORLD_LABEL[world] + ' · ' + moduleLabel(world, key), title: THEME_LINE[world + ':' + key] || moduleLabel(world, key) });
@@ -6758,7 +6763,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         h('div', { class: 'card' }, h('h3', { text: 'Nach Kanal' }), byCh.length ? CH.bars(byCh, { title: 'Content nach Kanal', sort: 'desc', band: 16, from: prev && prev.ch, selected: m.channel, onSelect: k => { m.channel = m.channel === k ? '' : k; rerender(); } }) : h('p', { class: 'muted small', text: 'Keine Werte.' })),
         h('div', { class: 'card' }, h('h3', { text: 'Nach Projekttyp' }), byPt.length ? CH.bars(byPt, { title: 'Content nach Projekttyp', sort: 'desc', limit: 7, band: 16, from: prev && prev.pt, selected: m.ptype, onSelect: k => { if (k !== '_rest') { m.ptype = m.ptype === k ? '' : k; rerender(); } } }) : h('p', { class: 'muted small', text: 'Kein Projekttyp hinterlegt.' })));
       return [head, tools, dist,
-        (det => { det.addEventListener('toggle', () => { m.calOpen = det.open; }); return det; })(h('details', { class: 'section cal-fold', open: !!m.calOpen },
+        (det => { det.addEventListener('toggle', () => { m.calOpen = det.open; }); return det; })(h('details', { class: 'section cal-fold', open: (m.calOpen = app.foldOpen('#panel-marketing-content details.cal-fold', m.calOpen)) },
           h('summary', {}, h('span', { class: 'cal-sum', text: 'Kalender' })),
           h('div', { class: 'tools', style: 'margin:0;justify-content:flex-end' }, viewToggle),
           m.view === 'week' ? weekGrid(items) : monthCalendar(items))),
@@ -6886,7 +6891,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       }
       for (const site of D.HOME_SITES) { const g = K.geocode(site.city, site.state); if (g) pts.push({ lat: g.lat, lon: g.lon, label: 'Standort ' + site.city.replace(/\s*\(.*\)/, ''), kind: 'home' }); }
     }
-    const geoMapEl = app.geoMap ? app.geoMap({ id: 'tenders', height: 440, label: 'Karte: Ausschreibungen nach Bundesland', states: stateInfo, onState: pick, points: pts }) : null;
+    const geoMapEl = app.geoMap ? app.geoMap({ id: 'tenders', height: 440, label: 'Karte: Ausschreibungen nach Bundesland', states: stateInfo, onState: pick, points: pts, stateBubbles: true }) : null;
     return h('div', { class: 'section' },
       h('div', { class: 'tools', style: 'margin:0;justify-content:space-between' }, h('h3', { text: 'Kartenauswahl' }),
         h('div', { class: 'row' },
@@ -7695,7 +7700,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
           h('div', { class: 'filter-bar', role: 'group', 'aria-label': 'Nach Welle filtern' }, waves.map(([w, l]) => { const p = waveDone(w), pct = p.n ? Math.round(p.d / p.n * 100) : 0; return h('button', { class: 'btn small wave-btn', type: 'button', 'aria-pressed': String(ui.wave === w), 'aria-label': l + ', ' + p.d + ' von ' + p.n + ' Paketen erledigt', onclick: () => { ui.wave = w; app.refresh(); } }, h('span', { text: l }), h('span', { class: 'wave-bar', 'aria-hidden': 'true' }, h('i', { style: 'width:' + pct + '%' })), h('span', { class: 'wave-n num', 'aria-hidden': 'true', text: p.d + '/' + p.n })); })),
           app.tipBtn ? app.tipBtn('Verantwortlich laut Plan: Marketing, bis die GL Rollen vergibt (Annahme). Bewusst nach Tag 90: regionale Landingpages, Maschinenpark-Seite mit Modelldaten, Events 2027.', 'Hinweis Arbeitspakete') : null,
           // Die Pakete stehen schon im Zeitplan; die Tabelle mit Details klappt auf (Sprünge aus dem Zeitplan öffnen sie).
-          (det => { det.addEventListener('toggle', () => { ui.apOpen = det.open; }); return det; })(h('details', { class: 'ap-fold', open: !!ui.apOpen }, h('summary', { class: 'small', text: 'Arbeitspakete als Tabelle (Verantwortung, Termine, Status)' }), apTable()))),
+          (det => { det.addEventListener('toggle', () => { ui.apOpen = det.open; }); return det; })(h('details', { class: 'ap-fold', open: (ui.apOpen = app.foldOpen('#panel-marketing-plan90 details.ap-fold', ui.apOpen)) }, h('summary', { class: 'small', text: 'Arbeitspakete als Tabelle (Verantwortung, Termine, Status)' }), apTable()))),
         section('p90-entscheidungen', 'Entscheidungen der Geschäftsleitung', 'Zur Freigabe', decisions()),
         h('div', { class: 'section' }, h('div', { class: 'grid2' },
           h('div', {}, h('h3', { text: 'Blockaden' }), h('ul', { class: 'sev-list' }, BLOCKERS.map(([k, t, r]) => h('li', {}, h('span', { class: 'hint-num', text: k }), h('span', { class: 'txt' }, t, r ? h('span', { class: 'muted small', text: ' (' + r + ')' }) : null))))),
@@ -8214,7 +8219,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
             CH.waterfall([{ label: 'Planrahmen max.', short: 'Rahmen', value: F.planMax, total: true }]
               .concat(r.rows.map(x => ({ label: x.p, short: short(x.p), value: -fcOf(x) })))
               .concat([{ label: rest >= 0 ? 'Puffer' : 'Überzug', short: rest >= 0 ? 'Puffer' : 'Überzug', total: true, tone: rest >= 0 ? 's1' : 'crit' }]), { title: 'Budget-Wasserfall', format: v => H.fmtEuro(Math.abs(v)), table: true, animate: !prev }))),
-        h('details', { class: 'section bud-edit', open: !!ui.budOpen, ontoggle: e => { ui.budOpen = e.target.open; } },
+        h('details', { class: 'section bud-edit', open: (ui.budOpen = app.foldOpen('#panel-infratech-budget details.bud-edit', ui.budOpen)), ontoggle: e => { ui.budOpen = e.target.open; } },
           h('summary', { class: 'small', text: 'Forecast und Ist eintragen' }),
           h('p', { class: 'muted small', text: 'Baseline 2026: ' + H.fmtEuro(F.baseline) + ' brutto. Planrahmen 2027: ' + H.fmtEuro(F.planMin) + '–' + H.fmtEuro(F.planMax) + '. Forecast ist mit der Mitte des Planrahmens vorbelegt.' }),
                   h('div', { class: 'tbl-wrap' }, h('table', { class: 'data' },
@@ -14587,10 +14592,20 @@ let shown = false, hideT = null;
       h('span', { class: 'gm-scale', title: 'Ausschreibungen je Bundesland' }, cls.legend.map(l => h('span', {}, h('i', { style: '--o:' + l.opacity }), h('small', { text: l.label })))),
       h('span', {}, h('i', { class: 'gm-l-home' }), 'Standort-Bundesland (Umriss)'),
       h('span', {}, h('i', { class: 'gm-l-pin' }), 'Ausschreibung mit Ortsangabe'),
-      h('span', {}, h('i', { class: 'gm-l-cluster' }), 'Gruppe (Zahl = Pins, Klick zoomt)'),
+      h('span', {}, h('i', { class: 'gm-l-cluster' }), 'Anzahl je Land, beim Hineinzoomen die Standorte'),
       h('span', {}, h('i', { class: 'gm-l-site' }), 'Standort Lübben / Wittenburg'));
   }
 
+  // Lagepunkte für die Zahl je Bundesland (Landesmitte, Brandenburg westlich von Berlin, damit sich Kreise nicht decken).
+  const STATE_LABEL = {
+    'Schleswig-Holstein': [54.2, 9.75], 'Hamburg': [53.56, 10.02], 'Mecklenburg-Vorpommern': [53.75, 12.6], 'Bremen': [53.08, 8.8],
+    'Niedersachsen': [52.75, 9.3], 'Brandenburg': [52.3, 12.75], 'Berlin': [52.52, 13.4], 'Sachsen-Anhalt': [51.95, 11.65],
+    'Nordrhein-Westfalen': [51.45, 7.55], 'Hessen': [50.6, 9.0], 'Thüringen': [50.9, 11.0], 'Sachsen': [51.05, 13.35],
+    'Rheinland-Pfalz': [49.9, 7.4], 'Saarland': [49.4, 6.95], 'Baden-Württemberg': [48.55, 9.0], 'Bayern': [48.95, 11.4]
+  };
+  // Unterhalb dieser Zoomstufe (ganz Deutschland) zeigt die Karte je Land einen Kreis mit der Anzahl, darüber die Standorte.
+  const DETAIL_ZOOM = 7;
+  const bubbleIcon = n => { const d = Math.round(30 + 6 * Math.sqrt(n)); return L.divIcon({ className: 'gm-state-bubble', iconSize: [d, d], iconAnchor: [d / 2, d / 2], html: '<span>' + n + '</span>' }); };
   const pinIcon = (p, home) => L.divIcon({ className: home ? 'gm-home' : 'gm-pin-wrap', iconSize: [16, 16], iconAnchor: [8, 8],
     html: '<span class="gm-pin' + (p.approx ? ' approx' : '') + '"' + (home ? '' : ' style="--pin:var(' + (KIND[p.kind] || '--ink') + ')"') + '></span>' });
 
@@ -14678,13 +14693,35 @@ let shown = false, hideT = null;
         if (q.onClick) m.on('click', () => { if (app.haptic) app.haptic(8); q.onClick(); });
         if (home) m.addTo(map); else group.addLayer(m);
       }
-      group.addTo(map);
+      // Übersicht: je Bundesland mit Ausschreibungen ein Kreis mit der Zahl; Klick zoomt in das Land. Die einzelnen
+      // Standorte (Cluster) erscheinen erst ab DETAIL_ZOOM.
+      let bubbles = null;
+      if (st && opts.stateBubbles) {
+        bubbles = L.layerGroup();
+        for (const [name, s] of Object.entries(st)) {
+          const pos = STATE_LABEL[name];
+          if (!pos || !s.n) continue;
+          const lab = name + ': ' + s.n + (s.n === 1 ? ' Ausschreibung' : ' Ausschreibungen') + '. Hineinzoomen zeigt die Standorte.';
+          const m = L.marker(pos, { icon: bubbleIcon(s.n), title: lab, alt: lab, keyboard: true, zIndexOffset: 500 });
+          m.on('click', () => { const rings = data().states[name]; if (rings) map.fitBounds(L.polygon(rings.map(ring)).getBounds(), { padding: [16, 16], maxZoom: Math.max(DETAIL_ZOOM, 8) }); });
+          bubbles.addLayer(m);
+        }
+        const sync = () => {
+          const detail = map.getZoom() >= DETAIL_ZOOM;
+          if (detail) { if (map.hasLayer(bubbles)) map.removeLayer(bubbles); if (!map.hasLayer(group)) group.addTo(map); }
+          else { if (map.hasLayer(group)) map.removeLayer(group); if (!map.hasLayer(bubbles)) bubbles.addTo(map); }
+          box.dataset.detail = String(detail);
+        };
+        map.on('zoomend', sync);
+        map._fcSync = sync;
+      } else group.addTo(map);
       const b = L.latLngBounds(DE_BOUNDS);
       for (const q of pts) b.extend([q.lat, q.lon]);
       map.fitBounds(b, { padding: [12, 12], animate: false });
       if (views[id]) { map.setView(views[id].c, views[id].z, { animate: false }); map._fcMoved = true; }
       map.on('dragend zoomend', () => { map._fcMoved = true; views[id] = { c: map.getCenter(), z: map.getZoom() }; });
       box.dataset.zoom = String(map.getZoom());
+      if (map._fcSync) map._fcSync();
       if (window.ResizeObserver) { const ro = new ResizeObserver(() => { if (maps[id] === map && box.isConnected) { try { map.invalidateSize({ animate: false }); } catch (e) { /* entfernt */ } } }); ro.observe(box); map._fcObs.push(ro); }
       if (opts.note && !info.textContent) info.textContent = opts.note;
     };
