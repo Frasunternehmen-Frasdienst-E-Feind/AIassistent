@@ -584,22 +584,80 @@ button.kpi:hover { border-color: var(--ink-muted); }
 /* ---------- Referenzen ---------- */
 .refs { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--s2); }
 .refs .card ul { margin: 0; padding-left: 18px; font-size: 13.5px; }
+/* Projektfoto je Referenz: 3:2, randlos oben in der Karte, Ausschnitt über --pos. */
+.ref-photo { position: relative; margin: calc(-1 * var(--s2)) -12px 2px; aspect-ratio: 3 / 2; overflow: hidden; background: var(--raised); }
+.ref-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, center 50%); }
+.ref-photo figcaption { position: absolute; left: 0; bottom: 0; padding: 2px 8px; font-size: 11px; color: #fff; background: rgba(31, 37, 37, .62); }
+.ref-photo-edit { position: absolute; top: 6px; right: 6px; width: 36px; height: 36px; display: grid; place-items: center; border: 0; background: rgba(255, 255, 255, .9); color: #263030; cursor: pointer; }
+.ref-photo-edit:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+/* Platzhalterbild: gleiche Flaeche wie ein echtes Foto (3:2), damit die Karten im Raster gleich
+   hoch bleiben und nichts springt, sobald ein Foto dazukommt. Klick oeffnet den Foto-Dialog. */
+.ref-photo.ph { background-color: var(--surface-muted); background-image: repeating-linear-gradient(135deg, transparent 0 9px, color-mix(in srgb, var(--ink-muted) 12%, transparent) 9px 18px); border-bottom: 1px dashed var(--line); }
+.ref-photo .ph-in { width: 100%; height: 100%; display: grid; place-content: center; justify-items: center; gap: 4px; margin: 0; padding: 4px 8px; border: 0; background: none; color: var(--ink-muted); font: inherit; font-size: 12px; line-height: 1.25; text-align: center; }
+.ref-photo button.ph-in { cursor: pointer; transition: background .15s ease, color .15s ease; }
+.ref-photo button.ph-in:hover, .ref-photo button.ph-in:focus-visible { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--ink-strong); }
+.ref-photo button.ph-in:focus-visible { outline: 2px solid var(--focus); outline-offset: -3px; }
+.ref-photo .ph-in svg { width: 32px; height: 32px; fill: none; stroke: currentColor; stroke-width: 1.6; opacity: .8; }
+.refmap-detail .ref-photo { margin: calc(-1 * var(--s3)) calc(-1 * var(--s3)) var(--s1); max-height: 180px; }
+@media (prefers-reduced-motion: reduce) { .ref-photo button.ph-in { transition: none; } }
+@media print { .ref-photo.ph { display: none !important; } }
+.ref-photo-prev { aspect-ratio: 3 / 2; max-height: 300px; background: var(--raised); display: grid; place-items: center; overflow: hidden; }
+.ref-photo-prev img { width: 100%; height: 100%; object-fit: cover; }
+@media print { .ref-photo-edit, .ref-photo-add { display: none !important; } }
 .noclient { font-style: italic; color: var(--ink-muted); }
 /* Referenzkarte: schematischer Umriss, Projektpunkte als Knöpfe über der Karte (Spec konzepte/referenzkarte.md) */
-.refmap { display: grid; grid-template-columns: minmax(0, 340px) 1fr; gap: var(--s3); align-items: start; }
-.refmap-stage { position: relative; width: 100%; max-width: 340px; }
+.refmap { display: grid; grid-template-columns: minmax(0, 440px) 1fr; gap: var(--s3); align-items: start; }
+.refmap-stage { position: relative; width: 100%; max-width: 440px; }
 .refmap-stage svg { display: block; width: 100%; height: auto; }
 .refmap-stage .land { fill: var(--surface-muted); stroke: var(--ink-muted); stroke-width: 1.5; stroke-linejoin: round; }
+/* Bundesländer: neutral, mit Referenzen in drei Grün-Stufen; Grenzverlauf Deutschland kräftiger obenauf. */
+/* Grenzverlauf der Bundeslaender: duenne, immer sichtbare Haarlinie (auch ohne Hover).
+   non-scaling-stroke haelt sie auf jedem Bildschirm bei knapp 1 px. */
+.refmap-stage .bl { fill: var(--surface-muted); stroke: color-mix(in srgb, var(--ink-muted) 62%, transparent); stroke-width: .9; vector-effect: non-scaling-stroke; stroke-linejoin: round; transition: fill .2s ease; }
+.refmap-stage .bl:hover { fill: color-mix(in srgb, var(--ink-muted) 22%, var(--surface-muted)); }
+.refmap-stage .bl.n1 { fill: color-mix(in srgb, var(--accent) 22%, var(--surface)); }
+.refmap-stage .bl.n2 { fill: color-mix(in srgb, var(--accent) 42%, var(--surface)); }
+.refmap-stage .bl.n3 { fill: color-mix(in srgb, var(--accent) 65%, var(--surface)); }
+.refmap-stage .bl.n1:hover, .refmap-stage .bl.n2:hover, .refmap-stage .bl.n3:hover { fill: color-mix(in srgb, var(--accent) 80%, var(--surface)); }
+.refmap-stage .border { fill: none; stroke: var(--ink-strong); stroke-width: 1.1; stroke-linejoin: round; pointer-events: none; }
+.refmap-stage .cap circle { fill: var(--surface); stroke: var(--ink-muted); stroke-width: .9; opacity: .5; }
+.refmap-stage .cap text { font: 600 5.4px var(--font-sans); fill: var(--ink-muted); opacity: .55; paint-order: stroke; stroke: var(--surface); stroke-width: 2px; pointer-events: none; }
+.refmap-stage .cap.on circle { fill: var(--surface); stroke: var(--ink-strong); stroke-width: 1.2; opacity: .9; }
+.refmap-stage .cap.on text { fill: var(--ink-strong); opacity: 1; }
+.refmap-legend i.cap-on, .refmap-legend i.cap-off { border-radius: 50%; background: var(--surface); }
+.refmap-legend i.cap-off { border-color: var(--ink-muted); opacity: .55; }
+.refmap-legend i.sh { width: 12px; margin-right: 1px; border-color: var(--line); }
+.refmap-legend i.sh.n1 { background: color-mix(in srgb, var(--accent) 22%, var(--surface)); }
+.refmap-legend i.sh.n2 { background: color-mix(in srgb, var(--accent) 42%, var(--surface)); }
+.refmap-legend i.sh.n3 { background: color-mix(in srgb, var(--accent) 65%, var(--surface)); margin-right: 6px; }
+.refmap-states .chips { margin-top: 4px; }
+.refmap-stage svg text.site-l { font-size: 6.4px; font-weight: 600; paint-order: stroke; stroke: var(--surface); stroke-width: 2px; }
 .refmap-stage .site { fill: var(--accent); stroke: var(--ink-strong); stroke-width: 1; }
 .refmap-stage .route { stroke: var(--accent); stroke-width: 4; stroke-linecap: square; }
 .refmap-stage .site-l { fill: var(--ink-muted); font: 11px var(--font-sans); }
-.refpin { position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; padding: 0; border: 0; background: transparent; cursor: pointer; display: grid; place-items: center; }
-.refpin i { display: block; width: 12px; height: 12px; background: var(--accent); border: 2px solid var(--ink-strong); transform: rotate(45deg); }
-.refpin[aria-pressed="true"] i { width: 16px; height: 16px; background: var(--ink-strong); border-color: var(--accent); }
+/* Nur die Referenzprojekte sind klar und gross; Hauptstaedte und Standorte bleiben zurueckhaltend.
+   Beim Ueberfahren tritt der Punkt leicht nach vorn (Groesse, Schatten, Stapelreihenfolge). */
+/* Referenzprojekt-Marke (Wunsch David 07.10.2026, zweite Runde): Anthrazit-Plakette mit weißer Schleifwelle
+   und grünem Ring; heller Halo trennt sie von jeder Länderfarbe. Symbol 18 px, damit die Rillen der Welle sichtbar bleiben. */
+.refpin { position: absolute; z-index: 1; width: 24px; height: 24px; margin: -12px 0 0 -12px; padding: 0; border: 0; background: transparent; cursor: pointer; display: grid; place-items: center; }
+.refpin i { display: grid; place-items: center; width: 24px; height: 24px; background: #2f3a3a; color: #fff; border: 2px solid var(--accent); border-radius: 50%; box-shadow: 0 0 0 1.5px var(--surface), 0 2px 5px rgba(0, 0, 0, .35); transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease; }
+.refpin i .ic { width: 16px; height: 16px; stroke-width: 2; --ic-d: inline; --ic-accent: var(--accent); }
+.refpin[aria-pressed="true"] i { background: var(--accent); color: #1f2626; border-color: #1f2626; }
+.refpin[aria-pressed="true"] i .ic { --ic-accent: #fff; }
+.refpin:hover, .refpin:focus-visible, .refpin[aria-pressed="true"] { z-index: 3; }
+.refpin:hover i, .refpin:focus-visible i { transform: scale(1.25); box-shadow: 0 0 0 1.5px var(--surface), 0 5px 12px rgba(0, 0, 0, .4); }
+@media (prefers-reduced-motion: reduce) { .refpin i { transition: none; } }
 .refpin:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+/* Auf Touchgeräten ist die sichtbare Plakette 24 px klein. Die Trefferfläche wächst deshalb unsichtbar
+   auf 44 px (Mindestmaß für Finger), das Zeichen bleibt gleich groß. */
+@media (pointer: coarse) { .refpin { width: 44px; height: 44px; margin: -22px 0 0 -22px; } }
 .refmap-legend { display: flex; flex-wrap: wrap; gap: var(--s3); font-size: 12px; color: var(--ink-muted); margin-top: var(--s2); }
 .refmap-legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; background: var(--accent); border: 1px solid var(--ink-strong); }
-.refmap-legend i.pin { transform: rotate(45deg); }
+.refmap-legend i.pin { width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center; background: #2f3a3a; color: #fff; border: 1.5px solid var(--accent); vertical-align: -5px; }
+.refmap-legend i.pin .ic { width: 12px; height: 12px; --ic-d: inline; --ic-accent: var(--accent); }
+.refmap-legend i.fe { width: auto; height: auto; padding: 0 3px; font: 700 9px/13px var(--font-display, var(--font-sans)); font-style: normal; color: var(--accent); background: var(--surface-inverse); border-color: var(--surface-inverse); border-radius: 2px; vertical-align: 0; }
+.refmap-stage .site-fe rect { fill: var(--surface-inverse); stroke: var(--accent); stroke-width: .6; }
+.refmap-stage .site-fe text { fill: var(--accent); font: 700 6px var(--font-display, var(--font-sans)); letter-spacing: .02em; pointer-events: none; }
 .refmap-detail .t { font-weight: 700; color: var(--ink-strong); }
 @media (max-width: 720px) { .refmap { grid-template-columns: 1fr; } .refmap-stage { margin: 0 auto; } }
 @media print { .refpin i { border-color: var(--print-ink); } }
@@ -1159,7 +1217,12 @@ circle.fc-track { fill: none; stroke: var(--chart-track); }
 /* ---- actionbar.css ---- */
 /* Aktionsleiste: Kopfzeile des aktiven Moduls direkt unter den Reitern (nicht sticky). Höchstens drei
    Knöpfe sichtbar (Handy: zwei, Kurzbeschriftung), der Rest im Menü „Mehr“. Farben nur aus Tokens. */
-.actionbar { position: relative; display: flex; align-items: center; gap: var(--s2); min-width: 0; background: var(--panel); border: 1px solid var(--line); border-top: 0; border-bottom: 1px solid var(--line-soft); padding: var(--s2) var(--s3); }
+.actionbar { position: relative; z-index: 2; display: flex; align-items: center; gap: var(--s2); min-width: 0; background: linear-gradient(180deg, var(--surface), var(--raised)); border: 1px solid var(--line); border-top: 0; border-left: 4px solid var(--accent); border-bottom: 1px solid var(--line); padding: var(--s2) var(--s3); box-shadow: 0 6px 14px -8px var(--shadow), inset 0 1px 0 color-mix(in srgb, var(--surface) 70%, transparent); margin-bottom: var(--s2); }
+/* Aktionsleiste mit räumlicher Tiefe (Wunsch David 07.10.2026): Verlauf, Akzentkante, Schatten; Knöpfe heben sich beim Überfahren. */
+.ab-btn { box-shadow: 0 1px 0 var(--line), 0 1px 3px color-mix(in srgb, var(--shadow) 45%, transparent); transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease; }
+.ab-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 10px -2px var(--shadow); }
+.ab-btn:active:not(:disabled) { transform: translateY(0); box-shadow: 0 1px 2px var(--shadow); }
+@media (prefers-reduced-motion: reduce) { .ab-btn { transition: none; } .ab-btn:hover:not(:disabled) { transform: none; } }
 @media (min-width: 760px) { .actionbar { padding-inline: var(--s4); } }
 .ab-label { flex: none; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--ink-muted); white-space: nowrap; }
 .ab-scroll { display: flex; gap: var(--s2); align-items: center; min-width: 0; flex: 0 1 auto; overflow-x: auto; scrollbar-width: none; padding: 4px; margin: -4px; }
@@ -2110,11 +2173,16 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
 .gm-legend i.gm-l-pin { background: var(--warn); border-color: var(--surface); }
 .gm-legend i.gm-l-site { background: var(--surface-inverse); border: 2px solid var(--accent); }
 .gm-legend i.gm-l-cluster { background: var(--surface-inverse); border: 2px solid var(--ink-inverse-muted); }
+.gm-legend i.gm-l-sb { border-radius: 50%; background: var(--accent); border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--line); }
 .gm-pin { display: block; width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--surface); background: var(--pin, var(--ink)); box-shadow: 0 1px 3px var(--shadow); }
 .gm-pin.approx { border-style: dashed; border-color: var(--ink-strong); }
 .gm-home .gm-pin { width: 16px; height: 16px; background: var(--surface-inverse); border: 3px solid var(--accent); }
-.gm-state-bubble { display: grid; place-items: center; border-radius: 50%; background: var(--surface-inverse); color: var(--ink-inverse); border: 2px solid var(--accent); box-shadow: 0 1px 4px var(--shadow); font: 700 13px var(--font-sans); font-variant-numeric: tabular-nums; cursor: zoom-in; }
-.gm-state-bubble:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+/* Bundesland-Kreis in der Deutschland-Ansicht: Zahl der Ausschreibungen je Land. --d setzt die Groesse
+   (waechst mit der Anzahl), --sbs skaliert sie bei weiter Ansicht herunter, damit auf dem Handy nichts ueberlappt. */
+.gm-sb { display: grid; place-items: center; width: var(--d, 34px); height: var(--d, 34px); box-sizing: border-box; border-radius: 50%; background: var(--accent); color: var(--on-accent); border: 2px solid var(--surface); box-shadow: 0 1px 4px var(--shadow), 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent); font: 700 13px var(--font-sans); font-variant-numeric: tabular-nums; cursor: pointer; transform: scale(var(--sbs, 1)); transform-origin: center; transition: transform .15s; }
+.gm-sb-wrap:hover .gm-sb, .gm-sb-wrap:focus-visible .gm-sb { transform: scale(calc(var(--sbs, 1) * 1.1)); }
+.gm-mode { margin: 4px 0 0; }
+@media (prefers-reduced-motion: reduce) { .gm-sb { transition: none; } }
 .gm-cluster { display: grid; place-items: center; border-radius: 50%; background: var(--surface-inverse); color: var(--ink-inverse); border: 2px solid var(--ink-inverse-muted); box-shadow: 0 0 0 4px color-mix(in srgb, var(--warn) 45%, transparent); font: 700 13px var(--font-sans); font-variant-numeric: tabular-nums; }
 
 /* ---- wissen.css ---- */
@@ -6126,7 +6194,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   app.ro = () => (S.readOnly ? true : null);
 
   /* ---------- Store-Anbindung und Abonnements ---------- */
-  const COLLECTIONS = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'knowledge', 'tasks', 'admin_requests', 'meetings', 'checkliste', 'kb_items', 'kb_projects'];
+  const COLLECTIONS = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'ref_photos', 'knowledge', 'tasks', 'admin_requests', 'meetings', 'checkliste', 'kb_items', 'kb_projects'];
   const DOC_WATCH = { settings: 'settings/general', meta: 'meta/sync', budget: 'budget/actuals', leadCounts: 'leads/counts', adminConfig: 'admin/config', adminDraft: 'admin/draft', adminRoles: 'admin/roles', planSnapshot: 'snapshot/aktuell' };
   for (const c of COLLECTIONS.concat(['briefings', 'activity', 'legacy_leads'])) S.data[c] = [];
 
@@ -6891,7 +6959,8 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       }
       for (const site of D.HOME_SITES) { const g = K.geocode(site.city, site.state); if (g) pts.push({ lat: g.lat, lon: g.lon, label: 'Standort ' + site.city.replace(/\s*\(.*\)/, ''), kind: 'home' }); }
     }
-    const geoMapEl = app.geoMap ? app.geoMap({ id: 'tenders', height: 440, label: 'Karte: Ausschreibungen nach Bundesland', states: stateInfo, onState: pick, points: pts, stateBubbles: true }) : null;
+    const geoMapEl = app.geoMap ? app.geoMap({ id: 'tenders', height: 440, label: 'Karte: Ausschreibungen nach Bundesland', states: stateInfo, onState: pick, points: pts,
+      stateBubbles: Object.fromEntries(Object.entries(stateInfo).map(([k, v]) => [k, v.n])) }) : null;
     return h('div', { class: 'section' },
       h('div', { class: 'tools', style: 'margin:0;justify-content:space-between' }, h('h3', { text: 'Kartenauswahl' }),
         h('div', { class: 'row' },
@@ -6985,7 +7054,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   const CH = FC.charts;
   const prevOf = key => app.chartPrev('marketing', key);
   const keep = (key, v) => app.chartKeep('marketing', key, v);
-  const ui = S.ui.mk2 = { showPast: true, openEvents: new Set(), pending: new Set(), metric: 'clicks', refQ: '', refService: '', refYear: '', refSel: null };
+  const ui = S.ui.mk2 = { showPast: true, openEvents: new Set(), pending: new Set(), metric: 'clicks', refQ: '', refService: '', refYear: '', refUse: '', refSel: null };
   const rerender = () => app.refresh();
   const today = () => app.today();
   const uniq = values => Array.from(new Set(values.map(str).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'de'));
@@ -7270,6 +7339,10 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     const q = ui.refQ.trim().toLowerCase();
     return S.data.references.filter(r => {
       if (!app.mkMatchRegion(r)) return false;
+      if (ui.refUse) {
+        const u = usageOf(r);
+        if (ui.refUse === 'none' ? !!u : !(u && u[ui.refUse] === true)) return false;
+      }
       const y = parseInt(r.year, 10);
       if (y && !app.mkSpanInRange(new Date(y, 0, 1), new Date(y, 11, 31))) return false;
       if (ui.refService && !arr(r.services).map(str).includes(ui.refService)) return false;
@@ -7305,30 +7378,166 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   const refTip = r => [str(r.title) || '(ohne Titel)', [str(r.place) || str(r.region), refDate(r) || 'Datum offen'].filter(Boolean).join(' · '), firstSentence(r.summary)].filter(Boolean).join('\n');
   app.refGeo = { DE_OUTLINE, proj, hasGeo, refDate, refUrl, MAP_W, MAP_H };
 
+  /* Feinere Karte (Wunsch David 07.10.2026): Grenzverlauf und Bundesländer aus den eingebetteten Geodaten,
+     Länder nach Zahl der Referenzen schattiert, Landeshauptstädte als eigene Marke (Kreis, nicht klickbar).
+     Hauptstädte in Ländern ohne Referenz bleiben grau. */
+  const CAPITALS = [
+    ['Schleswig-Holstein', 'Kiel', 54.32, 10.14, 6, -4], ['Hamburg', 'Hamburg', 53.55, 9.99, -5, -3, 'end'], ['Mecklenburg-Vorpommern', 'Schwerin', 53.63, 11.41, 6, -3],
+    ['Bremen', 'Bremen', 53.08, 8.80, -6, -3, 'end'], ['Niedersachsen', 'Hannover', 52.37, 9.73, 6, 4], ['Berlin', 'Berlin', 52.52, 13.40, 6, -4],
+    ['Brandenburg', 'Potsdam', 52.40, 13.06, 3, 10], ['Sachsen-Anhalt', 'Magdeburg', 52.13, 11.63, -5, 4, 'end'], ['Nordrhein-Westfalen', 'Düsseldorf', 51.23, 6.78, 6, 4],
+    ['Sachsen', 'Dresden', 51.05, 13.74, 6, 4], ['Thüringen', 'Erfurt', 50.98, 11.03, 6, 4], ['Hessen', 'Wiesbaden', 50.08, 8.24, 6, -3],
+    ['Rheinland-Pfalz', 'Mainz', 50.00, 8.27, 6, 9], ['Saarland', 'Saarbrücken', 49.24, 6.99, 4, 9], ['Baden-Württemberg', 'Stuttgart', 48.78, 9.18, 6, 4],
+    ['Bayern', 'München', 48.14, 11.58, 6, 4]];
+  // Kleine Länder zuerst prüfen: Berlin liegt in Brandenburg, Bremen in Niedersachsen.
+  const STATE_ORDER = ['Berlin', 'Bremen', 'Hamburg', 'Saarland', 'Schleswig-Holstein', 'Mecklenburg-Vorpommern', 'Niedersachsen', 'Brandenburg', 'Sachsen-Anhalt', 'Nordrhein-Westfalen',
+    'Sachsen', 'Thüringen', 'Hessen', 'Rheinland-Pfalz', 'Baden-Württemberg', 'Bayern'];
+  let GEO = null;
+  function geoShapes() {
+    if (GEO) return GEO;
+    try { const g = JSON.parse(document.getElementById('geoData').textContent); GEO = { de: (g.countries || {}).DE || [], states: g.states || {} }; }
+    catch (e) { GEO = { de: [], states: {} }; }
+    return GEO;
+  }
+  const ringPath = rings => rings.filter(r => Array.isArray(r) && r.length > 2).map(r => 'M' + r.map(([lng, lat]) => proj(lat, lng).map(v => v.toFixed(1)).join(',')).join('L') + 'Z').join('');
+  function inRing(lng, lat, ring) {
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const [xi, yi] = ring[i], [xj, yj] = ring[j];
+      if ((yi > lat) !== (yj > lat) && lng < (xj - xi) * (lat - yi) / (yj - yi) + xi) inside = !inside;
+    }
+    return inside;
+  }
+  function stateOf(r) {
+    if (hasGeo(r)) {
+      const st = geoShapes().states;
+      for (const name of STATE_ORDER) if ((st[name] || []).some(ring => inRing(r.lng, r.lat, ring))) return name;
+    }
+    return (M && M.canonState && (M.canonState(r.state) || M.canonState(r.region))) || '';
+  }
+  app.refStateOf = stateOf;
+  const shade = n => (n >= 4 ? 'bl n3' : n >= 2 ? 'bl n2' : n >= 1 ? 'bl n1' : 'bl');
+  /* Beschriftung soll den Umriss Deutschlands optisch nicht ueberschreiten (Wunsch David 07.10.2026).
+     spanAtY liefert die linke und rechte Kante des Umrisses auf Hoehe y, fitLabel rueckt den Text
+     hinein: zuerst durch Drehen der Seite, danach durch Verschieben. Schriftgroessen wie im CSS. */
+  const CAP_FS = 5.4, SITE_FS = 6.4;
+  let SPAN = null;
+  function spanRings() {
+    if (SPAN) return SPAN;
+    const de = geoShapes().de;
+    const src = (de && de.length ? de : [DE_OUTLINE]).filter(r => Array.isArray(r) && r.length > 2);
+    SPAN = src.map(r => r.map(([lng, lat]) => proj(lat, lng)));
+    return SPAN;
+  }
+  function spanAtY(y) {
+    let lo = Infinity, hi = -Infinity;
+    for (const ring of spanRings()) {
+      for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+        const [xi, yi] = ring[i], [xj, yj] = ring[j];
+        if ((yi > y) !== (yj > y)) {
+          const x = xi + (y - yi) * (xj - xi) / (yj - yi);
+          if (x < lo) lo = x;
+          if (x > hi) hi = x;
+        }
+      }
+    }
+    return hi > lo ? [lo, hi] : [0, MAP_W];
+  }
+  function fitLabel(px, py, dx, dy, anchor, text, fs) {
+    const y = py + dy, w = String(text).length * fs * 0.52, pad = 3.5;
+    const [lo, hi] = spanAtY(y);
+    if (w > hi - lo - 2 * pad) return { x: (lo + hi) / 2, y, anchor: 'middle' };
+    let a = anchor || 'start', x = px + dx;
+    const right = () => (a === 'end' ? x : a === 'middle' ? x + w / 2 : x + w);
+    const left = () => (a === 'end' ? x - w : a === 'middle' ? x - w / 2 : x);
+    const d = Math.abs(dx) || 5;
+    if (right() > hi - pad && a !== 'end' && px - d - w >= lo + pad) { a = 'end'; x = px - d; }
+    else if (left() < lo + pad && a === 'end' && px + d + w <= hi - pad) { a = 'start'; x = px + d; }
+    if (right() > hi - pad) x -= right() - (hi - pad);
+    if (left() < lo + pad) x += (lo + pad) - left();
+    return { x, y, anchor: a };
+  }
+  function mapLayers(svg, items) {
+    const { de, states } = geoShapes();
+    const counts = {};
+    for (const r of items) { const st = stateOf(r); if (st) counts[st] = (counts[st] || 0) + 1; }
+    if (!de.length) { svg.append(s('path', { class: 'land', d: 'M' + DE_OUTLINE.map(([lng, lat]) => proj(lat, lng).map(v => v.toFixed(1)).join(',')).join('L') + 'Z' })); return counts; }
+    svg.append(s('path', { class: 'land', d: ringPath(de) }));
+    // Größere Länder zuerst, damit Berlin, Bremen und Hamburg obenauf liegen.
+    for (const name of STATE_ORDER.slice().reverse()) {
+      if (!states[name]) continue;
+      const n = counts[name] || 0;
+      svg.append(s('path', { class: shade(n), 'data-state': name, d: ringPath(states[name]) }, s('title', {}, name + ': ' + (n ? n + (n === 1 ? ' Referenz' : ' Referenzen') : 'keine Referenz'))));
+    }
+    svg.append(s('path', { class: 'border', d: ringPath(de) }));
+    // Beschriftung nur innerhalb des Umrisses und ohne Überdeckung (auch nicht der Projektpunkte):
+    // Wunschseite zuerst (fitLabel), dann rechts, links, unten, oben; passt nichts, bleibt nur der Tooltip.
+    const deXY = spanRings();
+    const insideDE = (x, y) => deXY.some(r => { let inside = false; for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const [xi, yi] = r[i], [xj, yj] = r[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside; } return inside; });
+    const boxes = items.filter(hasGeo).map(r => { const [x, y] = proj(r.lat, r.lng); return [x - 5.4, y - 5.4, x + 5.4, y + 5.4]; });
+    const place = (x, y, text, rad, fs, pref) => {
+      const w = String(text).length * fs * 0.56;
+      const cands = [pref ? [pref.x, pref.y, pref.anchor] : null, [x + rad + 1.5, y + fs * 0.35, 'start'], [x - rad - 1.5, y + fs * 0.35, 'end'], [x, y + rad + fs + 0.4, 'middle'], [x, y - rad - 1.4, 'middle']].filter(Boolean);
+      for (const [tx, ty, a] of cands) {
+        const x0 = a === 'start' ? tx : a === 'end' ? tx - w : tx - w / 2, x1 = x0 + w, y0 = ty - fs, y1 = ty + 1;
+        if (![[x0, y0], [x1, y0], [x0, y1], [x1, y1]].every(([cx, cy]) => insideDE(cx, cy))) continue;
+        if (boxes.some(b => x0 < b[2] && b[0] < x1 && y0 < b[3] && b[1] < y1)) continue;
+        boxes.push([x0, y0, x1, y1]);
+        return { x: tx, y: ty, anchor: a };
+      }
+      return null;
+    };
+    const sites = SITES.map(([name, lat, lng, anchor]) => { const [x, y] = proj(lat, lng); boxes.push([x - 6, y - 4.2, x + 6, y + 4.2]); return [name, x, y, anchor]; });
+    for (const [name, x, y, anchor] of sites) {
+      // Feind-Standort als Logo-Marke: Anthrazit-Fläche mit „EF“ in Feind-Grün, den beiden Buchstaben
+      // der freigegebenen Kurzform E.FEIND (Wunsch David 07.10.2026).
+      const lb = place(x, y, name, 6, SITE_FS, fitLabel(x, y, anchor === 'end' ? -8.5 : 8.5, 3, anchor, name, SITE_FS));
+      svg.append(s('g', { class: 'site-fe' }, s('title', {}, 'Feind-Standort ' + name),
+          s('rect', { x: (x - 6).toFixed(1), y: (y - 4.2).toFixed(1), width: 12, height: 8.4, rx: 1.2 }),
+          s('text', { x: x.toFixed(1), y: (y + 2.1).toFixed(1), 'text-anchor': 'middle' }, 'EF')),
+        lb ? s('text', { class: 'site-l', 'text-anchor': lb.anchor, x: lb.x.toFixed(1), y: lb.y.toFixed(1) }, name) : null);
+    }
+    for (const [state, city, lat, lng] of CAPITALS) {
+      const [x, y] = proj(lat, lng);
+      boxes.push([x - 2.6, y - 2.6, x + 2.6, y + 2.6]);
+    }
+    for (const [state, city, lat, lng, dx, dy, anchor] of CAPITALS) {
+      const [x, y] = proj(lat, lng), on = !!counts[state];
+      const lb = place(x, y, city, 2.2, CAP_FS, fitLabel(x, y, dx, dy, anchor, city, CAP_FS));
+      svg.append(s('g', { class: 'cap' + (on ? ' on' : ''), 'data-state': state },
+        s('title', {}, city + ', Landeshauptstadt ' + state + (on ? '' : ' (keine Referenz)')),
+        s('circle', { cx: x.toFixed(1), cy: y.toFixed(1), r: 2.2 }),
+        lb ? s('text', { x: lb.x.toFixed(1), y: lb.y.toFixed(1), 'text-anchor': lb.anchor }, city) : null));
+    }
+    return counts;
+  }
+  function stateSummary(counts) {
+    const list = Object.entries(counts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'de'));
+    if (!list.length) return null;
+    return h('div', { class: 'refmap-states' }, h('span', { class: 'label', text: 'Referenzen je Bundesland' }),
+      h('div', { class: 'chips' }, list.map(([st, n]) => h('span', { class: 'chip soft', text: st + ' ' + n }))));
+  }
+
   function refMap(items) {
     const geo = items.filter(hasGeo), noGeo = items.filter(r => !hasGeo(r));
     const sel = items.find(r => r._id === ui.refSel) || null;
     const svg = s('svg', { viewBox: '0 0 ' + MAP_W + ' ' + MAP_H, 'aria-hidden': 'true', focusable: 'false' });
-    svg.append(s('path', { class: 'land', d: 'M' + DE_OUTLINE.map(([lng, lat]) => proj(lat, lng).map(v => v.toFixed(1)).join(',')).join('L') + 'Z' }));
+    const counts = mapLayers(svg, items);
     for (const r of geo) {
       const to = r.geo && r.geo.kind === 'strecke' && r.geo.to && hasGeo(r.geo.to) ? r.geo.to : null;
       if (to) { const [x1, y1] = proj(r.lat, r.lng), [x2, y2] = proj(to.lat, to.lng); svg.append(s('line', { class: 'route', x1, y1, x2, y2 })); }
-    }
-    for (const [name, lat, lng, anchor] of SITES) {
-      const [x, y] = proj(lat, lng);
-      svg.append(s('rect', { class: 'site', x: (x - 4).toFixed(1), y: (y - 4).toFixed(1), width: 8, height: 8 }), s('text', { class: 'site-l', 'text-anchor': anchor, x: (x + (anchor === 'end' ? -7 : 7)).toFixed(1), y: (y + 4).toFixed(1) }, name));
     }
     const stage = h('div', { class: 'refmap-stage', role: 'group', 'aria-label': 'Deutschlandkarte, schematisch, ' + geo.length + (geo.length === 1 ? ' Referenzprojekt' : ' Referenzprojekte') }, svg,
       geo.map(r => {
         const [x, y] = proj(r.lat, r.lng);
         return h('button', { class: 'refpin', type: 'button', id: 'refpin-' + r._id, style: 'left:' + (x / MAP_W * 100).toFixed(2) + '%;top:' + (y / MAP_H * 100).toFixed(2) + '%',
           'data-tip': refTip(r), 'aria-pressed': String(ui.refSel === r._id), 'aria-label': (str(r.title) || 'Referenz') + (str(r.place) ? ', ' + str(r.place) : '') + ', Details anzeigen',
-          onclick: () => { ui.refSel = ui.refSel === r._id ? null : r._id; rerender(); } }, h('i', { 'aria-hidden': 'true' }));
+          onclick: () => { ui.refSel = ui.refSel === r._id ? null : r._id; rerender(); } }, h('i', { 'aria-hidden': 'true' }, app.ico('schleifwelle')));
       }));
     let detail;
     if (sel) {
       const url = refUrl(sel);
       detail = h('article', { class: 'card accentbar refmap-detail', 'aria-live': 'polite' },
+        photoFigure(sel),
         h('div', { class: 'meta', text: [str(sel.place) || str(sel.region), refDate(sel) || 'Datum offen'].filter(Boolean).join(' · ') }),
         h('div', { class: 't', text: str(sel.title) || '(ohne Titel)' }),
         str(sel.summary) ? h('p', { class: 'small', text: str(sel.summary) }) : null,
@@ -7341,10 +7550,293 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       h('ul', { class: 'small', style: 'margin:0;padding-left:18px' }, noGeo.map(r => h('li', {}, h('button', { class: 'linkbtn', type: 'button', onclick: () => { ui.refSel = r._id; rerender(); } }, str(r.title) || '(ohne Titel)'))))) : null;
     return h('div', { class: 'section' }, h('h3', { text: 'Referenzkarte' }),
       h('div', { class: 'refmap' },
-        h('div', {}, stage, h('div', { class: 'refmap-legend' }, h('span', {}, h('i', { class: 'pin' }), 'Referenzprojekt'), h('span', {}, h('i'), 'Standort (Lübben, Wittenburg)'))),
-        h('div', { class: 'stack' }, detail, without,
-          h('p', { class: 'muted small', text: 'Schematische Karte; Orte nur aus den Referenzdaten. Gemeindekoordinaten gelten als ungefähr.' }))));
+        h('div', {}, stage, h('div', { class: 'refmap-legend' }, h('span', {}, h('i', { class: 'pin' }, app.ico('schleifwelle')), 'Referenzprojekt'), h('span', {}, h('i', { class: 'fe', text: 'EF' }), 'Feind-Standort (Lübben, Wittenburg)'),
+          h('span', {}, h('i', { class: 'cap-on' }), 'Landeshauptstadt'), h('span', {}, h('i', { class: 'cap-off' }), 'Landeshauptstadt, Land ohne Referenz'),
+          h('span', {}, h('i', { class: 'sh n1' }), h('i', { class: 'sh n2' }), h('i', { class: 'sh n3' }), '1 · 2–3 · 4+ Referenzen im Land'))),
+        h('div', { class: 'stack' }, detail, stateSummary(counts), without,
+          h('p', { class: 'muted small', text: 'Grenzen vereinfacht nach amtlichen Geodaten; Orte nur aus den Referenzdaten. Gemeindekoordinaten gelten als ungefähr. Bundesland über die Koordinaten bestimmt, sonst über die Region.' }))));
   }
+
+  /* ---------- Projektfoto je Referenz (Wunsch David 07.10.2026) ----------
+     Fotos liegen getrennt in ref_photos/<Referenz-ID>, damit ein Abgleich der Referenzen sie nicht überschreibt.
+     Beim Hochladen rechnet der Browser zwei Größen (1600 px und 480 px breit, WebP, sonst JPEG); das neu
+     kodierte Bild enthält keine Kamera- oder GPS-Daten mehr. Die große Fassung ist für die Internetseite gedacht. */
+  const PHOTO_W = 1600, THUMB_W = 480, PHOTO_MAX = 25 * 1024 * 1024;
+  const FOCUS = [['center 20%', 'Oben'], ['center 50%', 'Mitte'], ['center 80%', 'Unten']];
+  const photoOf = r => (S.data.ref_photos || []).find(p => p._id === r._id) || null;
+  const photoSrc = v => (v && v.id ? '/_blob/' + encodeURIComponent(v.id) : str(v && v.data));
+  const canEditPhoto = () => !!S.store && !S.readOnly;
+  async function photoAssets() {
+    try { return window.claude && window.claude.use ? await window.claude.use('assets') : null; } catch (e) { return null; }
+  }
+  const refSlug = r => [str(r.title), str(r.place) || str(r.region), str(r.year)].filter(Boolean).join(' ').toLowerCase()
+    .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+    .normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70) || 'referenz';
+  const defaultAlt = r => [str(r.title), str(r.place) || str(r.region)].filter(Boolean).join(', ') + ' – Fräsdienst-Service E. Feind';
+  async function decodeImage(file) {
+    if (window.createImageBitmap) { try { return await createImageBitmap(file, { imageOrientation: 'from-image' }); } catch (e) { /* Rückfall unten */ } }
+    const url = URL.createObjectURL(file);
+    try {
+      return await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('Bild nicht lesbar')); im.src = url; });
+    } finally { setTimeout(() => URL.revokeObjectURL(url), 1000); }
+  }
+  async function encodeImage(src, maxW) {
+    const sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height;
+    const k = Math.min(1, maxW / sw), w = Math.max(1, Math.round(sw * k)), hh = Math.max(1, Math.round(sh * k));
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = hh;
+    const ctx = cv.getContext('2d'); ctx.imageSmoothingQuality = 'high'; ctx.drawImage(src, 0, 0, w, hh);
+    const toBlob = (type, q) => new Promise(res => cv.toBlob(res, type, q));
+    let blob = await toBlob('image/webp', 0.82);
+    if (!blob || blob.type !== 'image/webp') blob = await toBlob('image/jpeg', 0.85);
+    if (!blob) throw new Error('Bild nicht kodierbar');
+    return { blob, w, h: hh, type: blob.type };
+  }
+  const blobToData = b => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); });
+  async function storePhotoFile(file) {
+    const img = await decodeImage(file);
+    const big = await encodeImage(img, PHOTO_W), small = await encodeImage(img, THUMB_W);
+    if (img.close) img.close();
+    const assets = await photoAssets();
+    if (assets) {
+      const ub = await assets.upload(big.blob), us = await assets.upload(small.blob);
+      return { full: { id: ub.id, w: big.w, h: big.h, type: big.type, bytes: ub.sizeBytes || big.blob.size }, thumb: { id: us.id, w: small.w, h: small.h, type: small.type } };
+    }
+    // Ohne Dateispeicher (lokale Datei im Browser): nur die kleine Fassung, direkt im Eintrag.
+    const data = await blobToData(small.blob);
+    return { full: { data, w: small.w, h: small.h, type: small.type, local: true }, thumb: { data, w: small.w, h: small.h, type: small.type } };
+  }
+  /* Platzhalterbild statt leerer Flaeche (Wunsch David 07.10.2026): jede Referenz zeigt ein Bildfeld
+     im Format 3:2. Ohne Foto steht dort ein Platzhalter, der den Foto-Dialog oeffnet; ohne Schreibrecht
+     bleibt er ein ruhiger Hinweis ohne Klickfunktion. */
+  function photoPlaceholder(r) {
+    const edit = canEditPhoto();
+    const inner = [app.ico('kamera'), h('span', { text: edit ? 'Projektfoto hinzufügen' : 'Noch kein Projektfoto' })];
+    const body = edit
+      ? h('button', { class: 'ph-in', type: 'button', 'aria-label': 'Projektfoto hinzufügen: ' + (str(r.title) || 'Referenz'), onclick: () => openPhotoDialog(r) }, inner)
+      : h('div', { class: 'ph-in' }, inner);
+    return h('figure', { class: 'ref-photo ph' }, body);
+  }
+  function photoFigure(r) {
+    const p = photoOf(r);
+    if (!p || !(p.thumb || p.full)) return photoPlaceholder(r);
+    const t = p.thumb || p.full, f = p.full || p.thumb;
+    const img = h('img', { src: photoSrc(t), alt: str(p.alt) || defaultAlt(r), loading: 'lazy', decoding: 'async', width: t.w || null, height: t.h || null,
+      srcset: p.full && p.thumb && p.full.id && p.thumb.id ? photoSrc(t) + ' ' + t.w + 'w, ' + photoSrc(f) + ' ' + f.w + 'w' : null,
+      sizes: '(max-width: 640px) 100vw, 360px' });
+    return h('figure', { class: 'ref-photo', style: '--pos:' + (str(p.focus) || 'center 50%') }, img,
+      str(p.credit) ? h('figcaption', { text: 'Foto: ' + str(p.credit) }) : null,
+      canEditPhoto() ? h('button', { class: 'ref-photo-edit', type: 'button', 'aria-label': 'Projektfoto bearbeiten: ' + (str(r.title) || 'Referenz'), onclick: () => openPhotoDialog(r) }, app.ico('stift')) : null);
+  }
+  function webSnippet(r, p) {
+    const sl = refSlug(r), f = p.full || {}, t = p.thumb || {};
+    const ext = (f.type === 'image/jpeg') ? 'jpg' : 'webp';
+    const esc = v => str(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    const cap = [str(r.title), str(r.place) || str(r.region), str(r.year)].filter(Boolean).join(' · ') + (str(p.credit) ? ' – Foto: ' + str(p.credit) : '');
+    return '<figure class="feind-referenz">\n  <img src="' + sl + '.' + ext + '"\n       srcset="' + sl + '-480.' + ext + ' ' + (t.w || 480) + 'w, ' + sl + '.' + ext + ' ' + (f.w || 1600) + 'w"\n' +
+      '       sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 33vw"\n       width="' + (f.w || '') + '" height="' + (f.h || '') + '"\n' +
+      '       alt="' + esc(p.alt || defaultAlt(r)) + '" loading="lazy" decoding="async"\n       style="width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;object-position:' + esc(p.focus || 'center 50%') + '">\n' +
+      '  <figcaption>' + esc(cap) + '</figcaption>\n</figure>';
+  }
+  async function downloadPhoto(r, v, suffix) {
+    try {
+      const res = await fetch(photoSrc(v));
+      const bytes = new Uint8Array(await res.arrayBuffer());
+      const ext = v.type === 'image/jpeg' ? 'jpg' : 'webp';
+      const out = await app.offerBinary(refSlug(r) + suffix + '.' + ext, v.type || 'image/webp', bytes);
+      if (out && (out.how === 'saved' || out.how === 'download')) app.toast('Bild bereitgestellt.');
+    } catch (e) { app.toast('Bild nicht verfügbar.', true); }
+  }
+  function openPhotoDialog(r) {
+    const p = photoOf(r) || {};
+    const ro = !canEditPhoto();
+    let file = null;
+    const prev = h('div', { class: 'ref-photo-prev' });
+    const paint = (src) => prev.replaceChildren(src ? h('img', { src, alt: '' }) : h('span', { class: 'muted small', text: 'Noch kein Foto gewählt.' }));
+    paint(p.thumb || p.full ? photoSrc(p.full && p.full.id ? p.full : (p.thumb || p.full)) : '');
+    const msg = h('p', { class: 'small', role: 'status' });
+    const inp = h('input', { type: 'file', accept: 'image/*', class: 'file-native', id: 'rp-file', tabindex: '-1', 'aria-hidden': 'true', disabled: ro || null });
+    inp.addEventListener('change', () => {
+      const f = inp.files && inp.files[0];
+      if (!f) return;
+      if (!/^image\//.test(f.type)) { msg.textContent = 'Bitte eine Bilddatei wählen (JPG, PNG, WebP, HEIC).'; return; }
+      if (f.size > PHOTO_MAX) { msg.textContent = 'Datei zu groß (höchstens 25 MB).'; return; }
+      file = f; msg.textContent = f.name + ' gewählt. Wird beim Speichern verkleinert (1600 und 480 px).';
+      const u = URL.createObjectURL(f); paint(u); setTimeout(() => URL.revokeObjectURL(u), 60000);
+    });
+    const pick = h('label', { class: 'btn' + (ro ? ' is-disabled' : ''), role: 'button', tabindex: ro ? '-1' : '0', onkeydown: e => { if ((e.key === 'Enter' || e.key === ' ') && !ro) { e.preventDefault(); inp.click(); } } },
+      app.ico('plus'), p.thumb || p.full ? 'Anderes Foto wählen' : 'Foto wählen', inp);
+    const alt = h('input', { type: 'text', id: 'rp-alt', maxlength: '160', value: str(p.alt) || defaultAlt(r), disabled: ro || null });
+    const credit = h('input', { type: 'text', id: 'rp-credit', maxlength: '80', value: str(p.credit), placeholder: 'z. B. Fräsdienst Feind oder Name der Fotografin', disabled: ro || null });
+    const focus = app.dropdown('rp-focus', FOCUS, str(p.focus) || 'center 50%'); focus.disabled = ro;
+    const rights = h('input', { type: 'checkbox', id: 'rp-rights', checked: p.rightsOk === true, disabled: ro || null });
+    const has = !!(p.thumb || p.full);
+    const online = !app.mkUsageOnline || app.mkUsageOnline(r);
+    const web = has ? h('div', { class: 'card' }, h('h4', { text: 'Für die Internetseite' }),
+      online ? null : h('p', { class: 'muted small', text: 'Diese Referenz ist nicht für die Website freigegeben (Verwendung im Datensatz). Download und HTML-Baustein sind gesperrt.' }),
+      p.full && p.full.local ? h('p', { class: 'muted small', text: 'Lokal gespeichert nur in kleiner Fassung. Für die Website das Foto im geteilten Cockpit in claude.ai hochladen.' }) : null,
+      h('div', { class: 'row' },
+        h('button', { class: 'btn small', type: 'button', disabled: p.rightsOk !== true || !online || null, onclick: () => downloadPhoto(r, p.full || p.thumb, '') }, app.ico('down'), 'Bild groß (' + ((p.full || {}).w || '') + ' px)'),
+        h('button', { class: 'btn small', type: 'button', disabled: p.rightsOk !== true || !online || null, onclick: () => downloadPhoto(r, p.thumb || p.full, '-480') }, app.ico('down'), 'Bild klein (480 px)'),
+        h('button', { class: 'btn small', type: 'button', disabled: p.rightsOk !== true || !online || null, onclick: async () => { try { await app.copyText(webSnippet(r, p)); app.toast('HTML-Baustein kopiert.'); } catch (e) { app.toast('Kopieren nicht möglich.', true); } } }, app.ico('copy'), 'HTML-Baustein kopieren')),
+      h('p', { class: 'muted small', text: p.rightsOk === true ? 'Dateinamen passen zum HTML-Baustein: ' + refSlug(r) + '.webp und ' + refSlug(r) + '-480.webp. Seitenverhältnis 3:2, lädt verzögert, mit Alternativtext.' : 'Erst nach bestätigten Nutzungsrechten verfügbar (Haken oben, dann speichern).' })) : null;
+    app.modal({
+      title: 'Projektfoto · ' + (str(r.title) || 'Referenz'),
+      body: [prev, h('div', { class: 'row' }, pick), msg,
+        h('div', { class: 'form-grid' }, app.field('Alternativtext (Website, Barrierefreiheit)', alt, { hint: 'Was ist zu sehen? Keine Namen von Personen.' }), app.field('Fotonachweis', credit), app.field('Bildausschnitt', focus)),
+        h('label', { class: 'check', for: 'rp-rights' }, rights, ' Nutzungsrechte für Cockpit und Internetseite liegen vor; keine erkennbaren Personen ohne Einwilligung.'),
+        h('p', { class: 'muted small', text: 'Kamera- und GPS-Daten werden beim Verkleinern entfernt. Bei Fremdfotos, Kundengeländen oder erkennbaren Personen: Bitte Rechtsabteilung prüfen.' }),
+        web],
+      actions: ro ? [{ label: 'Schließen', primary: true }] : [
+        has ? { label: 'Foto entfernen', danger: true, spacer: true, onClick: async () => {
+          if (!await app.write('ref_photos/' + r._id, 'delete')) return true;
+          app.log('Referenzfoto entfernt', str(r.title)); app.toast('Foto entfernt.');
+        } } : null,
+        { label: 'Abbrechen' },
+        { label: 'Speichern', primary: true, onClick: async () => {
+          if (!file && !has) { msg.textContent = 'Bitte zuerst ein Foto wählen.'; return true; }
+          if (!alt.value.trim()) { msg.textContent = 'Bitte einen Alternativtext eingeben.'; alt.focus(); return true; }
+          const meta = { refId: r._id, alt: alt.value.trim().slice(0, 160), credit: credit.value.trim().slice(0, 80), focus: focus.value, rightsOk: rights.checked, updatedAt: new Date().toISOString(), by: (S.me && S.me.id) || null };
+          let doc = meta;
+          if (file) {
+            msg.textContent = 'Foto wird verkleinert und gespeichert …';
+            try { doc = Object.assign({}, meta, await storePhotoFile(file)); }
+            catch (e) { msg.textContent = 'Foto konnte nicht verarbeitet werden' + (e && e.code ? ' (' + e.code + ')' : '') + '. Anderes Format probieren (JPG oder PNG).'; return true; }
+          } else doc = Object.assign({ full: p.full || null, thumb: p.thumb || null }, meta);
+          if (!await app.write('ref_photos/' + r._id, 'set', doc)) return true;
+          app.log(file ? 'Referenzfoto gespeichert' : 'Referenzfoto-Angaben geändert', str(r.title));
+          app.toast(file ? 'Foto gespeichert.' : 'Angaben gespeichert.');
+        } }].filter(Boolean),
+      focus: '#rp-alt'
+    });
+    const box = document.querySelector('#modalRoot .modal');
+    if (box) box.classList.add('wide');
+  }
+  app.refPhotoDialog = id => { const r = (S.data.references || []).find(x => x._id === id); if (r) openPhotoDialog(r); };
+
+  /* ---------- Verwendung und neues Referenzprojekt (Wunsch David 07.10.2026) ----------
+     Jede Referenz traegt, wofuer sie freigegeben ist: Website, Printmedien oder nur intern.
+     Mehrfachauswahl; bei Print ist das Medium Pflicht, bei intern der Zweck. Altbestand ohne
+     Angabe bleibt gueltig und zaehlt als „Verwendung offen“. */
+  const usageOf = r => (r && r.usage && typeof r.usage === 'object' ? r.usage : null);
+  function usageParts(r) {
+    const u = usageOf(r);
+    if (!u) return [];
+    const out = [];
+    if (u.online === true) out.push(['ext', 'Website']);
+    if (u.print === true) out.push(['presse', 'Print: ' + (str(u.printMedia) || 'Medium offen')]);
+    if (u.internal === true) out.push(['schloss', 'Intern: ' + (str(u.internalPurpose) || 'Zweck offen')]);
+    return out;
+  }
+  app.mkUsageText = r => usageParts(r).map(x => x[1]).join(' · ') || 'Verwendung offen';
+  // Ohne Angabe bleibt alles wie bisher erlaubt; nur eine ausdrueckliche Entscheidung sperrt die Website.
+  app.mkUsageOnline = r => { const u = usageOf(r); return !u || u.online === true; };
+  function usageChips(r) {
+    const parts = usageParts(r);
+    return parts.length ? h('div', { class: 'chips' }, parts.map(([ic, t]) => h('span', { class: 'chip soft', title: 'Verwendung' }, app.ico(ic), t))) : null;
+  }
+
+  const PERSONAL = [/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i, /(\+|\b0)\d[\d\s/-]{6,}\d/];
+  const canWriteRef = () => !!S.store && !S.readOnly;
+  function openRefForm(ex) {
+    const ro = !canWriteRef();
+    const old = ex && typeof ex === 'object' ? ex : null;
+    const ou = (old && old.usage && typeof old.usage === 'object') ? old.usage : {};
+    const msg = h('p', { class: 'np-msg', role: 'status' });
+    const inp = (id, o) => h('input', Object.assign({ type: 'text', id, disabled: ro || null }, o || {}));
+    const title = inp('rf-title', { maxlength: '120', placeholder: 'z. B. BAB 7 – Fahrbahnsanierung', value: old ? str(old.title) : '' });
+    const place = inp('rf-place', { maxlength: '80', placeholder: 'z. B. Nossen oder AS Hildesheim–Drammetal', value: old ? str(old.place) : '' });
+    const region = app.dropdown('rf-region', [['', '–']].concat((D.BUNDESLAENDER || []).map(b => [b, b])), old ? str(old.region) : ''); region.disabled = ro;
+    const year = inp('rf-year', { type: 'number', min: '1990', max: '2040', value: old && old.year ? String(old.year) : '' });
+    const date = inp('rf-date', { type: 'month', value: old ? str(old.date).slice(0, 7) : '' });
+    const services = inp('rf-services', { maxlength: '160', placeholder: 'Kaltfräsen, Precision Grinding', value: old ? arr(old.services).map(str).join(', ') : '' });
+    const summary = h('textarea', { id: 'rf-summary', rows: '3', maxlength: '400', disabled: ro || null, placeholder: 'Ein bis zwei Sätze: Aufgabe und Ergebnis.' });
+    if (old) summary.value = str(old.summary);
+    const facts = h('textarea', { id: 'rf-facts', rows: '3', maxlength: '400', disabled: ro || null, placeholder: 'je Zeile ein Fakt, z. B. 12.000 m² · Wirtgen W 210 Fi' });
+    if (old) facts.value = arr(old.facts).map(str).join('\n');
+    const client = inp('rf-client', { maxlength: '80', value: old ? str(old.client) : '' });
+    const approved = h('input', { type: 'checkbox', id: 'rf-approved', checked: !!(old && old.clientApproved === true), disabled: ro || null });
+    const url = inp('rf-url', { type: 'url', maxlength: '300', placeholder: 'https://www.fraesdienst-feind.de/…', value: old ? str(old.projectUrl) : '' });
+    const lat = inp('rf-lat', { type: 'number', step: '0.0001', min: '47', max: '55.2', placeholder: '51.0580', value: old && typeof old.lat === 'number' ? String(old.lat) : '' });
+    const lng = inp('rf-lng', { type: 'number', step: '0.0001', min: '5.5', max: '15.3', placeholder: '13.2980', value: old && typeof old.lng === 'number' ? String(old.lng) : '' });
+    const source = inp('rf-source', { maxlength: '120', value: old ? str(old.source) : 'Eingabe im Cockpit · ' + fmtD(today()) });
+    const uOnline = h('input', { type: 'checkbox', id: 'rf-u-online', checked: ou.online === true, disabled: ro || null });
+    const uPrint = h('input', { type: 'checkbox', id: 'rf-u-print', checked: ou.print === true, disabled: ro || null });
+    const uIntern = h('input', { type: 'checkbox', id: 'rf-u-intern', checked: ou.internal === true, disabled: ro || null });
+    const printMedia = inp('rf-print-media', { maxlength: '120', placeholder: 'z. B. Straßen- und Tiefbau 3/2027, Messeflyer InfraTech', value: str(ou.printMedia) });
+    const internPurpose = inp('rf-intern-zweck', { maxlength: '120', placeholder: 'z. B. Angebotsmappe, Schulung, GL-Vorlage', value: str(ou.internalPurpose) });
+    const sync = () => { printMedia.disabled = ro || !uPrint.checked; internPurpose.disabled = ro || !uIntern.checked; };
+    uPrint.addEventListener('change', sync); uIntern.addEventListener('change', sync); sync();
+    const v = el => str(el.value).trim();
+
+    app.modal({
+      title: old ? 'Referenz bearbeiten · ' + (str(old.title) || 'ohne Titel') : 'Neues Referenzprojekt',
+      body: [
+        h('p', { class: 'muted small', text: 'Pflicht sind Titel und mindestens eine Verwendung. Ort, Datum und Projektseite sind die Angaben, die der Referenzkarte und der Referenzmappe bisher fehlen – bitte gleich mit eintragen.' }),
+        h('div', { class: 'form-grid' },
+          app.field('Titel', title, { wide: true, hint: 'Pflichtfeld. Projekt, nicht Kunde.' }),
+          app.field('Ort oder Abschnitt', place, { hint: 'Erscheint auf der Karte und in der Referenzmappe.' }),
+          app.field('Bundesland', region),
+          app.field('Jahr', year),
+          app.field('Monat und Jahr', date, { hint: 'Genauer als das Jahr; steht in der Kartenblase.' }),
+          app.field('Leistungen', services, { hint: 'Mit Komma trennen.' }),
+          app.field('Projektseite (https)', url, { hint: 'Ziel des Knopfes „Mehr zum Projekt“.' }),
+          app.field('Breite (lat)', lat, { hint: 'Nur zusammen mit der Länge; ohne beides steht das Projekt unter der Karte.' }),
+          app.field('Länge (lng)', lng),
+          app.field('Kunde', client, { hint: 'Erscheint nur mit Freigabe.' }),
+          app.field('Quelle', source)),
+        h('label', { class: 'check', for: 'rf-approved' }, approved, ' Kundenfreigabe liegt dokumentiert vor'),
+        app.field('Zusammenfassung', summary, { wide: true }),
+        app.field('Fakten', facts, { wide: true }),
+        h('div', { class: 'card np-panel' },
+          h('h4', { text: 'Verwendung (Mehrfachauswahl, Pflicht)' }),
+          h('label', { class: 'check', for: 'rf-u-online' }, uOnline, ' Online auf der Website fraesdienst-feind.de'),
+          h('label', { class: 'check', for: 'rf-u-print' }, uPrint, ' Nur in Printmedien'),
+          app.field('Printmedium benennen', printMedia, { wide: true }),
+          h('label', { class: 'check', for: 'rf-u-intern' }, uIntern, ' Nur interner Zweck'),
+          app.field('Interner Zweck benennen', internPurpose, { wide: true }),
+          h('p', { class: 'muted small', text: 'Ohne Haken bei „Online“ bietet der Foto-Dialog später keinen Website-Baustein an. Bei Fremdfotos, Kundengeländen oder erkennbaren Personen: Bitte Rechtsabteilung prüfen.' })),
+        msg],
+      actions: ro ? [{ label: 'Schließen', primary: true }] : [
+        { label: 'Abbrechen' },
+        { label: old ? 'Speichern' : 'Anlegen', primary: true, onClick: async () => {
+          const t = v(title);
+          if (!t) { msg.textContent = 'Bitte einen Titel eingeben.'; title.focus(); return true; }
+          if (!uOnline.checked && !uPrint.checked && !uIntern.checked) { msg.textContent = 'Bitte mindestens eine Verwendung wählen.'; uOnline.focus(); return true; }
+          if (uPrint.checked && !v(printMedia)) { msg.textContent = 'Bitte das Printmedium benennen.'; printMedia.focus(); return true; }
+          if (uIntern.checked && !v(internPurpose)) { msg.textContent = 'Bitte den internen Zweck benennen.'; internPurpose.focus(); return true; }
+          const u = v(url);
+          if (u && !/^https:\/\//i.test(u)) { msg.textContent = 'Die Projektseite muss mit https:// beginnen.'; url.focus(); return true; }
+          const la = v(lat) === '' ? null : Number(v(lat)), ln = v(lng) === '' ? null : Number(v(lng));
+          if ((la === null) !== (ln === null)) { msg.textContent = 'Breite und Länge immer zusammen eintragen.'; (la === null ? lat : lng).focus(); return true; }
+          if (la !== null && !(la > 47 && la < 55.2 && ln > 5.5 && ln < 15.3)) { msg.textContent = 'Die Koordinaten liegen außerhalb von Deutschland.'; lat.focus(); return true; }
+          const all = [t, v(place), v(summary), v(facts), v(client), v(printMedia), v(internPurpose), v(source)].join(' ');
+          if (PERSONAL.some(re => re.test(all))) { msg.textContent = 'Keine personenbezogenen Daten speichern: E-Mail-Adresse oder Telefonnummer gefunden. Kontakte gehören ins CRM.'; return true; }
+          const id = old ? old._id : H.uid('ref-');
+          const doc = {
+            title: t, place: v(place), region: region.value || '', year: v(year) || null,
+            date: (old && str(old.date).slice(0, 7) === v(date) ? str(old.date) : v(date)),
+            services: v(services).split(',').map(x => x.trim()).filter(Boolean),
+            summary: v(summary), facts: v(facts).split('\n').map(x => x.trim()).filter(Boolean),
+            client: v(client), clientApproved: approved.checked === true,
+            projectUrl: u, lat: la, lng: ln, source: v(source) || 'Eingabe im Cockpit',
+            usage: { online: uOnline.checked, print: uPrint.checked, printMedia: uPrint.checked ? v(printMedia) : '',
+              internal: uIntern.checked, internalPurpose: uIntern.checked ? v(internPurpose) : '',
+              setAt: new Date().toISOString(), by: (S.me && S.me.id) || null }
+          };
+          if (old) doc.updatedAt = new Date().toISOString(); else doc.createdAt = new Date().toISOString();
+          if (!await app.write('references/' + id, old ? 'update' : 'set', doc)) return true;
+          app.log(old ? 'Referenz geändert' : 'Referenz angelegt', t + (doc.place ? ' · ' + doc.place : ''));
+          app.toast(old ? 'Änderungen gespeichert.' : 'Referenzprojekt angelegt. Foto fügst du direkt in der Karte hinzu.');
+          ui.refQ = ''; ui.refService = ''; ui.refYear = ''; ui.refUse = '';
+          rerender();
+        } }],
+      focus: '#rf-title'
+    });
+    const box = document.querySelector('#modalRoot .modal');
+    if (box) box.classList.add('wide');
+  }
+  app.mkNewReference = openRefForm;
+  app.mkCanWriteRef = canWriteRef;
 
   app.module('marketing', 'references', {
     count: () => filteredRefs().length,
@@ -7357,21 +7849,25 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       const tools = h('div', { class: 'tools' }, app.mkSharedFilters(),
         h('div', { class: 'field', style: 'flex:1 1 220px' }, h('label', { for: 'r-q', text: 'Suche' }), q),
         app.field('Leistung', app.dropdown('r-service', [['', 'Alle Leistungen'], ...services.map(x => [x, x])], ui.refService, v => { ui.refService = v; rerender(); })),
-        app.field('Jahr', app.dropdown('r-year', [['', 'Alle Jahre'], ...years.map(x => [x, x])], ui.refYear, v => { ui.refYear = v; rerender(); })));
+        app.field('Jahr', app.dropdown('r-year', [['', 'Alle Jahre'], ...years.map(x => [x, x])], ui.refYear, v => { ui.refYear = v; rerender(); })),
+        app.field('Verwendung', app.dropdown('r-use', [['', 'Alle'], ['online', 'Website'], ['print', 'Print'], ['internal', 'Intern'], ['none', 'Verwendung offen']], ui.refUse, v => { ui.refUse = v; rerender(); })));
       const head = panelHead('Referenz-Bibliothek', items.length + ' von ' + S.data.references.length, null, app.mkSrcNote('references') + ' · Kundennamen nur mit Freigabe (clientApproved)');
       if (!items.length) return [head, tools, app.mkEmpty('references', S.data.references.length > 0)];
       const list = items.slice().sort((a, b) => (parseInt(b.year, 10) || 0) - (parseInt(a.year, 10) || 0) || str(a.title).localeCompare(str(b.title), 'de'));
-      return [head, tools, refMap(list), h('div', { class: 'refs' }, list.map(r => h('article', { class: 'card' },
+      return [head, tools, refMap(list), h('div', { class: 'refs' }, list.map(r => h('article', { class: 'card' + (photoOf(r) ? ' has-photo' : '') },
+        photoFigure(r),
         h('div', { class: 'meta', text: [refDate(r) || str(r.year), str(r.place) || str(r.region)].filter(Boolean).join(' · ') || 'Jahr und Region offen' }),
         h('div', { class: 't', text: str(r.title) || '(ohne Titel)' }),
         r.clientApproved === true && str(r.client) ? h('div', {}, h('span', { class: 'label', text: 'Kunde ' }), str(r.client)) : h('div', { class: 'noclient small', text: 'Kunde nicht freigegeben' }),
         arr(r.services).length ? h('div', { class: 'chips' }, arr(r.services).map(x => h('span', { class: 'chip soft', text: str(x) }))) : null,
+        usageChips(r),
         str(r.summary) ? h('div', { class: 'small', text: str(r.summary) }) : null,
         arr(r.facts).length ? h('ul', {}, arr(r.facts).map(f => h('li', { text: str(f) }))) : null,
         str(r.feedback) ? h('div', { class: 'small muted', text: 'Feedback: ' + str(r.feedback) }) : null,
         arr(r.files).length ? h('div', { class: 'stack' }, h('span', { class: 'label', text: 'Dateien' }), arr(r.files).map(f => h('span', { class: 'path', text: str(f) }))) : null,
         refUrl(r) ? h('div', { class: 'small' }, h('a', { href: refUrl(r), target: '_blank', rel: 'noopener noreferrer' }, app.icon('ext'), ' Mehr zum Projekt')) : null,
-        str(r.source) ? h('div', { class: 'muted small', text: 'Quelle: ' + str(r.source) }) : null)))];
+        str(r.source) ? h('div', { class: 'muted small', text: 'Quelle: ' + str(r.source) }) : null,
+        canWriteRef() ? h('div', { class: 'row' }, h('button', { class: 'btn small ghost', type: 'button', 'aria-label': 'Referenz bearbeiten: ' + (str(r.title) || 'ohne Titel'), onclick: () => openRefForm(r) }, app.ico('stift'), 'Bearbeiten')) : null)))];
     }
   });
 })();
@@ -9180,7 +9676,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
 
   /* ---------- Daten: Sicherung, Import über den Migrationsplan, alte Marketing-Leads ---------- */
   const ALL_COLLECTIONS = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'knowledge', 'tasks', 'briefings', 'activity',
-    'admin_requests', 'leads', 'settings', 'meta', 'budget', 'admin', 'admin_links', 'meetings', 'checkliste', 'kb_items', 'kb_text', 'kb_projects'];
+    'admin_requests', 'leads', 'settings', 'meta', 'budget', 'admin', 'admin_links', 'ref_photos', 'meetings', 'checkliste', 'kb_items', 'kb_text', 'kb_projects'];
   const strip = r => { const d = Object.assign({}, r); delete d._id; return d; };
   async function dumpAll(masked) {
     const out = {};
@@ -11633,16 +12129,18 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       blocks: [
         { p: 'Kundennamen erscheinen nur mit dokumentierter Freigabe (clientApproved). Preise und Beträge gehören nicht in Marketing-Material.', style: 'muted' },
         { h: 'Referenzen' },
-        { table: { cols: [{ t: 'Datum', w: 20 }, { t: 'Projekt' }, { t: 'Kunde', w: 40 }, { t: 'Leistungen', w: 36 }, { t: 'geprüft', w: 17, align: 'center' }],
+        { table: { cols: [{ t: 'Datum', w: 20 }, { t: 'Projekt' }, { t: 'Kunde', w: 34 }, { t: 'Leistungen', w: 30 }, { t: 'Verwendung', w: 32 }, { t: 'geprüft', w: 17, align: 'center' }],
           rows: items.map((r, k) => [(app.refGeo ? app.refGeo.refDate(r) : '') || str(r.year) || '–', { t: str(r.title) || '(ohne Titel)', sub: [str(r.place) || str(r.region), str(r.summary), ...arr(r.facts).map(str)].filter(Boolean).join(' · ') },
-            r.clientApproved === true ? client(r) : mut(client(r)), arr(r.services).map(str).join(', ') || '–', chk('Ref_' + k)]), empty: 'Keine Referenzen für die aktuellen Filter.' } },
+            r.clientApproved === true ? client(r) : mut(client(r)), arr(r.services).map(str).join(', ') || '–',
+            app.mkUsageText ? (app.mkUsageText(r) === 'Verwendung offen' ? mut('Verwendung offen') : app.mkUsageText(r)) : '–', chk('Ref_' + k)]), empty: 'Keine Referenzen für die aktuellen Filter.' } },
         { field: { label: 'Fehlende Freigaben und Fotos', name: 'Freigaben', h: 54, optional: true } }
       ]
     };
   }
-  const refsCsv = () => H.toCsv(['Jahr', 'Datum', 'Titel', 'Region', 'Ort', 'Breite', 'Länge', 'Kunde', 'Leistungen', 'Zusammenfassung', 'Projektseite', 'Quelle'],
+  const refsCsv = () => H.toCsv(['Jahr', 'Datum', 'Titel', 'Region', 'Ort', 'Breite', 'Länge', 'Kunde', 'Leistungen', 'Zusammenfassung', 'Projektseite', 'Verwendung', 'Quelle'],
     (app.mkFilteredRefs ? app.mkFilteredRefs() : S.data.references).map(r => [str(r.year), str(r.date), str(r.title), str(r.region), str(r.place), typeof r.lat === 'number' ? r.lat : '', typeof r.lng === 'number' ? r.lng : '',
-      r.clientApproved === true ? str(r.client) : 'nicht freigegeben', arr(r.services).map(str).join(', '), str(r.summary), H.safeUrl(r.projectUrl) || '', str(r.source)].map(v => (typeof v === 'string' ? scrub(v) : v))));
+      r.clientApproved === true ? str(r.client) : 'nicht freigegeben', arr(r.services).map(str).join(', '), str(r.summary), H.safeUrl(r.projectUrl) || '',
+      app.mkUsageText ? app.mkUsageText(r) : '', str(r.source)].map(v => (typeof v === 'string' ? scrub(v) : v))));
 
 
   function specBibliothek() {
@@ -12090,7 +12588,12 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     'marketing:events': () => [pdf('e', 'Checklisten (PDF)', 'Event-Checklisten', specEvents),
       ics('e-ics', 'Events in den Kalender (ICS)', 'Feind-Events.ics', eventsIcs), print('e', 'Event-Checklisten', specEvents)],
     'marketing:seo': () => [pdf('s', 'SEO-Bericht (PDF)', 'SEO-Bericht', specSeo), csv('s-csv', 'Keywords als CSV', 'Feind-SEO-Keywords.csv', seoCsv), print('s', 'SEO-Bericht', specSeo)],
-    'marketing:references': () => [pdf('r', 'Referenzmappe (PDF)', 'Referenzmappe', specRefs), csv('r-csv', 'Referenzen als CSV', 'Feind-Referenzen.csv', refsCsv), print('r', 'Referenzmappe', specRefs)],
+    'marketing:references': () => [
+      { id: 'r-new', label: 'Neues Referenzprojekt', short: 'Neu', icon: 'plus', main: true,
+        tip: 'Legt ein Referenzprojekt über ein strukturiertes Formular an: Ort, Datum, Leistungen, Kundenfreigabe und die Verwendung (Website, Print, nur intern).',
+        disabled: !(app.mkNewReference && app.mkCanWriteRef && app.mkCanWriteRef()),
+        run: () => app.mkNewReference && app.mkNewReference() },
+      pdf('r', 'Referenzmappe (PDF)', 'Referenzmappe', specRefs), csv('r-csv', 'Referenzen als CSV', 'Feind-Referenzen.csv', refsCsv), print('r', 'Referenzmappe', specRefs)],
     'marketing:bibliothek': () => [{ id: 'kb-open', label: 'Upload-Ordner öffnen', short: 'Upload', icon: 'ext', main: true, tip: 'Öffnet den Dropbox-Ordner KI-Agent/Datenbank-UPLOADs in einem neuen Tab. Dort abgelegte Dateien verarbeitet Claude zum nächsten Termin.', run: () => { const w = window.open(app.kbInboxUrl(), '_blank', 'noopener'); if (!w) copy(app.kbInboxUrl(), 'Link zum Upload-Ordner kopiert.'); } },
       pdf('kb', 'Bestandsliste (PDF)', 'Wissensbibliothek', specBibliothek),
       csv('kb-csv', 'Bestand als CSV', 'Feind-Wissensbibliothek.csv', kbCsv),
@@ -14545,6 +15048,16 @@ let shown = false, hideT = null;
   const { h } = app;
   const CONSENT_KEY = 'feind-cockpit:osm-consent';
   const DE_BOUNDS = [[47.2, 5.6], [55.15, 15.3]];
+  // Deutschland-Ansicht: ein Kreis je Bundesland. Ankerpunkte liegen im Land und halten Abstand zu Nachbarkreisen
+  // (Berlin/Brandenburg, Bremen/Niedersachsen, Saarland/Rheinland-Pfalz) und zu den Standort-Pins.
+  const STATE_ANCHOR = {
+    'Baden-Württemberg': [48.54, 9.04], 'Bayern': [48.95, 11.4], 'Berlin': [52.52, 13.4], 'Brandenburg': [51.97, 13.0],
+    'Bremen': [53.08, 8.8], 'Hamburg': [53.55, 10.0], 'Hessen': [50.6, 9.0], 'Mecklenburg-Vorpommern': [53.75, 12.6],
+    'Niedersachsen': [52.65, 9.6], 'Nordrhein-Westfalen': [51.45, 7.6], 'Rheinland-Pfalz': [50.05, 7.5], 'Saarland': [49.38, 6.95],
+    'Sachsen': [51.05, 13.35], 'Sachsen-Anhalt': [52.15, 11.35], 'Schleswig-Holstein': [54.2, 9.7], 'Thüringen': [50.9, 11.0]
+  };
+  const DETAIL_ZOOM = 7; // ab dieser Zoomstufe einzelne Standorte statt Laenderkreise
+  const SMALL_STATES = ['Berlin', 'Bremen', 'Hamburg', 'Saarland']; // Stadtstaaten/Saarland liegen ueber den Nachbarkreisen
   const maps = {};
   const views = {}; // letzter Ausschnitt je Karte, damit ein Neuzeichnen Zoom und Lage behält
   const failedHosts = new Set();
@@ -14587,29 +15100,21 @@ let shown = false, hideT = null;
     return panel;
   }
 
-  function legendFor(cls) {
+  function legendFor(cls, bubbles) {
     return h('div', { class: 'gm-legend', 'aria-label': 'Legende der Karte' },
       h('span', { class: 'gm-scale', title: 'Ausschreibungen je Bundesland' }, cls.legend.map(l => h('span', {}, h('i', { style: '--o:' + l.opacity }), h('small', { text: l.label })))),
       h('span', {}, h('i', { class: 'gm-l-home' }), 'Standort-Bundesland (Umriss)'),
-      h('span', {}, h('i', { class: 'gm-l-pin' }), 'Ausschreibung mit Ortsangabe'),
-      h('span', {}, h('i', { class: 'gm-l-cluster' }), 'Anzahl je Land, beim Hineinzoomen die Standorte'),
+      bubbles ? h('span', {}, h('i', { class: 'gm-l-sb' }), 'Kreis: Ausschreibungen je Bundesland (Deutschland-Ansicht, Klick zoomt hinein)') : null,
+      h('span', {}, h('i', { class: 'gm-l-pin' }), bubbles ? 'Ausschreibung mit Ortsangabe (ab Zoomstufe ' + DETAIL_ZOOM + ')' : 'Ausschreibung mit Ortsangabe'),
+      h('span', {}, h('i', { class: 'gm-l-cluster' }), bubbles ? 'Gruppe am selben Ort (Zahl = Pins, Klick zoomt)' : 'Gruppe (Zahl = Pins, Klick zoomt)'),
       h('span', {}, h('i', { class: 'gm-l-site' }), 'Standort Lübben / Wittenburg'));
   }
 
-  // Lagepunkte für die Zahl je Bundesland (Landesmitte, Brandenburg westlich von Berlin, damit sich Kreise nicht decken).
-  const STATE_LABEL = {
-    'Schleswig-Holstein': [54.2, 9.75], 'Hamburg': [53.56, 10.02], 'Mecklenburg-Vorpommern': [53.75, 12.6], 'Bremen': [53.08, 8.8],
-    'Niedersachsen': [52.75, 9.3], 'Brandenburg': [52.3, 12.75], 'Berlin': [52.52, 13.4], 'Sachsen-Anhalt': [51.95, 11.65],
-    'Nordrhein-Westfalen': [51.45, 7.55], 'Hessen': [50.6, 9.0], 'Thüringen': [50.9, 11.0], 'Sachsen': [51.05, 13.35],
-    'Rheinland-Pfalz': [49.9, 7.4], 'Saarland': [49.4, 6.95], 'Baden-Württemberg': [48.55, 9.0], 'Bayern': [48.95, 11.4]
-  };
-  // Unterhalb dieser Zoomstufe (ganz Deutschland) zeigt die Karte je Land einen Kreis mit der Anzahl, darüber die Standorte.
-  const DETAIL_ZOOM = 7;
-  const bubbleIcon = n => { const d = Math.round(30 + 6 * Math.sqrt(n)); return L.divIcon({ className: 'gm-state-bubble', iconSize: [d, d], iconAnchor: [d / 2, d / 2], html: '<span>' + n + '</span>' }); };
   const pinIcon = (p, home) => L.divIcon({ className: home ? 'gm-home' : 'gm-pin-wrap', iconSize: [16, 16], iconAnchor: [8, 8],
     html: '<span class="gm-pin' + (p.approx ? ' approx' : '') + '"' + (home ? '' : ' style="--pin:var(' + (KIND[p.kind] || '--ink') + ')"') + '></span>' });
 
-  // opts: { id, height, label, states: { name: { n, home, sel } } | null, onState(name), points: [{ lat, lon, label, sub, kind, approx, onClick }], note }
+  // opts: { id, height, label, states: { name: { n, home, sel } } | null, onState(name), points: [{ lat, lon, label, sub, kind, approx, onClick }], note,
+  //         stateBubbles: { name: n } | null } – mit stateBubbles zeigt die Deutschland-Ansicht einen Kreis je Land, Pins erst ab DETAIL_ZOOM.
   app.geoMap = function (opts) {
     const id = opts.id || 'map';
     if (maps[id]) { const old = maps[id]; delete maps[id]; try { if (old._fcMoved) views[id] = { c: old.getCenter(), z: old.getZoom() }; } catch (e) { /* ohne Ausschnitt */ } try { if (old._fcObs) old._fcObs.forEach(o => o.disconnect()); old.stop(); old.remove(); } catch (e) { /* schon weg */ } }
@@ -14628,8 +15133,10 @@ let shown = false, hideT = null;
         : c.on && failedHosts.has(p.host) ? 'Die Straßenkarte von ' + p.name + ' ließ sich nicht laden (Anbieter nicht erreichbar oder vom Viewer blockiert). Umrisskarte aktiv, „Straßenkarte laden“ versucht es erneut.'
         : 'Umrisskarte offline: keine Datenübertragung an Dritte.' }));
     const st = opts.states || null;
+    const sb = opts.stateBubbles && typeof opts.stateBubbles === 'object' ? opts.stateBubbles : null;
+    const modeInfo = sb ? h('div', { class: 'gm-mode muted small', role: 'status' }) : null;
     const cls = GL.classes(st ? Object.values(st).map(s => s.n || 0) : []);
-    const wrap = h('div', { class: 'gm-wrap' }, bar, asking === id ? consentPanel(id, p) : null, box, st ? legendFor(cls) : null, info);
+    const wrap = h('div', { class: 'gm-wrap' }, bar, asking === id ? consentPanel(id, p) : null, box, modeInfo, st ? legendFor(cls, !!sb) : null, info);
     if (!L) { box.replaceChildren(h('p', { class: 'muted small', text: 'Kartenbibliothek nicht geladen.' })); return wrap; }
 
     const init = () => {
@@ -14693,35 +15200,52 @@ let shown = false, hideT = null;
         if (q.onClick) m.on('click', () => { if (app.haptic) app.haptic(8); q.onClick(); });
         if (home) m.addTo(map); else group.addLayer(m);
       }
-      // Übersicht: je Bundesland mit Ausschreibungen ein Kreis mit der Zahl; Klick zoomt in das Land. Die einzelnen
-      // Standorte (Cluster) erscheinen erst ab DETAIL_ZOOM.
+      // Mit stateBubbles: weit herausgezoomt ein Kreis je Bundesland, ab DETAIL_ZOOM die einzelnen Pins.
       let bubbles = null;
-      if (st && opts.stateBubbles) {
+      if (sb) {
         bubbles = L.layerGroup();
-        for (const [name, s] of Object.entries(st)) {
-          const pos = STATE_LABEL[name];
-          if (!pos || !s.n) continue;
-          const lab = name + ': ' + s.n + (s.n === 1 ? ' Ausschreibung' : ' Ausschreibungen') + '. Hineinzoomen zeigt die Standorte.';
-          const m = L.marker(pos, { icon: bubbleIcon(s.n), title: lab, alt: lab, keyboard: true, zIndexOffset: 500 });
-          m.on('click', () => { const rings = data().states[name]; if (rings) map.fitBounds(L.polygon(rings.map(ring)).getBounds(), { padding: [16, 16], maxZoom: Math.max(DETAIL_ZOOM, 8) }); });
+        for (const [name, cnt] of Object.entries(sb)) {
+          const a = STATE_ANCHOR[name];
+          if (!a || !(cnt > 0)) continue;
+          const d = 28 + Math.round(Math.min(20, Math.sqrt(cnt) * 5));
+          const lab = name + ': ' + cnt + (cnt === 1 ? ' Ausschreibung' : ' Ausschreibungen') + ' – Klick zeigt die Standorte';
+          const m = L.marker(a, { icon: L.divIcon({ className: 'gm-sb-wrap', iconSize: [d, d], iconAnchor: [d / 2, d / 2], html: '<span class="gm-sb" style="--d:' + d + 'px">' + cnt + '</span>' }),
+            title: lab, alt: lab, keyboard: true, zIndexOffset: SMALL_STATES.includes(name) ? 600 : 500 });
+          m.bindTooltip(lab, { direction: 'top', offset: [0, -d / 2] });
+          m.on('click', () => {
+            if (app.haptic) app.haptic(8);
+            const rings = G.states[name];
+            const bb = rings ? L.latLngBounds(rings.flatMap(r => ring(r))) : null;
+            if (bb && bb.isValid()) map.setView(bb.getCenter(), Math.max(DETAIL_ZOOM, map.getBoundsZoom(bb, false, L.point(24, 24))));
+            else map.setView(a, DETAIL_ZOOM);
+          });
           bubbles.addLayer(m);
         }
-        const sync = () => {
-          const detail = map.getZoom() >= DETAIL_ZOOM;
-          if (detail) { if (map.hasLayer(bubbles)) map.removeLayer(bubbles); if (!map.hasLayer(group)) group.addTo(map); }
-          else { if (map.hasLayer(group)) map.removeLayer(group); if (!map.hasLayer(bubbles)) bubbles.addTo(map); }
-          box.dataset.detail = String(detail);
-        };
-        map.on('zoomend', sync);
-        map._fcSync = sync;
       } else group.addTo(map);
       const b = L.latLngBounds(DE_BOUNDS);
       for (const q of pts) b.extend([q.lat, q.lon]);
       map.fitBounds(b, { padding: [12, 12], animate: false });
       if (views[id]) { map.setView(views[id].c, views[id].z, { animate: false }); map._fcMoved = true; }
       map.on('dragend zoomend', () => { map._fcMoved = true; views[id] = { c: map.getCenter(), z: map.getZoom() }; });
+      if (bubbles) {
+        let mode = '';
+        const apply = () => {
+          const z = map.getZoom();
+          box.style.setProperty('--sbs', z < 5 ? '0.7' : z < 5.75 ? '0.85' : '1'); // kleinere Kreise bei weiter Ansicht (Handy)
+          const next = z >= DETAIL_ZOOM ? 'detail' : 'overview';
+          if (next === mode) return;
+          mode = next;
+          box.dataset.mode = mode;
+          if (mode === 'detail') { map.removeLayer(bubbles); map.addLayer(group); }
+          else { map.removeLayer(group); map.addLayer(bubbles); }
+          modeInfo.textContent = mode === 'detail'
+            ? 'Detailansicht: einzelne Standorte der Ausschreibungen. Herauszoomen zeigt wieder die Summen je Bundesland.'
+            : 'Deutschland-Ansicht: Kreise zeigen die erfassten Ausschreibungen je Bundesland. Hineinzoomen oder Kreis anklicken zeigt die einzelnen Standorte.';
+        };
+        map.on('zoomend', apply);
+        apply();
+      }
       box.dataset.zoom = String(map.getZoom());
-      if (map._fcSync) map._fcSync();
       if (window.ResizeObserver) { const ro = new ResizeObserver(() => { if (maps[id] === map && box.isConnected) { try { map.invalidateSize({ animate: false }); } catch (e) { /* entfernt */ } } }); ro.observe(box); map._fcObs.push(ro); }
       if (opts.note && !info.textContent) info.textContent = opts.note;
     };
