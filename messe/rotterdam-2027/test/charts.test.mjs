@@ -84,7 +84,9 @@ test('Jeder Baustein hat role=img, aria-label und Textalternative und nutzt kein
     C.progressRing(40, o()),
     C.heatmap({ rows: ['A'], cols: ['KW1'], values: [[2]] }, o())
   ];
-  for (const svg of all) {
+  for (let svg of all) {
+    // Breite Zeitachse liegt in einem Scroll-Container.
+    if ((svg.attrs.class || '').includes('fc-scroll')) svg = svg.children[0];
     assert.equal(svg.getAttribute('role'), 'img');
     assert.ok(svg.getAttribute('aria-label').length > 5, svg.getAttribute('class'));
     // SVG-Diagramme: <title> zuerst; Balkenzeilen (HTML + SVG): Beschreibung als sr-only-Text.
@@ -153,6 +155,30 @@ test('Balkenzeilen: Klick und Enter auf eine Zeile melden den Schlüssel (Filter
   assert.equal(rows[0].getAttribute('tabindex'), '0');
   rows[0].dispatch('keydown', { key: ' ' });
   assert.deepEqual(picked, ['sn']);
+});
+
+test('Zeitachse: gleiche Tage werden zu einem Marker mit Anzahl zusammengefasst, außerhalb liegende fallen weg', () => {
+  const el = C.timeline([
+    { date: '2027-01-13', label: 'Langer Abend' }, { date: '2027-01-13', label: 'Verleihung' },
+    { date: '2026-12-01', label: 'Webshop' }, { date: '2026-09-25', label: 'vorbei' }
+  ], o({ from: '2026-10-07', to: '2027-01-15' }));
+  const marks = el.byClass('fc-mark');
+  assert.equal(marks.length, 2);
+  assert.match(marks[1].getAttribute('aria-label'), /13\.01\. · Langer Abend · Verleihung/);
+  assert.ok(el.byClass('fc-lbl').some(t => t.textContent === '13.01. (2)'));
+});
+
+test('Balken: eigener Wertetext und Marker je Zeile (Forecast-Strich im Budget)', () => {
+  const el = C.bars([{ key: 'a', label: 'Stand', value: 0, text: 'FC 12.000 €', marks: [{ value: 12000, label: 'Forecast' }] }], o({ max: 15000 }));
+  assert.equal(el.byClass('fc-hval')[0].textContent, 'FC 12.000 €');
+  assert.equal(el.byClass('fc-marker').length, 1);
+  assert.equal(el.byClass('fc-marker')[0].attrs.style, 'left:80.00%');
+});
+
+test('Wasserfall: Kosten neutral (Hellgrau), Summen Anthrazit, eigener Ton für den Puffer', () => {
+  const svg = C.waterfall([{ label: 'Rahmen', value: 100, total: true }, { label: 'Stand', value: -60 }, { label: 'Puffer', total: true, tone: 's1' }], o());
+  const tones = svg.byClass('fc-bar').map(r => cls(r).find(c => c.startsWith('fc-k-')));
+  assert.deepEqual(tones, ['fc-k-s2', 'fc-k-s3', 'fc-k-s1']);
 });
 
 test('Mehrfach aufrufbar ohne Seiteneffekt: gleiche Eingabe, gleiches Ergebnis', () => {

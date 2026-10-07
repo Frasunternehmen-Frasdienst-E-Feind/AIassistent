@@ -6,8 +6,8 @@ Farbregeln: `branding/farbsystem.md` (Version 1.1) und `branding/feind-ci.tokens
 | Phase | Inhalt | Stand |
 |---|---|---|
 | 0 | Führende Quelle, Regression Kachelanbieter, Text-Ausgangsmessung | erledigt |
-| 1 | `charts.js`, Diagramm-Tokens, Referenzmodul Lead-Zähler, Themenbanner-Muster | **wartet auf Freigabe** |
-| 2 | InfraTech: Dashboard, Aufgaben, Fristen, Budget, KPI; Meeting-Modus; Exporte | offen |
+| 1 | `charts.js`, Diagramm-Tokens, Referenzmodul Lead-Zähler, Themenbanner-Muster | freigegeben 07.10.2026 |
+| 2 | InfraTech: Dashboard, Aufgaben, Fristen, Budget, KPI; Banner auf allen Seiten; Meeting-Modus; Exporte | **wartet auf Freigabe** |
 | 3 | Marketing: Copilot, Content, Leads, Ausschreibungen, Events, SEO; `lineChart()` → `charts.line()` | offen |
 | 4 | Abnahme: Bewegung, Druck, lokaler Modus, Viewer, Kontrast-Audit | offen |
 
@@ -103,8 +103,64 @@ im Lead-Zähler, ab Phase 2 je Reiter mit eigenem Symbol und eigener Kernaussage
 Neuere Chromium-Versionen zeigen den Inhalt geschlossener `<details>` auch im Druck nicht. Die bisherige Druckregel
 griff deshalb nicht mehr. Die neue Regel `details:not([open])::details-content` behebt das für alle Module.
 
-### Offene Entscheidungen
+### Entscheidungen
 
-1. Freigabe des Musters (Ringe, Balken, Banner, Animation) für die Fläche in Phase 2 und 3.
-2. Veröffentlichung des Stands in das Artefakt „Feind Cockpit“ (TfuzbG): jetzt oder gesammelt nach Phase 2.
-3. Info-Status in Tiefblau `#2c5a7a` steht im Farbsystem, ist aber neu im Cockpit. Bisher ist er Anthrazit.
+1. Muster freigegeben (07.10.2026).
+2. Veröffentlichung in TfuzbG gesammelt nach Phase 2.
+3. Offen: Info-Status in Tiefblau `#2c5a7a` steht im Farbsystem, ist aber neu im Cockpit. Bisher ist er Anthrazit.
+
+---
+
+## Phase 2: InfraTech-Welt
+
+### Module
+
+| Modul | Primär | Sekundär | Hintergrund (aufklappbar / Tooltip) |
+|---|---|---|---|
+| Dashboard | 5 Kennzahlen mit Ticker; „Fällig ≤ 14 T“ mit Sparkline; Ring Gesamtfortschritt + Donut „Aufgaben nach Status“; Balken „Erledigt je Bereich“ (Klick → Aufgaben gefiltert) | Innovationspreis als Zeitachse (Frist, alte Frist, Verleihung, heute) | Messedatum als Tooltip; nächste 5 Fristen kompakt, Priorität und Zuständige im Tooltip; Ampel-Tabelle in `<details>` |
+| Aufgaben | Balken „Offen je Bereich“ (Ampel: im Plan / ≤ 14 T / überfällig), Klick oder Enter setzt und löst den Bereichsfilter | Zeitachse „Fällig in 30 Tagen“ (gleiche Tage zusammengefasst) | Bereichsgruppen zu, solange kein Filter aktiv ist; Notizen wie bisher als Tooltip |
+| Fristen | Zeitachse heute → 15.01.2027, Farbe nach Quelle (bestätigt / Referenz / Messe), Legende statt Erklärsatz | Hinweis „Offen beim Veranstalter“ | vollständige Tabelle in `<details>` (Export unverändert über die Aktionsleiste) |
+| Budget | Ist je Kostenblock mit Forecast-Strich; Ampel der Gesamtabweichung im Kopf | Wasserfall Planrahmen → Blöcke → Puffer | Eingabetabelle in `<details>`; der Zustand bleibt nach dem Speichern offen |
+| Ziele & KPIs | Ring je KPI: aktueller Wert gegen Ziel (Leads aus dem Lead-Zähler, Budgetabweichung aus dem Budget), sonst „–“ | – | Baseline und Messmethode im Tooltip und in der Tabelle in `<details>` |
+
+**Themenbanner:** Die Module der Phasen 1 und 2 haben ein eigenes Banner mit Kennzahl. Alle übrigen Seiten in allen
+Welten bekommen das Standardbanner des Reiters, mit Symbol aus dem Sprite und einer festen Kernaussage
+(`THEME_LINE` in `app-core.js`). Das erledigt den Artefakt-Kommentar „Eyecatcher auf jeder Seite“.
+
+### Sichtbarer Text (leere Daten, `tools/textmass.mjs`)
+
+| Reiter | vorher | nachher | Änderung |
+|---|---|---|---|
+| Dashboard | 2103 | 1240 | −41 % |
+| Aufgaben | 3813 | 1519 | −60 % |
+| Fristen | 1348 | 368 | −73 % |
+| Budget | 800 | 245 | −69 % |
+| Ziele & KPIs | 499 | 253 | −49 % |
+| Lead-Zähler | 568 | 282 | −50 % |
+
+Alle anderen Reiter haben jetzt etwa 40 Zeichen mehr, weil das Standardbanner dazukommt.
+
+### Diagramm-Bausteine: Ergänzungen
+
+- `bars`: eigener Wertetext je Zeile (`text`) und Marker je Zeile (`marks`, z. B. Forecast).
+- `donut`: animiert nach `app.refresh()` nur geänderte Segmente (`from`).
+- `timeline`: fasst gleiche Tage zusammen und verteilt Beschriftungen auf vier Ebenen. Auf schmalen Schirmen scrollt die Achse seitlich, statt die Schrift zu verkleinern.
+- `waterfall`: Kosten in Hellgrau (Rot nur als Signal), Puffer grün oder bei Überzug rot.
+- Balkenzeilen nutzen CSS-Subgrid, damit Beschriftungen und Balken bündig stehen.
+
+### Bewusste Abweichungen von der Arbeitsanweisung
+
+- **„Erledigt je Bereich“ zeigt alle 12 Bereiche.** Abschnitt 5.1 verlangt das ausdrücklich, Blinder Fleck 4 nennt höchstens 7 Kategorien. Jede Zeile ist beschriftet, und die Farbe trägt nur den Ampelstatus. Die Regel „höchstens 3 Serienfarben“ bleibt also eingehalten.
+- **Sparkline nur für „Fällig ≤ 14 T“, und zwar als Vorschau.** Einen Verlauf der letzten 14 Tage gibt es nicht, weil keine Historie gespeichert wird und neue gespeicherte Felder ausgeschlossen sind. Die Linie zeigt deshalb, wie sich die Fälligkeiten auf die nächsten 14 Tage verteilen.
+- **„in Arbeit“ ist Anthrazit, nicht Gelb.** Gelbgrün steht laut Farbsystem 1.1 nur für „bald fällig“.
+
+### Unverändert geprüft
+
+- Exporte (CSV, ICS, Markdown, PDF): Code und Spaltenreihenfolge unberührt (`model.js` `build*`).
+- Meeting-Modus startet ohne Fehler (E2E). Er nutzt keine der neuen Diagramme.
+- Filter, Archiv, Aufgabe bearbeiten, Lead-Bumps, Budget-Eingaben über `app.cmd.*`.
+
+### Tests
+
+- `npm run test:cockpit`: 40 bestanden (`charts.js` 21)
+- `npm run test:cockpit:e2e`: 19 bestanden (neu: `infratech-visuell.e2e.mjs` mit 6 Tests)
