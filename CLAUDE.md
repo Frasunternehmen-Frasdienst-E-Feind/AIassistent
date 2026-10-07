@@ -98,3 +98,8 @@ und Datenschutz, diese Anweisung, aufgabenbezogene Anweisungen). Sorgfalt bleibt
 unangetastet: Die Regeln dieser Datei zu Rückfragen vor schwer umkehrbaren
 Aktionen, Multiple-Choice-Abfragen und Rechtsabteilungs-Hinweisen gelten
 weiter.
+
+Ausnahme zur Längengrenze (David, 2026-10-07): Das Standardformat mit fünf
+Abschnitten (Zusammenfassung, Empfehlung, Vorlage, Risiken, KPIs) hat Vorrang
+vor der 150-Wörter-Grenze. Innerhalb des Formats gilt weiter: keine
+Wiederholungen, keine Alternativen ohne Anfrage.

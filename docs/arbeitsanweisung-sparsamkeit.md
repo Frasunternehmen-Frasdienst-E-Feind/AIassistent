@@ -201,3 +201,4 @@ Wenn eine dieser Fragen mit „nein“ oder „zu viel“ beantwortet wird, korr
 | Datum | Änderung |
 |---|---|
 | 2026-10-07 | Erstfassung ins Repository übernommen |
+| 2026-10-07 | Vorrang des Standardformats (fünf Abschnitte) vor der 150-Wörter-Grenze festgelegt, siehe `CLAUDE.md` |
