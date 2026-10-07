@@ -91,3 +91,15 @@ Bestätigung ausführen.
 Auswahlmöglichkeiten (Optionen, Varianten, Rückfragen) immer **zum Anklicken**
 ausgeben (Multiple-Choice-Abfrage), nicht nur als Text – die empfohlene Option
 steht zuerst und ist als „(Empfohlen)“ markiert.
+
+## Sparsamer Umgang mit Nutzungsguthaben
+Verbindlich gilt `docs/arbeitsanweisung-sparsamkeit.md` (Rangfolge: Sicherheit
+und Datenschutz, diese Anweisung, aufgabenbezogene Anweisungen). Sorgfalt bleibt
+unangetastet: Die Regeln dieser Datei zu Rückfragen vor schwer umkehrbaren
+Aktionen, Multiple-Choice-Abfragen und Rechtsabteilungs-Hinweisen gelten
+weiter.
+
+Ausnahme zur Längengrenze (David, 2026-10-07): Das Standardformat mit fünf
+Abschnitten (Zusammenfassung, Empfehlung, Vorlage, Risiken, KPIs) hat Vorrang
+vor der 150-Wörter-Grenze. Innerhalb des Formats gilt weiter: keine
+Wiederholungen, keine Alternativen ohne Anfrage.
