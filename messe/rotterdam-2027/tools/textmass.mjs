@@ -28,7 +28,9 @@ for (const w of await p.locator('.worldtab').allInnerTexts()) {
       const panel = [...document.querySelectorAll('.panel')].find(el => el.offsetParent !== null);
       if (!panel) return { chars: 0, blocks: 0 };
       // Nur sichtbarer Text: eingeklappte <details> zählen nicht (innerText liefert nur Gerendertes).
-      const chars = panel.innerText.replace(/\s+/g, '').length;
+      // Text nur für Screenreader (.sr-only) ist nicht sichtbar und zählt nicht mit.
+      const hidden = [...panel.querySelectorAll('.sr-only')].reduce((n, el) => n + el.textContent.replace(/\s+/g, '').length, 0);
+      const chars = panel.innerText.replace(/\s+/g, '').length - hidden;
       const blocks = panel.querySelectorAll('.section, .card, .kpi, .alert, table, .tl-item, .trow').length;
       return { chars, blocks };
     });
