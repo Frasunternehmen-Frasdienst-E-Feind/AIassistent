@@ -222,11 +222,11 @@ Definition of Done nennt „nicht mehr als ~40 % des früheren Textes“, das w�
 
 ### Karte Ausschreibungen: Zahl je Bundesland in der Übersicht (Artefakt-Kommentar 07.10.2026)
 
-Bei Zoom auf ganz Deutschland zeigt die Karte je Bundesland mit Ausschreibungen einen Kreis mit der Anzahl
-(Anthrazit, grüne Kante, Größe nach Anzahl). Ab Zoomstufe 7 erscheinen stattdessen die einzelnen Standorte
-(Pins, nahe beieinander gebündelt). Ein Klick oder Enter auf einen Kreis zoomt in das Land. Die Standorte
-Lübben und Wittenburg bleiben immer sichtbar. Umgesetzt in `geomap.js` (Option `stateBubbles`), geprüft in
-`karte.e2e.mjs`.
+Bei Zoom auf ganz Deutschland zeigt die Karte je Bundesland mit Ausschreibungen einen Kreis mit der Anzahl.
+Ab Zoomstufe 7 erscheinen stattdessen die einzelnen Standorte (Pins, nahe beieinander gebündelt). Ein Klick oder
+Enter auf einen Kreis zoomt in das Land. Die Standorte Lübben und Wittenburg bleiben immer sichtbar. Parallel war
+dieselbe Funktion direkt im Artefakt entstanden (Versionen 40–46); bei der Zusammenführung gilt die Live-Umsetzung
+(grüne Kreise, Hinweis zum Ansichtsmodus, `data-mode`). Geprüft in `karte.e2e.mjs`.
 
 ### CI-Korrektur
 
@@ -240,3 +240,38 @@ danach 5 Durchläufe in Folge grün.
 - `npm run test:cockpit`: 40 bestanden
 - `npm run test:cockpit:e2e`: 26 bestanden (neu: `marketing-visuell.e2e.mjs` mit 7 Tests)
 - Keine Konsolenfehler in Hell, Dunkel und bei 390 px Breite.
+
+## Zusammenführung mit dem Live-Stand und drei Artefakt-Kommentare (07.10.2026)
+
+**Zusammenführung.** Im Artefakt TfuzbG waren nach Version 36 weitere Änderungen direkt veröffentlicht worden
+(Referenz-Formular mit Verwendung, Projektfoto-Platzhalter, Grinding-Marke, EF-Standortmarke, Aktionsleiste mit
+Tiefe, Länderkreise). Dreiwege-Zusammenführung mit Basis Phase 2 (`9bf3cfa`): fünf Konflikte, alle aufgelöst,
+`geomap.js` aus dem Live-Stand übernommen.
+
+**1. Symbol der Hauptstandorte mit Logo-Kürzel.** Neues Symbol `standort-ef` in der Symbolsammlung (Gruppe „Marke“):
+Plakette mit EF. Auf Karten und in Legenden in den Markenfarben über `app.efMark()`: Fläche Anthrazit, Kontur und
+Kürzel Feind-Grün. Eingesetzt in Ausschreibungskarte, Projektkarte, Referenzkarte und allen drei Legenden.
+
+**2. Kartensystem abgeglichen, Funktionen getrennt.** Die Projektkarte (Wissen › Projektkarte) zeichnet nicht mehr
+mit einer eigenen SVG-Karte, sondern mit dem gemeinsamen Baustein `app.geoMap` wie die Ausschreibungskarte:
+Umrisskarte oder Straßenkarte nach Einwilligung, Kreis je Bundesland, ab Zoomstufe 7 die Pins. Neue Optionen
+im Baustein: `unit`, `selected`, `focus`, `onMapClick`, `picking`, dazu `app.geoMapSelect`. Jede Verbesserung der
+Darstellung in `geomap.js` gilt damit für beide Karten. Fachfunktionen bleiben im Modul: Filter, Seitenleiste,
+Position setzen (Klick auf freie Fläche), Projekt bearbeiten, Referenz übernehmen. Die separate Ansicht
+„Straßenkarte“ entfällt, weil die Karte selbst umschalten kann. Neu: `projektkarte.e2e.mjs` (4 Tests).
+
+**3. Farben global geprüft (Farbsystem 1.1).**
+- Prüfmeldungen (`.banner.warn`, z. B. „Einträge warten auf Prüfung“): vorher 20 % Feind-Rot, das wirkte rosa.
+  Jetzt Signal-Gelbgrün mit Anthrazit-Schrift. Token `--signal-tint` entfernt.
+- Rot ohne Fehlerbedeutung ersetzt: „Nur lesend“ (Banner und Statuspunkt), Prüfung im Archiv-Fluss, Warnbalken
+  im Archiv, „2026 gestrichen“ in der Checkliste.
+- Event-Pins auf Karten: Info-Blau mit Rautenform statt Rot.
+- Hart gesetzte Farbwerte aus dem Live-Stand (Referenz-Marke, Foto-Leiste) durch Tokens ersetzt; PDF-Grau auf `#5F6969`.
+- Prüfskript über alle Farbwerte: keine Töne aus den ausgeschlossenen Bereichen. Die beiden Rot-Töne `#FDE8E8` und
+  `#FF9A9F` sind im Farbsystem festgelegt (Fehler-Hintergrund, Fehlertext im Dark Mode). Leaflet-Grundstile
+  (Bibliothek) unverändert.
+
+### Tests
+- `npm run test:cockpit`: 40 bestanden
+- `npm run test:cockpit:e2e`: 30 bestanden
+- `pytest`: 59 bestanden

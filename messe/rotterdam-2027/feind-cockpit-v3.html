@@ -51,7 +51,6 @@
   --raised: #f2f4f4;
   --accent-soft: #eef5e1;
   --signal-soft: #fde8e8;
-  --signal-tint: #f9ccce; /* 20 % Feind-Rot auf Fläche: Prüfmeldungen (Wunsch David 06.10.2026), Text 5,6:1 */
   --warn-soft: #f2f4f4;
   --shadow: #1f252533;
   --scrim: #1f2525b3;
@@ -113,7 +112,6 @@
     --raised: #384242;
     --accent-soft: #2f3d1e;
     --signal-soft: #3d1b1c;
-    --signal-tint: #522c2e;
     --warn-soft: #384242;
     --shadow: #00000066;
     --scrim: #000000b3;
@@ -159,7 +157,6 @@
   --raised: #384242;
   --accent-soft: #2f3d1e;
   --signal-soft: #3d1b1c;
-    --signal-tint: #522c2e;
   --warn-soft: #384242;
   --shadow: #00000066;
   --scrim: #000000b3;
@@ -229,7 +226,7 @@ img, svg { max-width: 100%; }
 .store-state { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; border: 1px solid var(--ink-inverse-muted); padding: 3px 9px; color: var(--ink-inverse); white-space: nowrap; }
 .store-state::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ink-inverse-muted); }
 .store-state.is-shared::before { background: var(--accent); }
-.store-state.is-readonly::before { background: var(--signal); }
+.store-state.is-readonly::before { background: var(--ink-muted); }
 /* Datenstand des Notion-Tagesstands (snapshot/aktuell): grün aktuell, bernstein veraltet */
 .data-stand { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; border: 1px solid var(--ink-inverse-muted); padding: 3px 9px; color: var(--ink-inverse); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .data-stand::before { content: ""; width: 8px; height: 8px; flex: none; background: var(--ink-inverse-muted); }
@@ -287,11 +284,14 @@ img, svg { max-width: 100%; }
 .banner { border: 1px solid var(--line); border-left: 6px solid var(--ink-strong); background: var(--panel); padding: var(--s2) var(--s3); display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); align-items: center; }
 .banner .txt { flex: 1 1 320px; min-width: 0; }
 .banner strong { color: var(--ink-strong); }
-/* Prüfmeldungen: Balken Feind-Rot, Fläche 20 % Feind-Rot; Text bleibt ink (hell 5,6:1, dunkel 10:1). */
-.banner.warn { border-left-color: var(--signal); background: var(--signal-tint); }
+/* Warnung (Farbsystem 1.1, Abschnitt 6): kräftige Fläche Signal-Gelbgrün, Schrift, Symbol und Balken Anthrazit (5,97:1),
+   in Hell und Dunkel gleich. Ersetzt die Fläche aus 20 % Feind-Rot: wirkte rosa (ausgeschlossen, 2.6), Rot bleibt Fehlern vorbehalten. */
+.banner.warn { border-left-color: var(--on-warn); background: var(--warn); color: var(--on-warn); }
+.banner.warn strong, .banner.warn a, .banner.warn .linkbtn { color: var(--on-warn); }
 .banner.crit { border-left-color: var(--signal); background: var(--signal-soft); }
 .banner.ok { border-left-color: var(--accent); background: var(--accent-soft); }
-.banner.readonly { border-left-color: var(--signal); }
+/* Nur lesend ist kein Fehler: neutraler Balken. */
+.banner.readonly { border-left-color: var(--ink-muted); }
 
 /* ---------- Hauptbereich ---------- */
 main { display: block; padding-block: var(--s3) var(--s5); }
@@ -587,8 +587,8 @@ button.kpi:hover { border-color: var(--ink-muted); }
 /* Projektfoto je Referenz: 3:2, randlos oben in der Karte, Ausschnitt über --pos. */
 .ref-photo { position: relative; margin: calc(-1 * var(--s2)) -12px 2px; aspect-ratio: 3 / 2; overflow: hidden; background: var(--raised); }
 .ref-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, center 50%); }
-.ref-photo figcaption { position: absolute; left: 0; bottom: 0; padding: 2px 8px; font-size: 11px; color: #fff; background: rgba(31, 37, 37, .62); }
-.ref-photo-edit { position: absolute; top: 6px; right: 6px; width: 36px; height: 36px; display: grid; place-items: center; border: 0; background: rgba(255, 255, 255, .9); color: #263030; cursor: pointer; }
+.ref-photo figcaption { position: absolute; left: 0; bottom: 0; padding: 2px 8px; font-size: 11px; color: var(--ink-inverse); background: color-mix(in srgb, var(--surface-inverse) 70%, transparent); }
+.ref-photo-edit { position: absolute; top: 6px; right: 6px; width: 36px; height: 36px; display: grid; place-items: center; border: 0; background: color-mix(in srgb, var(--surface) 90%, transparent); color: var(--ink-strong); cursor: pointer; }
 .ref-photo-edit:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 /* Platzhalterbild: gleiche Flaeche wie ein echtes Foto (3:2), damit die Karten im Raster gleich
    hoch bleiben und nichts springt, sobald ein Foto dazukommt. Klick oeffnet den Foto-Dialog. */
@@ -640,12 +640,12 @@ button.kpi:hover { border-color: var(--ink-muted); }
 /* Referenzprojekt-Marke (Wunsch David 07.10.2026, zweite Runde): Anthrazit-Plakette mit weißer Schleifwelle
    und grünem Ring; heller Halo trennt sie von jeder Länderfarbe. Symbol 18 px, damit die Rillen der Welle sichtbar bleiben. */
 .refpin { position: absolute; z-index: 1; width: 24px; height: 24px; margin: -12px 0 0 -12px; padding: 0; border: 0; background: transparent; cursor: pointer; display: grid; place-items: center; }
-.refpin i { display: grid; place-items: center; width: 24px; height: 24px; background: #2f3a3a; color: #fff; border: 2px solid var(--accent); border-radius: 50%; box-shadow: 0 0 0 1.5px var(--surface), 0 2px 5px rgba(0, 0, 0, .35); transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease; }
+.refpin i { display: grid; place-items: center; width: 24px; height: 24px; background: var(--surface-inverse); color: var(--ink-inverse); border: 2px solid var(--accent); border-radius: 50%; box-shadow: 0 0 0 1.5px var(--surface), 0 2px 5px var(--shadow); transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease; }
 .refpin i .ic { width: 16px; height: 16px; stroke-width: 2; --ic-d: inline; --ic-accent: var(--accent); }
-.refpin[aria-pressed="true"] i { background: var(--accent); color: #1f2626; border-color: #1f2626; }
-.refpin[aria-pressed="true"] i .ic { --ic-accent: #fff; }
+.refpin[aria-pressed="true"] i { background: var(--accent); color: var(--on-accent); border-color: var(--on-accent); }
+.refpin[aria-pressed="true"] i .ic { --ic-accent: var(--on-accent); }
 .refpin:hover, .refpin:focus-visible, .refpin[aria-pressed="true"] { z-index: 3; }
-.refpin:hover i, .refpin:focus-visible i { transform: scale(1.25); box-shadow: 0 0 0 1.5px var(--surface), 0 5px 12px rgba(0, 0, 0, .4); }
+.refpin:hover i, .refpin:focus-visible i { transform: scale(1.25); box-shadow: 0 0 0 1.5px var(--surface), 0 5px 12px var(--shadow); }
 @media (prefers-reduced-motion: reduce) { .refpin i { transition: none; } }
 .refpin:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 /* Auf Touchgeräten ist die sichtbare Plakette 24 px klein. Die Trefferfläche wächst deshalb unsichtbar
@@ -653,11 +653,9 @@ button.kpi:hover { border-color: var(--ink-muted); }
 @media (pointer: coarse) { .refpin { width: 44px; height: 44px; margin: -22px 0 0 -22px; } }
 .refmap-legend { display: flex; flex-wrap: wrap; gap: var(--s3); font-size: 12px; color: var(--ink-muted); margin-top: var(--s2); }
 .refmap-legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; background: var(--accent); border: 1px solid var(--ink-strong); }
-.refmap-legend i.pin { width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center; background: #2f3a3a; color: #fff; border: 1.5px solid var(--accent); vertical-align: -5px; }
+.refmap-legend i.pin { width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--surface-inverse); color: var(--ink-inverse); border: 1.5px solid var(--accent); vertical-align: -5px; }
 .refmap-legend i.pin .ic { width: 12px; height: 12px; --ic-d: inline; --ic-accent: var(--accent); }
-.refmap-legend i.fe { width: auto; height: auto; padding: 0 3px; font: 700 9px/13px var(--font-display, var(--font-sans)); font-style: normal; color: var(--accent); background: var(--surface-inverse); border-color: var(--surface-inverse); border-radius: 2px; vertical-align: 0; }
-.refmap-stage .site-fe rect { fill: var(--surface-inverse); stroke: var(--accent); stroke-width: .6; }
-.refmap-stage .site-fe text { fill: var(--accent); font: 700 6px var(--font-display, var(--font-sans)); letter-spacing: .02em; pointer-events: none; }
+.refmap-stage .site-fe .ef-use { color: var(--accent); fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.75; --ic-tone: 1; --ic-tone-c: var(--surface-inverse); --ic-accent: var(--accent); --ic-d: inline; pointer-events: none; overflow: visible; }
 .refmap-detail .t { font-weight: 700; color: var(--ink-strong); }
 @media (max-width: 720px) { .refmap { grid-template-columns: 1fr; } .refmap-stage { margin: 0 auto; } }
 @media print { .refpin i { border-color: var(--print-ink); } }
@@ -2171,12 +2169,22 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
 .gm-legend i.gm-l-home { border: 2px solid var(--accent); background: transparent; }
 .gm-legend i.gm-l-pin, .gm-legend i.gm-l-site, .gm-legend i.gm-l-cluster { border-radius: 50%; }
 .gm-legend i.gm-l-pin { background: var(--warn); border-color: var(--surface); }
-.gm-legend i.gm-l-site { background: var(--surface-inverse); border: 2px solid var(--accent); }
+.gm-legend i.gm-l-site { width: auto; height: auto; background: none; border: 0; border-radius: 0; }
+/* Standortmarke EF in Markenfarben: Plakette Anthrazit, Kontur und Kürzel Feind-Grün (wie die Referenzkarte). */
+.ef-mark { display: inline-block; width: 33px; height: 24px; line-height: 0; color: var(--accent); --ic-tone: 1; --ic-tone-c: var(--surface-inverse); --ic-accent: var(--accent); --ic-d: inline; filter: drop-shadow(0 1px 2px var(--shadow)); }
+.ef-mark svg { width: 100%; height: 100%; overflow: visible; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.gm-legend .ef-mark, .mp-legend .ef-mark, .refmap-legend .ef-mark { width: 23px; height: 17px; filter: none; vertical-align: middle; flex: none; }
+.gm-home { background: none; border: 0; }
+/* Ausgewählter Pin (Projektkarte) und Wahl-Modus für „Position setzen“. */
+.gm-pin-wrap.sel { z-index: 900 !important; }
+.gm-pin-wrap.sel .gm-pin { transform: scale(1.5); border-color: var(--ink-strong); box-shadow: 0 0 0 3px var(--focus); }
+.gm-pin.ev { border-radius: 2px; transform: rotate(45deg) scale(.85); }
+.gm-pin-wrap.sel .gm-pin.ev { transform: rotate(45deg) scale(1.3); }
+.gm-map.gm-pick, .gm-map.gm-pick .leaflet-interactive { cursor: crosshair; }
 .gm-legend i.gm-l-cluster { background: var(--surface-inverse); border: 2px solid var(--ink-inverse-muted); }
 .gm-legend i.gm-l-sb { border-radius: 50%; background: var(--accent); border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--line); }
 .gm-pin { display: block; width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--surface); background: var(--pin, var(--ink)); box-shadow: 0 1px 3px var(--shadow); }
 .gm-pin.approx { border-style: dashed; border-color: var(--ink-strong); }
-.gm-home .gm-pin { width: 16px; height: 16px; background: var(--surface-inverse); border: 3px solid var(--accent); }
 /* Bundesland-Kreis in der Deutschland-Ansicht: Zahl der Ausschreibungen je Land. --d setzt die Groesse
    (waechst mit der Anzahl), --sbs skaliert sie bei weiter Ansicht herunter, damit auf dem Handy nichts ueberlappt. */
 .gm-sb { display: grid; place-items: center; width: var(--d, 34px); height: var(--d, 34px); box-sizing: border-box; border-radius: 50%; background: var(--accent); color: var(--on-accent); border: 2px solid var(--surface); box-shadow: 0 1px 4px var(--shadow), 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent); font: 700 13px var(--font-sans); font-variant-numeric: tabular-nums; cursor: pointer; transform: scale(var(--sbs, 1)); transform-origin: center; transition: transform .15s; }
@@ -2226,7 +2234,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
 .kb-flow > i { display: block; height: 100%; flex-basis: 0; transition: flex-grow .7s cubic-bezier(.2,.8,.2,1); }
 .kb-flow > i + i { box-shadow: inset 2px 0 0 var(--panel); }
 .kb-flow .f-neu { background: var(--ink-muted); } .kb-flow .f-in { background: var(--accent); } .kb-flow .f-ok { background: var(--accent-ink); }
-.kb-flow .f-pr { background: color-mix(in srgb, var(--signal) 55%, var(--panel)); } .kb-flow .f-err { background: var(--signal); }
+.kb-flow .f-pr { background: var(--warn); } .kb-flow .f-err { background: var(--signal); }
 .kb-flow.busy::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--panel) 65%, transparent), transparent); transform: translateX(-100%); animation: kb-sweep 1.6s cubic-bezier(.4,0,.2,1) infinite; }
 @keyframes kb-sweep { to { transform: translateX(100%); } }
 .kpi.bump .v { animation: kb-bump .6s cubic-bezier(.2,.8,.2,1); }
@@ -2259,7 +2267,8 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
 .kb-track .tk.active { color: var(--ink-strong); font-weight: 700; } .kb-track .tk.active .bar { background: color-mix(in srgb, var(--accent) 25%, var(--line)); }
 .kb-track .tk.active .bar::after { content: ""; position: absolute; inset: 0; width: 40%; background: var(--accent); animation: kb-run 1.1s cubic-bezier(.4,0,.2,1) infinite; }
 @keyframes kb-run { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
-.kb-track .tk.warn .bar, .kb-track .tk.err .bar { background: var(--signal); }
+.kb-track .tk.warn .bar { background: var(--warn); box-shadow: inset 0 0 0 1px var(--on-warn); }
+.kb-track .tk.err .bar { background: var(--signal); }
 .kb-track .tk.warn, .kb-track .tk.err { color: var(--signal-text); font-weight: 700; }
 .kb-track small { grid-column: 1 / -1; font-size: 11px; color: var(--ink-muted); }
 .kb-card.fresh { animation: kb-in .45s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i, 0) * 45ms); }
@@ -2312,35 +2321,12 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
 /* Projektkarte */
 .mp-wrap { display: grid; grid-template-columns: 1fr; gap: var(--s3); }
 @media (min-width: 980px) { .mp-wrap { grid-template-columns: minmax(0, 1fr) 340px; } }
-.mp-stage { position: relative; border: 1px solid var(--line); background: color-mix(in srgb, var(--accent-soft) 35%, var(--surface)); height: min(72vh, 640px); min-height: 360px; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; }
-.mp-svg { width: 100%; height: 100%; display: block; cursor: grab; outline-offset: -3px; }
-.mp-svg:active { cursor: grabbing; }
-.mp-wrap.setpos .mp-svg { cursor: crosshair; }
-.mp-land { fill: var(--surface-muted); stroke: var(--line); stroke-width: .6; vector-effect: non-scaling-stroke; }
-.mp-land.de { fill: var(--surface); stroke: var(--ink-muted); stroke-width: 1.2; }
-.mp-cty { fill: var(--ink-muted); font-size: 11px; font-family: var(--font-sans); letter-spacing: .1em; text-transform: uppercase; pointer-events: none; opacity: .7; }
-.mp-pin, .mp-cluster { cursor: pointer; outline: none; }
-.mp-shape { stroke: var(--surface); stroke-width: 1.6; vector-effect: non-scaling-stroke; transition: transform .1s ease; }
-.mp-shape.ok { fill: var(--accent-ink); }
-.mp-shape.draft { fill: var(--accent); }
-.mp-shape.ref { fill: var(--ink); }
-.mp-shape.ev { fill: var(--signal); }
-.mp-shape.home { fill: var(--surface-inverse); stroke: var(--accent); stroke-width: 2.2; }
-.mp-unsure { fill: none; stroke: var(--warn); stroke-width: 1.4; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
-.mp-pin:hover .mp-shape, .mp-pin:focus-visible .mp-shape { transform: scale(1.35); }
-.mp-pin.sel .mp-shape { transform: scale(1.5); stroke: var(--ink-strong); stroke-width: 2.4; }
-.mp-pin:focus-visible .mp-shape, .mp-cluster:focus-visible .mp-cl { stroke: var(--focus); stroke-width: 3; }
-.mp-lbl { fill: var(--ink-strong); font-weight: 700; font-family: var(--font-sans); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
-.mp-cl { fill: var(--surface-inverse); stroke: var(--accent); stroke-width: 2; vector-effect: non-scaling-stroke; }
-.mp-cl-t { fill: var(--ink-inverse); font-weight: 700; font-family: var(--font-sans); pointer-events: none; }
-.mp-cluster:hover .mp-cl { fill: var(--ink-strong); }
-.mp-ctrl { position: absolute; top: var(--s2); right: var(--s2); display: flex; flex-direction: column; gap: 4px; }
-.mp-ctrl .iconbtn { background: var(--surface); border: 1px solid var(--line); box-shadow: 0 1px 4px var(--shadow); min-width: 40px; min-height: 40px; display: grid; place-items: center; font-size: 18px; font-weight: 700; }
-.mp-ctrl .iconbtn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
-.mp-de { font-size: 11px; font-weight: 800; letter-spacing: .04em; }
-.mp-banner { position: absolute; left: var(--s2); right: 56px; top: var(--s2); background: var(--surface-inverse); color: var(--ink-inverse); border-left: 6px solid var(--accent); padding: 8px 12px; display: flex; gap: var(--s2); align-items: center; flex-wrap: wrap; font-size: 13.5px; }
+.mp-stage { position: relative; min-width: 0; display: flex; flex-direction: column; gap: var(--s2); }
+.mp-legend i.lg { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--line); background: var(--k); flex: none; }
+.mp-legend i.lg.ev { border-radius: 2px; transform: rotate(45deg) scale(.85); }
+.mp-legend i.lg.unsure { background: var(--surface); border: 2px dashed var(--ink-strong); box-shadow: none; }
+.mp-banner { position: static; background: var(--surface-inverse); color: var(--ink-inverse); border-left: 6px solid var(--accent); padding: 8px 12px; display: flex; gap: var(--s2); align-items: center; flex-wrap: wrap; font-size: 13.5px; }
 .mp-banner .btn { min-height: 30px; }
-.mp-attr { position: absolute; left: 0; bottom: 0; right: 0; background: color-mix(in srgb, var(--surface) 85%, transparent); color: var(--ink-muted); font-size: 10.5px; padding: 2px 8px; pointer-events: none; }
 .mp-side { border: 1px solid var(--line); background: var(--surface); padding: var(--s3); display: flex; flex-direction: column; gap: var(--s2); min-width: 0; max-height: min(72vh, 640px); overflow: auto; }
 .mp-side h3 { margin: 0; }
 .mp-strip { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
@@ -2358,9 +2344,9 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
 
 @media (prefers-reduced-motion: reduce) { .kb-card.busy .kb-t::after { animation: none; } }
 @media print {
-  #dropOverlay, .kb-drop, .mp-ctrl, .mp-banner, .kb-filters, .mp-filters { display: none !important; }
-  .mp-stage { height: 160mm; break-inside: avoid; }
-  .mp-shape, .mp-cl, .mp-land, .kb-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #dropOverlay, .kb-drop, .mp-banner, .kb-filters, .mp-filters { display: none !important; }
+  .mp-stage { break-inside: avoid; }
+  .kb-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
 .toast { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
@@ -2380,9 +2366,9 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
 
 /* ---- checkliste.css: Checkliste 2026→27 (übernommene ToDo-Liste, Artefakt 2FT2wp) ---- */
 .cl-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; background: var(--ink-muted); }
-.cl-dot.keep { background: var(--accent); } .cl-dot.drop { background: var(--signal); } .cl-dot.warn { background: var(--warn); }
+.cl-dot.keep { background: var(--accent); } .cl-dot.drop { background: var(--ink-muted); } .cl-dot.warn { background: var(--warn); }
 .pill.cl-typ { text-transform: none; letter-spacing: 0; border-color: var(--line); color: var(--ink-strong); background: var(--panel); }
-.pill.cl-typ.warn { border-style: dashed; border-color: var(--warn); } .pill.cl-typ.drop { border-color: var(--signal); }
+.pill.cl-typ.warn { border-style: dashed; border-color: var(--warn); } .pill.cl-typ.drop { border-color: var(--ink-muted); }
 .pill.cl-cu { white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
 .cl-legend { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); font-size: 13px; color: var(--ink); }
 .cl-legend span { display: inline-flex; align-items: center; gap: 6px; }
@@ -5389,6 +5375,10 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     kamera: ['Messe', 'Foto / Kamera', 'Fotodokumentation, Bildrechte', TR(2, 7, 20, 13, 2.5) + ZC(12, 13.5, 1.75) + R(2, 7, 20, 13, 2.5) + L('M8 7l1.5-2.5h5L16 7') + C(12, 13.5, 4) + DOT('M18.5 10h.01')],
     muell: ['Messe', 'Müll / Entsorgung', 'Abfall, Sperrmüll, Reinigung', T('M6 7l1 14h10l1-14z') + L('M3.5 7h17M9 7V4h6v3M6 7l1 14h10l1-14') + L('M10 11v6M14 11v6', 1.5)],
     schloss: ['Messe', 'Schloss / Datenschutz', 'Datenschutz, geschützte Dateien', TR(4, 10, 16, 11, 2) + ZC(12, 14.5, 1.5) + R(4, 10, 16, 11, 2) + L('M8 10V7a4 4 0 0 1 8 0v3') + L('M12 15.5v2.5', 1.5)],
+    /* ---------- Marke ---------- */
+    // Feind-Standort (Lübben, Wittenburg): Plakette mit dem Kürzel EF der freigegebenen Kurzform E.FEIND (Wunsch David 07.10.2026).
+    // In der Symbolsammlung als Linienzeichen; auf Karten in den Markenfarben über .ef-mark (Anthrazit-Fläche, Feind-Grün).
+    'standort-ef': ['Marke', 'Feind-Standort (EF)', 'Hauptstandorte Lübben und Wittenburg auf Karten und in Legenden', TR(2, 5, 20, 14, 2.5) + ZP('M22 14.5v2a2.5 2.5 0 0 1-2.5 2.5h-2.75z') + R(2, 5, 20, 14, 2.5) + L('M10.5 9H6v6h4.5M6 12h3.5', 2) + L('M18 9h-4.5v6M13.5 12h3.5', 2)],
     /* ---------- Status ---------- */
     'st-open': ['Status', 'Offen', 'Status offen (leeres Quadrat)', R(4, 4, 16, 16, 2.5)],
     'st-progress': ['Status', 'In Arbeit', 'Status in Arbeit (halb gefüllter Kreis)', '<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" style="fill:currentColor;stroke:none"/>'],
@@ -6382,6 +6372,15 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', ref);
     svg.append(use);
     return svg;
+  };
+  // Standortmarke EF in Markenfarben (.ef-mark): als Element für Legenden, als HTML-Text für Leaflet-Marker.
+  // viewBox schneidet das 24er-Raster auf die Plakette (20 × 14) zu; Fläche über --ic-tone-c gefüllt.
+  const EF_HTML = '<span class="ef-mark" aria-hidden="true"><svg viewBox="1 4 22 16" focusable="false"><use href="#i-standort-ef" width="24" height="24"></use></svg></span>';
+  app.efMark = function (asHtml) {
+    if (asHtml) return EF_HTML;
+    const t = document.createElement('template');
+    t.innerHTML = EF_HTML;
+    return t.content.firstChild;
   };
   app.injectSprite = function () {
     if (document.getElementById('feindSprite')) return;
@@ -7486,14 +7485,15 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       }
       return null;
     };
-    const sites = SITES.map(([name, lat, lng, anchor]) => { const [x, y] = proj(lat, lng); boxes.push([x - 6, y - 4.2, x + 6, y + 4.2]); return [name, x, y, anchor]; });
+    const sites = SITES.map(([name, lat, lng, anchor]) => { const [x, y] = proj(lat, lng); boxes.push([x - 6.6, y - 4.6, x + 6.6, y + 4.6]); return [name, x, y, anchor]; });
     for (const [name, x, y, anchor] of sites) {
       // Feind-Standort als Logo-Marke: Anthrazit-Fläche mit „EF“ in Feind-Grün, den beiden Buchstaben
       // der freigegebenen Kurzform E.FEIND (Wunsch David 07.10.2026).
       const lb = place(x, y, name, 6, SITE_FS, fitLabel(x, y, anchor === 'end' ? -8.5 : 8.5, 3, anchor, name, SITE_FS));
       svg.append(s('g', { class: 'site-fe' }, s('title', {}, 'Feind-Standort ' + name),
-          s('rect', { x: (x - 6).toFixed(1), y: (y - 4.2).toFixed(1), width: 12, height: 8.4, rx: 1.2 }),
-          s('text', { x: x.toFixed(1), y: (y + 2.1).toFixed(1), 'text-anchor': 'middle' }, 'EF')),
+          // Kürzel aus der Symbolsammlung (standort-ef), damit Referenz- und Straßenkarte dieselbe Marke zeigen.
+          // <use> direkt (kein eingebettetes <svg>, das die Kartenregel auf volle Breite zöge): Raster 24, Plakette 20 × 14 ab (2|5), Maßstab 0,66.
+          s('use', { href: '#i-standort-ef', class: 'ef-use', x: (x - 7.92).toFixed(2), y: (y - 7.92).toFixed(2), width: 15.84, height: 15.84 })),
         lb ? s('text', { class: 'site-l', 'text-anchor': lb.anchor, x: lb.x.toFixed(1), y: lb.y.toFixed(1) }, name) : null);
     }
     for (const [state, city, lat, lng] of CAPITALS) {
@@ -7550,7 +7550,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       h('ul', { class: 'small', style: 'margin:0;padding-left:18px' }, noGeo.map(r => h('li', {}, h('button', { class: 'linkbtn', type: 'button', onclick: () => { ui.refSel = r._id; rerender(); } }, str(r.title) || '(ohne Titel)'))))) : null;
     return h('div', { class: 'section' }, h('h3', { text: 'Referenzkarte' }),
       h('div', { class: 'refmap' },
-        h('div', {}, stage, h('div', { class: 'refmap-legend' }, h('span', {}, h('i', { class: 'pin' }, app.ico('schleifwelle')), 'Referenzprojekt'), h('span', {}, h('i', { class: 'fe', text: 'EF' }), 'Feind-Standort (Lübben, Wittenburg)'),
+        h('div', {}, stage, h('div', { class: 'refmap-legend' }, h('span', {}, h('i', { class: 'pin' }, app.ico('schleifwelle')), 'Referenzprojekt'), h('span', {}, app.efMark(), 'Feind-Standort (Lübben, Wittenburg)'),
           h('span', {}, h('i', { class: 'cap-on' }), 'Landeshauptstadt'), h('span', {}, h('i', { class: 'cap-off' }), 'Landeshauptstadt, Land ohne Referenz'),
           h('span', {}, h('i', { class: 'sh n1' }), h('i', { class: 'sh n2' }), h('i', { class: 'sh n3' }), '1 · 2–3 · 4+ Referenzen im Land'))),
         h('div', { class: 'stack' }, detail, stateSummary(counts), without,
@@ -11648,7 +11648,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
 
   /* ---------- Layout ---------- */
   const PT = 72 / 25.4;
-  const C = { green: '#84bb20', anth: '#424e4e', red: '#e3000b', sig: '#b8000a', text: '#3c5457', muted: '#6b7575', line: '#d5dada', area: '#f2f4f4', white: '#ffffff' };
+  const C = { green: '#84bb20', anth: '#424e4e', red: '#e3000b', sig: '#b8000a', text: '#3c5457', muted: '#5f6969', line: '#d5dada', area: '#f2f4f4', white: '#ffffff' };
   const FS = 10, LD = 13.5, P = 5;
   const COLOR = { signal: C.sig, muted: C.muted, strong: C.anth };
 
@@ -14527,11 +14527,12 @@ let shown = false, hideT = null;
 })();
 
 /* ---- app-karte.js ---- */
-/* ---- app-karte.js ---- */
 /* Feind Cockpit · Projektkarte: vergangene Projekte als Pins (kb_projects aus dem Wissensarchiv, dazu Referenzen
-   und Events aus dem Cockpit), Standorte Lübben und Wittenburg. Eigene SVG-Karte ohne Kachelserver: Umrisse aus
-   Natural Earth (gemeinfrei), Orte aus GeoNames (CC BY 4.0). Zoomen mit Rad, Tasten, Knöpfen oder zwei Fingern,
-   Verschieben mit Maus oder Finger, Bündeln naher Pins, Listenansicht für Tastatur und Screenreader. */
+   und Events aus dem Cockpit), Standorte Lübben und Wittenburg. Darstellung über den gemeinsamen Karten-Baustein
+   app.geoMap (geomap.js, wie die Ausschreibungskarte): Umrisskarte offline oder Straßenkarte nach Einwilligung,
+   Deutschland-Ansicht mit Kreis je Bundesland, ab Zoomstufe 7 die einzelnen Pins. Was die Darstellung verbessert,
+   gehört in geomap.js und gilt damit für beide Karten. Fachfunktionen bleiben hier: Filter, Seitenleiste,
+   Position setzen, Projekt bearbeiten, Referenz übernehmen. Orte aus GeoNames (CC BY 4.0). */
 (function () {
   'use strict';
   const FC = window.FC, app = FC.app, H = FC.helpers, D = FC.data, M = FC.model, K = FC.kb;
@@ -14539,10 +14540,9 @@ let shown = false, hideT = null;
   const S = app.state;
   const { str, arr } = H;
   const MP = S.ui.map = {
-    vb: null, sel: null, setPos: null, view: 'karte', wrap: null, svg: null, gLand: null, gPins: null, side: null, banner: null,
+    sel: null, setPos: null, focus: null, view: 'karte', wrap: null, side: null, banner: null,
     f: { q: '', service: '', status: '', from: '', to: '', proj: true, ref: true, event: true, home: true }
   };
-  const DE_BOX = [5.6, 55.15, 15.3, 47.2];
   const STATUS_L = { geprueft: 'geprüft', entwurf: 'Entwurf', referenz: 'Referenz (noch kein Projekt)', event: 'Event', home: 'Standort' };
   const canWrite = () => app.kbCanWrite && app.kbCanWrite();
   const geoHow = k => (app.kbGeoHow && app.kbGeoHow[k]) || 'Position offen';
@@ -14579,161 +14579,12 @@ let shown = false, hideT = null;
   }
   const hasPos = p => typeof p.lat === 'number' && typeof p.lon === 'number';
 
-  /* ---------- Ansicht (viewBox) ---------- */
-  function rect() { const r = MP.svg && MP.svg.getBoundingClientRect(); return r && r.width ? r : { width: 800, height: 600 }; }
-  function fit(box, pad) {
-    const [a, b] = [K.project(box[0], box[1]), K.project(box[2], box[3])];
-    const x0 = Math.min(a[0], b[0]), y0 = Math.min(a[1], b[1]), w0 = Math.abs(b[0] - a[0]), h0 = Math.abs(b[1] - a[1]);
-    const r = rect(), ar = r.height / r.width, p = pad || 0.06;
-    let w = w0 * (1 + 2 * p), hh = h0 * (1 + 2 * p);
-    if (hh / w > ar) w = hh / ar; else hh = w * ar;
-    MP.vb = { x: x0 + w0 / 2 - w / 2, y: y0 + h0 / 2 - hh / 2, w, h: hh };
-  }
-  function fitPoints(list) {
-    const ps = list.filter(hasPos);
-    if (!ps.length) return fit(DE_BOX);
-    const lons = ps.map(p => p.lon), lats = ps.map(p => p.lat);
-    const box = [Math.min(...lons), Math.max(...lats), Math.max(...lons), Math.min(...lats)];
-    if (box[2] - box[0] < 1.5) { box[0] -= 0.75; box[2] += 0.75; }
-    if (box[1] - box[3] < 1) { box[1] += 0.5; box[3] -= 0.5; }
-    // Deutschland bleibt immer als Rahmen sichtbar; Punkte außerhalb erweitern ihn.
-    fit([Math.min(box[0], DE_BOX[0]), Math.max(box[1], DE_BOX[1]), Math.max(box[2], DE_BOX[2]), Math.min(box[3], DE_BOX[3])], 0.04);
-  }
-  function setVb() { if (MP.svg && MP.vb) MP.svg.setAttribute('viewBox', [MP.vb.x, MP.vb.y, MP.vb.w, MP.vb.h].map(v => v.toFixed(2)).join(' ')); }
-  const scale = () => rect().width / MP.vb.w;
-  function zoomAt(factor, cx, cy) {
-    const vb = MP.vb;
-    const nw = Math.max(25, Math.min(1500, vb.w * factor));
-    const f = nw / vb.w;
-    if (cx == null) { cx = vb.x + vb.w / 2; cy = vb.y + vb.h / 2; }
-    MP.vb = { x: cx - (cx - vb.x) * f, y: cy - (cy - vb.y) * f, w: nw, h: vb.h * f };
-    setVb(); drawPins();
-  }
-  function toUnits(clientX, clientY) {
-    const r = rect();
-    const sc = Math.min(r.width / MP.vb.w, r.height / MP.vb.h);
-    const ox = (r.width - MP.vb.w * sc) / 2, oy = (r.height - MP.vb.h * sc) / 2;
-    return [MP.vb.x + (clientX - r.left - ox) / sc, MP.vb.y + (clientY - r.top - oy) / sc];
-  }
-
-  /* ---------- Zeichnen ---------- */
-  function drawLand() {
-    const C = app.geoCountries || {};
-    const g = MP.gLand;
-    g.replaceChildren();
-    for (const [cc, rings] of Object.entries(C)) {
-      const d = rings.map(r => r.map((p, i) => (i ? 'L' : 'M') + K.project(p[0], p[1]).map(v => v.toFixed(1)).join(',')).join('') + 'Z').join('');
-      g.append(s('path', { d, class: 'mp-land' + (cc === 'DE' ? ' de' : '') }));
-    }
-    const lbl = [['Niederlande', 5.4, 52.3], ['Polen', 17.2, 52.6], ['Tschechien', 15.3, 49.7], ['Dänemark', 9.3, 55.9], ['Österreich', 13.6, 47.6], ['Belgien', 4.6, 50.6], ['Frankreich', 5.2, 48.6], ['Schweiz', 8.2, 46.9]];
-    for (const [t, lon, lat] of lbl) { const [x, y] = K.project(lon, lat); g.append(s('text', { x, y, class: 'mp-cty', 'text-anchor': 'middle' }, t)); }
-  }
-  const ariaOf = p => [p.name, p.place && p.place !== p.name ? p.place : '', p.year || '', STATUS_L[p.status] || '', p.how === 'land' ? 'Position ungefähr' : ''].filter(Boolean).join(', ');
-  function shape(p, r) {
-    if (p.kind === 'event') return s('rect', { x: -r, y: -r, width: 2 * r, height: 2 * r, transform: 'rotate(45)', class: 'mp-shape ev' });
-    if (p.kind === 'home') return s('rect', { x: -r, y: -r, width: 2 * r, height: 2 * r, class: 'mp-shape home' });
-    return s('circle', { r, class: 'mp-shape ' + (p.kind === 'ref' ? 'ref' : p.status === 'geprueft' ? 'ok' : 'draft') });
-  }
-  function drawPins() {
-    if (!MP.gPins || !MP.vb) return;
-    const sc = scale(), r = 7.5 / sc, cell = 30 / sc;
-    const list = visible(points()).filter(hasPos);
-    const g = MP.gPins;
-    g.replaceChildren();
-    const groups = new Map();
-    for (const p of list) {
-      const [x, y] = K.project(p.lon, p.lat);
-      const k = p.kind === 'home' || p.key === MP.sel ? p.key : Math.floor(x / cell) + ':' + Math.floor(y / cell);
-      if (!groups.has(k)) groups.set(k, []);
-      groups.get(k).push({ p, x, y });
-    }
-    const pins = [];
-    for (const [, grp] of groups) {
-      if (grp.length > 1) {
-        const cx = grp.reduce((t, q) => t + q.x, 0) / grp.length, cy = grp.reduce((t, q) => t + q.y, 0) / grp.length;
-        const el = s('g', { class: 'mp-cluster', transform: 'translate(' + cx + ',' + cy + ')', tabindex: '0', role: 'button', 'aria-label': grp.length + ' Punkte: ' + grp.map(q => q.p.name).slice(0, 4).join(', ') + '. Hineinzoomen', 'data-cx': cx, 'data-cy': cy },
-          s('circle', { r: 12 / sc, class: 'mp-cl' }), s('text', { class: 'mp-cl-t', 'text-anchor': 'middle', dy: (4.5 / sc), style: 'font-size:' + (12 / sc) + 'px' }, String(grp.length)));
-        el.append(s('title', {}, grp.map(q => q.p.name).join(' · ')));
-        pins.push(el);
-        continue;
-      }
-      const { p, x, y } = grp[0];
-      const sel = p.key === MP.sel;
-      const el = s('g', { class: 'mp-pin k-' + p.kind + (sel ? ' sel' : ''), transform: 'translate(' + x + ',' + y + ')', tabindex: '0', role: 'button', 'aria-label': ariaOf(p), 'aria-pressed': String(sel), 'data-key': p.key });
-      if (p.how === 'land' || p.how === 'ki' || p.how === 'mehrdeutig') el.append(s('circle', { r: 20 / sc, class: 'mp-unsure' }));
-      el.append(shape(p, sel ? r * 1.35 : r));
-      if (p.kind === 'home' || sel) el.append(s('text', { class: 'mp-lbl', x: (sel ? r * 1.6 : r * 1.3), y: 4 / sc, style: 'font-size:' + (12.5 / sc) + 'px' }, p.kind === 'home' ? p.name.replace('Standort ', '') : p.name));
-      el.append(s('title', {}, ariaOf(p)));
-      pins.push(el);
-    }
-    // Ausgewählter Pin zuletzt, damit er oben liegt.
-    const z = el => el.classList.contains('sel') ? 3 : el.classList.contains('k-home') ? 0 : el.classList.contains('mp-cluster') ? 2 : 1;
-    pins.sort((a, b) => z(a) - z(b));
-    g.append(...pins);
-  }
-
-  /* ---------- Bedienung: Ziehen, Zoomen, Tippen ---------- */
-  function bind(svg) {
-    const ptrs = new Map();
-    let start = null, moved = false, pinchD = 0, target = null;
-    svg.addEventListener('pointerdown', e => {
-      if (e.button !== 0 && e.pointerType === 'mouse') return;
-      svg.setPointerCapture(e.pointerId);
-      ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      if (ptrs.size === 1) { start = { x: e.clientX, y: e.clientY, vb: Object.assign({}, MP.vb) }; moved = false; target = e.target.closest('.mp-pin, .mp-cluster'); }
-      if (ptrs.size === 2) { const [a, b] = Array.from(ptrs.values()); pinchD = Math.hypot(a.x - b.x, a.y - b.y); moved = true; }
-    });
-    svg.addEventListener('pointermove', e => {
-      if (!ptrs.has(e.pointerId)) return;
-      ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      if (ptrs.size === 2) {
-        const [a, b] = Array.from(ptrs.values());
-        const d = Math.hypot(a.x - b.x, a.y - b.y);
-        if (pinchD) { const [cx, cy] = toUnits((a.x + b.x) / 2, (a.y + b.y) / 2); zoomAt(pinchD / d, cx, cy); }
-        pinchD = d;
-        return;
-      }
-      if (!start) return;
-      const dx = e.clientX - start.x, dy = e.clientY - start.y;
-      if (!moved && Math.hypot(dx, dy) < 5) return;
-      moved = true;
-      svg.classList.add('panning');
-      const sc = scale();
-      MP.vb.x = start.vb.x - dx / sc; MP.vb.y = start.vb.y - dy / sc;
-      setVb();
-    });
-    const end = e => {
-      if (!ptrs.has(e.pointerId)) return;
-      ptrs.delete(e.pointerId);
-      if (ptrs.size) return;
-      svg.classList.remove('panning');
-      if (!moved) tap(e, target);
-      start = null; pinchD = 0; target = null;
-    };
-    svg.addEventListener('pointerup', end);
-    svg.addEventListener('pointercancel', e => { ptrs.delete(e.pointerId); svg.classList.remove('panning'); start = null; });
-    svg.addEventListener('wheel', e => { e.preventDefault(); const [cx, cy] = toUnits(e.clientX, e.clientY); zoomAt(Math.exp(e.deltaY * (e.deltaMode ? 0.05 : 0.0015)), cx, cy); }, { passive: false });
-    svg.addEventListener('dblclick', e => { e.preventDefault(); const [cx, cy] = toUnits(e.clientX, e.clientY); zoomAt(0.5, cx, cy); });
-    svg.addEventListener('keydown', e => {
-      const el = e.target.closest && e.target.closest('.mp-pin, .mp-cluster');
-      if ((e.key === 'Enter' || e.key === ' ') && el) { e.preventDefault(); tap(null, el); return; }
-      const st = MP.vb.w * 0.12;
-      const map = { ArrowLeft: () => { MP.vb.x -= st; setVb(); }, ArrowRight: () => { MP.vb.x += st; setVb(); }, ArrowUp: () => { MP.vb.y -= st; setVb(); }, ArrowDown: () => { MP.vb.y += st; setVb(); },
-        '+': () => zoomAt(0.7), '=': () => zoomAt(0.7), '-': () => zoomAt(1.4), '0': () => { fitPoints(visible(points())); setVb(); drawPins(); }, Escape: () => { if (MP.setPos) cancelSetPos(); else select(null); } };
-      if (map[e.key]) { e.preventDefault(); map[e.key](); }
-    });
-  }
-  function tap(e, el) {
-    if (MP.setPos && e) { const [x, y] = toUnits(e.clientX, e.clientY); const [lon, lat] = K.unproject(x, y); placeAt(lat, lon); return; }
-    if (el && el.classList.contains('mp-cluster')) { zoomAt(0.4, +el.getAttribute('data-cx'), +el.getAttribute('data-cy')); return; }
-    if (el && el.getAttribute('data-key')) { select(el.getAttribute('data-key')); return; }
-    if (e) select(null);
-  }
+  /* ---------- Auswahl ---------- */
   function select(key) {
     if (app.haptic) app.haptic(8);
     MP.sel = key;
-    drawPins(); drawSide();
-    if (key) { const el = MP.gPins.querySelector('[data-key="' + CSS.escape(key) + '"]'); if (el && document.activeElement !== el && MP.wrap.contains(document.activeElement)) el.focus({ preventScroll: true }); }
+    if (app.geoMapSelect) app.geoMapSelect('projekte', key);
+    drawSide();
   }
 
   /* ---------- Position setzen ---------- */
@@ -14746,11 +14597,14 @@ let shown = false, hideT = null;
   function startSetPos(p) {
     if (!canWrite()) { app.toast('Positionen setzen braucht Schreibrecht.', true); return; }
     MP.setPos = { kind: p.kind, id: p.id, name: p.name };
-    MP.wrap.classList.add('setpos');
+    if (MP.wrap) { MP.wrap.classList.add('setpos'); const box = MP.wrap.querySelector('.gm-map'); if (box) { box.classList.add('gm-pick'); box.focus({ preventScroll: true }); } }
     drawBanner();
-    MP.svg.focus({ preventScroll: true });
   }
-  function cancelSetPos() { MP.setPos = null; if (MP.wrap) MP.wrap.classList.remove('setpos'); drawBanner(); }
+  function cancelSetPos() {
+    MP.setPos = null;
+    if (MP.wrap) { MP.wrap.classList.remove('setpos'); const box = MP.wrap.querySelector('.gm-map'); if (box) box.classList.remove('gm-pick'); }
+    drawBanner();
+  }
   async function placeAt(lat, lon) {
     const sp = MP.setPos;
     cancelSetPos();
@@ -14816,7 +14670,7 @@ let shown = false, hideT = null;
     if (!MP.banner) return;
     MP.banner.replaceChildren();
     MP.banner.hidden = !MP.setPos;
-    if (MP.setPos) MP.banner.append(h('span', {}, h('b', { text: 'Position setzen: ' }), 'Auf die Karte tippen, wo „' + MP.setPos.name + '“ liegt. Verschieben und Zoomen gehen weiter.'), h('button', { class: 'btn small', type: 'button', onclick: cancelSetPos }, 'Abbrechen'));
+    if (MP.setPos) MP.banner.append(h('span', {}, h('b', { text: 'Position setzen: ' }), 'Auf die Karte tippen, wo „' + MP.setPos.name + '“ liegt. Verschieben und Zoomen gehen weiter, Esc bricht ab.'), h('button', { class: 'btn small', type: 'button', onclick: cancelSetPos }, 'Abbrechen'));
   }
   function drawSide() {
     const add = (...k) => MP.side.append(...k.flat().filter(x => x != null && x !== false));
@@ -14862,63 +14716,50 @@ let shown = false, hideT = null;
         h('div', { class: 'kpi' }, h('div', { class: 'v', text: String(n('ref')) }), h('div', { class: 'k', text: 'Referenzen' })),
         h('div', { class: 'kpi' }, h('div', { class: 'v', text: String(n('event')) }), h('div', { class: 'k', text: 'Events' }))),
       h('div', { class: 'mp-legend' },
-        h('span', {}, svgDot('ok'), 'Projekt geprüft'), h('span', {}, svgDot('draft'), 'Projekt Entwurf'), h('span', {}, svgDot('ref'), 'Referenz ohne Projekt'),
-        h('span', {}, svgDot('ev'), 'Event'), h('span', {}, svgDot('home'), 'Standort'), h('span', {}, svgDot('unsure'), 'Position ungefähr')),
+        h('span', {}, dot('--accent-ink'), 'Projekt geprüft'), h('span', {}, dot('--accent'), 'Projekt Entwurf'), h('span', {}, dot('--ink'), 'Referenz ohne Projekt'),
+        h('span', {}, dot('--info', 'ev'), 'Event'), h('span', {}, app.efMark(), 'Standort'), h('span', {}, dot('', 'unsure'), 'Position ungefähr')),
       noPos.length ? h('div', {}, h('span', { class: 'label', text: noPos.length + ' ohne Position' }), h('ul', { class: 'mp-docs' }, noPos.slice(0, 10).map(x => h('li', {}, h('span', { text: x.name + ' ' }),
         (x.kind === 'proj' || x.kind === 'ref') && canWrite() ? h('button', { class: 'linkbtn', type: 'button', onclick: () => startSetPos(x) }, 'Position setzen') : null)))) : null,
-      h('p', { class: 'muted small', text: 'Pins antippen für Details. Ziehen verschiebt, Mausrad, Doppelklick oder zwei Finger zoomen. Tastatur: Pfeile, + und −, 0 zeigt alles. Neue Projekte entstehen automatisch, wenn Unterlagen zu einem Bauprojekt mit Ort im Archiv landen.' }));
+      h('p', { class: 'muted small', text: 'Kreise zeigen die Anzahl je Bundesland; Kreis anklicken oder hineinzoomen zeigt die Pins. Pin antippen für Details. Tastatur: Tab erreicht Kreise und Pins, Pfeile verschieben, + und − zoomen. Neue Projekte entstehen automatisch, wenn Unterlagen zu einem Bauprojekt mit Ort im Archiv landen.' }));
   }
-  function svgDot(cls) {
-    const g = s('svg', { viewBox: '-8 -8 16 16', width: 14, height: 14, 'aria-hidden': 'true' });
-    if (cls === 'ev') g.append(s('rect', { x: -4.5, y: -4.5, width: 9, height: 9, transform: 'rotate(45)', class: 'mp-shape ev' }));
-    else if (cls === 'home') g.append(s('rect', { x: -5, y: -5, width: 10, height: 10, class: 'mp-shape home' }));
-    else if (cls === 'unsure') g.append(s('circle', { r: 6.5, class: 'mp-unsure' }), s('circle', { r: 3, class: 'mp-shape draft' }));
-    else g.append(s('circle', { r: 5, class: 'mp-shape ' + cls }));
-    return g;
-  }
+  // Legendenpunkt in derselben Form und Farbe wie die Pins der Karte (.gm-pin).
+  const dot = (tok, cls) => h('i', { class: 'lg' + (cls ? ' ' + cls : ''), 'aria-hidden': 'true', style: tok ? '--k:var(' + tok + ')' : null });
 
-  /* ---------- Gerüst (bleibt über Neuzeichnungen erhalten) ---------- */
-  function build() {
-    const svg = s('svg', { class: 'mp-svg', role: 'application', 'aria-label': 'Projektkarte Deutschland und Nachbarländer. Pins mit Tab erreichen, Enter öffnet.', tabindex: '0', preserveAspectRatio: 'xMidYMid meet' });
-    const gLand = s('g', { class: 'mp-landg', 'aria-hidden': 'true' }), gPins = s('g', { class: 'mp-pins' });
-    svg.append(gLand, gPins);
-    const zoom = h('div', { class: 'mp-ctrl', role: 'group', 'aria-label': 'Kartensteuerung' },
-      h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Hineinzoomen', onclick: () => zoomAt(0.65) }, icon('plus')),
-      h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Herauszoomen', onclick: () => zoomAt(1.5) }, h('span', { 'aria-hidden': 'true', text: '−' })),
-      h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Alle Punkte zeigen', title: 'Alle Punkte zeigen', onclick: () => { fitPoints(visible(points())); setVb(); drawPins(); } }, app.ico('raster')),
-      h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Deutschland zeigen', title: 'Deutschland', onclick: () => { fit(DE_BOX); setVb(); drawPins(); } }, h('span', { 'aria-hidden': 'true', class: 'mp-de', text: 'DE' })));
-    const banner = h('div', { class: 'mp-banner', role: 'status', hidden: true });
-    const attr = h('div', { class: 'mp-attr', text: 'Umrisse: Natural Earth (gemeinfrei) · Orte: GeoNames (CC BY 4.0) · Positionen aus Ortsnamen, nicht vermessen' });
-    const side = h('aside', { class: 'mp-side', 'aria-label': 'Details zur Auswahl', 'aria-live': 'polite' });
-    const stage = h('div', { class: 'mp-stage' }, svg, zoom, banner, attr);
-    const wrap = h('div', { class: 'mp-wrap' }, stage, side);
-    Object.assign(MP, { wrap, svg, gLand, gPins, side, banner });
-    bind(svg);
-    if (window.ResizeObserver) new ResizeObserver(() => { if (!MP.vb || !wrap.isConnected) return; const r = rect(); const nh = MP.vb.w * r.height / r.width; if (Math.abs(nh - MP.vb.h) > 0.5) { MP.vb.y += (MP.vb.h - nh) / 2; MP.vb.h = nh; setVb(); drawPins(); } }).observe(svg);
+  /* ---------- Karte ---------- */
+  const PIN_KIND = p => p.kind === 'proj' ? (p.status === 'geprueft' ? 'proj' : 'draft') : p.kind;
+  function mapView() {
+    if (!MP.side) {
+      MP.side = h('aside', { class: 'mp-side', 'aria-label': 'Details zur Auswahl', 'aria-live': 'polite' });
+      MP.banner = h('div', { class: 'mp-banner', role: 'status', hidden: true });
+    }
+    const vis = visible(points()).filter(hasPos);
+    const counts = {};
+    for (const p of vis) if (p.kind !== 'home' && p.state) counts[p.state] = (counts[p.state] || 0) + 1;
+    const pts = vis.map(p => ({ key: p.key, lat: p.lat, lon: p.lon, label: p.name, sub: [p.year, STATUS_L[p.status]].filter(Boolean).join(' · '),
+      kind: PIN_KIND(p), approx: p.how === 'land' || p.how === 'ki' || p.how === 'mehrdeutig', onClick: p.kind === 'home' ? null : () => select(p.key) }));
+    const gm = app.geoMap ? app.geoMap({ id: 'projekte', height: 560, label: 'Projektkarte: Projekte, Referenzen und Events', points: pts,
+      stateBubbles: counts, unit: ['Eintrag', 'Einträge'], selected: MP.sel, focus: MP.focus, picking: !!MP.setPos,
+      onMapClick: (lat, lon) => { if (MP.setPos) placeAt(lat, lon); else if (MP.sel) select(null); },
+      note: 'Gestrichelt: Position nur ungefähr. Umrisse: Natural Earth (gemeinfrei) · Orte: GeoNames (CC BY 4.0) · Positionen aus Ortsnamen, nicht vermessen.' })
+      : h('p', { class: 'muted', text: 'Karte nicht verfügbar.' });
+    MP.focus = null;
+    MP.wrap = h('div', { class: 'mp-wrap' + (MP.setPos ? ' setpos' : ''), onkeydown: e => { if (e.key === 'Escape') { if (MP.setPos) cancelSetPos(); else if (MP.sel) select(null); } } },
+      h('div', { class: 'mp-stage' }, MP.banner, gm), MP.side);
+    return MP.wrap;
   }
-  let landDone = false;
   function after() {
     if (MP.view !== 'karte' || !MP.wrap) return;
-    app.kbEnsureGaz();
-    if (!landDone) { drawLand(); landDone = true; }
-    if (!MP.vb) fit(DE_BOX);
-    setVb(); drawPins(); drawSide(); drawBanner();
+    drawSide(); drawBanner();
   }
 
   /* ---------- Modul ---------- */
-  function streetMap() {
-    const pts = visible(points()).filter(hasPos).map(p => ({ lat: p.lat, lon: p.lon, label: p.name, sub: [p.year, STATUS_L[p.status]].filter(Boolean).join(' · '),
-      kind: p.kind === 'proj' ? (p.status === 'geprueft' ? 'proj' : 'draft') : p.kind, approx: p.how === 'land' || p.how === 'ki' || p.how === 'mehrdeutig',
-      onClick: p.kind === 'home' ? null : () => { MP.view = 'karte'; showOnMap(p.key); } }));
-    return app.geoMap ? app.geoMap({ id: 'projekte', height: 560, label: 'Projektkarte als Straßenkarte', points: pts, note: 'Pin antippen öffnet die Details in der Projektkarte. Gestrichelt: Position nur ungefähr.' }) : h('p', { class: 'muted', text: 'Karte nicht verfügbar.' });
-  }
   app.module('wissen', 'karte', {
     count: () => app.kbProjects().length || null,
     render() {
-      if (!MP.wrap) build();
       const f = MP.f;
       const q = h('input', { type: 'search', id: 'mp-q', value: f.q, placeholder: 'Projekt oder Ort', autocomplete: 'off' });
-      q.addEventListener('input', () => { f.q = q.value; drawPins(); drawSide(); });
+      // Suche zeichnet Karte und Seitenleiste neu; der Fokus bleibt im Suchfeld.
+      q.addEventListener('input', () => { f.q = q.value; clearTimeout(MP.qt); MP.qt = setTimeout(() => { app.refresh(); const el = document.getElementById('mp-q'); if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 250); });
       const years = Array.from(new Set(points().map(p => p.year).filter(Boolean))).sort();
       const dd = (id, label, opts, val, set) => app.field(label, app.dropdown(id, opts, val, v => { set(v); app.refresh(); }));
       const layer = (k, l) => h('button', { class: 'fchip', type: 'button', 'aria-pressed': String(f[k]), onclick: () => { f[k] = !f[k]; app.refresh(); } }, l);
@@ -14931,8 +14772,7 @@ let shown = false, hideT = null;
         h('div', { class: 'field' }, h('span', { class: 'label', text: 'Ebenen' }), h('div', { class: 'chipset', role: 'group', 'aria-label': 'Ebenen' }, layer('proj', 'Projekte'), layer('ref', 'Referenzen'), layer('event', 'Events'), layer('home', 'Standorte'))),
         h('div', { class: 'field' }, h('span', { class: 'label', text: 'Ansicht' }), h('div', { class: 'row', role: 'group', 'aria-label': 'Ansicht' },
           h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(MP.view === 'karte'), onclick: () => { MP.view = 'karte'; app.refresh(); } }, app.ico('karte'), 'Karte'),
-          h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(MP.view === 'liste'), onclick: () => { MP.view = 'liste'; app.refresh(); } }, app.ico('liste'), 'Liste'),
-          h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(MP.view === 'strasse'), onclick: () => { MP.view = 'strasse'; app.refresh(); } }, app.ico('pin'), 'Straßenkarte'))));
+          h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(MP.view === 'liste'), onclick: () => { MP.view = 'liste'; app.refresh(); } }, app.ico('liste'), 'Liste'))));
       const all = visible(points()).filter(p => p.kind !== 'home');
       const list = h('div', { class: 'tbl-wrap' }, h('table', { class: 'data' }, h('caption', { class: 'sr', text: 'Projekte, Referenzen und Events' }),
         h('thead', {}, h('tr', {}, ['Name', 'Ort', 'Jahr', 'Leistungen', 'Status', 'Position', ''].map(t => h('th', { scope: 'col', text: t })))),
@@ -14944,23 +14784,21 @@ let shown = false, hideT = null;
         panelHead('Projektkarte', all.filter(hasPos).length + ' Punkte', h('button', { class: 'btn', type: 'button', onclick: () => app.go('wissen', 'eingang') }, app.ico('ablegen'), 'Unterlagen ablegen'),
           'Vergangene Projekte aus dem Wissensarchiv, dazu Referenzen und Events aus dem Cockpit. Projekte entstehen automatisch aus abgelegten Unterlagen; ungefähre Positionen sind gestrichelt umrandet.'),
         tools,
-        MP.view === 'liste' ? list : MP.view === 'strasse' ? streetMap() : MP.wrap
+        MP.view === 'liste' ? list : mapView()
       ];
     },
     after
   });
   function showOnMap(key) {
+    const p = points().find(x => x.key === key);
+    MP.view = 'karte';
+    MP.sel = key;
+    MP.focus = p && hasPos(p) ? { lat: p.lat, lon: p.lon } : null;
     app.go('wissen', 'karte');
-    setTimeout(() => {
-      const p = points().find(x => x.key === key);
-      if (!p) return;
-      MP.sel = key;
-      if (hasPos(p)) { const [x, y] = K.project(p.lon, p.lat); const w = Math.min(MP.vb.w, 160); const hh = MP.vb.h * w / MP.vb.w; MP.vb = { x: x - w / 2, y: y - hh / 2, w, h: hh }; setVb(); }
-      drawPins(); drawSide();
-      if (!hasPos(p) && (p.kind === 'proj' || p.kind === 'ref') && canWrite()) startSetPos(p);
-    }, 60);
+    app.refresh();
+    if (p && !hasPos(p) && (p.kind === 'proj' || p.kind === 'ref') && canWrite()) setTimeout(() => startSetPos(p), 60);
   }
-  app.kbMapFocus = id => { MP.view = 'karte'; showOnMap('p:' + id); };
+  app.kbMapFocus = id => showOnMap('p:' + id);
 })();
 
 /* ---- geo-logic.js ---- */
@@ -15073,7 +14911,8 @@ let shown = false, hideT = null;
   }
   const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || '#888888';
   const ring = r => r.map(([lon, lat]) => [lat, lon]);
-  const KIND = { proj: '--accent-ink', draft: '--accent', ref: '--ink', event: '--signal', tender: '--warn' };
+  // Rot bleibt Signal (Farbsystem 1.1): Events tragen Info-Blau und die Raute als Form.
+  const KIND = { proj: '--accent-ink', draft: '--accent', ref: '--ink', event: '--info', tender: '--warn' };
   const provider = () => GL.provider((app.cfg() || {}).mapTiles);
   const consentRaw = () => app.storeGet(CONSENT_KEY);
   const consentOf = p => GL.consent.read(consentRaw(), p.host);
@@ -15107,19 +14946,24 @@ let shown = false, hideT = null;
       bubbles ? h('span', {}, h('i', { class: 'gm-l-sb' }), 'Kreis: Ausschreibungen je Bundesland (Deutschland-Ansicht, Klick zoomt hinein)') : null,
       h('span', {}, h('i', { class: 'gm-l-pin' }), bubbles ? 'Ausschreibung mit Ortsangabe (ab Zoomstufe ' + DETAIL_ZOOM + ')' : 'Ausschreibung mit Ortsangabe'),
       h('span', {}, h('i', { class: 'gm-l-cluster' }), bubbles ? 'Gruppe am selben Ort (Zahl = Pins, Klick zoomt)' : 'Gruppe (Zahl = Pins, Klick zoomt)'),
-      h('span', {}, h('i', { class: 'gm-l-site' }), 'Standort Lübben / Wittenburg'));
+      h('span', {}, h('i', { class: 'gm-l-site' }, app.efMark()), 'Standort Lübben / Wittenburg'));
   }
 
-  const pinIcon = (p, home) => L.divIcon({ className: home ? 'gm-home' : 'gm-pin-wrap', iconSize: [16, 16], iconAnchor: [8, 8],
-    html: '<span class="gm-pin' + (p.approx ? ' approx' : '') + '"' + (home ? '' : ' style="--pin:var(' + (KIND[p.kind] || '--ink') + ')"') + '></span>' });
+  const pinIcon = (p, home, sel) => home
+    ? L.divIcon({ className: 'gm-home', iconSize: [33, 24], iconAnchor: [16.5, 12], html: app.efMark(true) })
+    : L.divIcon({ className: 'gm-pin-wrap' + (sel ? ' sel' : ''), iconSize: [16, 16], iconAnchor: [8, 8],
+      html: '<span class="gm-pin' + (p.kind === 'event' ? ' ev' : '') + (p.approx ? ' approx' : '') + '" style="--pin:var(' + (KIND[p.kind] || '--ink') + ')"></span>' });
 
   // opts: { id, height, label, states: { name: { n, home, sel } } | null, onState(name), points: [{ lat, lon, label, sub, kind, approx, onClick }], note,
   //         stateBubbles: { name: n } | null } – mit stateBubbles zeigt die Deutschland-Ansicht einen Kreis je Land, Pins erst ab DETAIL_ZOOM.
+  // Gemeinsamer Baustein für Ausschreibungs- und Projektkarte: Darstellung hier, Fachlogik in den Modulen. Für die Projektkarte:
+  //   unit: [Einzahl, Mehrzahl] für Kreise und Hinweise · points[].key + selected: hervorgehobener Pin · focus: { lat, lon } öffnet dort
+  //   in der Detailansicht · onMapClick(lat, lon): Klick auf freie Kartenfläche (z. B. „Position setzen“) · picking: Fadenkreuz.
   app.geoMap = function (opts) {
     const id = opts.id || 'map';
     if (maps[id]) { const old = maps[id]; delete maps[id]; try { if (old._fcMoved) views[id] = { c: old.getCenter(), z: old.getZoom() }; } catch (e) { /* ohne Ausschnitt */ } try { if (old._fcObs) old._fcObs.forEach(o => o.disconnect()); old.stop(); old.remove(); } catch (e) { /* schon weg */ } }
     const p = provider(), c = consentOf(p), on = tilesOn(p);
-    const box = h('div', { class: 'gm-map', style: 'height:' + (opts.height || 420) + 'px', role: 'region', 'aria-label': (opts.label || 'Karte') + '. Mit Pfeiltasten verschieben, Plus und Minus zoomen.' });
+    const box = h('div', { class: 'gm-map' + (opts.picking ? ' gm-pick' : ''), style: 'height:' + (opts.height || 420) + 'px', role: 'region', 'aria-label': (opts.label || 'Karte') + '. Mit Pfeiltasten verschieben, Plus und Minus zoomen.' });
     const info = h('div', { class: 'gm-info muted small', role: 'status' });
     const toggle = h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(on),
       onclick: () => {
@@ -15134,6 +14978,7 @@ let shown = false, hideT = null;
         : 'Umrisskarte offline: keine Datenübertragung an Dritte.' }));
     const st = opts.states || null;
     const sb = opts.stateBubbles && typeof opts.stateBubbles === 'object' ? opts.stateBubbles : null;
+    const unit = opts.unit || ['Ausschreibung', 'Ausschreibungen'];
     const modeInfo = sb ? h('div', { class: 'gm-mode muted small', role: 'status' }) : null;
     const cls = GL.classes(st ? Object.values(st).map(s => s.n || 0) : []);
     const wrap = h('div', { class: 'gm-wrap' }, bar, asking === id ? consentPanel(id, p) : null, box, modeInfo, st ? legendFor(cls, !!sb) : null, info);
@@ -15192,14 +15037,17 @@ let shown = false, hideT = null;
         ? L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 48, spiderfyOnMaxZoom: true, chunkedLoading: true,
           iconCreateFunction: cl => L.divIcon({ html: String(cl.getChildCount()), className: 'marker-cluster gm-cluster', iconSize: L.point(34, 34) }) })
         : L.layerGroup();
+      map._fcMarkers = new Map();
       for (const q of pts) {
         const home = q.kind === 'home';
-        const m = L.marker([q.lat, q.lon], { icon: pinIcon(q, home), title: q.label + (q.sub ? ' · ' + q.sub : ''), alt: q.label, keyboard: !!q.onClick, zIndexOffset: home ? 1000 : 0 });
+        const m = L.marker([q.lat, q.lon], { icon: pinIcon(q, home, q.key && q.key === opts.selected), title: q.label + (q.sub ? ' · ' + q.sub : ''), alt: q.label, keyboard: !!q.onClick, zIndexOffset: home ? 1000 : 0 });
         m.bindTooltip(q.label + (q.sub ? ' · ' + q.sub : ''), { direction: 'top', offset: [0, -8] });
         // Leaflet löst bei Enter auf einem fokussierten Pin selbst „click“ aus.
         if (q.onClick) m.on('click', () => { if (app.haptic) app.haptic(8); q.onClick(); });
+        if (q.key) map._fcMarkers.set(q.key, { m, q });
         if (home) m.addTo(map); else group.addLayer(m);
       }
+      if (opts.onMapClick) map.on('click', e => opts.onMapClick(e.latlng.lat, e.latlng.lng));
       // Mit stateBubbles: weit herausgezoomt ein Kreis je Bundesland, ab DETAIL_ZOOM die einzelnen Pins.
       let bubbles = null;
       if (sb) {
@@ -15208,7 +15056,7 @@ let shown = false, hideT = null;
           const a = STATE_ANCHOR[name];
           if (!a || !(cnt > 0)) continue;
           const d = 28 + Math.round(Math.min(20, Math.sqrt(cnt) * 5));
-          const lab = name + ': ' + cnt + (cnt === 1 ? ' Ausschreibung' : ' Ausschreibungen') + ' – Klick zeigt die Standorte';
+          const lab = name + ': ' + cnt + ' ' + (cnt === 1 ? unit[0] : unit[1]) + ' – Klick zeigt die Standorte';
           const m = L.marker(a, { icon: L.divIcon({ className: 'gm-sb-wrap', iconSize: [d, d], iconAnchor: [d / 2, d / 2], html: '<span class="gm-sb" style="--d:' + d + 'px">' + cnt + '</span>' }),
             title: lab, alt: lab, keyboard: true, zIndexOffset: SMALL_STATES.includes(name) ? 600 : 500 });
           m.bindTooltip(lab, { direction: 'top', offset: [0, -d / 2] });
@@ -15226,6 +15074,7 @@ let shown = false, hideT = null;
       for (const q of pts) b.extend([q.lat, q.lon]);
       map.fitBounds(b, { padding: [12, 12], animate: false });
       if (views[id]) { map.setView(views[id].c, views[id].z, { animate: false }); map._fcMoved = true; }
+      if (opts.focus && typeof opts.focus.lat === 'number') { map.setView([opts.focus.lat, opts.focus.lon], Math.max(DETAIL_ZOOM + 3, map.getZoom()), { animate: false }); map._fcMoved = true; views[id] = { c: map.getCenter(), z: map.getZoom() }; }
       map.on('dragend zoomend', () => { map._fcMoved = true; views[id] = { c: map.getCenter(), z: map.getZoom() }; });
       if (bubbles) {
         let mode = '';
@@ -15239,8 +15088,8 @@ let shown = false, hideT = null;
           if (mode === 'detail') { map.removeLayer(bubbles); map.addLayer(group); }
           else { map.removeLayer(group); map.addLayer(bubbles); }
           modeInfo.textContent = mode === 'detail'
-            ? 'Detailansicht: einzelne Standorte der Ausschreibungen. Herauszoomen zeigt wieder die Summen je Bundesland.'
-            : 'Deutschland-Ansicht: Kreise zeigen die erfassten Ausschreibungen je Bundesland. Hineinzoomen oder Kreis anklicken zeigt die einzelnen Standorte.';
+            ? 'Detailansicht: einzelne Standorte (' + unit[1] + '). Herauszoomen zeigt wieder die Summen je Bundesland.'
+            : 'Deutschland-Ansicht: Kreise zeigen die erfassten ' + unit[1] + ' je Bundesland. Hineinzoomen oder Kreis anklicken zeigt die einzelnen Standorte.';
         };
         map.on('zoomend', apply);
         apply();
@@ -15257,6 +15106,19 @@ let shown = false, hideT = null;
       io.observe(box);
     }));
     return wrap;
+  };
+  // Auswahl ohne Neuaufbau: Pin hervorheben, bei Bedarf aus der Gruppe holen. Liefert false, wenn die Karte noch fehlt.
+  app.geoMapSelect = function (id, key) {
+    const map = maps[id];
+    if (!map || !map._fcMarkers) return false;
+    for (const [k, { m, q }] of map._fcMarkers) {
+      if (q.kind === 'home') continue;
+      const on = k === key;
+      if (m._fcSel === on) continue;
+      m._fcSel = on;
+      m.setIcon(pinIcon(q, false, on));
+    }
+    return true;
   };
 })();
 
