@@ -1,12 +1,17 @@
-// E2E für die Ausschreibungskarte im Feind Cockpit v3 (Seite per file://, Chromium).
-// Jeder Request außerhalb von file:/data:/blob: wird mitgeschrieben; Kacheln bekommen ein 1×1-PNG.
+// E2E für die Ausschreibungskarte im Feind Cockpit v3 (Chromium).
+// Die Seite kommt von einem festen Test-Ursprung (http://cockpit.test), nicht per file://: dort verliert
+// Chromium localStorage gelegentlich beim Neuladen, was Einwilligung und Widerruf verfälscht.
+// Jeder andere Request wird mitgeschrieben; Kacheln bekommen ein 1×1-PNG.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
-import { pathToFileURL } from 'node:url';
+import { readFileSync } from 'node:fs';
 import { PAGE } from '../test/load-module.mjs';
 
-const URL_ = pathToFileURL(PAGE).href;
+const ORIGIN = 'http://cockpit.test';
+const URL_ = ORIGIN + '/feind-cockpit-v3.html';
+const HTML = readFileSync(PAGE);
+const own = u => u.origin === ORIGIN || /^(data|blob):/.test(u.href);
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==', 'base64');
 const PLACES = [['Leipzig', 'Sachsen'], ['Dresden', 'Sachsen'], ['Chemnitz', 'Sachsen'], ['Cottbus', 'Brandenburg'], ['Potsdam', 'Brandenburg'], ['Rostock', 'Mecklenburg-Vorpommern'], ['Hamburg', 'Hamburg']];
 
@@ -23,7 +28,8 @@ async function open({ db = {}, storage = {} } = {}) {
   Object.assign(docs, db);
   const ctx = await browser.newContext({ locale: 'de-DE', timezoneId: 'Europe/Berlin', viewport: { width: 1280, height: 1000 } });
   const ext = [];
-  await ctx.route(u => !/^(file|data|blob):/.test(u.href), r => {
+  await ctx.route(URL_, r => r.fulfill({ body: HTML, contentType: 'text/html; charset=utf-8' }));
+  await ctx.route(u => !own(u), r => {
     ext.push(r.request().url());
     return /\{?\d+\}?\/\d+\/\d+\.png/.test(r.request().url()) ? r.fulfill({ body: PNG, contentType: 'image/png' }) : r.abort();
   });
@@ -147,7 +153,7 @@ test('Anbieter nicht erreichbar: Rückfall auf Umrisskarte mit Hinweis', async (
   const consent = JSON.stringify({ host: 'tile.openstreetmap.org', at: '2026-10-01', on: true });
   const { page, ctx } = await open({ storage: { 'feind-cockpit:osm-consent': consent } });
   await ctx.unroute(() => true).catch(() => {});
-  await page.route(u => !/^(file|data|blob):/.test(u.href), r => r.abort());
+  await page.route(u => !own(u), r => r.abort());
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.locator('.tab', { hasText: 'Ausschreibungen' }).click();
   await page.getByText('ließ sich nicht laden').waitFor({ timeout: 10000 });
