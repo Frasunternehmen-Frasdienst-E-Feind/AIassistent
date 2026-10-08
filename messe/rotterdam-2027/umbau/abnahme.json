@@ -1,0 +1,1032 @@
+{
+  "stand": "2026-10-08T12:16:51.791Z",
+  "module": [
+    {
+      "welt": "marketing",
+      "modul": "heute",
+      "name": "Auf einen Blick",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 158,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "copilot",
+      "name": "Copilot",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 94,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "content",
+      "name": "Content",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 127,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "leads",
+      "name": "Leads",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 143,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "tenders",
+      "name": "Ausschreibungen",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 115,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "events",
+      "name": "Events",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 84,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "seo",
+      "name": "SEO",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 97,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "references",
+      "name": "Referenzen",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 51,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "bibliothek",
+      "name": "Wissensbibliothek",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 59,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "plan90",
+      "name": "90-Tage-Plan",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 477,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "ablage",
+      "name": "Ablage",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 109,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "dashboard",
+      "name": "Dashboard",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 149,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "aufgaben",
+      "name": "Aufgaben",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 665,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "checkliste",
+      "name": "Checkliste 26→27",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 308,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "fristen",
+      "name": "Fristen",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 89,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "budget",
+      "name": "Budget",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 121,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "kpi",
+      "name": "Ziele & KPIs",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 74,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "leadzaehler",
+      "name": "Lead-Zähler",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 68,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "lessons",
+      "name": "Lessons Learned",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 85,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "fakten",
+      "name": "Faktencheck",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 77,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "team",
+      "name": "Team",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 50,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "meetings",
+      "name": "Protokolle",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 43,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "protokoll",
+      "name": "Aktivität",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 40,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "wissen",
+      "name": "Wissensbasis",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 71,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "wissen",
+      "modul": "eingang",
+      "name": "Eingang",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 56,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "wissen",
+      "modul": "archiv",
+      "name": "Archiv",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 46,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "wissen",
+      "modul": "pruefung",
+      "name": "Prüfung",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 33,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "wissen",
+      "modul": "karte",
+      "name": "Projektkarte",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 59,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "admin",
+      "modul": "status",
+      "name": "Status",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 93,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "admin",
+      "modul": "konfiguration",
+      "name": "Konfiguration",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 74,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "admin",
+      "modul": "zugaenge",
+      "name": "Zugänge",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 35,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "admin",
+      "modul": "datenschutz",
+      "name": "Datenschutz",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 59,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "admin",
+      "modul": "links",
+      "name": "Link-Protokoll",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 51,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "admin",
+      "modul": "daten",
+      "name": "Daten",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 58,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "admin",
+      "modul": "icons",
+      "name": "Icons",
+      "theme": "light",
+      "fehler": [],
+      "kontrastGeprueft": 604,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0,
+      "querUeberlauf390": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "heute",
+      "name": "Auf einen Blick",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 158,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "copilot",
+      "name": "Copilot",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 94,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "content",
+      "name": "Content",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 127,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "leads",
+      "name": "Leads",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 143,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "tenders",
+      "name": "Ausschreibungen",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 115,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "events",
+      "name": "Events",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 84,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "seo",
+      "name": "SEO",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 97,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "references",
+      "name": "Referenzen",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 51,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "bibliothek",
+      "name": "Wissensbibliothek",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 59,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "plan90",
+      "name": "90-Tage-Plan",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 477,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "marketing",
+      "modul": "ablage",
+      "name": "Ablage",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 109,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "dashboard",
+      "name": "Dashboard",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 149,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "aufgaben",
+      "name": "Aufgaben",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 665,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "checkliste",
+      "name": "Checkliste 26→27",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 308,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "fristen",
+      "name": "Fristen",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 89,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "budget",
+      "name": "Budget",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 121,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "kpi",
+      "name": "Ziele & KPIs",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 74,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "leadzaehler",
+      "name": "Lead-Zähler",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 68,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "lessons",
+      "name": "Lessons Learned",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 85,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "fakten",
+      "name": "Faktencheck",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 77,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "team",
+      "name": "Team",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 50,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "meetings",
+      "name": "Protokolle",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 43,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "protokoll",
+      "name": "Aktivität",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 40,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "infratech",
+      "modul": "wissen",
+      "name": "Wissensbasis",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 71,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "wissen",
+      "modul": "eingang",
+      "name": "Eingang",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 56,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "wissen",
+      "modul": "archiv",
+      "name": "Archiv",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 46,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "wissen",
+      "modul": "pruefung",
+      "name": "Prüfung",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 33,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "wissen",
+      "modul": "karte",
+      "name": "Projektkarte",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 59,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "admin",
+      "modul": "status",
+      "name": "Status",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 93,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "admin",
+      "modul": "konfiguration",
+      "name": "Konfiguration",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 74,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "admin",
+      "modul": "zugaenge",
+      "name": "Zugänge",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 35,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "admin",
+      "modul": "datenschutz",
+      "name": "Datenschutz",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 59,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "admin",
+      "modul": "links",
+      "name": "Link-Protokoll",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 51,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "admin",
+      "modul": "daten",
+      "name": "Daten",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 58,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    },
+    {
+      "welt": "admin",
+      "modul": "icons",
+      "name": "Icons",
+      "theme": "dark",
+      "fehler": [],
+      "kontrastGeprueft": 604,
+      "kontrastFehler": [],
+      "animationenTrotzReduziert": 0
+    }
+  ],
+  "betrieb": {
+    "lokal": {
+      "lokalBanner": false,
+      "nurLesenBanner": false,
+      "erfassenGesperrt": false,
+      "modus": "local",
+      "readOnly": false,
+      "viewerLocal": false,
+      "adminGesperrt": false,
+      "fehler": []
+    },
+    "viewer-ohne-db": {
+      "lokalBanner": true,
+      "nurLesenBanner": false,
+      "erfassenGesperrt": false,
+      "modus": "local",
+      "readOnly": false,
+      "viewerLocal": true,
+      "adminGesperrt": true,
+      "fehler": []
+    },
+    "nur-lesen": {
+      "lokalBanner": false,
+      "nurLesenBanner": true,
+      "erfassenGesperrt": true,
+      "modus": "shared",
+      "readOnly": true,
+      "viewerLocal": false,
+      "adminGesperrt": true,
+      "fehler": []
+    }
+  },
+  "druck": {
+    "seiten": [
+      {
+        "welt": "marketing",
+        "modul": "heute",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "marketing",
+        "modul": "copilot",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "marketing",
+        "modul": "content",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "marketing",
+        "modul": "leads",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "marketing",
+        "modul": "tenders",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "marketing",
+        "modul": "events",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "marketing",
+        "modul": "seo",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "marketing",
+        "modul": "references",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "marketing",
+        "modul": "bibliothek",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "marketing",
+        "modul": "plan90",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "marketing",
+        "modul": "ablage",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "infratech",
+        "modul": "dashboard",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "infratech",
+        "modul": "aufgaben",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "infratech",
+        "modul": "checkliste",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "infratech",
+        "modul": "fristen",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "infratech",
+        "modul": "budget",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "infratech",
+        "modul": "kpi",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "infratech",
+        "modul": "leadzaehler",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "infratech",
+        "modul": "lessons",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "infratech",
+        "modul": "fakten",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "infratech",
+        "modul": "team",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "infratech",
+        "modul": "meetings",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "infratech",
+        "modul": "protokoll",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "infratech",
+        "modul": "wissen",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "wissen",
+        "modul": "eingang",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "wissen",
+        "modul": "archiv",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "wissen",
+        "modul": "pruefung",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "wissen",
+        "modul": "karte",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "admin",
+        "modul": "status",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "admin",
+        "modul": "konfiguration",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "admin",
+        "modul": "zugaenge",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "admin",
+        "modul": "datenschutz",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "admin",
+        "modul": "links",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "admin",
+        "modul": "daten",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      },
+      {
+        "welt": "admin",
+        "modul": "icons",
+        "banner": false,
+        "aktionsleiste": false,
+        "geschlosseneDetailsGedruckt": true
+      }
+    ],
+    "fehler": []
+  },
+  "summe": {
+    "module": 35,
+    "seitenMitSkriptfehler": 0,
+    "kontrastFehler": 0,
+    "textstellenGeprueft": 9044,
+    "animationenTrotzReduziert": 0,
+    "querUeberlauf390": 0,
+    "druckBannerSichtbar": 0,
+    "druckDetailsVerborgen": 0
+  }
+}

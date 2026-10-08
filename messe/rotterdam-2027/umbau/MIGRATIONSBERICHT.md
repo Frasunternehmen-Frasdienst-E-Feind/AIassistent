@@ -289,3 +289,32 @@ Position setzen (Klick auf freie Fläche), Projekt bearbeiten, Referenz überneh
   jetzt in Feind-Grau (`--map-fill`: hell `#424E4E`, dunkel `#B8BFBF`) statt in Grün. Grün bleibt für Zahlenkreise
   und Umrisse. Farbsystem auf Version 1.2 angehoben, Token-Datei ergänzt.
 - Tests: 40 Unit, 31 E2E. Zusammenführung mit Live-Version vom 08.10.2026, 08:15 (ein Konflikt, aufgelöst).
+
+## Phase 4: Abnahme (08.10.2026)
+
+Geprüft mit `node tools/abnahme.mjs` über alle 35 Module der vier Welten, in Hell und Dunkel, mit erfundenen
+Beispieldaten. Messwerte: `umbau/abnahme.json`.
+
+| Prüfung | Ergebnis |
+|---|---|
+| Skriptfehler (35 Module × 2 Themes) | 0 |
+| Kontrast WCAG AA (9.044 Textstellen, je Theme) | 0 Fehler |
+| Animationen trotz „Bewegung reduzieren“ | 0 |
+| Querscrollen bei 390 px Breite | 0 Seiten |
+| Druck: Themenbanner sichtbar / zugeklappte Inhalte fehlen | 0 / 0 |
+| Lokal (Datei im Browser) | voller Zugriff, kein Hinweisbanner |
+| Viewer ohne geteilte Datenbank | Hinweis „nur dieses Gerät“, Admin gesperrt |
+| Nur-Lesen-Zugang | Hinweis „Nur Lesezugriff“, Erfassen und Admin gesperrt |
+
+Hinweise zur Messung:
+- Bei Farbverläufen gilt die ungünstigste Farbstufe als Hintergrund.
+- Bei Fotos als Hintergrund wird nicht gemessen.
+- Inaktive Bedienelemente sind ausgenommen (WCAG-Ausnahme).
+- Leaflet-Grundstile und Kartenkacheln sind nicht Teil der Messung.
+
+Die Kurzfassung läuft in CI mit `e2e/abnahme.e2e.mjs`: Kontrast und Bewegung als Stichprobe in Hell und Dunkel,
+dazu die Betriebsarten Viewer ohne Datenbank und Nur-Lesen.
+
+**Nicht geprüft:**
+- Die Live-Anbindungen an Notion, Microsoft 365, Canva und Firecrawl. In dieser Sitzung war kein erfolgreicher
+  Aufruf möglich; ihr Code ist im Umbau unverändert.
