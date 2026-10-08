@@ -28,14 +28,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Unit-Tests Feind Cockpit (FeindCore)
-        run: node --test cockpit/test/*.test.mjs
-      - name: Abhängigkeiten (jsPDF für die Brennglas-Tests)
-        run: npm ci --ignore-scripts
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:cockpit
       - name: Unit-Tests Cockpit A1 (Notion-Aufgaben, Brennglas-PDF)
-        run: node --test cockpit-a1/test/*.test.mjs
-      - name: Migrationsplan gegen Live-Fixture (Dry-Run)
-        run: |
-          node -e "import('./cockpit/test/fixtures/live-2026-09-28.mjs').then(m=>{const fs=require('fs');for(const k of ['target','a2','a3'])fs.writeFileSync('/tmp/'+k+'.json',JSON.stringify(m.default[k]));})"
-          node cockpit/tools/migrate.mjs --target /tmp/target.json --a2 /tmp/a2.json --a3 /tmp/a3.json | tee /tmp/plan.txt
-          grep -q "0 Löschungen" /tmp/plan.txt
+        run: npm run test:cockpit-a1
+      - run: npm run test:cockpit:e2e

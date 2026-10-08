@@ -41,3 +41,5 @@ playwright-report/
 messe/data/*.local.json
 messe/output/*
 !messe/output/.gitkeep
+
+# Node-Abhängigkeiten (npm install)

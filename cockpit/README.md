@@ -1,5 +1,7 @@
 # Feind Cockpit v1.0
 
+> **Abgelöst (Entscheidung 08.10.2026):** Führend ist das Cockpit v3 (`messe/rotterdam-2027/feind-cockpit-v3.html`, Artefakt GRG81) mit dessen Datenschema. Dieser Ordner bleibt bis zur Prüfung von `cockpit-sync` und `cockpit-a1/` als Referenz erhalten; keine neuen Änderungen hier.
+
 > **Archiv (Stand 30.09.2026):** Dieser Ordner ist der ältere A4-Stand. A4 ist gelöscht; live und führend ist
 > A1 (https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd), Quelle unter `cockpit-a1/`.
 
