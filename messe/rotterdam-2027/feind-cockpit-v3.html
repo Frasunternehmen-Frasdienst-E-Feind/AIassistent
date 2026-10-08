@@ -2192,6 +2192,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
 .gm-legend i.gm-l-home { border: 2px solid var(--accent); background: transparent; }
 .gm-legend i.gm-l-pin, .gm-legend i.gm-l-site, .gm-legend i.gm-l-cluster { border-radius: 50%; }
 .gm-legend i.gm-l-pin { background: var(--warn); border-color: var(--surface); }
+.gm-legend i.gm-l-approx { border-style: dashed; border-color: var(--ink-strong); }
 .gm-legend i.gm-l-site { width: auto; height: auto; background: none; border: 0; border-radius: 0; }
 /* Standortmarke EF in Markenfarben: Hausdach Feind-Grün, Plakette Feind-Grau, Kürzel und Kontur Weiß (Wunsch David 08.10.2026). */
 .ef-mark { display: inline-block; width: 32px; height: 31px; line-height: 0; color: var(--ink-inverse); --ic-tone: 1; --ic-tone-c: var(--brand-anth); --ic-accent: var(--accent); --ic-d: inline; filter: drop-shadow(0 1px 2px var(--shadow)); }
@@ -15299,12 +15300,13 @@ let shown = false, hideT = null;
     return panel;
   }
 
-  function legendFor(cls, bubbles) {
+  function legendFor(cls, bubbles, approx) {
     return h('div', { class: 'gm-legend', 'aria-label': 'Legende der Karte' },
       h('span', { class: 'gm-scale', title: 'Ausschreibungen je Bundesland' }, cls.legend.map(l => h('span', {}, h('i', { style: '--o:' + l.opacity }), h('small', { text: l.label })))),
       h('span', {}, h('i', { class: 'gm-l-home' }), 'Standort-Bundesland (Umriss)'),
       bubbles ? h('span', {}, h('i', { class: 'gm-l-sb' }), 'Kreis: Ausschreibungen je Bundesland (Deutschland-Ansicht, Klick zoomt hinein)') : null,
       h('span', {}, h('i', { class: 'gm-l-pin' }), bubbles ? 'Ausschreibung mit Ortsangabe (ab Zoomstufe ' + DETAIL_ZOOM + ')' : 'Ausschreibung mit Ortsangabe'),
+      approx ? h('span', {}, h('i', { class: 'gm-l-pin gm-l-approx' }), 'Ungefährer Pin (gestrichelter Rand): Ort fehlt oder ist nicht eindeutig, Lage nur ungefähr, bei fehlendem Ort Mitte des Bundeslandes') : null,
       h('span', {}, h('i', { class: 'gm-l-cluster' }), bubbles ? 'Gruppe am selben Ort (Zahl = Pins, Klick zoomt)' : 'Gruppe (Zahl = Pins, Klick zoomt)'),
       h('span', {}, h('i', { class: 'gm-l-site' }, app.efMark()), 'Standort Lübben / Wittenburg'));
   }
@@ -15341,7 +15343,7 @@ let shown = false, hideT = null;
     const unit = opts.unit || ['Ausschreibung', 'Ausschreibungen'];
     const modeInfo = sb ? h('div', { class: 'gm-mode muted small', role: 'status' }) : null;
     const cls = GL.classes(st ? Object.values(st).map(s => s.n || 0) : []);
-    const wrap = h('div', { class: 'gm-wrap' }, bar, asking === id ? consentPanel(id, p) : null, box, modeInfo, st ? legendFor(cls, !!sb) : null, info);
+    const wrap = h('div', { class: 'gm-wrap' }, bar, asking === id ? consentPanel(id, p) : null, box, modeInfo, st ? legendFor(cls, !!sb, (opts.points || []).some(q => q && q.approx)) : null, info);
     if (!L) { box.replaceChildren(h('p', { class: 'muted small', text: 'Kartenbibliothek nicht geladen.' })); return wrap; }
 
     const init = () => {
