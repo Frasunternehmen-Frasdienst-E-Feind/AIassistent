@@ -130,10 +130,17 @@ test('Klick auf ein Bundesland setzt den Regionsfilter', async () => {
   await ctx.close();
 });
 
-test('Pins werden geclustert, Standorte bleiben einzeln sichtbar', async () => {
+// Seit dem Live-Stand vom 07.10.2026: Deutschland-Ansicht mit einem Kreis je Bundesland,
+// einzelne Ausschreibungen (geclustert) erst ab DETAIL_ZOOM, z. B. nach Klick auf einen Länderkreis.
+test('Übersicht zeigt Länderkreise, nach Klick Detailansicht mit geclusterten Pins', async () => {
   const { page, ctx } = await open();
-  assert.ok(await page.locator('.gm-map .marker-cluster').count() >= 1, 'mindestens ein Cluster');
+  const bubbles = page.locator('.gm-map .gm-sb');
+  assert.ok(await bubbles.count() >= 1, 'mindestens ein Länderkreis');
   assert.equal(await page.locator('.gm-map .gm-home').count(), 2, 'Lübben und Wittenburg');
+  await bubbles.first().click();
+  await page.waitForFunction(() => Number(document.querySelector('.gm-map')?.getAttribute('data-zoom')) >= 7, null, { timeout: 5000 });
+  assert.ok(await page.locator('.gm-map .marker-cluster, .gm-map .gm-pin-wrap').count() >= 1, 'Pins oder Cluster in der Detailansicht');
+  assert.equal(await page.locator('.gm-map .gm-home').count(), 2, 'Standorte bleiben sichtbar');
   await ctx.close();
 });
 

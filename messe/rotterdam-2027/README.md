@@ -26,10 +26,10 @@ Einstieg/Überblick über das Gesamtsystem: **`SYSTEM-UEBERSICHT.md`**.
 
 ## Live-Cockpit
 
-- **Führendes Cockpit:** „Feind Cockpit (Copy)“ – https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i (privat, angepinnt; festgelegt am 02.10.2026).
+- **Führendes Cockpit:** „Feind Cockpit (Copy)“ – https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i (privat, angepinnt; festgelegt am 02.10.2026; Version 10 vom 08.10.2026 mit A1-Funktionen und Live-Kartenstand vom 07.10.).
   Seit 02.10.2026 wieder mit dem Reiter **„Checkliste 26→27“** (64 Punkte der ToDo-Liste `2FT2wp…`).
   `feind-cockpit-v3.html` entspricht dem Live-Stand vom 02.10.2026 (inkl. Checkliste, db `checkliste/<Kategorie-Punkt>`).
-- Das frühere Cockpit `4zX58…` existiert nicht mehr; „Feind Cockpit“ (`TfuzbGa…`) ist eine Nebenversion.
+- Das frühere Cockpit `4zX58…` existiert nicht mehr; „Feind Cockpit“ A1 (`TfuzbGa…`) ist seit 08.10.2026 eingefroren.
 - Datenhaltung: geteilte Artefakt-Datenbank (`db`): `tasks/<id>` (Aufgaben), `checkliste/<Kategorie-Punkt>` = `{ status, rolle, frist, budget, beschluss, notiz }` (Checkliste 26→27), Alt-Bestand `overrides/<taskId>`.
   Fällt die Datenbank aus, speichert die Seite pro Gerät lokal (localStorage).
 - Der eingebettete Aufgabenstand im HTML ist Erstbefüllung und Notfall-Anzeige.

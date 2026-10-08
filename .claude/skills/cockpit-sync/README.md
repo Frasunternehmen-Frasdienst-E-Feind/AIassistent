@@ -9,8 +9,8 @@ Marketing-Skills in den Artefakt-Speicher des konsolidierten Feind Cockpits und 
 - Die Skill-Datei liegt im Repository unter `.claude/skills/cockpit-sync/SKILL.md`. Claude Code
   lädt sie automatisch, wenn eine Sitzung in diesem Repository startet. Aufruf mit
   `/cockpit-sync`, „Cockpit aktualisieren“ oder „Daten ins Cockpit“.
-- Ziel: Cockpit A1 (https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd), eingetragen unter
-  `cockpit/README.md` → „Live-Artefakt“. A4 ist gelöscht.
+- Ziel: Cockpit v3 (https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i), eingetragen unter
+  `cockpit/README.md` → „Live-Artefakt“. A1 ist eingefroren, A4 gelöscht.
   Ohne Adresse fragt der Skill nach und schreibt nichts.
 - **Offen, von David zu bestätigen:** Ob der bisher in claude.ai/Cowork genutzte Skill
   „cockpit-sync“ (Plugin `feind-marketing-cockpit`) durch diese Version ersetzt werden muss.

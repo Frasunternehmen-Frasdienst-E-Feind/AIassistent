@@ -1828,6 +1828,8 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
 .gm-pin { display: block; width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--surface); background: var(--pin, var(--ink)); box-shadow: 0 1px 3px var(--shadow); }
 .gm-pin.approx { border-style: dashed; border-color: var(--ink-strong); }
 .gm-home .gm-pin { width: 16px; height: 16px; background: var(--surface-inverse); border: 3px solid var(--accent); }
+.gm-sb { display: grid; place-items: center; width: var(--d, 34px); height: var(--d, 34px); box-sizing: border-box; border-radius: 50%; background: var(--accent); color: var(--on-accent); border: 2px solid var(--surface); box-shadow: 0 1px 4px var(--shadow), 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent); font: 700 13px var(--font-sans); font-variant-numeric: tabular-nums; cursor: pointer; transform: scale(var(--sbs, 1)); transform-origin: center; transition: transform .15s; }
+.gm-legend i.gm-l-sb { border-radius: 50%; background: var(--accent); border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--line); }
 .gm-cluster { display: grid; place-items: center; border-radius: 50%; background: var(--surface-inverse); color: var(--ink-inverse); border: 2px solid var(--ink-inverse-muted); box-shadow: 0 0 0 4px color-mix(in srgb, var(--warn) 45%, transparent); font: 700 13px var(--font-sans); font-variant-numeric: tabular-nums; }
 
 /* ---- wissen.css ---- */
@@ -5758,7 +5760,8 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
       }
       for (const site of D.HOME_SITES) { const g = K.geocode(site.city, site.state); if (g) pts.push({ lat: g.lat, lon: g.lon, label: 'Standort ' + site.city.replace(/\s*\(.*\)/, ''), kind: 'home' }); }
     }
-    const geoMapEl = app.geoMap ? app.geoMap({ id: 'tenders', height: 440, label: 'Karte: Ausschreibungen nach Bundesland', states: stateInfo, onState: pick, points: pts }) : null;
+    const geoMapEl = app.geoMap ? app.geoMap({ id: 'tenders', height: 440, label: 'Karte: Ausschreibungen nach Bundesland', states: stateInfo, onState: pick, points: pts,
+      stateBubbles: Object.fromEntries(Object.entries(stateInfo).map(([k, v]) => [k, v.n])) }) : null;
     return h('div', { class: 'section' },
       h('div', { class: 'tools', style: 'margin:0;justify-content:space-between' }, h('h3', { text: 'Kartenauswahl' }),
         h('div', { class: 'row' },
@@ -5770,7 +5773,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
           geoMapEl ? null : h('div', { class: 'map-legend' }, h('span', {}, h('i', { class: 'home' }), 'Standort-Bundesland (Lübben, Wittenburg)'), h('span', {}, h('i', { class: 'has', style: 'background:var(--accent)' }), 'mit Ausschreibungen (kräftiger = mehr)'), h('span', {}, h('i', { class: 'tender' }), 'Ausschreibung mit Ortsangabe')),
           geoMapEl ? h('details', { class: 'gm-tiles' }, h('summary', { text: 'Kachelansicht (per Tastatur bedienbar)' }), grid) : null),
         h('div', { class: 'stack' },
-          h('p', { class: 'muted small', text: 'Maßstabsgetreue Karte: Bundesländer nach Zahl der Ausschreibungen in Stufen eingefärbt (Legende unter der Karte), Pins für Ausschreibungen mit Ortsangabe, nahe beieinander liegende Pins als Gruppe. Klick auf ein Land setzt den Regionsfilter, ein zweiter hebt ihn auf. Zoomen: Mausrad, zwei Finger, +/− oder Tastatur (Karte anwählen, dann Plus/Minus und Pfeiltasten).' }),
+          h('p', { class: 'muted small', text: 'Maßstabsgetreue Karte: Bundesländer nach Zahl der Ausschreibungen in Stufen eingefärbt (Legende unter der Karte), in der Deutschland-Ansicht ein Kreis je Bundesland mit der Zahl der erfassten Ausschreibungen; beim Hineinzoomen oder per Klick auf einen Kreis erscheinen die einzelnen Standorte als Pins. Klick auf ein Land setzt den Regionsfilter, ein zweiter hebt ihn auf. Zoomen: Mausrad, zwei Finger, +/− oder Tastatur (Karte anwählen, dann Plus/Minus und Pfeiltasten).' }),
           h('div', { class: 'label', text: 'Nachbarländer (Quelle noch nicht angebunden)' }), countries,
           related)));
   }
@@ -10873,6 +10876,16 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
   const { h } = app;
   const CONSENT_KEY = 'feind-cockpit:osm-consent';
   const DE_BOUNDS = [[47.2, 5.6], [55.15, 15.3]];
+  // Deutschland-Ansicht: ein Kreis je Bundesland. Ankerpunkte liegen im Land und halten Abstand zu Nachbarkreisen
+  // (Berlin/Brandenburg, Bremen/Niedersachsen, Saarland/Rheinland-Pfalz) und zu den Standort-Pins.
+  const STATE_ANCHOR = {
+    'Baden-Württemberg': [48.54, 9.04], 'Bayern': [48.95, 11.4], 'Berlin': [52.52, 13.4], 'Brandenburg': [51.97, 13.0],
+    'Bremen': [53.08, 8.8], 'Hamburg': [53.55, 10.0], 'Hessen': [50.6, 9.0], 'Mecklenburg-Vorpommern': [53.75, 12.6],
+    'Niedersachsen': [52.65, 9.6], 'Nordrhein-Westfalen': [51.45, 7.6], 'Rheinland-Pfalz': [50.05, 7.5], 'Saarland': [49.38, 6.95],
+    'Sachsen': [51.05, 13.35], 'Sachsen-Anhalt': [52.15, 11.35], 'Schleswig-Holstein': [54.2, 9.7], 'Thüringen': [50.9, 11.0]
+  };
+  const DETAIL_ZOOM = 7; // ab dieser Zoomstufe einzelne Standorte statt Länderkreise
+  const SMALL_STATES = ['Berlin', 'Bremen', 'Hamburg', 'Saarland']; // Stadtstaaten/Saarland liegen über den Nachbarkreisen
   const maps = {};
   const failedHosts = new Set();
   let geo = null, asking = '';
@@ -10914,19 +10927,21 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     return panel;
   }
 
-  function legendFor(cls) {
+  function legendFor(cls, bubbles) {
     return h('div', { class: 'gm-legend', 'aria-label': 'Legende der Karte' },
       h('span', { class: 'gm-scale', title: 'Ausschreibungen je Bundesland' }, cls.legend.map(l => h('span', {}, h('i', { style: '--o:' + l.opacity }), h('small', { text: l.label })))),
       h('span', {}, h('i', { class: 'gm-l-home' }), 'Standort-Bundesland (Umriss)'),
-      h('span', {}, h('i', { class: 'gm-l-pin' }), 'Ausschreibung mit Ortsangabe'),
-      h('span', {}, h('i', { class: 'gm-l-cluster' }), 'Gruppe (Zahl = Pins, Klick zoomt)'),
+      bubbles ? h('span', {}, h('i', { class: 'gm-l-sb' }), 'Kreis: Ausschreibungen je Bundesland (Deutschland-Ansicht, Klick zoomt hinein)') : null,
+      h('span', {}, h('i', { class: 'gm-l-pin' }), bubbles ? 'Ausschreibung mit Ortsangabe (ab Zoomstufe ' + DETAIL_ZOOM + ')' : 'Ausschreibung mit Ortsangabe'),
+      h('span', {}, h('i', { class: 'gm-l-cluster' }), bubbles ? 'Gruppe am selben Ort (Zahl = Pins, Klick zoomt)' : 'Gruppe (Zahl = Pins, Klick zoomt)'),
       h('span', {}, h('i', { class: 'gm-l-site' }), 'Standort Lübben / Wittenburg'));
   }
 
   const pinIcon = (p, home) => L.divIcon({ className: home ? 'gm-home' : 'gm-pin-wrap', iconSize: [16, 16], iconAnchor: [8, 8],
     html: '<span class="gm-pin' + (p.approx ? ' approx' : '') + '"' + (home ? '' : ' style="--pin:var(' + (KIND[p.kind] || '--ink') + ')"') + '></span>' });
 
-  // opts: { id, height, label, states: { name: { n, home, sel } } | null, onState(name), points: [{ lat, lon, label, sub, kind, approx, onClick }], note }
+  // opts: { id, height, label, states: { name: { n, home, sel } } | null, onState(name), points: [{ lat, lon, label, sub, kind, approx, onClick }], note,
+  //         stateBubbles: { name: n } | null } – mit stateBubbles zeigt die Deutschland-Ansicht einen Kreis je Land, Pins erst ab DETAIL_ZOOM.
   app.geoMap = function (opts) {
     const id = opts.id || 'map';
     if (maps[id]) { const old = maps[id]; delete maps[id]; try { if (old._fcObs) old._fcObs.forEach(o => o.disconnect()); old.stop(); old.remove(); } catch (e) { /* schon weg */ } }
@@ -10946,7 +10961,9 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
         : 'Umrisskarte offline: keine Datenübertragung an Dritte.' }));
     const st = opts.states || null;
     const cls = GL.classes(st ? Object.values(st).map(s => s.n || 0) : []);
-    const wrap = h('div', { class: 'gm-wrap' }, bar, asking === id ? consentPanel(id, p) : null, box, st ? legendFor(cls) : null, info);
+    const sb = opts.stateBubbles && typeof opts.stateBubbles === 'object' ? opts.stateBubbles : null;
+    const modeInfo = sb ? h('div', { class: 'gm-mode muted small', role: 'status' }) : null;
+    const wrap = h('div', { class: 'gm-wrap' }, bar, asking === id ? consentPanel(id, p) : null, box, modeInfo, st ? legendFor(cls, !!sb) : null, info);
     if (!L) { box.replaceChildren(h('p', { class: 'muted small', text: 'Kartenbibliothek nicht geladen.' })); return wrap; }
 
     const init = () => {
@@ -10999,7 +11016,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
       // Pins: Ausschreibungen und Projekte gebündelt (Leaflet.markercluster), Standorte immer einzeln.
       const pts = (opts.points || []).filter(q => typeof q.lat === 'number' && typeof q.lon === 'number');
       const group = L.markerClusterGroup
-        ? L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 48, spiderfyOnMaxZoom: true, chunkedLoading: true,
+        ? L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: sb ? 14 : 48, spiderfyOnMaxZoom: true, chunkedLoading: true,
           iconCreateFunction: cl => L.divIcon({ html: String(cl.getChildCount()), className: 'marker-cluster gm-cluster', iconSize: L.point(34, 34) }) })
         : L.layerGroup();
       for (const q of pts) {
@@ -11010,11 +11027,49 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
         if (q.onClick) m.on('click', () => { if (app.haptic) app.haptic(8); q.onClick(); });
         if (home) m.addTo(map); else group.addLayer(m);
       }
-      group.addTo(map);
+      let bubbles = null;
+      if (sb) {
+        bubbles = L.layerGroup();
+        for (const [name, n] of Object.entries(sb)) {
+          const a = STATE_ANCHOR[name];
+          if (!a || !(n > 0)) continue;
+          const d = 28 + Math.round(Math.min(20, Math.sqrt(n) * 5));
+          const lab = name + ': ' + n + (n === 1 ? ' Ausschreibung' : ' Ausschreibungen') + ' – Klick zeigt die Standorte';
+          const m = L.marker(a, { icon: L.divIcon({ className: 'gm-sb-wrap', iconSize: [d, d], iconAnchor: [d / 2, d / 2], html: '<span class="gm-sb" style="--d:' + d + 'px">' + n + '</span>' }),
+            title: lab, alt: lab, keyboard: true, zIndexOffset: SMALL_STATES.includes(name) ? 600 : 500 });
+          m.bindTooltip(lab, { direction: 'top', offset: [0, -d / 2] });
+          m.on('click', () => {
+            if (app.haptic) app.haptic(8);
+            const rings = G.states[name];
+            const bb = rings ? L.latLngBounds(rings.flatMap(r => ring(r))) : null;
+            if (bb && bb.isValid()) map.setView(bb.getCenter(), Math.max(DETAIL_ZOOM, map.getBoundsZoom(bb, false, L.point(24, 24))));
+            else map.setView(a, DETAIL_ZOOM);
+          });
+          bubbles.addLayer(m);
+        }
+      } else group.addTo(map);
       const b = L.latLngBounds(DE_BOUNDS);
       for (const q of pts) b.extend([q.lat, q.lon]);
       map.fitBounds(b, { padding: [12, 12], animate: false });
       box.dataset.zoom = String(map.getZoom());
+      if (bubbles) {
+        let mode = '';
+        const apply = () => {
+          const z = map.getZoom();
+          box.style.setProperty('--sbs', z < 5 ? '0.7' : z < 5.75 ? '0.85' : '1'); // kleinere Kreise bei weiter Ansicht (Handy)
+          const next = map.getZoom() >= DETAIL_ZOOM ? 'detail' : 'overview';
+          if (next === mode) return;
+          mode = next;
+          box.dataset.mode = mode;
+          if (mode === 'detail') { map.removeLayer(bubbles); map.addLayer(group); }
+          else { map.removeLayer(group); map.addLayer(bubbles); }
+          modeInfo.textContent = mode === 'detail'
+            ? 'Detailansicht: einzelne Standorte der Ausschreibungen. Herauszoomen zeigt wieder die Summen je Bundesland.'
+            : 'Deutschland-Ansicht: Kreise zeigen die erfassten Ausschreibungen je Bundesland. Hineinzoomen oder Kreis anklicken zeigt die einzelnen Standorte.';
+        };
+        map.on('zoomend', apply);
+        apply();
+      }
       if (window.ResizeObserver) { const ro = new ResizeObserver(() => { if (maps[id] === map && box.isConnected) { try { map.invalidateSize({ animate: false }); } catch (e) { /* entfernt */ } } }); ro.observe(box); map._fcObs.push(ro); }
       if (opts.note && !info.textContent) info.textContent = opts.note;
     };
