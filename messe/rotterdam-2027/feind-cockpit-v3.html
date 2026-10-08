@@ -346,6 +346,25 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--accent-ink); }
 .np-panel h4 { margin: 0; }
 .np-msg { margin: 0; color: var(--signal-text); }
 .np-msg:empty { display: none; }
+.rw-dots { display: flex; gap: var(--s1); list-style: none; margin: 0 0 var(--s2); padding: 0; flex-wrap: wrap; }
+.rw-dots li { flex: 1 1 90px; font-size: 12px; padding: 4px 8px; border-top: 3px solid var(--line); color: var(--ink-muted); }
+.rw-dots li.on { border-top-color: var(--accent); color: var(--ink-strong); font-weight: 600; }
+.rw-dots li.done { border-top-color: var(--accent-ink); }
+.rw-prog { margin: 0 0 var(--s2); font-weight: 600; }
+.rw-nav { justify-content: flex-end; margin-top: var(--s2); position: sticky; bottom: 0; background: var(--surface); padding: var(--s2) 0; border-top: 1px solid var(--line); }
+.rw-step[hidden] { display: none; }
+.rw-sum dl, .modal dl { margin: 0; }
+.rw-row { display: grid; grid-template-columns: 9em 1fr; gap: var(--s2); padding: 6px 0; border-bottom: 1px solid var(--line); }
+.rw-row dt { color: var(--ink-muted); }
+.rw-row dd { margin: 0; overflow-wrap: anywhere; }
+.rw-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s2); }
+.rw-list li { display: flex; gap: var(--s2); align-items: center; flex-wrap: wrap; }
+.rw-list img, .rw-noimg { width: 56px; height: 38px; object-fit: cover; background: var(--raised); flex: none; }
+.rw-main { flex: 1 1 200px; min-width: 0; }
+.rw-inbox { margin-bottom: var(--s3); }
+fieldset.np-panel { margin: 0; min-width: 0; }
+@media (max-width: 520px) { .rw-row { grid-template-columns: 1fr; gap: 0; } .rw-dots li { flex-basis: 40%; } }
+
 .kb-pick { position: fixed; left: 0; top: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 @media (min-width: 560px) { .form-grid { grid-template-columns: 1fr 1fr; } }
 
@@ -6588,7 +6607,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     const stale = S.data.content.filter(c => matchRegion(c) && contentStale(c) != null);
     const due = leads.filter(l => leadFollowup(l) != null);
     const overdueTenders = S.data.tenders.filter(x => matchRegion(x) && H.tenderOpen(x) && tenderAmpel(x).level === 'gone' && tenderAmpel(x).days != null);
-    const noApproval = S.data.references.filter(r => matchRegion(r) && r.clientApproved !== true);
+    const noApproval = (app.mkPubRefs ? app.mkPubRefs() : S.data.references).filter(r => matchRegion(r) && r.clientApproved !== true);
     const itOver = M.overdue(app.tasks(), t);
     const extra = app.cfg().features && app.cfg().features.hintsExtra === false ? [] : [
       { n: overdueTenders.length, sev: overdueTenders.length ? 'kritisch' : null, go: ['marketing', 'tenders'], s: 'Frist abgelaufen', ic: 'ausschreibung', text: 'Ausschreibungen mit abgelaufener Frist, aber noch offenem Status (Status prüfen)' },
@@ -6959,6 +6978,12 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         const g0 = M.geoOf(t), place = str(t.ort || t.location || t.landkreis || t.place);
         const g = place ? (K.geocode(place, g0.state) || K.findPlaceInText(place, g0.state)) : null;
         if (g) pts.push({ lat: g.lat, lon: g.lon, label: str(t.title) || 'Ausschreibung', sub: [g.place, t.deadline ? 'Frist ' + fmtD(t.deadline) : ''].filter(Boolean).join(' · '), kind: 'tender', approx: !!g.ambiguous, onClick: () => { if (g0.state) pick(g0.state); } });
+        // Ohne auffindbaren Ort bleibt die Ausschreibung trotzdem sichtbar: Pin in der Mitte des Bundeslandes (ungefähr),
+        // damit die Zahl im Kreis und die Pins in der Detailansicht übereinstimmen.
+        else if (g0.state && K.stateCentroid) {
+          const c = K.stateCentroid(g0.state);
+          if (c) pts.push({ lat: c.lat, lon: c.lon, label: str(t.title) || 'Ausschreibung', sub: [place ? 'Ort nicht gefunden: ' + place : 'Ort nicht angegeben', 'Mitte von ' + g0.state, t.deadline ? 'Frist ' + fmtD(t.deadline) : ''].filter(Boolean).join(' · '), kind: 'tender', approx: true, onClick: () => pick(g0.state) });
+        }
       }
       for (const site of D.HOME_SITES) { const g = K.geocode(site.city, site.state); if (g) pts.push({ lat: g.lat, lon: g.lon, label: 'Standort ' + site.city.replace(/\s*\(.*\)/, ''), kind: 'home' }); }
     }
@@ -7340,7 +7365,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   /* ---------- Referenzen ---------- */
   function filteredRefs() {
     const q = ui.refQ.trim().toLowerCase();
-    return S.data.references.filter(r => {
+    return pubRefs().filter(r => {
       if (!app.mkMatchRegion(r)) return false;
       if (ui.refUse) {
         const u = usageOf(r);
@@ -7739,6 +7764,279 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     return parts.length ? h('div', { class: 'chips' }, parts.map(([ic, t]) => h('span', { class: 'chip soft', title: 'Verwendung' }, app.ico(ic), t))) : null;
   }
 
+  /* ---------- Referenz erfassen: geführter Assistent mit Foto, Entwurf und Prüfung (Wunsch David 08.10.2026) ----------
+     Grinding-Manager erfassen ein Projekt in fünf Schritten (Projekt, Leistung und Zahlen, Verwendung, Foto, Prüfen).
+     Beim Absenden entsteht references/<ID> mit status „entwurf“ und ref_photos/<ID>. Erst die Freigabe (Prüfliste im Modul)
+     macht die Referenz auf Karte, Mappe und Website-Auswahl sichtbar. Bestand ohne status gilt als freigegeben.
+     Entwürfe sehen nur die erfassende Person und Admins (Anzeigeregel der Oberfläche, kein Zugriffsschutz der Datenbank). */
+  const REF_SERVICES = ['Kaltfräsen', 'Grinding (Schleifen)', 'Grooving', 'Pflasterarbeiten', 'Industrieboden'];
+  const statusOf = r => (r && r.status) || 'freigegeben';
+  const STATUS_TXT = { entwurf: 'Entwurf zur Prüfung', zurueck: 'Zurück mit Hinweis', freigegeben: 'Freigegeben' };
+  const pubRefs = () => (S.data.references || []).filter(r => statusOf(r) === 'freigegeben');
+  app.mkPubRefs = pubRefs;
+  const isAdminNow = () => !!(app.isAdmin && app.isAdmin());
+  function inboxRefs() {
+    const open = (S.data.references || []).filter(r => statusOf(r) !== 'freigegeben');
+    if (isAdminNow()) return open;
+    const me = S.me && S.me.id;
+    return me ? open.filter(r => r.submittedBy === me) : [];
+  }
+  app.mkRefInbox = () => inboxRefs().length;
+  const nDe = x => Number(x).toLocaleString('de-DE');
+
+  function openRefWizard() {
+    const ro = !canWriteRef();
+    const admin = isAdminNow();
+    const v = el => str(el.value).trim();
+    const inp = (id, o) => h('input', Object.assign({ type: 'text', id, disabled: ro || null }, o || {}));
+    const ta = (id, rows, ph) => h('textarea', { id, rows: String(rows), maxlength: '400', disabled: ro || null, placeholder: ph || '' });
+    const chkBox = (id, on) => h('input', { type: 'checkbox', id, checked: !!on, disabled: ro || null });
+    const msg = h('p', { class: 'np-msg', role: 'status' });
+
+    const title = inp('rw-title', { maxlength: '120', placeholder: 'z. B. Industrieboden REWE Nossen' });
+    const place = inp('rw-place', { maxlength: '80', placeholder: 'z. B. Nossen' });
+    const region = app.dropdown('rw-region', [['', '–']].concat((D.BUNDESLAENDER || []).map(b => [b, b])), ''); region.disabled = ro;
+    const year = inp('rw-year', { type: 'number', min: '1990', max: '2040', value: String(new Date().getFullYear()) });
+    const month = inp('rw-date', { type: 'month' });
+    const by = inp('rw-by', { maxlength: '60', placeholder: 'Vor- und Nachname', autocomplete: 'name' });
+
+    const svc = REF_SERVICES.map((s, i) => ({ s, c: chkBox('rw-svc' + i, false) }));
+    const svcOther = inp('rw-svc-other', { maxlength: '80', placeholder: 'Sonstige Leistung (Freitext)' });
+    const summary = ta('rw-summary', 3, 'Ein bis zwei Sätze: Aufgabe und Ergebnis.');
+    const area = inp('rw-area', { type: 'number', min: '0', step: '1', inputmode: 'numeric', placeholder: 'z. B. 12000' });
+    const duration = inp('rw-duration', { maxlength: '60', placeholder: 'z. B. 5 Arbeitstage' });
+    const machine = inp('rw-machine', { maxlength: '80', placeholder: 'z. B. Wirtgen W 210 Fi' });
+    const facts = ta('rw-facts', 3, 'je Zeile ein Fakt');
+    const client = inp('rw-client', { maxlength: '80' });
+    const approved = chkBox('rw-approved', false);
+    const url = inp('rw-url', { type: 'url', maxlength: '300', placeholder: 'https://www.fraesdienst-feind.de/…' });
+
+    const uOnline = chkBox('rw-u-online', false), uPrint = chkBox('rw-u-print', false), uIntern = chkBox('rw-u-intern', false);
+    const printMedia = inp('rw-print-media', { maxlength: '120', placeholder: 'z. B. Straßen- und Tiefbau 3/2027, Messeflyer' });
+    const internPurpose = inp('rw-intern-zweck', { maxlength: '120', placeholder: 'z. B. Angebotsmappe, Schulung' });
+    const syncUse = who => {
+      if (who === 'intern' && uIntern.checked) { uOnline.checked = false; uPrint.checked = false; }
+      if ((who === 'online' || who === 'print') && (uOnline.checked || uPrint.checked)) uIntern.checked = false;
+      printMedia.disabled = ro || !uPrint.checked; internPurpose.disabled = ro || !uIntern.checked;
+    };
+    uOnline.addEventListener('change', () => syncUse('online')); uPrint.addEventListener('change', () => syncUse('print')); uIntern.addEventListener('change', () => syncUse('intern')); syncUse('');
+
+    // Foto: Pflicht, wird beim Absenden verkleinert; Kamera- und GPS-Daten entfallen durch das Neukodieren.
+    let file = null;
+    const prev = h('div', { class: 'ref-photo-prev' }, h('span', { class: 'muted small', text: 'Noch kein Foto gewählt.' }));
+    const fmsg = h('p', { class: 'small', role: 'status' });
+    const finp = h('input', { type: 'file', accept: 'image/*', class: 'file-native', id: 'rw-file', tabindex: '-1', 'aria-hidden': 'true', disabled: ro || null });
+    finp.addEventListener('change', () => {
+      const f = finp.files && finp.files[0];
+      if (!f) return;
+      if (!/^image\//.test(f.type)) { fmsg.textContent = 'Bitte eine Bilddatei wählen (JPG, PNG, WebP, HEIC).'; return; }
+      if (f.size > PHOTO_MAX) { fmsg.textContent = 'Datei zu groß (höchstens 25 MB).'; return; }
+      file = f; fmsg.textContent = f.name + ' gewählt. Wird beim Absenden verkleinert (1600 und 480 px).';
+      const u = URL.createObjectURL(f); prev.replaceChildren(h('img', { src: u, alt: '' })); setTimeout(() => URL.revokeObjectURL(u), 120000);
+    });
+    const pick = h('label', { class: 'btn' + (ro ? ' is-disabled' : ''), role: 'button', tabindex: ro ? '-1' : '0', onkeydown: e => { if ((e.key === 'Enter' || e.key === ' ') && !ro) { e.preventDefault(); finp.click(); } } }, app.ico('kamera'), 'Foto aufnehmen oder wählen', finp);
+    const alt = inp('rw-alt', { maxlength: '160' });
+    const credit = inp('rw-credit', { maxlength: '80', placeholder: 'z. B. Fräsdienst Feind' });
+    const rights = chkBox('rw-rights', false);
+
+    const checkTexts = () => [v(title), v(place), v(summary), v(facts), v(client), v(printMedia), v(internPurpose), v(machine), v(duration), v(svcOther), v(credit), v(alt)].join(' ');
+    const picked = () => svc.filter(x => x.c.checked).map(x => x.s).concat(v(svcOther) ? [v(svcOther)] : []);
+
+    const sum = h('div', { class: 'rw-sum' });
+    const steps = [
+      { t: 'Projekt', el: h('div', { class: 'form-grid' },
+          app.field('Titel', title, { wide: true, hint: 'Pflicht. Projekt, nicht Kunde.' }),
+          app.field('Ort', place, { hint: 'Pflicht. Der Kartenpunkt wird daraus gesetzt, keine Straßenadresse.' }),
+          app.field('Bundesland', region, { hint: 'Pflicht.' }),
+          app.field('Jahr', year, { hint: 'Pflicht.' }),
+          app.field('Monat und Jahr', month, { hint: 'Optional.' }),
+          app.field('Erfasst von', by, { wide: true, hint: 'Pflicht. Name der Person, die das Projekt einträgt.' })),
+        check() {
+          if (!v(title)) return ['Bitte einen Titel eingeben.', title];
+          if (!v(place)) return ['Bitte den Ort eintragen.', place];
+          if (!region.value) return ['Bitte das Bundesland wählen.', region];
+          const y = parseInt(v(year), 10);
+          if (!(y >= 1990 && y <= 2040)) return ['Bitte ein Jahr zwischen 1990 und 2040 eintragen.', year];
+          if (!v(by)) return ['Bitte eintragen, wer das Projekt erfasst.', by];
+          return null;
+        } },
+      { t: 'Leistung und Zahlen', el: h('div', { class: 'stack' },
+          h('fieldset', { class: 'np-panel card' }, h('legend', { text: 'Leistung (Pflicht, Mehrfachauswahl)' }),
+            svc.map((x, i) => h('label', { class: 'check', for: 'rw-svc' + i }, x.c, ' ' + x.s)),
+            app.field('Sonstiges', svcOther, { wide: true, hint: 'Sonstiges sieht die Marketing-Leitung bei der Prüfung, damit die Liste wächst.' })),
+          app.field('Kurzbeschreibung', summary, { wide: true, hint: 'Pflicht, höchstens 400 Zeichen: Aufgabe und Ergebnis.' }),
+          h('div', { class: 'form-grid' },
+            app.field('Fläche (m²)', area, { hint: 'Optional.' }),
+            app.field('Bauzeit', duration, { hint: 'Optional.' }),
+            app.field('Maschine oder Verfahren', machine, { wide: true, hint: 'Optional.' }),
+            app.field('Weitere Kennzahlen', facts, { wide: true, hint: 'Optional, je Zeile ein Fakt. Keine Preise.' }),
+            app.field('Kunde', client, { hint: 'Optional. Erscheint nur mit Freigabe.' }),
+            app.field('Projektseite (https)', url, { hint: 'Optional.' })),
+          h('label', { class: 'check', for: 'rw-approved' }, approved, ' Kundenfreigabe zur Nennung liegt dokumentiert vor'),
+          h('p', { class: 'muted small', text: 'Keine Namen, E-Mail-Adressen oder Telefonnummern von Ansprechpartnern. Bei Kundennennung: Bitte Rechtsabteilung prüfen.' })),
+        check() {
+          if (!picked().length) return ['Bitte mindestens eine Leistung wählen.', svc[0].c];
+          if (!v(summary)) return ['Bitte eine Kurzbeschreibung eintragen.', summary];
+          if (PERSONAL.some(re => re.test(checkTexts()))) return ['Keine personenbezogenen Daten: E-Mail-Adresse oder Telefonnummer gefunden. Kontakte gehören ins CRM.', summary];
+          if (v(area) !== '' && !(Number(v(area)) >= 0)) return ['Die Fläche muss eine Zahl ab 0 sein.', area];
+          if (v(url) && !/^https:\/\//i.test(v(url))) return ['Die Projektseite muss mit https:// beginnen.', url];
+          return null;
+        } },
+      { t: 'Verwendung', el: h('div', { class: 'card np-panel' },
+          h('h4', { text: 'Wofür darf die Referenz genutzt werden? (Pflicht)' }),
+          h('label', { class: 'check', for: 'rw-u-online' }, uOnline, ' Online auf der Website fraesdienst-feind.de'),
+          h('label', { class: 'check', for: 'rw-u-print' }, uPrint, ' Printmedien'),
+          app.field('Printmedium benennen', printMedia, { wide: true }),
+          h('label', { class: 'check', for: 'rw-u-intern' }, uIntern, ' Nur interner Zweck (schließt Website und Print aus)'),
+          app.field('Interner Zweck benennen', internPurpose, { wide: true })),
+        check() {
+          if (!uOnline.checked && !uPrint.checked && !uIntern.checked) return ['Bitte mindestens eine Verwendung wählen.', uOnline];
+          if (uPrint.checked && !v(printMedia)) return ['Bitte das Printmedium benennen.', printMedia];
+          if (uIntern.checked && !v(internPurpose)) return ['Bitte den internen Zweck benennen.', internPurpose];
+          return null;
+        } },
+      { t: 'Foto', el: h('div', { class: 'stack' }, prev, h('div', { class: 'row' }, pick), fmsg,
+          h('div', { class: 'form-grid' }, app.field('Alternativtext', alt, { wide: true, hint: 'Was ist zu sehen? Keine Namen von Personen.' }), app.field('Fotonachweis', credit, { hint: 'Optional.' })),
+          h('label', { class: 'check', for: 'rw-rights' }, rights, ' Bildrechte liegen vor; keine erkennbaren Personen ohne Einwilligung.'),
+          h('p', { class: 'muted small', text: 'Pflicht: ein Foto je Projekt. Kamera- und GPS-Daten werden entfernt. Bei Fremdfotos, Kundengeländen oder erkennbaren Personen: Bitte Rechtsabteilung prüfen.' })),
+        check() {
+          if (!file) return ['Bitte ein Foto aufnehmen oder wählen.', pick];
+          if (!rights.checked) return ['Bitte die Bildrechte bestätigen.', rights];
+          if (!v(alt)) return ['Bitte einen Alternativtext eingeben.', alt];
+          return null;
+        } },
+      { t: 'Prüfen', el: h('div', { class: 'stack' }, sum,
+          h('p', { class: 'muted small', text: admin ? 'Du bist Admin: Die Referenz wird direkt freigegeben.' : 'Nach dem Absenden prüft die Marketing-Leitung den Eintrag. Erst nach der Freigabe erscheint er auf Karte und in der Referenzmappe.' })),
+        check: () => null }
+    ];
+
+    const prog = h('p', { class: 'rw-prog', role: 'status', 'aria-live': 'polite' });
+    const dots = h('ol', { class: 'rw-dots', 'aria-hidden': 'true' }, steps.map(s => h('li', {}, s.t)));
+    const panels = steps.map((s, i) => h('section', { class: 'rw-step', 'aria-label': 'Schritt ' + (i + 1) + ' von ' + steps.length + ': ' + s.t }, s.el));
+    let at = 0, close = () => {};
+    const back = h('button', { class: 'btn', type: 'button', onclick: () => go(at - 1) }, 'Zurück');
+    const next = h('button', { class: 'btn primary', type: 'button', onclick: () => { const e = steps[at].check(); if (e) { msg.textContent = e[0]; if (e[1] && e[1].focus) e[1].focus(); return; } go(at + 1); } }, 'Weiter');
+    const send = h('button', { class: 'btn primary', type: 'button', onclick: () => submit() }, app.ico('check'), admin ? 'Anlegen und freigeben' : 'Absenden zur Prüfung');
+    function renderSum() {
+      const rowOf = (k, val) => h('div', { class: 'rw-row' }, h('dt', { text: k }), h('dd', { text: val || '–' }));
+      const use = [uOnline.checked ? 'Website' : '', uPrint.checked ? 'Print: ' + v(printMedia) : '', uIntern.checked ? 'Intern: ' + v(internPurpose) : ''].filter(Boolean).join(' · ');
+      sum.replaceChildren(h('dl', {},
+        rowOf('Projekt', v(title)), rowOf('Ort', [v(place), region.value].filter(Boolean).join(', ')), rowOf('Zeit', [v(month), v(year)].filter(Boolean).join(' · ')),
+        rowOf('Leistung', picked().join(', ')), rowOf('Beschreibung', v(summary)),
+        rowOf('Zahlen', [v(area) !== '' ? nDe(v(area)) + ' m²' : '', v(duration), v(machine)].filter(Boolean).join(' · ')),
+        rowOf('Kunde', approved.checked && v(client) ? v(client) : 'nicht genannt'), rowOf('Verwendung', use),
+        rowOf('Foto', file ? file.name : ''), rowOf('Erfasst von', v(by))));
+    }
+    function go(i) {
+      at = Math.max(0, Math.min(steps.length - 1, i));
+      panels.forEach((p, k) => { p.hidden = k !== at; });
+      Array.from(dots.children).forEach((li, k) => { li.className = k === at ? 'on' : k < at ? 'done' : ''; if (k === at) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current'); });
+      prog.textContent = 'Schritt ' + (at + 1) + ' von ' + steps.length + ': ' + steps[at].t;
+      back.hidden = at === 0; next.hidden = at === steps.length - 1; send.hidden = at !== steps.length - 1;
+      msg.textContent = '';
+      if (at === steps.length - 1) renderSum();
+      const first = panels[at].querySelector('input:not([type=file]):not(:disabled), textarea:not(:disabled), select:not(:disabled)');
+      if (first && at !== steps.length - 1) setTimeout(() => first.focus({ preventScroll: true }), 0);
+      const m = document.querySelector('#modalRoot .modal'); if (m) m.scrollTop = 0;
+    }
+    async function submit() {
+      for (let i = 0; i < steps.length - 1; i++) { const e = steps[i].check(); if (e) { go(i); msg.textContent = e[0]; if (e[1] && e[1].focus) e[1].focus(); return; } }
+      send.disabled = true;
+      const fail = t => { msg.textContent = t; send.disabled = false; };
+      msg.textContent = 'Foto wird verkleinert und gespeichert …';
+      let ph;
+      try { ph = await storePhotoFile(file); }
+      catch (e) { fail('Foto konnte nicht verarbeitet werden' + (e && e.code ? ' (' + e.code + ')' : '') + '. Anderes Format probieren (JPG oder PNG).'); return; }
+      let g = null;
+      try { if (app.kbEnsureGaz) app.kbEnsureGaz(); const K = window.FC && window.FC.kb; g = K && K.geocode ? K.geocode(v(place), region.value) : null; } catch (e) { g = null; }
+      const now = new Date().toISOString(), me = (S.me && S.me.id) || null, id = H.uid('ref-');
+      const lines = [v(area) !== '' ? nDe(v(area)) + ' m²' : '', v(duration) ? 'Bauzeit ' + v(duration) : '', v(machine)].concat(v(facts).split('\n').map(x => x.trim())).filter(Boolean);
+      const doc = {
+        title: v(title), place: v(place), region: region.value, year: v(year), date: v(month),
+        services: picked(), summary: v(summary), facts: lines,
+        areaM2: v(area) === '' ? null : Number(v(area)), duration: v(duration), machine: v(machine),
+        client: v(client), clientApproved: approved.checked === true && !!v(client),
+        projectUrl: v(url), lat: g ? g.lat : null, lng: g ? g.lon : null, geoApprox: !!g,
+        source: 'Erfassungsformular · ' + fmtD(today()),
+        usage: { online: uOnline.checked, print: uPrint.checked, printMedia: uPrint.checked ? v(printMedia) : '', internal: uIntern.checked, internalPurpose: uIntern.checked ? v(internPurpose) : '', setAt: now, by: me },
+        status: admin ? 'freigegeben' : 'entwurf', capturedBy: v(by), submittedBy: me, submittedAt: now, createdAt: now
+      };
+      if (admin) { doc.reviewedAt = now; doc.reviewedBy = me; }
+      if (v(svcOther)) doc.otherService = v(svcOther);
+      msg.textContent = 'Eintrag wird gespeichert …';
+      if (!await app.write('references/' + id, 'set', doc)) { fail('Speichern fehlgeschlagen. Bitte erneut versuchen.'); return; }
+      const pdoc = { refId: id, alt: v(alt).slice(0, 160), credit: v(credit).slice(0, 80), focus: 'center 50%', rightsOk: true, updatedAt: now, by: me, full: ph.full, thumb: ph.thumb };
+      if (!await app.write('ref_photos/' + id, 'set', pdoc)) { await app.write('references/' + id, 'delete'); fail('Das Foto konnte nicht gespeichert werden, der Eintrag wurde zurückgenommen. Bitte erneut versuchen.'); return; }
+      app.log('Referenz erfasst', doc.title + (doc.place ? ' · ' + doc.place : '') + ' · ' + STATUS_TXT[doc.status]);
+      app.toast(admin ? 'Referenz angelegt und freigegeben.' : 'Danke! Die Referenz liegt zur Prüfung vor.');
+      ui.refQ = ''; ui.refService = ''; ui.refYear = ''; ui.refUse = '';
+      close(true); rerender();
+    }
+    close = app.modal({
+      title: 'Referenz erfassen',
+      body: ro ? [h('p', { text: 'Zum Erfassen braucht es Schreibrechte (Freigabe „Mitwirken“ im Cockpit in claude.ai).' })]
+        : [dots, prog, h('div', { class: 'rw-panels' }, panels), msg, h('div', { class: 'row rw-nav' }, back, next, send)],
+      actions: ro ? [{ label: 'Schließen', primary: true }] : [{ label: 'Abbrechen' }],
+      focus: '#rw-title'
+    });
+    if (!ro) go(0);
+    const box = document.querySelector('#modalRoot .modal');
+    if (box) box.classList.add('wide');
+  }
+
+  // Prüfliste: Eingang für Admins, „Meine Entwürfe“ für Erfassende. Freigeben oder mit Hinweis zurück.
+  function reviewDialog(r) {
+    const p = photoOf(r);
+    const note = h('textarea', { id: 'rv-note', rows: '3', maxlength: '300', placeholder: 'Hinweis an die erfassende Person (nur nötig bei „Zurück“).' });
+    note.value = str(r.reviewNote);
+    const msg = h('p', { class: 'np-msg', role: 'status' });
+    const row = (k, val) => h('div', { class: 'rw-row' }, h('dt', { text: k }), h('dd', { text: val || '–' }));
+    app.modal({
+      title: 'Prüfen · ' + (str(r.title) || 'ohne Titel'),
+      body: [photoFigure(r), h('dl', {},
+        row('Ort', [str(r.place), str(r.region)].filter(Boolean).join(', ')), row('Jahr', str(r.year)), row('Leistung', arr(r.services).map(str).join(', ')),
+        row('Beschreibung', str(r.summary)), row('Zahlen', arr(r.facts).map(str).join(' · ')), row('Kunde', r.clientApproved === true ? str(r.client) : 'nicht genannt'),
+        row('Verwendung', app.mkUsageText(r)), row('Erfasst von', str(r.capturedBy)), row('Bildrechte', p && p.rightsOk === true ? 'bestätigt' : 'offen'),
+        row('Kartenpunkt', typeof r.lat === 'number' ? 'automatisch aus dem Ort gesetzt' : 'Ort nicht im Verzeichnis, Referenz steht unter der Karte')),
+        h('div', { class: 'field' }, h('label', { for: 'rv-note', text: 'Hinweis' }), note),
+        h('div', { class: 'row' },
+          h('button', { class: 'btn small ghost', type: 'button', onclick: () => openRefForm(r) }, app.ico('stift'), 'Angaben bearbeiten'),
+          app.mkRefPdf ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => app.mkRefPdf(r) }, app.ico('dokument'), 'Brennglas-PDF') : null),
+        msg],
+      actions: [{ label: 'Schließen', spacer: true },
+        { label: 'Zurück mit Hinweis', onClick: async () => {
+          if (!note.value.trim()) { msg.textContent = 'Bitte einen Hinweis eintragen.'; note.focus(); return true; }
+          if (!await app.write('references/' + r._id, 'update', { status: 'zurueck', reviewNote: note.value.trim(), reviewedAt: new Date().toISOString(), reviewedBy: (S.me && S.me.id) || null })) return true;
+          app.log('Referenz zurückgegeben', str(r.title)); app.toast('Zurück an die erfassende Person.'); rerender();
+        } },
+        { label: 'Freigeben', primary: true, onClick: async () => {
+          if (!await app.write('references/' + r._id, 'update', { status: 'freigegeben', reviewNote: '', reviewedAt: new Date().toISOString(), reviewedBy: (S.me && S.me.id) || null })) return true;
+          app.log('Referenz freigegeben', str(r.title)); app.toast('Freigegeben. Die Referenz erscheint auf der Karte.'); rerender();
+        } }],
+      focus: '#rv-note'
+    });
+    const box = document.querySelector('#modalRoot .modal');
+    if (box) box.classList.add('wide');
+  }
+  function inboxCard() {
+    const list = inboxRefs();
+    if (!list.length) return null;
+    const admin = isAdminNow();
+    return h('div', { class: 'card np-panel rw-inbox' },
+      h('h3', { text: (admin ? 'Eingang zur Prüfung' : 'Meine Entwürfe') + ' (' + list.length + ')' }),
+      h('ul', { class: 'rw-list' }, list.map(r => {
+        const st = statusOf(r), ph = photoOf(r);
+        return h('li', {},
+          ph && (ph.thumb || ph.full) ? h('img', { src: photoSrc(ph.thumb || ph.full), alt: '', width: 56, height: 38, loading: 'lazy' }) : h('span', { class: 'rw-noimg', 'aria-hidden': 'true' }),
+          h('div', { class: 'rw-main' }, h('strong', { text: str(r.title) || '(ohne Titel)' }),
+            h('div', { class: 'muted small', text: [str(r.place) || str(r.region), str(r.year), admin && str(r.capturedBy) ? 'erfasst von ' + str(r.capturedBy) : ''].filter(Boolean).join(' · ') }),
+            st === 'zurueck' && str(r.reviewNote) ? h('div', { class: 'small', text: 'Hinweis: ' + str(r.reviewNote) }) : null),
+          h('span', { class: 'chip ' + (st === 'zurueck' ? 'yellow' : 'soft'), text: STATUS_TXT[st] }),
+          admin ? h('button', { class: 'btn small primary', type: 'button', onclick: () => reviewDialog(r) }, 'Prüfen')
+            : h('button', { class: 'btn small', type: 'button', onclick: () => openRefForm(r) }, app.ico('stift'), 'Bearbeiten'));
+      })));
+  }
+
   const PERSONAL = [/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i, /(\+|\b0)\d[\d\s/-]{6,}\d/];
   const canWriteRef = () => !!S.store && !S.readOnly;
   function openRefForm(ex) {
@@ -7827,6 +8125,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
               internal: uIntern.checked, internalPurpose: uIntern.checked ? v(internPurpose) : '',
               setAt: new Date().toISOString(), by: (S.me && S.me.id) || null }
           };
+          if (old && statusOf(old) === 'zurueck' && !isAdminNow()) { doc.status = 'entwurf'; doc.reviewNote = ''; }
           if (old) doc.updatedAt = new Date().toISOString(); else doc.createdAt = new Date().toISOString();
           if (!await app.write('references/' + id, old ? 'update' : 'set', doc)) return true;
           app.log(old ? 'Referenz geändert' : 'Referenz angelegt', t + (doc.place ? ' · ' + doc.place : ''));
@@ -7839,15 +8138,15 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     const box = document.querySelector('#modalRoot .modal');
     if (box) box.classList.add('wide');
   }
-  app.mkNewReference = openRefForm;
+  app.mkNewReference = ex => (ex && typeof ex === 'object' ? openRefForm(ex) : openRefWizard());
   app.mkCanWriteRef = canWriteRef;
 
   app.module('marketing', 'references', {
     count: () => filteredRefs().length,
     render() {
       const items = filteredRefs();
-      const services = uniq(S.data.references.flatMap(r => arr(r.services)));
-      const years = uniq(S.data.references.map(r => r.year)).sort((a, b) => b.localeCompare(a));
+      const services = uniq(pubRefs().flatMap(r => arr(r.services)));
+      const years = uniq(pubRefs().map(r => r.year)).sort((a, b) => b.localeCompare(a));
       const q = h('input', { type: 'search', id: 'r-q', placeholder: 'Titel, Leistung, Fakten …', value: ui.refQ });
       q.addEventListener('input', () => { ui.refQ = q.value; rerender(); });
       const tools = h('div', { class: 'tools' }, app.mkSharedFilters(),
@@ -7855,10 +8154,10 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         app.field('Leistung', app.dropdown('r-service', [['', 'Alle Leistungen'], ...services.map(x => [x, x])], ui.refService, v => { ui.refService = v; rerender(); })),
         app.field('Jahr', app.dropdown('r-year', [['', 'Alle Jahre'], ...years.map(x => [x, x])], ui.refYear, v => { ui.refYear = v; rerender(); })),
         app.field('Verwendung', app.dropdown('r-use', [['', 'Alle'], ['online', 'Website'], ['print', 'Print'], ['internal', 'Intern'], ['none', 'Verwendung offen']], ui.refUse, v => { ui.refUse = v; rerender(); })));
-      const head = panelHead('Referenz-Bibliothek', items.length + ' von ' + S.data.references.length, null, app.mkSrcNote('references') + ' · Kundennamen nur mit Freigabe (clientApproved)');
-      if (!items.length) return [head, tools, app.mkEmpty('references', S.data.references.length > 0)];
+      const head = panelHead('Referenz-Bibliothek', items.length + ' von ' + pubRefs().length, null, app.mkSrcNote('references') + ' · Kundennamen nur mit Freigabe (clientApproved)');
+      if (!items.length) return [head, inboxCard(), tools, app.mkEmpty('references', pubRefs().length > 0)];
       const list = items.slice().sort((a, b) => (parseInt(b.year, 10) || 0) - (parseInt(a.year, 10) || 0) || str(a.title).localeCompare(str(b.title), 'de'));
-      return [head, tools, refMap(list), h('div', { class: 'refs' }, list.map(r => h('article', { class: 'card' + (photoOf(r) ? ' has-photo' : '') },
+      return [head, inboxCard(), tools, refMap(list), h('div', { class: 'refs' }, list.map(r => h('article', { class: 'card' + (photoOf(r) ? ' has-photo' : '') },
         photoFigure(r),
         h('div', { class: 'meta', text: [refDate(r) || str(r.year), str(r.place) || str(r.region)].filter(Boolean).join(' · ') || 'Jahr und Region offen' }),
         h('div', { class: 't', text: str(r.title) || '(ohne Titel)' }),
@@ -10092,7 +10391,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     for (const e of S.data.events || []) out.push({ group: 'Events', ic: 'messestand', title: str(e.title) || '(ohne Titel)', sub: H.fmtD(e.date) + (str(e.location) ? ' · ' + str(e.location) : ''), run: goMk('events', { range: 'all' }) });
     for (const m of S.data.meetings || []) out.push({ group: 'Protokolle', ic: 'meeting', title: 'Messe-Abstimmung ' + H.fmtD(m.date) + (m.status === 'offen' ? ' (offen)' : ''), sub: Object.keys(m.decisions || {}).length + ' Beschlüsse · ' + Object.keys(m.changes || {}).length + ' Änderungen', run: () => { S.ui.meetingSel = m.id || m._id; app.go('infratech', 'meetings'); } });
     for (const d of S.data.knowledge || []) out.push({ group: 'Wissen', ic: 'buch', title: str(d.title) || str(d.originalName) || '(ohne Titel)', sub: [app.kbCatLabel ? app.kbCatLabel(d.category) : str(d.category), str(d.topic)].filter(Boolean).join(' · '), run: () => { const ui = S.ui.kb; if (ui) { ui.q = str(d.title); ui.cat = ''; ui.status = ''; ui.tag = ''; } app.go('marketing', 'bibliothek'); } });
-    for (const r of S.data.references || []) out.push({ group: 'Referenzen', ic: 'stern', title: str(r.title) || '(ohne Titel)', sub: [str(r.year), str(r.region)].filter(Boolean).join(' · '), run: () => { const ui = S.ui.mk2; if (ui) { ui.refQ = str(r.title); ui.refService = ''; ui.refYear = ''; } app.go('marketing', 'references'); } });
+    for (const r of (app.mkPubRefs ? app.mkPubRefs() : S.data.references) || []) out.push({ group: 'Referenzen', ic: 'stern', title: str(r.title) || '(ohne Titel)', sub: [str(r.year), str(r.region)].filter(Boolean).join(' · '), run: () => { const ui = S.ui.mk2; if (ui) { ui.refQ = str(r.title); ui.refService = ''; ui.refYear = ''; } app.go('marketing', 'references'); } });
     return out;
   }
   function search(q) {
@@ -12123,8 +12422,65 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   const seoCsv = () => H.toCsv(['Keyword', 'Region', 'Position', 'Vorher', 'Klicks', 'Impressionen', 'URL', 'Geprüft'],
     S.data.seo_keywords.map(k => [str(k.keyword), str(k.region), k.position, k.previousPosition, k.clicks, k.impressions, str(k.url), fmtD(k.checkedAt)].map(v => (typeof v === 'string' ? scrub(v) : v))));
 
+  // Referenz erfassen: leeres Formular (Papier-Notlösung, gleiche Felder und Reihenfolge wie der Assistent im Cockpit)
+  // und Projektblatt je Referenz. Fotos setzt das Brennglas-Layout nicht ein; sie liegen im Cockpit.
+  const REF_SVC = ['Kaltfräsen', 'Grinding (Schleifen)', 'Grooving', 'Pflasterarbeiten', 'Industrieboden'];
+  function specRefForm() {
+    const fl = (label, name, hh, optional) => ({ field: { label, name, h: hh || 18, optional: !!optional } });
+    const row = (items) => ({ fields: items });
+    const boxes = (head, labels, prefix) => ({ table: { cols: [{ t: head }, { t: 'x', w: 14, align: 'center' }], rows: labels.map((s, k) => [s, chk(prefix + k)]) } });
+    return {
+      meta: false, approval: 'Im Cockpit eingetragen von (Name)', name: 'Referenz erfassen', subtitle: 'Neues Referenzprojekt · Formular für Grinding-Manager · ' + stand(),
+      blocks: [
+        { p: 'Gleiche Felder und Reihenfolge wie im Cockpit unter „Referenz erfassen“. Pflichtfelder sind nicht als optional gekennzeichnet. Keine Namen, E-Mail-Adressen oder Telefonnummern von Ansprechpartnern und keine Preise. Das Foto wird beim Eintragen im Cockpit hochgeladen. Bei Bildrechten und Kundennennung: Bitte Rechtsabteilung prüfen.', style: 'muted' },
+        { h: '1 Projekt' },
+        fl('Titel (Projekt, nicht Kunde)', 'Titel'),
+        row([{ label: 'Ort', name: 'Ort' }, { label: 'Bundesland', name: 'Bundesland' }, { label: 'Jahr', name: 'Jahr' }]),
+        row([{ label: 'Monat und Jahr', name: 'Monat', optional: true }, { label: 'Erfasst von (Name)', name: 'Erfasst_von' }]),
+        { h: '2 Leistung und Zahlen' },
+        boxes('Leistung (Mehrfachauswahl)', REF_SVC.concat(['Sonstiges (unten benennen)']), 'Leistung_'),
+        fl('Sonstige Leistung', 'Leistung_sonstige', 18, true),
+        fl('Kurzbeschreibung: Aufgabe und Ergebnis, höchstens 400 Zeichen', 'Beschreibung', 54),
+        row([{ label: 'Fläche (m²)', name: 'Flaeche', optional: true }, { label: 'Bauzeit', name: 'Bauzeit', optional: true }, { label: 'Maschine oder Verfahren', name: 'Maschine', optional: true }]),
+        fl('Weitere Kennzahlen, je Zeile ein Fakt (keine Preise)', 'Kennzahlen', 40, true),
+        row([{ label: 'Kunde (nur mit Freigabe)', name: 'Kunde', optional: true }, { label: 'Projektseite (https)', name: 'Projektseite', optional: true }]),
+        boxes('Kundenfreigabe zur Nennung liegt dokumentiert vor', ['Ja'], 'Kunde_freigabe'),
+        { h: '3 Verwendung' },
+        boxes('Wofür darf die Referenz genutzt werden? (Pflicht)', ['Online auf der Website', 'Printmedien', 'Nur intern (schließt Website und Print aus)'], 'Verwendung_'),
+        row([{ label: 'Printmedium benennen', name: 'Printmedium', optional: true }, { label: 'Interner Zweck benennen', name: 'Interner_Zweck', optional: true }]),
+        { h: '4 Foto' },
+        boxes('Foto je Projekt (Pflicht)', ['Foto liegt vor, Bildrechte bestätigt, keine erkennbaren Personen ohne Einwilligung'], 'Foto_'),
+        fl('Foto: Dateiname oder Aufnahmeort', 'Foto_Hinweis', 18, true)
+      ]
+    };
+  }
+  function specRefProject(r) {
+    const tag = r.status && r.status !== 'freigegeben' ? (r.status === 'zurueck' ? 'zurück mit Hinweis' : 'Entwurf zur Prüfung') : 'freigegeben';
+    const m2 = typeof r.areaM2 === 'number' ? r.areaM2.toLocaleString('de-DE') : '–';
+    const line = (k, v) => [bold(k), str(v) || mut('–')];
+    return {
+      meta: false, approval: 'Geprüft und freigegeben', name: 'Referenz ' + (str(r.title) || 'ohne Titel').slice(0, 60), subtitle: [str(r.place), str(r.region), str(r.year)].filter(Boolean).join(' · ') + ' · Status ' + tag + ' · ' + stand(),
+      kpis: [{ v: str(r.year) || '–', k: 'Jahr' }, { v: m2, k: 'Fläche m²' }, { v: n(arr(r.services).length), k: 'Leistungen' }],
+      blocks: [
+        { h: 'Beschreibung' },
+        { p: str(r.summary) || 'Keine Beschreibung erfasst.' },
+        { h: 'Steckbrief' },
+        { table: { cols: [{ t: 'Merkmal', w: 30 }, { t: 'Angabe' }], rows: [
+          line('Leistung', arr(r.services).map(str).join(', ')), line('Ort', [str(r.place), str(r.region)].filter(Boolean).join(', ')),
+          line('Zeitraum', str(r.date) || str(r.year)), line('Bauzeit', r.duration), line('Maschine oder Verfahren', r.machine),
+          line('Weitere Kennzahlen', arr(r.facts).map(str).join(' · ')),
+          line('Kunde', r.clientApproved === true ? str(r.client) : 'nicht freigegeben (anonym)'),
+          line('Verwendung', app.mkUsageText ? app.mkUsageText(r) : ''), line('Projektseite', H.safeUrl(r.projectUrl) || ''),
+          line('Erfasst von', r.capturedBy), line('Foto', 'liegt im Cockpit (Referenz-Bibliothek)')] } },
+        { field: { label: 'Notizen zur Prüfung', name: 'Pruefnotizen', h: 54, optional: true } }
+      ]
+    };
+  }
+  const slugOf = s => str(s).toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'projekt';
+  app.mkRefPdf = r => runPdf(() => specRefProject(r), 'Referenz-' + slugOf(r.title), false);
+
   function specRefs() {
-    const items = (app.mkFilteredRefs ? app.mkFilteredRefs() : S.data.references).slice().sort((a, b) => (parseInt(b.year, 10) || 0) - (parseInt(a.year, 10) || 0));
+    const items = (app.mkFilteredRefs ? app.mkFilteredRefs() : app.mkPubRefs()).slice().sort((a, b) => (parseInt(b.year, 10) || 0) - (parseInt(a.year, 10) || 0));
     const appr = items.filter(r => r.clientApproved === true).length;
     const client = r => (r.clientApproved === true && str(r.client) ? str(r.client) : 'Kunde nicht freigegeben');
     return {
@@ -12141,38 +12497,8 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       ]
     };
   }
-  // Leeres Brennglas-Aufnahmeformular für neue Referenzprojekte (Wunsch David 08.10.2026): dieselben Felder wie
-  // „Neues Referenzprojekt“ im Cockpit, zum Ausfüllen am Bildschirm oder ausgedruckt auf der Baustelle.
-  function specRefForm() {
-    return {
-      name: 'Aufnahmeformular Referenzprojekt', meta: false, approval: 'Ins Cockpit übertragen (Kürzel)',
-      subtitle: 'Leeres Formular · gleiche Felder wie „Neues Referenzprojekt“ in der Referenz-Bibliothek · am Bildschirm oder ausgedruckt ausfüllen',
-      blocks: [
-        { p: 'Pflicht sind Titel und mindestens eine Verwendung. Keine Namen, Telefonnummern oder E-Mail-Adressen von Personen eintragen; Kontakte gehören ins CRM. Den Kunden nur mit dokumentierter Freigabe nennen.', style: 'muted' },
-        { h: 'Projekt' },
-        { field: { label: 'Titel (Pflicht) · Projekt, nicht Kunde', name: 'Titel' } },
-        { fields: [{ label: 'Ort oder Abschnitt', name: 'Ort' }, { label: 'Bundesland', name: 'Bundesland' }] },
-        { fields: [{ label: 'Jahr', name: 'Jahr' }, { label: 'Monat und Jahr', name: 'Monat' }, { label: 'Leistungen (mit Komma)', name: 'Leistungen' }] },
-        { fields: [{ label: 'Projektseite (https)', name: 'Projektseite', optional: true }, { label: 'Breite (lat)', name: 'Breite', optional: true }, { label: 'Länge (lng)', name: 'Laenge', optional: true }] },
-        { field: { label: 'Zusammenfassung · Aufgabe und Ergebnis in ein bis zwei Sätzen', name: 'Zusammenfassung', h: 54 } },
-        { field: { label: 'Fakten · je Zeile einer, z. B. Fläche, Maschine, Bauzeit', name: 'Fakten', h: 54, optional: true } },
-        { h: 'Kunde' },
-        { field: { label: 'Kunde (Organisation)', name: 'Kunde', optional: true } },
-        { table: { zebra: false, cols: [{ t: '', w: 12, align: 'center' }, { t: 'Freigabe' }], rows: [[chk('Kundenfreigabe'), 'Kundenfreigabe liegt dokumentiert vor (sonst erscheint der Kunde nicht)']] } },
-        { h: 'Verwendung (Mehrfachauswahl, mindestens eine)' },
-        { table: { zebra: false, cols: [{ t: '', w: 12, align: 'center' }, { t: 'Verwendung', w: 62 }, { t: 'Angabe' }], rows: [
-          [chk('Verwendung_Online'), 'Online auf der Website fraesdienst-feind.de', mut('keine weitere Angabe')],
-          [chk('Verwendung_Print'), 'Nur in Printmedien', fld('Printmedium')],
-          [chk('Verwendung_Intern'), 'Nur interner Zweck', fld('Interner_Zweck')]] } },
-        { p: 'Ohne Haken bei „Online“ bietet das Cockpit keinen Website-Baustein an. Bei Fremdfotos, Kundengeländen oder erkennbaren Personen: Bitte Rechtsabteilung prüfen; für Fotos mit Personen ist eine Einwilligung erforderlich.', style: 'muted' },
-        { h: 'Fotos und Quelle' },
-        { fields: [{ label: 'Anzahl Fotos', name: 'Fotos', optional: true }, { label: 'Fotonachweis', name: 'Fotonachweis', optional: true }] },
-        { fields: [{ label: 'Quelle', name: 'Quelle' }, { label: 'Aufgenommen am', name: 'Aufgenommen_am' }, { label: 'Aufgenommen von (Rolle)', name: 'Aufgenommen_Rolle' }] }
-      ]
-    };
-  }
   const refsCsv = () => H.toCsv(['Jahr', 'Datum', 'Titel', 'Region', 'Ort', 'Breite', 'Länge', 'Kunde', 'Leistungen', 'Zusammenfassung', 'Projektseite', 'Verwendung', 'Quelle'],
-    (app.mkFilteredRefs ? app.mkFilteredRefs() : S.data.references).map(r => [str(r.year), str(r.date), str(r.title), str(r.region), str(r.place), typeof r.lat === 'number' ? r.lat : '', typeof r.lng === 'number' ? r.lng : '',
+    (app.mkFilteredRefs ? app.mkFilteredRefs() : app.mkPubRefs()).map(r => [str(r.year), str(r.date), str(r.title), str(r.region), str(r.place), typeof r.lat === 'number' ? r.lat : '', typeof r.lng === 'number' ? r.lng : '',
       r.clientApproved === true ? str(r.client) : 'nicht freigegeben', arr(r.services).map(str).join(', '), str(r.summary), H.safeUrl(r.projectUrl) || '',
       app.mkUsageText ? app.mkUsageText(r) : '', str(r.source)].map(v => (typeof v === 'string' ? scrub(v) : v))));
 
@@ -12623,14 +12949,11 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       ics('e-ics', 'Events in den Kalender (ICS)', 'Feind-Events.ics', eventsIcs), print('e', 'Event-Checklisten', specEvents)],
     'marketing:seo': () => [pdf('s', 'SEO-Bericht (PDF)', 'SEO-Bericht', specSeo), csv('s-csv', 'Keywords als CSV', 'Feind-SEO-Keywords.csv', seoCsv), print('s', 'SEO-Bericht', specSeo)],
     'marketing:references': () => [
-      { id: 'r-new', label: 'Neues Referenzprojekt', short: 'Neu', icon: 'plus', main: true,
-        tip: 'Legt ein Referenzprojekt über ein strukturiertes Formular an: Ort, Datum, Leistungen, Kundenfreigabe und die Verwendung (Website, Print, nur intern).',
+      { id: 'r-new', label: 'Referenz erfassen', short: 'Erfassen', icon: 'plus', main: true,
+        tip: 'Geführtes Formular in fünf Schritten: Projekt, Leistung und Zahlen, Verwendung, Foto, Prüfen. Der Eintrag geht als Entwurf zur Prüfung an die Marketing-Leitung.',
         disabled: !(app.mkNewReference && app.mkCanWriteRef && app.mkCanWriteRef()),
         run: () => app.mkNewReference && app.mkNewReference() },
-      pdf('r', 'Referenzmappe (PDF)', 'Referenzmappe', specRefs), csv('r-csv', 'Referenzen als CSV', 'Feind-Referenzen.csv', refsCsv), print('r', 'Referenzmappe', specRefs),
-      { id: 'r-form-pdf', label: 'Aufnahmeformular (PDF, leer)', short: 'Formular', icon: 'dokument',
-        tip: 'Leeres, ausfüllbares Brennglas-PDF für ein neues Referenzprojekt: gleiche Felder wie „Neues Referenzprojekt“, mit Verwendung (Website, Print, intern). Zum Ausdrucken für die Baustelle.',
-        run: () => runPdf(specRefForm, 'Aufnahmeformular Referenzprojekt', false) }],
+      pdf('r', 'Referenzmappe (PDF)', 'Referenzmappe', specRefs), Object.assign(pdf('rf', 'Leeres Formular „Referenz erfassen“ (PDF)', 'Referenz-erfassen-leer', specRefForm), { main: false, short: 'Formular' }), csv('r-csv', 'Referenzen als CSV', 'Feind-Referenzen.csv', refsCsv), print('r', 'Referenzmappe', specRefs)],
     'marketing:bibliothek': () => [{ id: 'kb-open', label: 'Upload-Ordner öffnen', short: 'Upload', icon: 'ext', main: true, tip: 'Öffnet den Dropbox-Ordner KI-Agent/Datenbank-UPLOADs in einem neuen Tab. Dort abgelegte Dateien verarbeitet Claude zum nächsten Termin.', run: () => { const w = window.open(app.kbInboxUrl(), '_blank', 'noopener'); if (!w) copy(app.kbInboxUrl(), 'Link zum Upload-Ordner kopiert.'); } },
       pdf('kb', 'Bestandsliste (PDF)', 'Wissensbibliothek', specBibliothek),
       csv('kb-csv', 'Bestand als CSV', 'Feind-Wissensbibliothek.csv', kbCsv),
@@ -13690,7 +14013,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   /* ---------- Einordnen: KI mit Regel-Rückfall ---------- */
   function knownContext() {
     const p = projects().map(x => x.name + (x.place ? ' (' + x.place + ')' : '')).slice(0, 60);
-    const r = (S.data.references || []).map(x => str(x.title) + (x.region ? ' (' + x.region + ')' : '')).slice(0, 40);
+    const r = (app.mkPubRefs ? app.mkPubRefs() : S.data.references || []).map(x => str(x.title) + (x.region ? ' (' + x.region + ')' : '')).slice(0, 40);
     const e = (S.data.events || []).map(x => str(x.title)).slice(0, 20);
     return { projekte: p, referenzen: r, events: e };
   }
@@ -13781,7 +14104,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     }
     const g = locate(place, p.state, p.lat, p.lon);
     const tk = new Set(K.tokens(name + ' ' + (place || '')));
-    const ref = (S.data.references || []).find(r => { const n = K.tokens(r.title).filter(w => tk.has(w)).length; return n >= 2 || (n >= 1 && place && K.fold(r.title + ' ' + r.region).includes(K.fold(place))); });
+    const ref = (app.mkPubRefs ? app.mkPubRefs() : S.data.references || []).find(r => { const n = K.tokens(r.title).filter(w => tk.has(w)).length; return n >= 2 || (n >= 1 && place && K.fold(r.title + ' ' + r.region).includes(K.fold(place))); });
     const id = H.uid('p');
     const doc = { id, name, place: (g && g.place) || place || '', state: (g && g.state) || p.state || '', country: p.country || (g ? 'Deutschland' : ''), lat: g ? g.lat : null, lon: g ? g.lon : null, geoHow: g ? g.how : 'offen',
       year: p.year || c.year || null, services: c.services, machine: p.machine || '', areaM2: p.areaM2 || null, summary: G.mask(str(c.summary)).slice(0, 400), client: '', clientApproved: false,
@@ -13823,7 +14146,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       const proj = projectId ? (projById(projectId) || { name: c.project.name, place: c.project.place, year: c.project.year, lat: null }) : null;
       const draft = Object.assign({}, it, c, { id, projectId });
       const rel = K.related(draft, items());
-      const links = K.cockpitLinks(draft, { references: S.data.references, events: S.data.events, tenders: S.data.tenders });
+      const links = K.cockpitLinks(draft, { references: app.mkPubRefs ? app.mkPubRefs() : S.data.references, events: S.data.events, tenders: S.data.tenders });
       const review = [];
       const piiFound = kinds.length > 0 || !!(c.pii && c.pii.found);
       if (piiFound) review.push('Personenbezogene Daten: ' + (kinds.join(', ') || 'Verdacht'));
@@ -14591,7 +14914,7 @@ let shown = false, hideT = null;
     const projs = app.kbProjects();
     const linked = new Set(projs.map(p => p.refId).filter(Boolean));
     for (const p of projs) out.push({ key: 'p:' + p.id, kind: 'proj', id: p.id, name: str(p.name), lat: p.lat, lon: p.lon, year: p.year, services: arr(p.services), status: p.status === 'geprueft' ? 'geprueft' : 'entwurf', place: str(p.place), state: str(p.state), how: p.geoHow, n: arr(p.items).length, data: p });
-    for (const r of S.data.references || []) {
+    for (const r of (app.mkPubRefs ? app.mkPubRefs() : S.data.references) || []) {
       if (linked.has(r._id)) continue;
       const st = M.canonState(r.region);
       let g = K.findPlaceInText(r.title, st), how = g ? (g.ambiguous ? 'mehrdeutig' : 'verzeichnis') : null;
@@ -15087,6 +15410,7 @@ let shown = false, hideT = null;
       if (opts.onMapClick) map.on('click', e => opts.onMapClick(e.latlng.lat, e.latlng.lng));
       // Mit stateBubbles: weit herausgezoomt ein Kreis je Bundesland, ab DETAIL_ZOOM die einzelnen Pins.
       let bubbles = null;
+      const detailAt = () => Math.max(DETAIL_ZOOM, minFit + 0.75);
       if (sb) {
         bubbles = L.layerGroup();
         for (const [name, cnt] of Object.entries(sb)) {
@@ -15101,8 +15425,8 @@ let shown = false, hideT = null;
             if (app.haptic) app.haptic(8);
             const rings = G.states[name];
             const bb = rings ? L.latLngBounds(rings.flatMap(r => ring(r))) : null;
-            if (bb && bb.isValid()) map.setView(bb.getCenter(), Math.max(DETAIL_ZOOM, map.getBoundsZoom(bb, false, L.point(24, 24))));
-            else map.setView(a, DETAIL_ZOOM);
+            if (bb && bb.isValid()) map.setView(bb.getCenter(), Math.max(detailAt(), map.getBoundsZoom(bb, false, L.point(24, 24))));
+            else map.setView(a, detailAt());
           });
           bubbles.addLayer(m);
         }
@@ -15110,6 +15434,34 @@ let shown = false, hideT = null;
       const b = L.latLngBounds(DE_BOUNDS);
       for (const q of pts) b.extend([q.lat, q.lon]);
       map.fitBounds(b, { padding: [12, 12], animate: false });
+      // Zoom-Kalibrierung: kleiner als „alles sichtbar in der Box“ gibt es nicht. Der Mindestzoom folgt der Boxgröße
+      // (Handy, Tablet, Desktop, Drehen) und die Karte lässt sich nur wenig über den Ausschnitt hinaus schieben.
+      const fitBox = L.latLngBounds(b.getSouthWest(), b.getNorthEast());
+      // Leaflet.markercluster rechnet mit ganzen Zoomstufen: Leaflet-minZoom bleibt ganzzahlig, die feine Untergrenze
+      // (Viertelstufen) erzwingt _limitZoom. Ein gebrochener minZoom ließ alle Pins verschwinden (Fehler Version 50).
+      let minFit = 0;
+      const limitZoom = map._limitZoom.bind(map);
+      map._limitZoom = zoom => Math.max(limitZoom(zoom), minFit);
+      const zoomOutBtn = () => box.querySelector('.leaflet-control-zoom-out');
+      const markMin = () => {
+        const btn = zoomOutBtn(), atMin = !!minFit && map.getZoom() <= minFit + 0.01;
+        if (btn) { btn.classList.toggle('leaflet-disabled', atMin); btn.setAttribute('aria-disabled', String(atMin)); }
+      };
+      map.on('zoomend', markMin);
+      const calibrate = () => {
+        const sz = map.getSize();
+        if (!sz.x || !sz.y) return;
+        const z = Math.min(map.getBoundsZoom(fitBox, false, L.point(12, 12)), map.getMaxZoom());
+        map.setMaxBounds(fitBox.pad(0.35));
+        map.options.maxBoundsViscosity = 0.9;
+        minFit = z;
+        map.setMinZoom(Math.max(0, Math.floor(z)));
+        if (map.getZoom() < z) map.setZoom(z, { animate: false });
+        markMin();
+        map.panInsideBounds(map.options.maxBounds, { animate: false });
+        box.dataset.minzoom = String(z);
+      };
+      calibrate();
       if (views[id]) { map.setView(views[id].c, views[id].z, { animate: false }); map._fcMoved = true; }
       if (opts.focus && typeof opts.focus.lat === 'number') { map.setView([opts.focus.lat, opts.focus.lon], Math.max(DETAIL_ZOOM + 3, map.getZoom()), { animate: false }); map._fcMoved = true; views[id] = { c: map.getCenter(), z: map.getZoom() }; }
       map.on('dragend zoomend', () => { map._fcMoved = true; views[id] = { c: map.getCenter(), z: map.getZoom() }; });
@@ -15118,7 +15470,7 @@ let shown = false, hideT = null;
         const apply = () => {
           const z = map.getZoom();
           box.style.setProperty('--sbs', z < 5 ? '0.7' : z < 5.75 ? '0.85' : '1'); // kleinere Kreise bei weiter Ansicht (Handy)
-          const next = z >= DETAIL_ZOOM ? 'detail' : 'overview';
+          const next = z >= detailAt() ? 'detail' : 'overview';
           if (next === mode) return;
           mode = next;
           box.dataset.mode = mode;
@@ -15132,7 +15484,7 @@ let shown = false, hideT = null;
         apply();
       }
       box.dataset.zoom = String(map.getZoom());
-      if (window.ResizeObserver) { const ro = new ResizeObserver(() => { if (maps[id] === map && box.isConnected) { try { map.invalidateSize({ animate: false }); } catch (e) { /* entfernt */ } } }); ro.observe(box); map._fcObs.push(ro); }
+      if (window.ResizeObserver) { const ro = new ResizeObserver(() => { if (maps[id] === map && box.isConnected) { try { map.invalidateSize({ animate: false }); calibrate(); } catch (e) { /* entfernt */ } } }); ro.observe(box); map._fcObs.push(ro); }
       if (opts.note && !info.textContent) info.textContent = opts.note;
     };
     // Lazy: Karte (und ggf. Kacheln) erst aufbauen, wenn sie in den sichtbaren Bereich kommt.
