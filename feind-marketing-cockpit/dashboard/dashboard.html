@@ -40,6 +40,7 @@
   --raised: #f2f4f4;
   --accent-soft: #eef5e1;
   --signal-soft: #fde8e8;
+  --signal-tint: #f9ccce; /* 20 % Feind-Rot auf Fläche: Prüfmeldungen (Wunsch David 06.10.2026), Text 5,6:1 */
   --warn-soft: #fbf0dc;
   --shadow: #1f252533;
   --scrim: #1f2525b3;
@@ -95,6 +96,7 @@
     --raised: #384242;
     --accent-soft: #2f3d1e;
     --signal-soft: #3d1b1c;
+    --signal-tint: #522c2e;
     --warn-soft: #352710;
     --shadow: #00000066;
     --scrim: #000000b3;
@@ -134,6 +136,7 @@
   --raised: #384242;
   --accent-soft: #2f3d1e;
   --signal-soft: #3d1b1c;
+    --signal-tint: #522c2e;
   --warn-soft: #352710;
   --shadow: #00000066;
   --scrim: #000000b3;
@@ -217,10 +220,12 @@ img, svg { max-width: 100%; }
 
 /* Top-Navigation: drei Welten als Reiter, die in die Seite übergehen */
 .topnav { display: flex; flex-wrap: wrap; gap: 4px; padding-top: var(--s1); }
-.worldtab { background: transparent; border: 0; border-top: 3px solid transparent; color: var(--ink-inverse); font-family: var(--font-display); font-weight: 700; font-size: 15px; padding: 10px 18px 12px; cursor: pointer; margin-bottom: -4px; }
-.worldtab:hover { background: color-mix(in srgb, var(--ink-inverse) 10%, transparent); }
+/* Nicht gewählte Bereiche leicht abgesetzt (Wunsch David 06.10.2026). */
+.worldtab { background: color-mix(in srgb, var(--ink-inverse) 9%, transparent); margin-right: 2px; border: 0; border-top: 3px solid transparent; color: var(--ink-inverse); font-family: var(--font-display); font-weight: 700; font-size: 15px; padding: 10px 18px 12px; cursor: pointer; margin-bottom: -4px; }
+.worldtab:hover { background: color-mix(in srgb, var(--ink-inverse) 17%, transparent); }
 .worldtab[aria-selected="true"] { background: var(--ground); color: var(--ink-strong); border-top-color: var(--accent); }
-.worldtab .cnt { font-family: var(--font-sans); font-size: 11px; margin-left: 6px; padding: 0 6px; border: 1px solid currentColor; }
+.worldtab .cnt { font-family: var(--font-sans); font-size: 11px; margin-left: 6px; padding: 1px 7px; border: 0; border-radius: 2px; background: color-mix(in srgb, var(--ink-inverse) 20%, transparent); }
+.worldtab[aria-selected="true"] .cnt { background: var(--surface-inverse); color: var(--ink-inverse); }
 
 /* Modul-Reiter: eine Zeile, horizontal scrollbar (Desktop und Mobil), klebt beim Scrollen oben */
 .tabbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--ground); padding-top: var(--s2); }
@@ -237,7 +242,9 @@ img, svg { max-width: 100%; }
 .tab { flex: none; scroll-snap-align: start; background: var(--panel); border: 1px solid var(--line); border-bottom: 4px solid transparent; padding: 9px 14px; min-height: 44px; cursor: pointer; color: var(--ink); font-size: 14px; font-weight: 600; line-height: 1.2; display: inline-flex; gap: 6px; align-items: center; white-space: nowrap; }
 .tab:hover { color: var(--ink-strong); border-color: var(--ink-muted); }
 .tab[aria-selected="true"] { background: var(--accent-soft); border-bottom-color: var(--accent); color: var(--ink-strong); font-weight: 700; }
-.tab .cnt { font-size: 12px; background: var(--raised); border: 1px solid var(--line); padding: 0 6px; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink-strong); }
+.tab .cnt { font-size: 12px; background: var(--surface-inverse); color: var(--ink-inverse); border: 0; border-radius: 2px; padding: 1px 7px; font-variant-numeric: tabular-nums; font-weight: 700; }
+/* Zähler ohne Haarlinie (Wunsch David 06.10.2026): Anthrazit-Fläche, im gewählten Reiter Feind-Grün mit on-accent. */
+.tab[aria-selected="true"] .cnt { background: var(--accent); color: var(--on-accent); }
 @media (max-width: 640px) {
   .tab { padding: 8px 12px; font-size: 13.5px; }
   .topnav { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
@@ -257,7 +264,8 @@ img, svg { max-width: 100%; }
 .banner { border: 1px solid var(--line); border-left: 6px solid var(--ink-strong); background: var(--panel); padding: var(--s2) var(--s3); display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); align-items: center; }
 .banner .txt { flex: 1 1 320px; min-width: 0; }
 .banner strong { color: var(--ink-strong); }
-.banner.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+/* Prüfmeldungen: Balken Feind-Rot, Fläche 20 % Feind-Rot; Text bleibt ink (hell 5,6:1, dunkel 10:1). */
+.banner.warn { border-left-color: var(--signal); background: var(--signal-tint); }
 .banner.crit { border-left-color: var(--signal); background: var(--signal-soft); }
 .banner.ok { border-left-color: var(--accent); background: var(--accent-soft); }
 .banner.readonly { border-left-color: var(--signal); }
@@ -305,6 +313,13 @@ input:disabled, select:disabled, textarea:disabled { opacity: .7; cursor: not-al
 .check input { width: 16px; height: 16px; }
 input[type="checkbox"], input[type="radio"] { accent-color: var(--accent-ink); }
 .form-grid { display: grid; grid-template-columns: 1fr; gap: var(--s2) var(--s3); }
+.np-field { display: flex; flex-direction: column; gap: var(--s1); min-width: 0; }
+.np-field > .btn { align-self: flex-start; }
+.np-panel { border-left: 3px solid var(--accent); display: flex; flex-direction: column; gap: var(--s2); }
+.np-panel h4 { margin: 0; }
+.np-msg { margin: 0; color: var(--signal-text); }
+.np-msg:empty { display: none; }
+.kb-pick { position: fixed; left: 0; top: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 @media (min-width: 560px) { .form-grid { grid-template-columns: 1fr 1fr; } }
 
 /* ---------- Knöpfe ---------- */
@@ -748,6 +763,31 @@ table.data ul { margin: 0; padding-left: 16px; }
 .modlist .done { text-decoration: line-through; color: var(--ink-muted); }
 .ord { display: flex; gap: 4px; }
 .req-card .acts { display: flex; flex-wrap: wrap; gap: var(--s2); }
+/* Admin › Link-Protokoll */
+.lk-entry { border: 1px solid var(--line); background: var(--surface); padding: 12px; display: flex; flex-direction: column; gap: var(--s2); min-width: 0; }
+.lk-entry.fresh { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.lk-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+.lk-lbl { font-size: 12px; font-weight: 700; color: var(--ink-muted); }
+.lk-target { display: block; font-size: 12.5px; padding: 8px 10px; background: var(--raised); border: 1px solid var(--line-soft); overflow-wrap: anywhere; word-break: break-all; white-space: pre-wrap; user-select: all; }
+.lk-kv { font-size: 13px; }
+.lk-acts { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.lk-prev { margin: 0; overflow-wrap: anywhere; }
+.lk-tools { justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s2); }
+.lk-tools h3 { margin: 0; }
+.lk-tools input[type=search] { max-width: 280px; }
+.lk-mapwrap { border: 1px solid var(--line); background: var(--surface); }
+.lk-map { display: block; width: 100%; height: auto; }
+.lk-map .sea { fill: var(--surface); }
+.lk-map .grid { stroke: var(--line); stroke-width: .75; }
+.lk-map .grid.eq { stroke: var(--ink-muted); stroke-width: 1; }
+.lk-map .lbl { fill: var(--ink-muted); font-size: 9px; }
+.lk-map .land { fill: var(--surface-muted); stroke: var(--ink-muted); stroke-width: .5; stroke-linejoin: round; }
+.lk-map .dot { fill: var(--signal); fill-opacity: .35; stroke: var(--signal-text); stroke-width: 1.5; }
+.lk-map .place { fill: var(--ink-strong); font-size: 11px; font-weight: 700; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; }
+.lk-legend { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); margin-top: var(--s2); }
+.lk-legend > div { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 640px) { .lk-kv { grid-template-columns: 1fr; } .lk-tools input[type=search] { max-width: none; width: 100%; } }
+.lk-map .lead { stroke: var(--ink-muted); stroke-width: .75; }
 .link-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto; gap: var(--s2); align-items: center; margin-bottom: var(--s2); }
 .link-row .small { grid-column: 1 / -1; color: var(--warn-text); }
 @media (max-width: 560px) { .link-row { grid-template-columns: 1fr auto; } .link-row input[type="url"] { grid-column: 1; } }
@@ -879,7 +919,9 @@ label.check input { margin-top: 3px; }
 .mt-empty { font-size: 20px; max-width: 60ch; }
 
 /* ---------- Icons (Sprite, <use>, currentColor) ---------- */
-.ic { width: 1em; height: 1em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; vertical-align: -0.15em; overflow: visible; }
+.ic { width: 1em; height: 1em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.15em; overflow: visible; --ic-d: none; }
+/* Icons 2.0, optische Größe: Feindetails erst ab 18 px einblenden. */
+.task .tt .ic, .cathead .ic, .mt-ico .ic, .folder .ic, .kpi .ic, .iccard .icprev.big .ic { --ic-d: inline; }
 .ic-accent { --ic-accent: var(--accent); }
 /* Fräszahn (CI-Grün) in Navigation, Kennzahlen, Ablage und Aufgaben; nie in Status-, Warn- oder erledigten Elementen. */
 .tab .ic, .worldtab .ic, .kpi:not(.warn):not(.crit) .ic, .folder .ic, .task .tt .ic, .cathead .ic, .col-h .ic, .mt-ico .ic, .ab-btn.main .ic { --ic-accent: var(--accent); }
@@ -887,7 +929,7 @@ label.check input { margin-top: 3px; }
 .tab .ic, .worldtab .ic { width: 16px; height: 16px; }
 .worldtab { display: inline-flex; align-items: center; gap: 8px; }
 .tab { gap: 7px; }
-.pill .ic { width: 12px; height: 12px; stroke-width: 2.4; }
+.pill .ic { width: 12px; height: 12px; stroke-width: 2.1; }
 .chip .ic { width: 12px; height: 12px; }
 .task .tt { display: flex; gap: 8px; align-items: flex-start; }
 .task .tt .ic, .cathead .ic { width: 20px; height: 20px; margin-top: 1px; color: var(--ink-strong); }
@@ -1884,11 +1926,64 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
 .kb-drop { display: flex; gap: var(--s3); align-items: center; border: 2px dashed var(--line); background: var(--raised); padding: var(--s4) var(--s3); cursor: pointer; min-height: 120px; }
 .kb-drop:hover, .kb-drop:focus-visible, .kb-drop.over { border-color: var(--accent); background: var(--accent-soft); }
 .kb-drop.blocked { cursor: not-allowed; opacity: .7; }
+.kb-drop-txt { display: flex; gap: var(--s3); align-items: center; flex: 1; min-width: 0; cursor: pointer; }
+@media (max-width: 640px) { .kb-drop { flex-wrap: wrap; } .kb-drop .row { width: 100%; } .kb-drop .row label.btn { flex: 1; justify-content: center; min-height: 44px; } }
+.file-native { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); border: 0; opacity: 0; }
+label.btn { position: relative; cursor: pointer; user-select: none; }
+label.btn.is-disabled { opacity: .5; cursor: not-allowed; }
+label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .kb-drop-ic { flex: none; width: 56px; height: 56px; display: grid; place-items: center; background: var(--surface); border: 1px solid var(--line); }
 .kb-drop-ic svg { width: 30px; height: 30px; fill: none; stroke: var(--accent-ink); stroke-width: 1.8; }
 .kb-drop h3, .kb-drop p { margin: 0; }
 .kb-drop p { color: var(--ink-muted); }
 #kb-text { width: 100%; min-height: 96px; resize: vertical; font: inherit; padding: var(--s2); border: 1px solid var(--line); border-radius: var(--r-input); background: var(--surface); color: var(--ink); }
+/* Aktions-Buttons (Wunsch David 06.10.2026): beim Überfahren leicht größer, mit Schatten. */
+.btn.primary, .banner .btn, .ab-btn.main { transition: transform .16s cubic-bezier(.2,.8,.2,1), box-shadow .16s ease; }
+:is(.btn.primary, .banner .btn, .ab-btn.main):hover:not(:disabled):not(.is-disabled) { transform: scale(1.04); box-shadow: 0 6px 16px var(--shadow); }
+/* Verarbeitung: Fluss-Leiste, Zähl-Impuls, Lauf-Spur, drehendes Symbol. */
+.kb-flow { position: relative; display: flex; height: 8px; margin: var(--s2) 0 var(--s3); background: var(--raised); overflow: hidden; border-radius: 2px; }
+.kb-flow > i { display: block; height: 100%; flex-basis: 0; transition: flex-grow .7s cubic-bezier(.2,.8,.2,1); }
+.kb-flow > i + i { box-shadow: inset 2px 0 0 var(--panel); }
+.kb-flow .f-neu { background: var(--ink-muted); } .kb-flow .f-in { background: var(--accent); } .kb-flow .f-ok { background: var(--accent-ink); }
+.kb-flow .f-pr { background: color-mix(in srgb, var(--signal) 55%, var(--panel)); } .kb-flow .f-err { background: var(--signal); }
+.kb-flow.busy::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--panel) 65%, transparent), transparent); transform: translateX(-100%); animation: kb-sweep 1.6s cubic-bezier(.4,0,.2,1) infinite; }
+@keyframes kb-sweep { to { transform: translateX(100%); } }
+.kpi.bump .v { animation: kb-bump .6s cubic-bezier(.2,.8,.2,1); }
+@keyframes kb-bump { 35% { transform: scale(1.22); color: var(--accent-ink); } }
+.kpi.live { background-image: linear-gradient(var(--accent), var(--accent)); background-size: 32% 3px; background-repeat: no-repeat; background-position: -40% 100%; animation: kb-track 1.3s ease-in-out infinite; }
+@keyframes kb-track { to { background-position: 140% 100%; } }
+.btn.busy .ic { animation: kb-rot 1s linear infinite; }
+@keyframes kb-rot { to { transform: rotate(360deg); } }
+/* Ablagefläche: großes Bildfeld links, Buttons übereinander (Wunsch David 06.10.2026). */
+.kb-drop { align-items: stretch; }
+.kb-drop-txt { align-items: stretch; }
+.kb-drop-txt > div:last-child { align-self: center; }
+.kb-drop-ic { width: 128px; height: auto; min-height: 112px; background: color-mix(in srgb, var(--accent) 10%, var(--surface)); border: 0; }
+.kb-drop-ic svg { width: 64px; height: 64px; stroke-width: 1.6; --ic-d: inline; }
+.kb-drop:hover .kb-drop-ic svg, .kb-drop.over .kb-drop-ic svg { animation: kb-float 1.4s ease-in-out infinite; }
+@keyframes kb-float { 50% { transform: translateY(-4px); } }
+.kb-drop > .row { flex-direction: column; justify-content: center; align-items: stretch; gap: var(--s2); min-width: 180px; }
+.kb-drop > .row .btn { justify-content: flex-start; }
+@media (max-width: 640px) { .kb-drop-txt { flex-direction: column; } .kb-drop-ic { width: 100%; min-height: 96px; } .kb-drop > .row { min-width: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .kb-flow.busy::after, .kpi.live, .kpi.bump .v, .btn.busy .ic, .kb-drop-ic svg { animation: none !important; }
+  :is(.btn.primary, .banner .btn, .ab-btn.main):hover:not(:disabled) { transform: none; }
+}
+.kb-track { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 6px; margin-top: var(--s2); }
+.kb-track .tk { display: flex; flex-direction: column; gap: 3px; min-width: 0; font-size: 11px; color: var(--ink-muted); }
+.kb-track .tk .bar { width: 100%; }
+.kb-track .tk .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kb-track .tk .bar { position: relative; display: block; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; transition: background-color .4s ease; }
+.kb-track .tk.done { color: var(--ink); } .kb-track .tk.done .bar { background: var(--accent); }
+.kb-track .tk.active { color: var(--ink-strong); font-weight: 700; } .kb-track .tk.active .bar { background: color-mix(in srgb, var(--accent) 25%, var(--line)); }
+.kb-track .tk.active .bar::after { content: ""; position: absolute; inset: 0; width: 40%; background: var(--accent); animation: kb-run 1.1s cubic-bezier(.4,0,.2,1) infinite; }
+@keyframes kb-run { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
+.kb-track .tk.warn .bar, .kb-track .tk.err .bar { background: var(--signal); }
+.kb-track .tk.warn, .kb-track .tk.err { color: var(--signal-text); font-weight: 700; }
+.kb-track small { grid-column: 1 / -1; font-size: 11px; color: var(--ink-muted); }
+.kb-card.fresh { animation: kb-in .45s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i, 0) * 45ms); }
+@keyframes kb-in { from { opacity: 0; transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) { .kb-track .tk.active .bar::after, .kb-card.fresh { animation: none !important; } }
 .kb-steps { margin: 0; padding-left: 1.3em; display: grid; gap: 4px; color: var(--ink-muted); }
 
 /* Karten-Raster */
@@ -4413,148 +4508,162 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
 });
 
 /* ---- icons.js ---- */
-/* Feind Cockpit · Icon-Basis v2 (03.10.2026): eigene Zeichnungen im Feind-CI. Raster 24×24, Strich 2 px, eckige
-   Enden (square/miter), 45°-Winkel, currentColor. Markenzeichen: der „Fräszahn“, das grüne Quadrat aus der Mitte
-   des Favicons (Fräswalze). Es sitzt in Branchen-, Messe- und Rollen-Icons genau am Arbeitspunkt des Motivs
-   (Walze, Fräskante, Standblende) und erscheint über die Variable --ic-accent (CI-Grün); ohne Akzent bleibt jedes
-   Motiv vollständig lesbar. Status-, Prioritäts- und Flag-Icons tragen bewusst keinen Akzent: Ihre Bedeutung
-   liegt allein in der Form. Jedes Icon: [Gruppe, Titel, Verwendungszweck, SVG-Inhalt]. Im Browser als FC.icons,
-   in Node per require. */
+/* Feind Cockpit · Icons 2.0 (04.10.2026, Freigabe David): eigene Zeichnungen im Feind-CI. Raster 24×24, Präzisionslinie
+   1,75 px mit runden Enden und Ecken, Feindetails 1,25 px, zarte Tonfläche (Duoton, --ic-tone / --ic-tone-c) und als
+   Markenzeichen der „Fräszahn“: die grüne Akzentfläche aus dem Favicon (Fräswalze) am Arbeitspunkt des Motivs, über
+   --ic-accent (CI-Grün); ohne Akzent bleibt jedes Motiv lesbar. Optische Größe: Feindetails tragen display:var(--ic-d)
+   und werden bei Kleinstgrößen (<= 16 px, Variable --ic-d:none) ausgeblendet. Status-, Prioritäts- und Flag-Icons
+   tragen keinen Akzent, ihre Bedeutung liegt in der Form. Jedes Icon: [Gruppe, Titel, Verwendungszweck, SVG-Inhalt].
+   Im Browser als FC.icons, in Node per require. */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
   else (root.FC = root.FC || {}).icons = factory();
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   const AC = 'style="fill:var(--ic-accent,none);stroke:none"';
-  // Fräszahn: Akzentfläche (zuerst gezeichnet, damit die Linien darüber liegen).
-  const Z = (x, y, w, hh) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + (hh == null ? w : hh) + '" ' + AC + '/>';
+  const TN = 'style="fill:var(--ic-tone-c,currentColor);fill-opacity:var(--ic-tone,.22);stroke:none"';
+  const DT = 'stroke-width="1.25" style="display:var(--ic-d,inline)"';
+  const Z = (x, y, w, h, r) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + (h == null ? w : h) + '" rx="' + (r == null ? 0.75 : r) + '" ' + AC + '/>';
   const ZP = d => '<path d="' + d + '" ' + AC + '/>';
+  const ZC = (cx, cy, r) => '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" ' + AC + '/>';
+  const T = d => '<path d="' + d + '" ' + TN + '/>';
+  const TR = (x, y, w, h, r) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + (r || 0) + '" ' + TN + '/>';
+  const TC = (cx, cy, r) => '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" ' + TN + '/>';
+  const D = d => '<path d="' + d + '" ' + DT + '/>';
+  const DOT = d => '<path d="' + d + '" stroke-width="2.25" style="display:var(--ic-d,inline)"/>';
+  const L = (d, w) => '<path d="' + d + '"' + (w ? ' stroke-width="' + w + '"' : '') + '/>';
+  const R = (x, y, w, h, r) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + (r || 0) + '"/>';
+  const C = (cx, cy, r) => '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '"/>';
+  
+  const MEGA = 'M3 10v4a1 1 0 0 0 1 1h3l8 4.5V4.5L7 9H4a1 1 0 0 0-1 1z';
+  const HAND = 'M3 8l4-3 5 3 3-3 6 3v7l-5 4-5-3-4 1-4-4z';
+  const PARA = 'M15 6a3 3 0 0 0-6 0c0 3 6 3 6 6a3 3 0 0 1-3 3M9 18a3 3 0 0 0 6 0c0-3-6-3-6-6a3 3 0 0 1 3-3';
   const DEFS = {
-    /* ---------- Branche: Fräsen, Grinding, Grooving, Straßenbau ---------- */
-    fraese: ['Branche', 'Kaltfräse (seitlich)', 'Kaltfräsen, Maschinenpark, Werkstatt', Z(9.5, 16.5, 4) + '<rect x="2" y="17" width="6" height="3"/><rect x="15" y="17" width="6" height="3"/><path d="M3 17v-6h15v6"/><path d="M7 11V7h5v4"/><path d="M18 13l4-6"/>'],
-    fraeswalze: ['Branche', 'Fräswalze mit Meißeln', 'Marke, Favicon, Exponat Fräswalze', Z(10, 10, 4) + '<rect x="4" y="7" width="16" height="10"/><path d="M2 12h2M20 12h2"/><path d="M7 7l1-3M11 7l1-3M15 7l1-3M9 17l1 3M13 17l1 3M17 17l1 3"/><path d="M8 7l4 10M12 7l4 10" stroke-width="1.5"/>'],
-    schleifwelle: ['Branche', 'Schleifwelle über geschliffener Fläche', 'Grinding-Leistungen, Exponat Schleifwelle', Z(10.5, 15, 3) + '<rect x="5" y="4" width="14" height="10"/><path d="M8 4v10M11 4v10M14 4v10M17 4v10" stroke-width="1.5"/><path d="M2 9h3M19 9h3"/><path d="M2 18h20"/><path d="M5 21h14" stroke-width="1.5"/>'],
-    grooving: ['Branche', 'Grooving: Rillen und Entwässerung', 'Grooving-Leistungen, Griffigkeit, Entwässerung', ZP('M12 1c-2 2.7-3 4-3 5.5a3 3 0 0 0 6 0c0-1.5-1-2.8-3-5.5z') + '<path d="M2 10h3v3h2v-3h3v3h2v-3h3v3h2v-3h5"/><path d="M2 10v10h20V10"/><path d="M12 1c-2 2.7-3 4-3 5.5a3 3 0 0 0 6 0c0-1.5-1-2.8-3-5.5z" stroke-width="1.5"/>'],
-    asphalt: ['Branche', 'Asphaltaufbau, Deckschicht abgefräst', 'Straßenbau, Deckenerneuerung, Fräskante', Z(12, 7, 4, 3) + '<path d="M2 8h9v3h11"/><path d="M2 15h20M2 20h20M2 8v12M22 11v9"/>'],
-    pflaster: ['Branche', 'Pflasterfläche im Läuferverband', 'Exponat Pflasterfläche, Standboden', Z(13, 10, 4) + '<rect x="3" y="3" width="18" height="18"/><path d="M3 9h18M3 15h18M9 3v6M15 3v6M6 9v6M12 9v6M18 9v6M9 15v6M15 15v6"/>'],
-    leitkegel: ['Branche', 'Leitkegel mit Reflexband', 'Baustelle, Verkehrssicherung', Z(10, 9, 4) + '<path d="M10 3h4l4 16H6z"/><path d="M8.5 9h7M7.5 13h9" stroke-width="1.5"/><path d="M3 21h18"/>'],
-    helm: ['Branche', 'Schutzhelm mit Kamm', 'Arbeitsschutz, Aufbau', Z(11, 8, 2, 7) + '<path d="M4 15a8 8 0 0 1 16 0"/><path d="M2 15h20v3H2z"/><path d="M10 15V7h4v8"/>'],
-    warnweste: ['Branche', 'Warnweste mit Reflexstreifen', 'Standkleidung, Wiedererkennung', Z(5, 14, 14, 3) + '<path d="M7 3l3 3h4l3-3 3 2v16H4V5z"/><path d="M10 6l2 4 2-4M12 10v4M12 17v4" stroke-width="1.5"/><path d="M4 14h16M4 17h16"/>'],
-    zollstock: ['Branche', 'Zollstock, aufgeklappt', 'Giveaway Zollstock, Maße', Z(3, 15, 10, 2) + '<path d="M2 14h12v4H2z"/><path d="M5 14v2M8 14v2M11 14v2" stroke-width="1.5"/><path d="M14 14l6-10 3 1.8-6 10.2"/><path d="M16.5 10.3l1.5.9M18 7.8l1.5.9" stroke-width="1.5"/>'],
-    kompaktlader: ['Branche', 'Kompaktlader mit Schaufel', 'Maschinen anmelden, Logistik', ZP('M18 11h4l-1 5h-4z') + '<path d="M18 11h4l-1 5h-4z"/><path d="M3 16V9h9v7H3z"/><path d="M5 9V5h5v4"/><path d="M12 10l6 2"/><circle cx="6" cy="18" r="2"/><circle cx="11" cy="18" r="2"/>'],
-    ameise: ['Branche', 'Hubwagen mit Palette', 'Hubwagen, Paletten', Z(13, 8, 4) + '<rect x="10" y="7" width="10" height="6"/><path d="M3 3l4 10v6M7 18h14"/><path d="M9 13h12v2H9z" stroke-width="1.5"/><circle cx="20" cy="20" r="1"/>'],
-    lkw: ['Branche', 'Kipper mit Fräsgut', 'Spedition, Lieferung, Rücktransport', ZP('M3 8c2-4 7-4 9 0z') + '<path d="M3 8c2-4 7-4 9 0" stroke-width="1.5"/><path d="M2 8h11l-1 8H3z"/><path d="M13 10h4l3 3v3h-7"/><path d="M2 16h18"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>'],
-    anhaenger: ['Branche', 'Tieflader mit Maschine', 'Transportplan, Anhänger, Maschinentransport', ZP('M10 14v-4h6l2 4z') + '<path d="M10 14v-4h6l2 4"/><path d="M8 14h14v3H8z"/><path d="M2 15.5h6M2 14v3"/><circle cx="13" cy="19" r="2"/><circle cx="18" cy="19" r="2"/>'],
-    'kran-verbot': ['Branche', 'Kran-Verbot', 'Eigene Stapler/Krane nicht erlaubt', '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/><path d="M9 18V7M7 7h10M15 7v5" stroke-width="1.5"/><path d="M14 12h2v1.5" stroke-width="1.5"/>'],
-    /* ---------- Messe und Organisation ---------- */
-    messestand: ['Messe', 'Messestand mit Banner und Theke', 'Standbau, InfraTech-Welt', Z(4, 5, 16, 2) + '<path d="M3 21V4h18v17"/><path d="M3 8h18"/><path d="M7 15h10M8 15v6M16 15v6"/>'],
-    standplan: ['Messe', 'Standplan / Grundriss', 'Layout, Fläche, Wegeführung', Z(13, 13, 7) + '<rect x="3" y="3" width="18" height="18"/><path d="M3 12h9v9M12 12V3M12 7h9"/>'],
-    stecker: ['Messe', 'Strom / Stecker', 'Stromanschluss, Steckdosen', Z(10, 10, 4, 3) + '<path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/>'],
-    display: ['Messe', 'Display / Monitor', 'TV, Präsentation, Loop', ZP('M10 7.5l5 3-5 3z') + '<rect x="2" y="4" width="20" height="13"/><path d="M8 21h8M12 17v4"/>'],
-    wlan: ['Messe', 'WLAN', 'Mobile Daten, Router', Z(11, 19, 2) + '<path d="M2 9a14 14 0 0 1 20 0"/><path d="M6 13a9 9 0 0 1 12 0"/><path d="M9.5 16.5a4.5 4.5 0 0 1 5 0"/><rect x="11" y="19" width="2" height="2"/>'],
-    hotel: ['Messe', 'Hotel / Bett', 'Hotel, Zimmerliste', Z(6, 9, 3, 2) + '<path d="M3 18V7"/><path d="M3 12h18v6"/><path d="M3 15h18"/><rect x="5" y="8" width="5" height="4"/>'],
-    anreise: ['Messe', 'Anreise', 'Anreisezeiten, Parken, Zufahrt', Z(11, 10, 2, 3) + '<path d="M4 20l4-16h8l4 16"/><path d="M12 5v2M12 16v2"/>'],
-    kaffee: ['Messe', 'Kaffee / Catering', 'Catering, Getränke, Kaffee-Bar', Z(6, 10, 8, 3) + '<path d="M4 8h12v7a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M16 10h2a2 2 0 0 1 0 4h-2"/><path d="M4 22h14M8 3v2M12 3v2"/>'],
-    paket: ['Messe', 'Paket / Packliste', 'Packliste, Material, Lieferetikett', ZP('M6 6.3l9 5v3.4l-9-5z') + '<path d="M3 8l9-5 9 5v9l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v9M7.5 5.5l9 5"/>'],
-    giveaway: ['Messe', 'Werbemittel / Giveaway', 'Streuartikel, Goodie-Bags', Z(4, 14, 7) + '<rect x="3" y="9" width="18" height="12"/><path d="M3 13h18M12 9v12"/><path d="M12 9H8V5h4zM12 9h4V5h-4z"/>'],
-    flyer: ['Messe', 'Flyer', 'Flyer DIN lang, Prospekte, Print', Z(7, 4, 10, 5) + '<path d="M6 3h12v18H6z"/><path d="M6 10h12M9 14h6M9 17h6"/>'],
-    megafon: ['Messe', 'Megafon / Social', 'Marketing, Social Media, Kampagnen', ZP('M8 10.6l6-3.8v10.4l-6-3.8z') + '<path d="M3 10v4h4l8 5V5L7 10z"/><path d="M18 9v6M21 7v10"/><path d="M6 14v6h3v-5"/>'],
-    presse: ['Messe', 'Presse', 'Pressemitteilung, Fachmedien, Katalog', Z(7, 9, 3) + '<rect x="3" y="4" width="18" height="16"/><path d="M6 8h5v5H6zM14 8h4M14 12h4M6 16h12"/>'],
-    pokal: ['Messe', 'Pokal / Innovationspreis', 'Innovationspreis, Auszeichnung', Z(10, 5, 4) + '<path d="M7 3h10v6a5 5 0 0 1-10 0z"/><path d="M7 5H4v2a3 3 0 0 0 3 3M17 5h3v2a3 3 0 0 1-3 3"/><path d="M12 14v4M8 21h8M9 18h6v3"/>'],
-    kalender: ['Messe', 'Kalender mit Frist', 'Fristen, Termine, Handbuch-Fristen', Z(15, 16, 3) + '<rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M7 14h2M11 14h2M15 14h2M7 17.5h2M11 17.5h2" stroke-width="1.5"/>'],
-    uhr: ['Messe', 'Uhr / Öffnungszeit', 'Öffnungszeiten, Steuerung, Zeitplan', Z(11, 11, 2) + '<circle cx="12" cy="12" r="9"/><path d="M12 7v5h4"/><path d="M12 3v1M21 12h-1M12 21v-1M3 12h1"/>'],
-    schichtplan: ['Messe', 'Schichtplan', 'Standbesetzung, Durchführung', Z(10, 13, 4, 2) + '<rect x="3" y="4" width="18" height="16"/><path d="M3 9h18M9 9v11M15 9v11"/><rect x="9" y="12" width="6" height="4"/>'],
-    team: ['Messe', 'Team mit Helmen', 'Messeteam, Standpersonal', ZP('M5 7.5a3 3 0 0 1 6 0z') + '<path d="M2 20v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3M14 13h2a4 4 0 0 1 4 4v3"/><circle cx="8" cy="9" r="2.5" stroke-width="1.5"/><circle cx="16" cy="9" r="2.5" stroke-width="1.5"/><path d="M5 7.5a3 3 0 0 1 6 0M13 7.5a3 3 0 0 1 6 0M4.5 7.5h7M12.5 7.5h7"/>'],
-    handschlag: ['Messe', 'Handschlag / Termin', 'Vertrieb, Gesprächstermine, Verhandlung', Z(11, 10, 2) + '<path d="M3 8l4-3 5 3 3-3 6 3v7l-5 4-5-3-4 1-4-4z"/><path d="M12 8l-3 4 3 2 3-3"/>'],
-    lead: ['Messe', 'Visitenkarte (Lead)', 'Leads, Kontakte, CRM', Z(6, 9, 3) + '<rect x="2" y="5" width="20" height="14"/><rect x="5" y="8" width="5" height="5"/><path d="M13 9h6M13 12h6M5 16h14" stroke-width="1.5"/>'],
-    qr: ['Messe', 'Scanner / QR', 'QR-Code, Landingpage, Badge-Scanner, Ausweise', Z(5.5, 5.5, 2) + '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM19 14h2M14 19h2M19 19h2v2"/><path d="M17 6h1M6 17h1"/>'],
-    trichter: ['Messe', 'Trichter / Pipeline', 'Lead-Pipeline, Pipeline-Tracking', ZP('M8 9h8l-3 3.4V17l-2 1v-5.6z') + '<path d="M3 4h18l-7 8v7l-4 2v-9z"/><path d="M6.5 8h11"/>'],
-    ziel: ['Messe', 'Zielscheibe mit Pfeil', 'Ziele, KPIs, Messgrößen', Z(10, 10, 4) + '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l7-7M16 4h4v4" stroke-width="1.5"/>'],
-    budget: ['Messe', 'Münze mit Euro (Budget)', 'Budget, Forecast, Kosten', '<circle cx="15" cy="10" r="6"/><path d="M17 7.5a3 3 0 1 0 0 5M12 9.2h4M12 10.8h4" stroke-width="1.5"/><path d="M3 17h9M3 20h14"/>'],
-    dokument: ['Messe', 'Dokument / Vertrag', 'Verträge, Bestellungen, Angebote', Z(14, 16, 3) + '<path d="M5 3h9l5 5v13H5z"/><path d="M14 3v5h5M8 12h8M8 16h4"/>'],
-    ordner: ['Messe', 'Ordner mit Reiter (Ablage)', 'Ablage, Dokumente, Wissensbasis', ZP('M3 6h6l2 2H3z') + '<path d="M3 6h6l2 2h10v12H3z"/><path d="M3 10h18" stroke-width="1.5"/>'],
-    recht: ['Messe', '§ Recht', 'Rechtsprüfung, Versicherung, DSGVO', '<path d="M15 6a3 3 0 0 0-6 0c0 3 6 3 6 6a3 3 0 0 1-3 3"/><path d="M9 18a3 3 0 0 0 6 0c0-3-6-3-6-6a3 3 0 0 1 3-3"/>'],
-    lupe: ['Messe', 'Lupe mit Haken (Faktencheck)', 'Faktencheck, Prüfen, Review', Z(8, 8, 4) + '<circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/><path d="M7 10l2 2 4-4"/>'],
-    warndreieck: ['Messe', 'Warndreieck / Notfall', 'Notfallplan, Eskalation, Genehmigungen', '<path d="M12 3l10 18H2z"/><path d="M12 10v5M11 18h2"/>'],
-    erstehilfe: ['Messe', 'Erste Hilfe', 'Erste Hilfe, Sanitätskoffer', '<rect x="3" y="6" width="18" height="15"/><path d="M9 3h6v3H9z"/><path d="M12 10v7M8.5 13.5h7"/>'],
-    grenze: ['Messe', 'Grenze / Zoll', 'Zoll, Grenzübertritt, Entsendung', Z(4, 10, 2, 1) + '<path d="M3 9h18v3H3z"/><path d="M5 12v9M19 12v9"/><path d="M7 9l3 3M12 9l3 3M17 9l3 3"/>'],
-    pin: ['Messe', 'Ort / NL-Stecknadel', 'Rotterdam, NL-Spezifika', Z(10, 8, 4) + '<path d="M12 22s-7-7-7-12a7 7 0 0 1 14 0c0 5-7 12-7 12z"/>'],
-    fernglas: ['Messe', 'Wettbewerb / Fernglas', 'Wettbewerber-Rundgang, Beobachtung', Z(4, 14, 3) + Z(17, 14, 3) + '<rect x="2" y="10" width="7" height="10"/><rect x="15" y="10" width="7" height="10"/><path d="M9 13h6M6 10V5h3M18 10V5h-3"/>'],
-    hammer: ['Messe', 'Protokoll / Beschluss', 'Beschlüsse, GL-Entscheidungen', ZP('M14 5l2-2 5 5-2 2z') + '<path d="M3 21h10"/><path d="M8 18l-1-1 9-9 1 1z"/><path d="M13 5l3-3 6 6-3 3z"/>'],
-    meeting: ['Messe', 'Besprechungstisch', 'Messe-Abstimmung, Protokolle', Z(11, 6, 2) + '<rect x="3" y="11" width="18" height="3"/><path d="M6 14v6M18 14v6"/><circle cx="7" cy="6" r="2"/><circle cx="17" cy="6" r="2"/>'],
-    mail: ['Messe', 'Nachfassen / Mail', 'Nachfassmail, Einladungen', Z(16, 14, 3) + '<rect x="2" y="5" width="20" height="14"/><path d="M2 5l10 8 10-8"/>'],
-    kamera: ['Messe', 'Foto / Kamera', 'Fotodokumentation, Bildrechte', Z(11, 12, 2) + '<rect x="2" y="7" width="20" height="13"/><path d="M8 7l2-3h4l2 3"/><circle cx="12" cy="13" r="4"/><path d="M18 10h1"/>'],
-    muell: ['Messe', 'Müll / Entsorgung', 'Abfall, Sperrmüll, Reinigung', '<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/><path d="M10 11v6M14 11v6"/>'],
-    schloss: ['Messe', 'Schloss / Datenschutz', 'Datenschutz, geschützte Dateien', Z(11, 14, 2, 3) + '<rect x="4" y="10" width="16" height="11"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v3"/>'],
-    /* ---------- Status (je eigene Form, ohne Akzent) ---------- */
-    'st-open': ['Status', 'Offen', 'Status offen (leeres Quadrat)', '<rect x="4" y="4" width="16" height="16"/>'],
+    /* ---------- Branche ---------- */
+    fraese: ['Branche', 'Kaltfräse (seitlich)', 'Kaltfräsen, Maschinenpark, Werkstatt', TR(2, 9.5, 17, 6, 1.5) + Z(9.5, 15.25, 4, 4, 2) + L('M2 15.5v-4.5A1.5 1.5 0 0 1 3.5 9.5h14A1.5 1.5 0 0 1 19 11v4.5') + L('M6 9.5V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3.5') + D('M8 7.25h2') + L('M19 11.5l3.25-6.25') + D('M17.5 10.5l3-5.75') + R(2, 16, 6.5, 4, 2) + R(14.5, 16, 6.5, 4, 2) + D('M4.25 18h2M16.75 18h2')],
+    fraeswalze: ['Branche', 'Fräswalze mit Meißeln', 'Marke, Favicon, Exponat Fräswalze', TR(4, 6, 16, 12, 2.5) + Z(10.25, 10.25, 3.5) + R(4, 6, 16, 12, 2.5) + L('M1.75 12H4M20 12h2.25') + D('M7 6.5l2.6 11M11 6.5l2.6 11M15 6.5l2.6 11') + L('M7.5 6l1-2.5M12 6l1-2.5M16.5 6l1-2.5M7.5 20.5l1-2.5M12 20.5l1-2.5M16.5 20.5l1-2.5')],
+    schleifwelle: ['Branche', 'Schleifwelle über geschliffener Fläche', 'Grinding-Leistungen, Exponat Schleifwelle', TR(5, 4, 14, 9, 2) + Z(10.25, 13.75, 3.5, 3.5, 1) + R(5, 4, 14, 9, 2) + D('M8.5 4.5v8M12 4.5v8M15.5 4.5v8') + L('M2 8.5h3M19 8.5h3') + L('M2 18h20') + D('M4 21h4M10 21h4M16 21h4')],
+    grooving: ['Branche', 'Grooving: Rillen und Entwässerung', 'Grooving-Leistungen, Griffigkeit, Entwässerung', T('M2 13h20v7H2z') + ZP('M12 1.5c-2 2.6-3 4-3 5.4a3 3 0 0 0 6 0c0-1.4-1-2.8-3-5.4z') + L('M2 10h3v3h2v-3h3v3h2v-3h3v3h2v-3h5') + L('M2 10v10h20V10') + L('M12 1.5c-2 2.6-3 4-3 5.4a3 3 0 0 0 6 0c0-1.4-1-2.8-3-5.4z', 1.5) + D('M5 16.75h3M11 16.75h2M16 16.75h3')],
+    asphalt: ['Branche', 'Asphaltaufbau, Deckschicht abgefräst', 'Straßenbau, Deckenerneuerung, Fräskante', T('M2 8h9v3h11v3.5H2z') + Z(12.25, 7.25, 3.5, 3, 0.75) + L('M2 8h9v3h11') + L('M2 14.5h20M2 20h20M2 8v12M22 11v9') + DOT('M5 17.25h.01M9 17.5h.01M13 17h.01M17.5 17.5h.01M5.5 11.25h.01')],
+    pflaster: ['Branche', 'Pflasterfläche im Läuferverband', 'Exponat Pflasterfläche, Standboden', TR(9, 3, 6, 6) + TR(12, 9, 6, 6) + TR(9, 15, 6, 6) + Z(13.25, 10.25, 3.5) + R(3, 3, 18, 18, 2.5) + L('M3 9h18M3 15h18M9 3v6M15 3v6M6 9v6M12 9v6M18 9v6M9 15v6M15 15v6', 1.5)],
+    leitkegel: ['Branche', 'Leitkegel mit Reflexband', 'Baustelle, Verkehrssicherung', T('M10.2 3h3.6l4.7 15.5h-13z') + ZP('M9 8.25h6l1.1 3.75H7.9z') + L('M10.2 3h3.6l4.7 15.5h-13z') + D('M7.1 14.75h9.8') + R(3, 18.5, 18, 2.75, 1.25)],
+    helm: ['Branche', 'Schutzhelm mit Kamm', 'Arbeitsschutz, Aufbau', T('M4 15a8 8 0 0 1 16 0z') + Z(10.9, 8, 2.2, 7, 0.5) + L('M4 15a8 8 0 0 1 16 0') + R(2, 15, 20, 3, 1.5) + L('M10 15V8M14 15V8') + D('M6.5 12.5a5.5 5.5 0 0 1 2-3')],
+    warnweste: ['Branche', 'Warnweste mit Reflexstreifen', 'Standkleidung, Wiedererkennung', T('M7 3l3 3h4l3-3 3 2v16H4V5z') + Z(4, 13.5, 16, 3, 0) + L('M7 3l3 3h4l3-3 3 2v16H4V5z') + L('M4 13.5h16M4 16.5h16', 1.25) + L('M10 6l2 4 2-4', 1.25) + D('M12 10v3.5M12 16.5V21')],
+    zollstock: ['Branche', 'Zollstock, aufgeklappt', 'Giveaway Zollstock, Maße', T('M14 14l6-10 3 1.8-6 10.2z') + Z(3, 15.25, 10, 1.5, 0.5) + R(2, 14, 12, 4, 1) + D('M5 14v1.75M8 14v1.75M11 14v1.75') + L('M14 14l6-10 3 1.8-6 10.2') + D('M16.6 10.3l1.5.9M18.1 7.8l1.5.9')],
+    kompaktlader: ['Branche', 'Kompaktlader mit Schaufel', 'Maschinen anmelden, Logistik', TR(3, 9, 9, 7, 1) + ZP('M18 10.5h4l-1 5h-4z') + R(3, 9, 9, 7, 1) + L('M5 9V5.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5V9') + D('M6.5 7h2') + L('M12 10l6 1.5') + L('M18 10.5h4l-1 5h-4z') + C(6, 18.25, 2) + C(11, 18.25, 2) + DOT('M6 18.25h.01M11 18.25h.01')],
+    ameise: ['Branche', 'Hubwagen mit Palette', 'Hubwagen, Paletten', TR(10, 6.5, 10, 6.5, 1) + Z(13.25, 8, 3.5) + R(10, 6.5, 10, 6.5, 1) + D('M15 6.5v1.5') + L('M2 2.75h2.5M3.25 2.75l3.75 10v6') + L('M7 18.5h14') + R(9, 13, 12, 2, 0.5) + C(20, 20.25, 1.25) + C(8.5, 20.25, 1.25)],
+    lkw: ['Branche', 'Kipper mit Fräsgut', 'Spedition, Lieferung, Rücktransport', T('M2.5 8h10.5l-1 8H3.5z') + ZP('M3.5 8c1.8-3.6 6.9-3.6 8.7 0z') + L('M2.5 8h10.5l-1 8H3.5z') + L('M13 9.5h4.2a1 1 0 0 1 .8.4l2.7 3.4a1 1 0 0 1 .3.7V16h-8') + D('M14.75 11.25h2.4l1.4 1.75h-3.8z') + L('M1.75 16h20.5') + C(6.25, 18.25, 2.25) + C(17.25, 18.25, 2.25) + D('M5.5 10.75l.6 2.5M8 10.75v2.5M10.5 10.75l-.6 2.5')],
+    anhaenger: ['Branche', 'Tieflader mit Maschine', 'Transportplan, Anhänger, Maschinentransport', TR(8, 14, 14, 3, 1) + ZP('M10 14v-4h6l2 4z') + L('M10 14v-4h6l2 4') + D('M11.5 10V7.75h3V10') + R(8, 14, 14, 3, 1) + L('M2 15.5h6M2 14v3') + C(13, 19.25, 1.75) + C(18, 19.25, 1.75)],
+    'kran-verbot': ['Branche', 'Kran-Verbot', 'Eigene Stapler/Krane nicht erlaubt', C(12, 12, 9) + L('M5.6 5.6l12.8 12.8') + L('M9 18V7M7 7h10M15 7v5', 1.5) + L('M14 12h2v1.5', 1.5)],
+    /* ---------- Messe ---------- */
+    messestand: ['Messe', 'Messestand mit Banner und Theke', 'Standbau, InfraTech-Welt', TR(7, 14, 10, 7, 1) + Z(3, 3, 18, 4, 1.5) + L('M3 21V4.5A1.5 1.5 0 0 1 4.5 3h15A1.5 1.5 0 0 1 21 4.5V21') + L('M6 14h12M7 14v7M17 14v7') + D('M10 17.5h4') + R(14, 9, 4.5, 3, 0.75) + D('M5.5 9.25l1.5 2M8.5 9.25L7 11.25') + L('M1.75 21h20.5')],
+    standplan: ['Messe', 'Standplan / Grundriss', 'Layout, Fläche, Wegeführung', TR(12, 3, 9, 4, 0) + Z(14, 14, 5, 5, 1) + R(3, 3, 18, 18, 2.5) + L('M3 12h9v9M12 12V3M12 7h9') + D('M6 16.5h3M7.5 15v3')],
+    stecker: ['Messe', 'Strom / Stecker', 'Stromanschluss, Steckdosen', T('M6 7h12v4a6 6 0 0 1-12 0z') + Z(10.25, 9.5, 3.5, 2.5) + L('M9 2.5V7M15 2.5V7') + L('M6 7h12v4a6 6 0 0 1-12 0z') + L('M12 17v4.5') + D('M10.5 21.5h3')],
+    display: ['Messe', 'Display / Monitor', 'TV, Präsentation, Loop', TR(2, 4, 20, 13, 2) + ZP('M10 7.5l5 3-5 3z') + R(2, 4, 20, 13, 2) + L('M8 21h8M12 17v4') + D('M4.5 14.5h3')],
+    wlan: ['Messe', 'WLAN', 'Mobile Daten, Router', ZC(12, 19.5, 1.5) + L('M2 9a14 14 0 0 1 20 0') + L('M5.5 12.75a9.5 9.5 0 0 1 13 0') + L('M9 16.25a4.5 4.5 0 0 1 6 0')],
+    hotel: ['Messe', 'Hotel / Bett', 'Hotel, Zimmerliste', TR(3, 12.5, 18, 3) + Z(6, 9.5, 3, 2, 0.5) + L('M3 18.5V6') + L('M3 12.5h18v6M3 15.5h18') + R(5, 8.5, 5, 4, 1.5) + D('M12.5 12.5v3')],
+    anreise: ['Messe', 'Anreise', 'Anreisezeiten, Parken, Zufahrt', T('M4 20l4-16h8l4 16z') + Z(11, 9.5, 2, 3.5, 0.5) + L('M4 20l4-16h8l4 16') + L('M12 5v2M12 15.5v2.5', 1.5)],
+    kaffee: ['Messe', 'Kaffee / Catering', 'Catering, Getränke, Kaffee-Bar', T('M4 8h12v7a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z') + Z(5.75, 10, 8.5, 2.5) + L('M4 8h12v7a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z') + L('M16 10h2a2 2 0 0 1 0 4h-2') + L('M3 21.5h14') + D('M8 2.5c-.8 1 .8 2 0 3M12 2.5c-.8 1 .8 2 0 3')],
+    paket: ['Messe', 'Paket / Packliste', 'Packliste, Material, Lieferetikett', T('M3 8l9-5 9 5v9l-9 5-9-5z') + ZP('M6 6.3l9 5v3.4l-9-5z') + L('M3 8l9-5 9 5v9l-9 5-9-5z') + L('M3 8l9 5 9-5M12 13v9') + D('M7.5 5.5l9 5')],
+    giveaway: ['Messe', 'Werbemittel / Giveaway', 'Streuartikel, Goodie-Bags', TR(3, 9, 18, 12, 1.5) + Z(4.5, 14.5, 6, 5) + R(3, 9, 18, 12, 1.5) + L('M3 13h18M12 9v12') + L('M12 9c-1.5-3.5-5-4-5-1.5S10 9 12 9zm0 0c1.5-3.5 5-4 5-1.5S14 9 12 9z', 1.5)],
+    flyer: ['Messe', 'Flyer', 'Flyer DIN lang, Prospekte, Print', TR(6, 3, 12, 18, 1.5) + Z(7.25, 4.25, 9.5, 5, 0.75) + R(6, 3, 12, 18, 1.5) + L('M6 10.5h12') + L('M9 13.75h6M9 16.75h6', 1.25) + D('M9 19.25h3')],
+    megafon: ['Messe', 'Megafon / Social', 'Marketing, Social Media, Kampagnen', T(MEGA) + ZP('M8 10.6l6-3.8v10.4l-6-3.8z') + L(MEGA) + L('M18 9a4 4 0 0 1 0 6M20.5 6.5a7.5 7.5 0 0 1 0 11') + L('M6 15v5h3v-4.5')],
+    presse: ['Messe', 'Presse', 'Pressemitteilung, Fachmedien, Katalog', TR(3, 4, 18, 16, 2) + Z(6.5, 8.5, 4, 4, 0.75) + R(3, 4, 18, 16, 2) + R(6, 8, 5, 5, 0.75) + L('M14 8.5h4M14 12.5h4') + D('M6 16.5h12')],
+    pokal: ['Messe', 'Pokal / Innovationspreis', 'Innovationspreis, Auszeichnung', T('M7 3h10v6a5 5 0 0 1-10 0z') + Z(10.25, 5, 3.5, 3.5) + L('M7 3h10v6a5 5 0 0 1-10 0z') + L('M7 5H4v2a3 3 0 0 0 3 3M17 5h3v2a3 3 0 0 1-3 3') + L('M12 14v4M9 18h6v3H9z') + L('M7 21h10')],
+    kalender: ['Messe', 'Kalender mit Frist', 'Fristen, Termine, Handbuch-Fristen', TR(3, 5, 18, 5, 2) + Z(14.25, 14.25, 5, 5, 1.25) + R(3, 5, 18, 16, 2.5) + L('M3 10h18M8 3v4M16 3v4') + DOT('M7 13.75h.01M10.5 13.75h.01M7 17.25h.01M10.5 17.25h.01') + '<path d="M15.6 16.9l1.1 1.1 1.9-2.2" stroke-width="1.25" style="stroke:var(--ic-on-accent,currentColor)"/>'],
+    uhr: ['Messe', 'Uhr / Öffnungszeit', 'Öffnungszeiten, Steuerung, Zeitplan', TC(12, 12, 9) + ZC(12, 12, 1.5) + C(12, 12, 9) + L('M12 7v5h4') + D('M12 3.5v1M20.5 12h-1M12 20.5v-1M3.5 12h1')],
+    schichtplan: ['Messe', 'Schichtplan', 'Standbesetzung, Durchführung', TR(3, 4, 18, 5, 2) + Z(9.75, 12, 4.5, 3.5) + R(3, 4, 18, 16, 2) + L('M3 9h18M9 9v11M15 9v11') + D('M4.5 14.5h3M16.5 17.5h3')],
+    team: ['Messe', 'Team mit Helmen', 'Messeteam, Standpersonal', T('M2 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2z') + ZP('M5 8a3 3 0 0 1 6 0z') + ZP('M13 8a3 3 0 0 1 6 0z') + L('M2 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M15.5 14h.5a4 4 0 0 1 4 4v2') + C(8, 9.5, 2.5) + C(16, 9.5, 2.5) + L('M5 8a3 3 0 0 1 6 0M13 8a3 3 0 0 1 6 0', 1.5) + D('M4.5 8h7M12.5 8h7')],
+    handschlag: ['Messe', 'Handschlag / Termin', 'Vertrieb, Gesprächstermine, Verhandlung', T(HAND) + Z(10.75, 9.75, 2.5, 2.5) + L(HAND) + L('M12 8l-3 4 3 2 3-3')],
+    lead: ['Messe', 'Visitenkarte (Lead)', 'Leads, Kontakte, CRM', TR(2, 5, 20, 14, 2) + ZC(7.5, 10, 1.5) + R(2, 5, 20, 14, 2) + R(5, 8, 5, 5, 1) + L('M13 9h6M13 12h4', 1.5) + D('M5 16h14')],
+    qr: ['Messe', 'Scanner / QR', 'QR-Code, Landingpage, Badge-Scanner, Ausweise', TR(3, 3, 7, 7, 1.5) + Z(5.25, 5.25, 2.5, 2.5, 0.5) + R(3, 3, 7, 7, 1.5) + R(14, 3, 7, 7, 1.5) + R(3, 14, 7, 7, 1.5) + L('M14 14h3v3h-3zM19 14h2M14 19.5h2M19 19h2v2') + DOT('M17.5 6.5h.01M6.5 17.5h.01')],
+    trichter: ['Messe', 'Trichter / Pipeline', 'Lead-Pipeline, Pipeline-Tracking', T('M3 4h18l-7 8v7l-4 2v-9z') + ZP('M8 9h8l-3 3.4V17l-2 1v-5.6z') + L('M3 4h18l-7 8v7l-4 2v-9z') + D('M6.5 8h11')],
+    ziel: ['Messe', 'Zielscheibe mit Pfeil', 'Ziele, KPIs, Messgrößen', TC(12, 12, 9) + ZC(12, 12, 2) + C(12, 12, 9) + C(12, 12, 5) + L('M12 12l7-7M16 4h4v4', 1.5)],
+    budget: ['Messe', 'Münze mit Euro (Budget)', 'Budget, Forecast, Kosten', TC(15, 10, 6) + ZP('M3 16h9v2H3z') + C(15, 10, 6) + L('M17 7.5a3 3 0 1 0 0 5M12 9.2h4M12 10.8h4', 1.5) + L('M3 17h9M3 20.5h14')],
+    dokument: ['Messe', 'Dokument / Vertrag', 'Verträge, Bestellungen, Angebote', T('M5 3h9l5 5v13H5z') + Z(13.75, 15.75, 3, 3) + L('M5 3h9l5 5v13H5z') + L('M14 3v5h5') + L('M8 12h8', 1.5) + D('M8 15.5h4')],
+    ordner: ['Messe', 'Ordner mit Reiter (Ablage)', 'Ablage, Dokumente, Wissensbasis', T('M3 8h18v12H3z') + ZP('M3 6h6l2 2H3z') + L('M3 5.5a.5.5 0 0 1 .5-.5H9l2 2.5h9.5a.5.5 0 0 1 .5.5v11.5a.5.5 0 0 1-.5.5h-17a.5.5 0 0 1-.5-.5z') + D('M3 10.5h18')],
+    recht: ['Messe', '§ Recht', 'Rechtsprüfung, Versicherung, DSGVO', L(PARA)],
+    lupe: ['Messe', 'Lupe mit Haken (Faktencheck)', 'Faktencheck, Prüfen, Review', TC(10, 10, 6) + ZC(10, 10, 2) + C(10, 10, 6) + L('M14.5 14.5l6 6', 2.25) + L('M7.25 10l2 2 3.5-4', 1.5)],
+    warndreieck: ['Messe', 'Warndreieck / Notfall', 'Notfallplan, Eskalation, Genehmigungen', T('M12 3.5l9.5 17h-19z') + L('M12 3.5l9.5 17h-19z') + L('M12 10v4.5') + '<path d="M12 17.5h.01" stroke-width="2.5"/>'],
+    erstehilfe: ['Messe', 'Erste Hilfe', 'Erste Hilfe, Sanitätskoffer', TR(3, 6.5, 18, 14, 2) + R(3, 6.5, 18, 14, 2) + L('M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2') + L('M12 10.5v6M9 13.5h6', 2.25)],
+    grenze: ['Messe', 'Grenze / Zoll', 'Zoll, Grenzübertritt, Entsendung', TR(3, 9, 18, 3, 1.5) + ZP('M7.5 9h3l3 3h-3z') + R(3, 9, 18, 3, 1.5) + L('M5 12v9M19 12v9') + D('M13 9l3 3M17.5 9l2.5 2.5') + L('M3 21h4M17 21h4', 1.5)],
+    pin: ['Messe', 'Ort / NL-Stecknadel', 'Rotterdam, NL-Spezifika', T('M12 21.5s-7-6.6-7-11.5a7 7 0 0 1 14 0c0 4.9-7 11.5-7 11.5z') + ZC(12, 10, 2.5) + L('M12 21.5s-7-6.6-7-11.5a7 7 0 0 1 14 0c0 4.9-7 11.5-7 11.5z')],
+    fernglas: ['Messe', 'Wettbewerb / Fernglas', 'Wettbewerber-Rundgang, Beobachtung', TR(2, 10, 7, 10, 1.5) + TR(15, 10, 7, 10, 1.5) + ZC(5.5, 16, 1.75) + ZC(18.5, 16, 1.75) + R(2, 10, 7, 10, 1.5) + R(15, 10, 7, 10, 1.5) + L('M9 13h6') + L('M4.5 10V6a1 1 0 0 1 1-1H8M19.5 10V6a1 1 0 0 0-1-1H16')],
+    hammer: ['Messe', 'Protokoll / Beschluss', 'Beschlüsse, GL-Entscheidungen', ZP('M14 5l2-2 5 5-2 2z') + L('M8 18l-1-1 9-9 1 1z') + L('M13 5l3-3 6 6-3 3z') + TR(3, 19.5, 10, 2, 1) + R(3, 19.5, 10, 2, 1)],
+    meeting: ['Messe', 'Besprechungstisch', 'Messe-Abstimmung, Protokolle', TR(3, 11, 18, 3, 1.5) + Z(10.5, 8.75, 3, 2.25, 0.5) + R(3, 11, 18, 3, 1.5) + L('M6 14v6M18 14v6') + C(7, 5.5, 2) + C(17, 5.5, 2) + D('M4 10a3 3 0 0 1 6 0M14 10a3 3 0 0 1 6 0')],
+    mail: ['Messe', 'Nachfassen / Mail', 'Nachfassmail, Einladungen', TR(2, 5, 20, 14, 2) + Z(16.25, 14.25, 3, 2.5, 0.5) + R(2, 5, 20, 14, 2) + L('M2.5 6l9.5 7.5L21.5 6')],
+    kamera: ['Messe', 'Foto / Kamera', 'Fotodokumentation, Bildrechte', TR(2, 7, 20, 13, 2.5) + ZC(12, 13.5, 1.75) + R(2, 7, 20, 13, 2.5) + L('M8 7l1.5-2.5h5L16 7') + C(12, 13.5, 4) + DOT('M18.5 10h.01')],
+    muell: ['Messe', 'Müll / Entsorgung', 'Abfall, Sperrmüll, Reinigung', T('M6 7l1 14h10l1-14z') + L('M3.5 7h17M9 7V4h6v3M6 7l1 14h10l1-14') + L('M10 11v6M14 11v6', 1.5)],
+    schloss: ['Messe', 'Schloss / Datenschutz', 'Datenschutz, geschützte Dateien', TR(4, 10, 16, 11, 2) + ZC(12, 14.5, 1.5) + R(4, 10, 16, 11, 2) + L('M8 10V7a4 4 0 0 1 8 0v3') + L('M12 15.5v2.5', 1.5)],
+    /* ---------- Status ---------- */
+    'st-open': ['Status', 'Offen', 'Status offen (leeres Quadrat)', R(4, 4, 16, 16, 2.5)],
     'st-progress': ['Status', 'In Arbeit', 'Status in Arbeit (halb gefüllter Kreis)', '<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" style="fill:currentColor;stroke:none"/>'],
     'st-blocked': ['Status', 'Blockiert', 'Status blockiert (Achteck mit Balken)', '<path d="M8 3h8l5 5v8l-5 5H8l-5-5V8z"/><path d="M8 12h8"/>'],
     'st-deferred': ['Status', 'Zurückgestellt', 'Status zurückgestellt (Pause im Kreis)', '<circle cx="12" cy="12" r="8"/><path d="M9.5 8v8M14.5 8v8"/>'],
-    'st-done': ['Status', 'Erledigt', 'Status erledigt (Quadrat mit Haken)', '<rect x="4" y="4" width="16" height="16"/><path d="M8 12l3 3 5-6"/>'],
-    /* ---------- Priorität, Flags (ohne Akzent) ---------- */
+    'st-done': ['Status', 'Erledigt', 'Status erledigt (Quadrat mit Haken)', R(4, 4, 16, 16, 2.5) + L('M8 12l3 3 5-6')],
+    /* ---------- Priorität ---------- */
     p0: ['Priorität', 'P0 – kritisch', 'Prio P0 (Doppelpfeil nach oben)', '<path d="M5 11l7-7 7 7M5 19l7-7 7 7"/>'],
     p1: ['Priorität', 'P1 – wichtig', 'Prio P1 (Pfeil nach oben)', '<path d="M5 15l7-7 7 7"/>'],
     p2: ['Priorität', 'P2 – normal', 'Prio P2 (Strich)', '<path d="M5 12h14"/>'],
+    /* ---------- Flag ---------- */
     'flag-neu': ['Flag', 'Neu', 'Flag neu (Funken)', '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/>'],
     'flag-fakt': ['Flag', 'Fakt prüfen', 'Flag fakt (Lupe mit Haken)', '<circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/><path d="M7 10l2 2 4-4"/>'],
     'flag-recht': ['Flag', 'Recht prüfen', 'Flag recht (§)', '<path d="M15 6a3 3 0 0 0-6 0c0 3 6 3 6 6a3 3 0 0 1-3 3"/><path d="M9 18a3 3 0 0 0 6 0c0-3-6-3-6-6a3 3 0 0 1 3-3"/>'],
-    /* ---------- Rollen (Fräszahn als Namensschild) ---------- */
-    'rolle-mkt': ['Rolle', 'Marketing & Event', 'Rolle Marketing (Megafon)', ZP('M8 10.6l6-3.8v10.4l-6-3.8z') + '<path d="M3 10v4h4l8 5V5L7 10z"/><path d="M18 9v6"/>'],
-    'rolle-team': ['Rolle', 'Messeteam', 'Rolle Messeteam', Z(7, 7, 2) + '<circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M2 20v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3M14 13h2a4 4 0 0 1 4 4v3"/>'],
-    'rolle-gl': ['Rolle', 'Geschäftsleitung', 'Rolle GL (Aktentasche)', Z(10, 11, 4, 3) + '<rect x="3" y="7" width="18" height="13"/><path d="M9 7V4h6v3M3 12h7M14 12h7"/>'],
-    'rolle-vertrieb': ['Rolle', 'Vertrieb', 'Rolle Vertrieb (Handschlag)', Z(11, 10, 2) + '<path d="M3 8l4-3 5 3 3-3 6 3v7l-5 4-5-3-4 1-4-4z"/><path d="M12 8l-3 4 3 2 3-3"/>'],
-    'rolle-werkstatt': ['Rolle', 'Werkstatt', 'Rolle Werkstatt (Schraubenschlüssel)', '<path d="M14 4a5 5 0 0 0-5 7L3 17l4 4 6-6a5 5 0 0 0 7-5l-3 3-3-3z"/>'],
-    'rolle-it': ['Rolle', 'IT / Webbetreuung', 'Rolle IT (Monitor mit Code)', Z(11, 10, 2) + '<rect x="2" y="4" width="20" height="13"/><path d="M8 8l-3 3 3 3M16 8l3 3-3 3M8 21h8"/>'],
-    'rolle-extern': ['Rolle', 'Dienstleister', 'Rolle Dienstleister (Gebäude)', Z(14, 16, 4, 2) + '<path d="M3 21V9h8v12M11 13h10v8"/><path d="M6 12h2M6 16h2M15 16h2M3 21h18"/>'],
-    /* ---------- Oberfläche (schlicht; Akzent nur bei Modul-Icons) ---------- */
+    /* ---------- Rolle ---------- */
+    'rolle-mkt': ['Rolle', 'Marketing & Event', 'Rolle Marketing (Megafon)', T(MEGA) + ZP('M8 10.6l6-3.8v10.4l-6-3.8z') + L(MEGA) + L('M18 9a4 4 0 0 1 0 6')],
+    'rolle-team': ['Rolle', 'Messeteam', 'Rolle Messeteam', T('M2 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2z') + Z(5.5, 16, 3, 2, 0.5) + C(8, 8, 3) + C(16, 8, 3) + L('M2 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M15.5 14h.5a4 4 0 0 1 4 4v2')],
+    'rolle-gl': ['Rolle', 'Geschäftsleitung', 'Rolle GL (Aktentasche)', TR(3, 7.5, 18, 12.5, 2.5) + Z(10, 10.75, 4, 4, 1) + R(3, 7.5, 18, 12.5, 2.5) + L('M9 7.5V5.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2') + L('M3 12.75h7M14 12.75h7') + DOT('M6 17.25h.01M18 17.25h.01')],
+    'rolle-vertrieb': ['Rolle', 'Vertrieb', 'Rolle Vertrieb (Handschlag)', T(HAND) + Z(10.75, 9.75, 2.5, 2.5) + L(HAND) + L('M12 8l-3 4 3 2 3-3')],
+    'rolle-werkstatt': ['Rolle', 'Werkstatt', 'Rolle Werkstatt (Schraubenschlüssel)', T('M14 4a5 5 0 0 0-5 7L3 17l4 4 6-6a5 5 0 0 0 7-5l-3 3-3-3z') + L('M14 4a5 5 0 0 0-5 7L3 17l4 4 6-6a5 5 0 0 0 7-5l-3 3-3-3z') + DOT('M5.5 18.5h.01')],
+    'rolle-it': ['Rolle', 'IT / Webbetreuung', 'Rolle IT (Monitor mit Code)', TR(2, 4, 20, 13, 2) + Z(10.75, 9.75, 2.5, 2.5, 0.5) + R(2, 4, 20, 13, 2) + L('M8 8l-3 2.5L8 13M16 8l3 2.5-3 2.5M8 21h8M12 17v4')],
+    'rolle-extern': ['Rolle', 'Dienstleister', 'Rolle Dienstleister (Gebäude)', TR(3, 9, 8, 12, 1) + Z(14, 16, 4, 2, 0.5) + L('M3 21V10a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v11M11 13h9a1 1 0 0 1 1 1v7') + D('M6 12.5h2M6 16h2') + L('M2 21h20')],
+    /* ---------- UI ---------- */
     check: ['UI', 'Haken', 'Bestätigen, erledigt', '<path d="M4 12.5 9.5 18 20 6"/>'],
     plus: ['UI', 'Plus', 'Neu anlegen', '<path d="M12 5v14M5 12h14"/>'],
     x: ['UI', 'Schließen', 'Schließen, entfernen', '<path d="M6 6l12 12M18 6 6 18"/>'],
     down: ['UI', 'Download', 'Datei bereitstellen', '<path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14"/>'],
     up: ['UI', 'Nach oben', 'Sortierung', '<path d="M12 19V5m0 0-6 6m6-6 6 6"/>'],
     dn: ['UI', 'Nach unten', 'Sortierung', '<path d="M12 5v14m0 0-6-6m6 6 6-6"/>'],
-    copy: ['UI', 'Kopieren', 'In die Zwischenablage', '<path d="M9 9h10v10H9zM5 15V5h10"/>'],
+    copy: ['UI', 'Kopieren', 'In die Zwischenablage', R(9, 9, 10, 10, 1.5) + L('M5 15V6.5A1.5 1.5 0 0 1 6.5 5H15')],
     ext: ['UI', 'Externer Link', 'Öffnet in neuem Tab', '<path d="M14 4h6v6M20 4 10 14M18 14v6H4V6h6"/>'],
     sun: ['UI', 'Hell', 'Farbschema hell', '<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>'],
     moon: ['UI', 'Dunkel', 'Farbschema dunkel', '<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>'],
     auto: ['UI', 'System', 'Farbschema System', '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" style="fill:currentColor;stroke:none"/>'],
     search: ['UI', 'Suchen', 'Befehlspalette, Suche', '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>'],
-    ablegen: ['UI', 'Ablegen / Eingang', 'Wissensarchiv: Dateien, Texte, Links ablegen', '<path d="M3 13h5l1 3h6l1-3h5"/><path d="M5 13 7 5h10l2 8v6H5z"/><path d="M12 3v7M9 7l3 3 3-3"/>'],
-    karte: ['UI', 'Karte', 'Projektkarte, Standorte', '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'],
+    ablegen: ['UI', 'Ablegen / Eingang', 'Wissensarchiv: Dateien, Texte, Links ablegen', T('M5 13 7 5h10l2 8v6H5z') + L('M3 13h5l1 3h6l1-3h5') + L('M5 13 7 5h10l2 8v6H5z') + L('M12 3v7M9 7l3 3 3-3')],
+    karte: ['UI', 'Karte', 'Projektkarte, Standorte', T('M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z') + L('M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z') + L('M9 4v14M15 6v14')],
     refresh: ['UI', 'Aktualisieren', 'Live-Daten neu laden', '<path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/>'],
     go: ['UI', 'Öffnen', 'Zu einem Modul springen', '<path d="M5 12h14m-6-6 6 6-6 6"/>'],
-    keys: ['UI', 'Tastenkürzel', 'Tastatur', '<path d="M3 6h18v12H3z"/><path d="M7 10h1M11 10h1M15 10h1M7 14h10"/>'],
-    dashboard: ['UI', 'Tacho (Dashboard)', 'Modul Dashboard (Tacho)', ZP('M4 18a8 8 0 0 1 4-6.9L12 18z') + '<path d="M4 18a8 8 0 0 1 16 0"/><path d="M12 10v2M17.7 12.3l-1.4 1.4M6.3 12.3l1.4 1.4" stroke-width="1.5"/><path d="M12 18l4-5"/><path d="M2 18h20"/>'],
-    liste: ['UI', 'Checkliste', 'Modul Aufgaben, Checklisten', Z(4, 5, 2) + '<rect x="3" y="4" width="4" height="4"/><rect x="3" y="10" width="4" height="4"/><rect x="3" y="16" width="4" height="4"/><path d="M10 6h11M10 12h11M10 18h11"/>'],
-    lampe: ['UI', 'Glühbirne (Lessons)', 'Lessons Learned, Ideen', Z(11, 10, 2, 3) + '<path d="M8 14a5 5 0 1 1 8 0c-1 1-1 2-1 3H9c0-1 0-2-1-3z"/><path d="M9 20h6M10 22h4"/>'],
-    buch: ['UI', 'Aufgeschlagenes Buch (Wissen)', 'Modul Wissensbasis', ZP('M16 3h3v6l-1.5-1.5L16 9z') + '<path d="M12 6c-2-2-6-2-9-1v14c3-1 7-1 9 1 2-2 6-2 9-1V5c-.7-.2-1.3-.3-2-.4"/><path d="M12 6v14"/>'],
-    chart: ['UI', 'Steigende Kurve (SEO)', 'SEO, Traffic, Auswertungen', Z(12, 13, 2) + '<path d="M3 3v18h18"/><path d="M6 15l4-4 3 3 6-7"/><path d="M16 7h3v3"/>'],
-    stift: ['UI', 'Stift mit Textzeile (Content)', 'Content-Pipeline, Entwürfe', ZP('M13 7l4 4-1.5 1.5-4-4z') + '<path d="M15 5l4 4-9 9H6v-4z"/><path d="M13 7l4 4"/><path d="M3 21h9" stroke-width="1.5"/>'],
-    ausschreibung: ['UI', 'Vergabeunterlage mit Siegel', 'Modul Ausschreibungen (Dokument mit Siegel)', Z(11, 15.5, 2) + '<path d="M5 3h10l4 4v14H5z"/><path d="M15 3v4h4"/><path d="M8 9h5M8 12h8" stroke-width="1.5"/><circle cx="12" cy="16.5" r="2.5"/>'],
-    stern: ['UI', 'Referenz-Stern', 'Referenzen, Bewertungen', Z(11, 10, 2) + '<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>'],
-    gantt: ['UI', 'Zeitplan mit Heute-Linie', 'Zeitplan, Gantt', Z(7.5, 10, 10, 4) + '<rect x="3" y="5" width="8" height="3"/><rect x="13" y="16" width="8" height="3"/><path d="M14 3v18" stroke-width="1.5"/>'],
-    kompass: ['UI', 'Kompass (Copilot)', 'Feind Copilot, Tagesbrief', ZP('M12 6l2.5 6h-5z') + '<circle cx="12" cy="12" r="9"/><path d="M12 6l2.5 6-2.5 6-2.5-6z"/><path d="M12 3v1.5M21 12h-1.5M12 21v-1.5M3 12h1.5" stroke-width="1.5"/>'],
-    verlauf: ['UI', 'Uhr mit Rückpfeil (Aktivität)', 'Aktivitätsprotokoll', Z(11, 11, 2) + '<path d="M4 12a8 8 0 1 0 2.3-5.7"/><path d="M3 4v4h4"/><path d="M12 8v4l3 2"/>'],
-    schild: ['UI', 'Schild mit Haken (Status)', 'Admin-Status', ZP('M12 4.1v15.8c-3.5-1-7-3.6-7-7.9V6.7z') + '<path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>'],
-    regler: ['UI', 'Schieberegler (Konfiguration)', 'Admin-Konfiguration', Z(14, 10, 3, 4) + '<path d="M4 7h16M4 12h16M4 17h16" stroke-width="1.5"/><rect x="7" y="5" width="3" height="4"/><rect x="14" y="10" width="3" height="4"/><rect x="9" y="15" width="3" height="4"/>'],
-    schluessel: ['UI', 'Schlüssel (Zugänge)', 'Admin-Zugänge, Rechte', Z(5.5, 13.5, 3) + '<circle cx="7" cy="15" r="4"/><path d="M10 12l10-8M17 6.5l2 2.5M14.5 8.5l2 2.5"/>'],
-    datenbank: ['UI', 'Datenbank-Zylinder', 'Admin-Daten, Sicherung', Z(15, 16, 3) + '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>'],
-    raster: ['UI', 'Raster (Icons)', 'Icon-Übersicht', Z(15, 4, 5) + '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>'],
-    zaehler: ['UI', 'Handzähler (Lead-Zähler)', 'Zählung am Messetag', Z(8, 11, 8, 2) + '<rect x="4" y="7" width="16" height="11"/><rect x="7" y="10" width="10" height="4" stroke-width="1.5"/><path d="M12 4v3M9 4h6"/><path d="M10 10v4M14 10v4" stroke-width="1.5"/>'],
+    keys: ['UI', 'Tastenkürzel', 'Tastatur', R(3, 6, 18, 12, 2) + L('M7 10h1M11 10h1M15 10h1M7 14h10')],
+    dashboard: ['UI', 'Tacho (Dashboard)', 'Modul Dashboard (Tacho)', T('M3.5 18a8.5 8.5 0 0 1 17 0z') + '<path d="M4.4 14.1a8.5 8.5 0 0 1 3.5-4.6" stroke-width="3" style="stroke:var(--ic-accent,none)"/>' + L('M3.5 18a8.5 8.5 0 0 1 17 0') + L('M2 18h20') + D('M12 9.5v1.5M17.9 11.9l-1 1M20 15.5h-1.5') + L('M12 18l4-5') + '<circle cx="12" cy="18" r="1.5" style="fill:currentColor"/>'],
+    liste: ['UI', 'Checkliste', 'Modul Aufgaben, Checklisten', Z(3.75, 4.75, 2.5, 2.5, 0.5) + R(3, 4, 4, 4, 1) + R(3, 10, 4, 4, 1) + R(3, 16, 4, 4, 1) + L('M10 6h11M10 12h11M10 18h11') + L('M3.9 12l.9.9 1.4-1.6', 1.25)],
+    lampe: ['UI', 'Glühbirne (Lessons)', 'Lessons Learned, Ideen', T('M8 14a5 5 0 1 1 8 0c-1 1-1 2-1 3H9c0-1 0-2-1-3z') + Z(10.75, 9.5, 2.5, 3.5, 0.75) + L('M8 14a5 5 0 1 1 8 0c-1 1-1 2-1 3H9c0-1 0-2-1-3z') + L('M9 20h6M10.5 22.25h3') + D('M12 1.25v.75M4.5 4.5l.6.6M19.5 4.5l-.6.6')],
+    buch: ['UI', 'Aufgeschlagenes Buch (Wissen)', 'Modul Wissensbasis', T('M12 6c-2-2-6-2-9-1v14c3-1 7-1 9 1z') + ZP('M16 3h3v6l-1.5-1.5L16 9z') + L('M12 6c-2-2-6-2-9-1v14c3-1 7-1 9 1 2-2 6-2 9-1V5c-.7-.2-1.3-.3-2-.4') + L('M12 6v14') + D('M6 9h3M6 12h3')],
+    chart: ['UI', 'Steigende Kurve (SEO)', 'SEO, Traffic, Auswertungen', T('M3 21V3M6 15l4-4 3 3 6-7v14H3z') + ZC(13, 14, 1.5) + L('M3 3v18h18') + L('M6 15l4-4 3 3 6-7') + L('M16 7h3v3')],
+    stift: ['UI', 'Stift mit Textzeile (Content)', 'Content-Pipeline, Entwürfe', T('M15 5l4 4-9 9H6v-4z') + ZP('M13 7l4 4-1.5 1.5-4-4z') + L('M15 5l4 4-9 9H6v-4z') + L('M13 7l4 4') + L('M3 21.25h9', 1.5)],
+    ausschreibung: ['UI', 'Vergabeunterlage mit Siegel', 'Modul Ausschreibungen (Dokument mit Siegel)', T('M5 3h10l4 4v14H5z') + ZC(12, 16.5, 1.25) + L('M5 3h10l4 4v14H5z') + L('M15 3v4h4') + L('M8 9h5M8 12h8', 1.5) + C(12, 16.5, 2.5) + D('M10.5 18.75l-.75 2.25M13.5 18.75l.75 2.25')],
+    stern: ['UI', 'Referenz-Stern', 'Referenzen, Bewertungen', T('M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z') + ZC(12, 12, 1.5) + L('M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z')],
+    gantt: ['UI', 'Zeitplan mit Heute-Linie', 'Zeitplan, Gantt', Z(7.5, 10, 10, 4, 1) + TR(3, 5, 8, 3, 1) + TR(13, 16, 8, 3, 1) + R(3, 5, 8, 3, 1) + R(13, 16, 8, 3, 1) + L('M14 2.5v19', 1.5)],
+    kompass: ['UI', 'Kompass (Copilot)', 'Feind Copilot, Tagesbrief', TC(12, 12, 9) + ZP('M12 6l2.5 6h-5z') + C(12, 12, 9) + L('M12 6l2.5 6-2.5 6-2.5-6z') + D('M12 3v1.5M21 12h-1.5M12 21v-1.5M3 12h1.5')],
+    verlauf: ['UI', 'Uhr mit Rückpfeil (Aktivität)', 'Aktivitätsprotokoll', TC(12, 12, 8) + ZC(12, 12, 1.25) + L('M4 12a8 8 0 1 0 2.3-5.7') + L('M3 4v4h4') + L('M12 8v4l3 2')],
+    schild: ['UI', 'Schild mit Haken (Status)', 'Admin-Status', T('M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z') + ZP('M12 4.1v15.8c-3.5-1-7-3.6-7-7.9V6.7z') + L('M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z') + L('M8.5 12l2.5 2.5 4.5-5')],
+    regler: ['UI', 'Schieberegler (Konfiguration)', 'Admin-Konfiguration', Z(14, 10, 3, 4, 1) + L('M4 7h16M4 12h16M4 17h16', 1.5) + R(7, 5, 3, 4, 1) + R(14, 10, 3, 4, 1) + R(9, 15, 3, 4, 1)],
+    schluessel: ['UI', 'Schlüssel (Zugänge)', 'Admin-Zugänge, Rechte', TC(7, 15, 4) + ZC(7, 15, 1.5) + C(7, 15, 4) + L('M10 12l10-8M17 6.5l2 2.5M14.5 8.5l2 2.5')],
+    datenbank: ['UI', 'Datenbank-Zylinder', 'Admin-Daten, Sicherung', T('M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6z') + ZP('M4 6c0 1.7 3.6 3 8 3s8-1.3 8-3-3.6-3-8-3-8 1.3-8 3z') + '<ellipse cx="12" cy="6" rx="8" ry="3"/>' + L('M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3') + DOT('M7 15.5h.01M7 9.5h.01')],
+    raster: ['UI', 'Raster (Icons)', 'Icon-Übersicht', Z(14, 3, 7, 7, 1.5) + TR(3, 14, 7, 7, 1.5) + R(3, 3, 7, 7, 1.5) + R(14, 3, 7, 7, 1.5) + R(3, 14, 7, 7, 1.5) + R(14, 14, 7, 7, 1.5)],
+    zaehler: ['UI', 'Handzähler (Lead-Zähler)', 'Zählung am Messetag', TR(4, 7, 16, 11, 2) + Z(7.75, 10.75, 8.5, 2.5, 0.5) + R(4, 7, 16, 11, 2) + R(7, 10, 10, 4, 1) + L('M12 4v3M9.5 4h5') + D('M10.33 10v4M13.67 10v4') + DOT('M7.5 16h.01')],
     info: ['UI', 'Info', 'Hinweise', '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7v1"/>'],
-    leer: ['UI', 'Leerer Zustand', 'Noch keine Daten', '<path d="M4 6h16v12H4z" stroke-dasharray="3 3"/><path d="M9 12h6"/>'],
-    drucker: ['UI', 'Drucken', 'Druckfassung, Brennglas-PDF', '<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8"/><path d="M6 14h12v7H6z"/><path d="M17 12h1"/>'],
+    leer: ['UI', 'Leerer Zustand', 'Noch keine Daten', '<rect x="4" y="6" width="16" height="12" rx="2" stroke-dasharray="3 3"/>' + L('M9 12h6')],
+    drucker: ['UI', 'Drucken', 'Druckfassung, Brennglas-PDF', L('M6 9V3h12v6') + R(3, 9, 18, 8, 1.5) + R(6, 14, 12, 7, 0.5) + L('M17 12h1')],
     mehr: ['UI', 'Mehr', 'Weitere Aktionen', '<path d="M5 12h1M11.5 12h1M18 12h1"/>']
   };
   const ORDER = Object.keys(DEFS);
   const symbol = id => '<symbol id="i-' + id + '" viewBox="0 0 24 24"><title>' + DEFS[id][1].replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</title>' + DEFS[id][3] + '</symbol>';
-  const STYLE = 'fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter';
+  const STYLE = 'fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round';
   const sprite = () => '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="' + STYLE + '">' + ORDER.map(symbol).join('') + '</svg>';
-  const standalone = (id, size, accent) => '<svg xmlns="http://www.w3.org/2000/svg" width="' + (size || 24) + '" height="' + (size || 24) + '" viewBox="0 0 24 24" style="' + STYLE + (accent ? ';--ic-accent:' + accent : '') + '"><title>' + DEFS[id][1] + '</title>' + DEFS[id][3] + '</svg>';
+  const standalone = (id, size, accent) => '<svg xmlns="http://www.w3.org/2000/svg" width="' + (size || 24) + '" height="' + (size || 24) + '" viewBox="0 0 24 24" style="' + STYLE + (accent ? ';--ic-accent:' + accent : '') + ((size || 24) <= 16 ? ';--ic-d:none' : '') + '"><title>' + DEFS[id][1] + '</title>' + DEFS[id][3] + '</svg>';
   return { DEFS, ORDER, STYLE, symbol, sprite, standalone };
 });
-
 /* ---- app-core.js ---- */
 /* Feind Cockpit · App-Kern: DOM-Helfer, Zustand, Welten und Module, Navigation mit Deep-Links,
    Farbschema, Banner, Meldungen, Dialoge, Exporte und die Anbindung an den Store.
@@ -4664,7 +4773,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     marketing: [['heute', 'Auf einen Blick'], ['copilot', 'Copilot'], ['content', 'Content'], ['leads', 'Leads'], ['tenders', 'Ausschreibungen'], ['events', 'Events'], ['seo', 'SEO'], ['references', 'Referenzen'], ['bibliothek', 'Wissensbibliothek'], ['plan90', '90-Tage-Plan'], ['ablage', 'Ablage']],
     infratech: [['dashboard', 'Dashboard'], ['aufgaben', 'Aufgaben'], ['checkliste', 'Checkliste 26→27'], ['fristen', 'Fristen'], ['budget', 'Budget'], ['kpi', 'Ziele & KPIs'], ['leadzaehler', 'Lead-Zähler'], ['lessons', 'Lessons Learned'], ['fakten', 'Faktencheck'], ['team', 'Team'], ['meetings', 'Protokolle'], ['protokoll', 'Aktivität'], ['wissen', 'Wissensbasis']],
     wissen: [['eingang', 'Eingang'], ['archiv', 'Archiv'], ['pruefung', 'Prüfung'], ['karte', 'Projektkarte']],
-    admin: [['status', 'Status'], ['konfiguration', 'Konfiguration'], ['zugaenge', 'Zugänge'], ['datenschutz', 'Datenschutz'], ['daten', 'Daten'], ['icons', 'Icons']]
+    admin: [['status', 'Status'], ['konfiguration', 'Konfiguration'], ['zugaenge', 'Zugänge'], ['datenschutz', 'Datenschutz'], ['links', 'Link-Protokoll'], ['daten', 'Daten'], ['icons', 'Icons']]
   };
   const registry = {};
   app.module = (world, key, def) => { registry[world + ':' + key] = def; };
@@ -5328,7 +5437,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     module: {
       heute: 'dashboard', copilot: 'kompass', content: 'stift', leads: 'lead', tenders: 'ausschreibung', events: 'messestand', seo: 'chart', references: 'stern', bibliothek: 'buch', plan90: 'gantt', ablage: 'ordner',
       dashboard: 'dashboard', aufgaben: 'liste', checkliste: 'st-done', fristen: 'kalender', budget: 'budget', kpi: 'ziel', leadzaehler: 'zaehler', lessons: 'lampe', fakten: 'lupe', team: 'team', meetings: 'meeting', protokoll: 'verlauf', wissen: 'buch', eingang: 'ablegen', archiv: 'buch', pruefung: 'lupe', karte: 'karte',
-      status: 'schild', konfiguration: 'regler', zugaenge: 'schluessel', daten: 'datenbank', icons: 'raster'
+      status: 'schild', konfiguration: 'regler', zugaenge: 'schluessel', links: 'ext', daten: 'datenbank', icons: 'raster'
     },
     cat: { steuerung: 'uhr', innovation: 'pokal', standbau: 'messestand', logistik: 'lkw', reise: 'hotel', material: 'paket', catering: 'kaffee', marketing: 'megafon', leads: 'lead', rotterdam: 'pin', ablauf: 'schichtplan', dokumente: 'ordner' },
     status: { open: 'st-open', in_progress: 'st-progress', blocked: 'st-blocked', deferred: 'st-deferred', done: 'st-done' },
@@ -5443,13 +5552,13 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
       const grid = h('div', { class: 'icgrid', role: 'list' }, list.map(id => {
         const [g, title, use] = I.DEFS[id];
         return h('div', { class: 'iccard', role: 'listitem' },
-          h('div', { class: 'icprev', style: 'font-size:' + ui.size + 'px' }, app.ico(id, 'ic-accent')),
+          h('div', { class: 'icprev' + (ui.size > 16 ? ' big' : ''), style: 'font-size:' + ui.size + 'px' }, app.ico(id, 'ic-accent')),
           h('div', { class: 'icname' }, h('code', { text: 'i-' + id })),
           h('b', { text: title }), h('span', { class: 'muted small', text: use }), h('span', { class: 'chip soft', text: g }),
           h('button', { class: 'btn small', type: 'button', 'aria-label': 'SVG kopieren: ' + title, onclick: () => copySvg(id) }, app.ico('copy'), 'SVG kopieren'));
       }));
       return [
-        panelHead('Icons · Feind Cockpit', I.ORDER.length + ' Icons', null, 'Eigene Zeichnungen im Feind-CI (v2, 03.10.2026): 24×24, Strich 2 px, eckige Linien, 45°-Winkel; Farbe über currentColor. Markenzeichen ist der Fräszahn, das grüne Quadrat aus dem Favicon, am Arbeitspunkt jedes Motivs (Akzent über --ic-accent). Status, Priorität und Flags bleiben ohne Akzent. Die Sprite-Datei gehört nach 04_Assets & CI.'),
+        panelHead('Icons · Feind Cockpit', I.ORDER.length + ' Icons', null, 'Icons 2.0 im Feind-CI (04.10.2026): 24×24, Präzisionslinie 1,75 px mit runden Enden, zarte Tonfläche (Duoton), Farbe über currentColor; bis 16 px werden Feindetails ausgeblendet. Markenzeichen ist der Fräszahn, die grüne Akzentfläche aus dem Favicon, am Arbeitspunkt jedes Motivs (Akzent über --ic-accent). Status, Priorität und Flags bleiben ohne Akzent. Die Sprite-Datei gehört nach 04_Assets & CI.'),
         h('div', { class: 'tools' },
           h('div', { class: 'field grow' }, h('label', { for: 'ic-q', text: 'Suche' }), search),
           h('div', { class: 'field' }, h('span', { class: 'label', text: 'Größe' }), sizes)),
@@ -5460,7 +5569,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     }
   });
   app.iconsMarkdown = function () {
-    const L = ['# Feind Cockpit – Icon-Übersicht', '', 'Eigene Zeichnungen im Feind-CI: Raster 24×24, Strich 2 px, eckige Linienenden (square/miter), currentColor; Markenzeichen „Fräszahn“: grünes Quadrat aus dem Favicon am Arbeitspunkt des Motivs, über `--ic-accent` (Token `--accent`); Status, Priorität und Flags ohne Akzent. Datei: feind-cockpit-icons.svg (Sprite mit `<symbol id="i-…">`).', '', '| Symbol-ID | Gruppe | Titel | Zweck |', '|---|---|---|---|'];
+    const L = ['# Feind Cockpit – Icon-Übersicht', '', 'Icons 2.0 im Feind-CI: Raster 24×24, Präzisionslinie 1,75 px mit runden Enden und Ecken, Feindetails 1,25 px (bis 16 px ausgeblendet über `--ic-d:none`), Tonfläche über `--ic-tone`, currentColor; Markenzeichen „Fräszahn“: grüne Akzentfläche aus dem Favicon am Arbeitspunkt des Motivs, über `--ic-accent` (Token `--accent`); Status, Priorität und Flags ohne Akzent. Datei: feind-cockpit-icons.svg (Sprite mit `<symbol id="i-…">`).', '', '| Symbol-ID | Gruppe | Titel | Zweck |', '|---|---|---|---|'];
     for (const id of I.ORDER) L.push('| `i-' + id + '` | ' + I.DEFS[id][0] + ' | ' + I.DEFS[id][1] + ' | ' + I.DEFS[id][2] + ' |');
     L.push('', 'Einbindung: `<svg class="ic" aria-hidden="true"><use href="feind-cockpit-icons.svg#i-fraeswalze"/></svg>` (gleicher Ursprung) oder Sprite inline in die Seite kopieren.', '', 'Stand ' + H.fmtD(app.today()) + ' · Feind Cockpit');
     return L.join('\n');
@@ -7305,7 +7414,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
               if (ui.personPick) entry.userId = ui.personPick;
               ui.personPick = null;
               saveSettings({ team: team().concat([entry]) }, 'Teammitglied hinzugefügt', entry.role);
-            } }, 'Hinzufügen'),
+            } }, app.ico('plus'), 'Hinzufügen'),
             h('h3', { text: 'Erinnerungen' }),
             app.field('Vorlauf in Tagen (kommagetrennt)', lead, { hint: 'Zu diesen Zeitpunkten vor Fälligkeit erscheinen Aufgaben im Dashboard.' }),
             h('button', { class: 'btn', type: 'button', disabled: ro(), onclick: () => {
@@ -7332,6 +7441,329 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
           h('span', { class: 'when num', text: e.ts ? fmtTs(new Date(e.ts)) : '—' }), h('span', { class: 'pill own', text: actorLabel(e.actorId) }),
           h('span', {}, h('strong', { text: str(e.action) }), str(e.detail) ? ': ' + str(e.detail) : ''))))
           : h('p', { class: 'muted', text: S.loaded.activity ? 'Noch keine Aktivitäten erfasst.' : 'Protokoll wird geladen …' })
+      ];
+    }
+  });
+})();
+
+/* ---- app-links.js ---- */
+/* Feind Cockpit · Admin › Link-Protokoll (aus der Fuhrpark-App, app/links.py und app/geo.py).
+   Umgeschriebene Schutz-Links (Hornetsecurity, Safe Links, Weiterleitungen) entpacken und das echte Ziel festhalten.
+   Ausgewertet wird nur der Text der Adresse: das Ziel wird nie aufgerufen, es gibt keine DNS- oder Geo-IP-Abfrage.
+   E-Mail-Adressen im Ziel werden vor dem Speichern maskiert, der Original-Schutzlink wird nicht gespeichert.
+   Sammlung admin_links: in der Datenbank nur für Admins lesbar und schreibbar. */
+(function () {
+  'use strict';
+  const FC = window.FC, app = FC.app, H = FC.helpers;
+  const { h, s, panelHead, chip } = app;
+  const { str } = H;
+  const S = app.state;
+  const COLL = 'admin_links';
+  const L = S.ui.links = { rows: [], loaded: false, loading: false, err: '', url: '', note: '', q: '', fresh: '', busy: false };
+  const isAdmin = () => app.isAdmin();
+  const canWrite = () => isAdmin() && app.canWriteAdmin() && !S.readOnly;
+
+  /* ---------- Entpacken und Maskieren (wie app/links.py) ---------- */
+  const WRAPPERS = [
+    ['atpscan.global.hornetsecurity.com', 'Hornetsecurity ATP', 'u'],
+    ['safelinks.protection.outlook.com', 'Microsoft Safe Links', 'url'],
+    ['google.com', 'Google-Weiterleitung', 'q']
+  ];
+  const GENERIC = ['u', 'url', 'target', 'redirect', 'q'];
+  const MAX_UNWRAP = 5;
+  const EMAIL_RE = /([A-Za-z0-9._%+-]+)(@|%40)([A-Za-z0-9.-]+\.[A-Za-z]{2,})/g;
+  const maskEmails = t => String(t).replace(EMAIL_RE, (m, u, at, d) => u.slice(0, 2) + '***@' + d);
+  const hostMatches = (host, suffix) => host === suffix || host.endsWith('.' + suffix);
+  const parse = u => { try { return new URL(u); } catch (e) { return null; } };
+  function innerUrl(u) {
+    const p = parse(u);
+    if (!p) return null;
+    const host = p.hostname.toLowerCase();
+    for (const [suffix, name, key] of WRAPPERS) {
+      const v = p.searchParams.get(key);
+      if (hostMatches(host, suffix) && v) return [name, v];
+    }
+    for (const key of GENERIC) for (const v of p.searchParams.getAll(key)) if (/^https?:\/\//i.test(v)) return ['Weiterleitung über ' + host, v];
+    return null;
+  }
+  function unwrap(raw) {
+    let url = String(raw).trim();
+    const chain = [];
+    for (let i = 0; i < MAX_UNWRAP; i++) {
+      const inner = innerUrl(url);
+      if (!inner) break;
+      chain.push(inner[0]);
+      url = inner[1].trim();
+    }
+    const p = parse(url);
+    return { ziel: maskEmails(url), host: p ? p.hostname.toLowerCase() : '', via: chain.join(' → ') };
+  }
+
+  /* ---------- Grober Standort aus dem Hostnamen (wie app/geo.py) ---------- */
+  // Regionscodes sind je Anbieter verschieden belegt (ap-southeast-3 = Singapur bei Huawei, Jakarta bei AWS).
+  const HUAWEI = { 'ap-southeast-1': ['Hongkong', 22.32, 114.17], 'ap-southeast-2': ['Bangkok', 13.75, 100.5], 'ap-southeast-3': ['Singapur', 1.35, 103.82],
+    'ap-southeast-4': ['Jakarta', -6.21, 106.85], 'cn-north-1': ['Peking', 39.9, 116.4], 'cn-north-4': ['Peking', 39.9, 116.4], 'cn-east-2': ['Shanghai', 31.23, 121.47],
+    'cn-east-3': ['Shanghai', 31.23, 121.47], 'cn-south-1': ['Guangzhou', 23.13, 113.26], 'af-south-1': ['Johannesburg', -26.2, 28.05], 'eu-west-101': ['Dublin', 53.35, -6.26],
+    'tr-west-1': ['Istanbul', 41.01, 28.98], 'me-east-1': ['Riad', 24.71, 46.68], 'sa-brazil-1': ['São Paulo', -23.55, -46.63], 'la-south-2': ['Santiago de Chile', -33.45, -70.67], 'la-north-2': ['Mexiko-Stadt', 19.43, -99.13] };
+  const AWS = { 'us-east-1': ['Nord-Virginia', 38.95, -77.45], 'us-east-2': ['Ohio', 39.96, -83], 'us-west-1': ['Nordkalifornien', 37.35, -121.96], 'us-west-2': ['Oregon', 45.84, -119.7],
+    'ca-central-1': ['Montreal', 45.5, -73.57], 'sa-east-1': ['São Paulo', -23.55, -46.63], 'eu-central-1': ['Frankfurt', 50.11, 8.68], 'eu-central-2': ['Zürich', 47.37, 8.54],
+    'eu-west-1': ['Irland', 53.35, -6.26], 'eu-west-2': ['London', 51.51, -0.13], 'eu-west-3': ['Paris', 48.86, 2.35], 'eu-north-1': ['Stockholm', 59.33, 18.07], 'eu-south-1': ['Mailand', 45.46, 9.19],
+    'ap-east-1': ['Hongkong', 22.32, 114.17], 'ap-south-1': ['Mumbai', 19.08, 72.88], 'ap-southeast-1': ['Singapur', 1.35, 103.82], 'ap-southeast-2': ['Sydney', -33.87, 151.21],
+    'ap-southeast-3': ['Jakarta', -6.21, 106.85], 'ap-northeast-1': ['Tokio', 35.68, 139.69], 'ap-northeast-2': ['Seoul', 37.57, 126.98], 'me-south-1': ['Bahrain', 26.07, 50.56], 'af-south-1': ['Kapstadt', -33.92, 18.42] };
+  const ALIBABA = { 'cn-hangzhou': ['Hangzhou', 30.27, 120.16], 'cn-shanghai': ['Shanghai', 31.23, 121.47], 'cn-beijing': ['Peking', 39.9, 116.4], 'cn-shenzhen': ['Shenzhen', 22.54, 114.06],
+    'cn-hongkong': ['Hongkong', 22.32, 114.17], 'ap-southeast-1': ['Singapur', 1.35, 103.82], 'eu-central-1': ['Frankfurt', 50.11, 8.68], 'us-west-1': ['Silicon Valley', 37.39, -122.08] };
+  const CLOUDS = [['myhuaweicloud.com', 'Huawei Cloud', HUAWEI], ['amazonaws.com', 'Amazon AWS', AWS], ['aliyuncs.com', 'Alibaba Cloud', ALIBABA]];
+  const TLD = { de: ['Deutschland', 52.52, 13.4], at: ['Österreich', 48.21, 16.37], ch: ['Schweiz', 46.95, 7.45], nl: ['Niederlande', 52.37, 4.9], be: ['Belgien', 50.85, 4.35],
+    fr: ['Frankreich', 48.86, 2.35], uk: ['Vereinigtes Königreich', 51.51, -0.13], ie: ['Irland', 53.35, -6.26], it: ['Italien', 41.9, 12.5], es: ['Spanien', 40.42, -3.7],
+    pt: ['Portugal', 38.72, -9.14], pl: ['Polen', 52.23, 21.01], cz: ['Tschechien', 50.08, 14.44], dk: ['Dänemark', 55.68, 12.57], se: ['Schweden', 59.33, 18.07],
+    no: ['Norwegen', 59.91, 10.75], fi: ['Finnland', 60.17, 24.94], ru: ['Russland', 55.76, 37.62], ua: ['Ukraine', 50.45, 30.52], tr: ['Türkei', 39.93, 32.86],
+    cn: ['China', 39.9, 116.4], hk: ['Hongkong', 22.32, 114.17], jp: ['Japan', 35.68, 139.69], kr: ['Südkorea', 37.57, 126.98], sg: ['Singapur', 1.35, 103.82],
+    in: ['Indien', 28.61, 77.21], au: ['Australien', -35.28, 149.13], br: ['Brasilien', -15.79, -47.88], us: ['USA', 38.9, -77.04], ca: ['Kanada', 45.42, -75.7] };
+  function locate(host) {
+    host = str(host).toLowerCase().replace(/\.$/, '');
+    if (!host) return null;
+    const labels = host.split('.');
+    for (const [suffix, provider, regions] of CLOUDS) {
+      if (!hostMatches(host, suffix)) continue;
+      for (const l of labels) {
+        const r = l.replace(/^oss-/, '').replace(/^s3-/, '');
+        if (Object.prototype.hasOwnProperty.call(regions, r)) { const [ort, lat, lon] = regions[r]; return { ort, lat, lon, quelle: provider + ' ' + r }; }
+      }
+    }
+    const t = labels[labels.length - 1];
+    if (Object.prototype.hasOwnProperty.call(TLD, t)) { const [ort, lat, lon] = TLD[t]; return { ort, lat, lon, quelle: 'Länderendung .' + t }; }
+    return null;
+  }
+  app.linkTools = { unwrap, maskEmails, locate };
+
+  /* ---------- Speicher ---------- */
+  // Dokument-ID aus dem (maskierten) Ziel: gleiches Ziel = gleiches Dokument, auch wenn zwei Admins gleichzeitig melden.
+  function idFor(ziel) {
+    let a = 0x811c9dc5, b = 0x01000193;
+    for (let i = 0; i < ziel.length; i++) { const c = ziel.charCodeAt(i); a = Math.imul(a ^ c, 0x01000193) >>> 0; b = Math.imul(b ^ c, 0x5bd1e995) >>> 0; }
+    return 'l' + a.toString(16).padStart(8, '0') + b.toString(16).padStart(8, '0');
+  }
+  const rows = () => L.rows;
+  async function load() {
+    if (!S.store || !S.store.db || L.loading || !isAdmin()) return;
+    L.loading = true;
+    try {
+      const snap = await S.store.db.collection(COLL).get();
+      L.rows = snap.docs.map(d => Object.assign({ _id: d.id }, d.data())).filter(r => r && str(r.ziel));
+      L.err = '';
+    } catch (e) { L.err = 'Link-Protokoll nicht lesbar' + (e && e.code ? ' (' + e.code + ')' : '') + '.'; }
+    L.loading = false;
+    L.loaded = true;
+    app.refresh();
+  }
+  app.linksReload = () => { L.loaded = false; return load(); };
+
+  async function record() {
+    if (L.busy) return;
+    const raw = str(L.url).trim();
+    if (!/^https?:\/\/\S+$/i.test(raw) || raw.length < 10) { app.toast('Bitte eine vollständige Adresse mit http:// oder https:// einfügen (ohne Leerzeichen).', true); return; }
+    if (raw.length > 8000) { app.toast('Die Adresse ist zu lang (über 8.000 Zeichen).', true); return; }
+    const info = unwrap(raw);
+    if (!info.host) { app.toast('Das Ziel ist keine gültige Adresse.', true); return; }
+    const note = str(L.note).trim().slice(0, 500);
+    const id = idFor(info.ziel);
+    const hit = rows().find(r => r._id === id);
+    const now = new Date().toISOString();
+    const me = (S.me && S.me.id) || null;
+    L.busy = true;
+    app.refresh();
+    let ok;
+    if (hit) {
+      const upd = { anzahl: (Number(hit.anzahl) || 1) + 1, zuletzt: now, by: me };
+      if (note) upd.notiz = note;
+      if (info.via) upd.via = info.via;
+      ok = await app.write(COLL + '/' + id, 'update', upd);
+      if (ok) Object.assign(hit, upd);
+    } else {
+      const doc = { ziel: info.ziel.slice(0, 4000), host: info.host, via: info.via, notiz: note, anzahl: 1, erstmals: now, zuletzt: now, by: me };
+      ok = await app.write(COLL + '/' + id, 'set', doc);
+      if (ok) L.rows.push(Object.assign({ _id: id }, doc));
+    }
+    L.busy = false;
+    if (ok) {
+      L.url = ''; L.note = ''; L.fresh = id;
+      app.log(hit ? 'Link erneut gemeldet' : 'Link aufgezeichnet', info.host);
+      app.toast(hit ? 'Bekanntes Ziel: jetzt ' + hit.anzahl + '× gemeldet.' : 'Link aufgezeichnet. Ziel nicht im Browser öffnen.');
+    }
+    app.refresh();
+  }
+  function editNote(r) {
+    const ta = h('textarea', { id: 'lk-note-edit', rows: '3', maxlength: '500', 'aria-label': 'Notiz' });
+    ta.value = str(r.notiz);
+    app.modal({
+      title: 'Notiz zu ' + (str(r.host) || 'Link'),
+      body: [h('p', { class: 'muted small', text: 'Keine personenbezogenen Daten Dritter eintragen.' }), ta],
+      actions: [{ label: 'Abbrechen' }, {
+        label: 'Speichern', primary: true, onClick: async () => {
+          const notiz = ta.value.trim().slice(0, 500);
+          if (!await app.write(COLL + '/' + r._id, 'update', { notiz })) return true;
+          r.notiz = notiz;
+          app.log('Link-Notiz geändert', str(r.host));
+          app.refresh();
+        }
+      }],
+      focus: 'textarea'
+    });
+  }
+  async function remove(r) {
+    const ok = await app.confirm({ title: 'Eintrag löschen?', text: 'Der Eintrag zu ' + (str(r.host) || 'diesem Ziel') + ' (' + (Number(r.anzahl) || 1) + '× gemeldet) wird für alle Admins entfernt.', confirmLabel: 'Löschen', danger: true });
+    if (!ok || !await app.write(COLL + '/' + r._id, 'delete')) return;
+    L.rows = L.rows.filter(x => x._id !== r._id);
+    app.log('Link-Eintrag gelöscht', str(r.host));
+    app.toast('Eintrag gelöscht.');
+    app.refresh();
+  }
+  async function copy(r) {
+    try { await app.copyText(str(r.ziel)); app.toast('Ziel kopiert. Nicht im Browser öffnen.'); }
+    catch (e) {
+      const code = document.getElementById('lk-z-' + r._id);
+      if (code) { const rg = document.createRange(); rg.selectNodeContents(code); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rg); }
+      app.toast('Kopieren nicht möglich. Das Ziel ist markiert: mit Strg+C kopieren.', true);
+    }
+  }
+
+  /* ---------- Darstellung ---------- */
+  const ts = v => { const d = H.parseTs ? H.parseTs(v) : new Date(v); return d && !isNaN(d) ? H.fmtTs(d) : '—'; };
+  const fold = t => str(t).toLowerCase();
+  const sorted = () => rows().slice().sort((a, b) => str(b.zuletzt).localeCompare(str(a.zuletzt)));
+  function filtered() {
+    const q = fold(L.q).trim();
+    if (!q) return sorted();
+    return sorted().filter(r => { const p = locate(r.host); return (fold(r.ziel) + ' ' + fold(r.via) + ' ' + fold(r.notiz) + ' ' + (p ? fold(p.ort) : '')).includes(q); });
+  }
+  app.linksFiltered = filtered;
+
+  // Karte: gleichabstandige Projektion auf Koordinatenraster, Länderumrisse aus den eingebetteten Geodaten (Europa).
+  function mapSvg(list) {
+    // Ausschnitt 75° N bis 60° S: Polargebiete bleiben leer und kosten nur Höhe.
+    const N = 75, SO = -60, W = 720, HH = Math.round(W * (N - SO) / 360);
+    const x = lon => ((lon + 180) / 360) * W, y = lat => ((N - Math.max(SO, Math.min(N, lat))) / (N - SO)) * HH;
+    const svg = s('svg', { viewBox: '0 0 ' + W + ' ' + HH, class: 'lk-map', role: 'img', 'aria-labelledby': 'lk-map-t' });
+    const places = new Map();
+    for (const r of list) {
+      const p = locate(r.host);
+      if (!p) continue;
+      const k = p.lat + ',' + p.lon;
+      if (!places.has(k)) places.set(k, { p, n: 0, hosts: new Set() });
+      const e = places.get(k); e.n += Number(r.anzahl) || 1; e.hosts.add(r.host);
+    }
+    svg.append(s('title', { id: 'lk-map-t' }, 'Grobe Server-Standorte: ' + (places.size ? Array.from(places.values()).map(e => e.p.ort + ' (' + e.n + '×)').join(', ') : 'keine')));
+    svg.append(s('rect', { x: 0, y: 0, width: W, height: HH, class: 'sea' }));
+    for (let lon = -150; lon <= 150; lon += 30) svg.append(s('line', { x1: x(lon), y1: 0, x2: x(lon), y2: HH, class: 'grid' }), s('text', { x: x(lon) + 3, y: HH - 5, class: 'lbl' }, Math.abs(lon) + '°' + (lon < 0 ? 'W' : lon > 0 ? 'O' : '')));
+    for (let lat = -60; lat <= 60; lat += 30) svg.append(s('line', { x1: 0, y1: y(lat), x2: W, y2: y(lat), class: lat ? 'grid' : 'grid eq' }), s('text', { x: 4, y: y(lat) - 4, class: 'lbl' }, lat ? Math.abs(lat) + '°' + (lat < 0 ? 'S' : 'N') : 'Äquator'));
+    const countries = app.geoCountries || (function () { try { return JSON.parse(document.getElementById('geoData').textContent).countries || {}; } catch (e) { return {}; } })();
+    for (const rings of Object.values(countries)) {
+      for (const ring of [].concat(rings)) {
+        if (!Array.isArray(ring) || !ring.length || !Array.isArray(ring[0]) || typeof ring[0][0] !== 'number') continue;
+        svg.append(s('path', { class: 'land', d: 'M' + ring.map(([lo, la]) => x(lo).toFixed(1) + ' ' + y(la).toFixed(1)).join('L') + 'Z' }));
+      }
+    }
+    // Beschriftungen nah beieinander liegender Orte (Frankfurt, Deutschland) untereinander statt übereinander.
+    const placed = [];
+    const items = Array.from(places.values()).sort((a, b) => b.p.lat - a.p.lat);
+    for (const { p, n } of items) svg.append(s('circle', { cx: x(p.lon), cy: y(p.lat), r: 5 + Math.min(n, 10), class: 'dot' }));
+    for (const { p, n } of items) {
+      const r = 5 + Math.min(n, 10), wTxt = p.ort.length * 6.6;
+      const tx = Math.min(Math.max(x(p.lon) + r + 3, 3), W - wTxt - 3);
+      let ty = y(p.lat) + 4;
+      while (placed.some(o => Math.abs(o.y - ty) < 12 && tx < o.x + o.w && o.x < tx + wTxt)) ty += 12;
+      placed.push({ x: tx, y: ty, w: wTxt });
+      if (Math.abs(ty - (y(p.lat) + 4)) > 1) svg.append(s('line', { x1: x(p.lon), y1: y(p.lat), x2: tx - 1, y2: ty - 4, class: 'lead' }));
+      svg.append(s('text', { x: tx, y: ty, class: 'place' }, p.ort));
+    }
+    return { svg, places };
+  }
+
+  function entryRow(r, w) {
+    const p = locate(r.host);
+    const n = Number(r.anzahl) || 1;
+    return h('article', { class: 'lk-entry' + (r._id === L.fresh ? ' fresh' : ''), id: 'lk-' + r._id },
+      h('div', { class: 'lk-head' },
+        chip(n > 1 ? 'yellow' : 'green', n + '× gemeldet'),
+        h('span', { class: 'muted small', text: 'zuletzt ' + ts(r.zuletzt) + (r.erstmals && r.erstmals !== r.zuletzt ? ' · erstmals ' + ts(r.erstmals) : '') })),
+      h('div', { class: 'lk-lbl', text: 'Echtes Ziel (' + (str(r.host) || 'unbekannt') + ')' + (p ? ' · ' + p.ort : '') }),
+      h('code', { class: 'lk-target', id: 'lk-z-' + r._id, text: str(r.ziel) }),
+      h('dl', { class: 'kv lk-kv' },
+        str(r.via) ? [h('dt', { text: 'Umgeschrieben durch' }), h('dd', { text: str(r.via) })] : null,
+        h('dt', { text: 'Standort' }), h('dd', { text: p ? p.ort + ' · Quelle: ' + p.quelle : 'nicht aus dem Hostnamen ableitbar' }),
+        str(r.notiz) ? [h('dt', { text: 'Notiz' }), h('dd', { text: str(r.notiz) })] : null,
+        r.by ? [h('dt', { text: 'Zuletzt gemeldet von' }), h('dd', { text: app.ownerLabel(r.by) })] : null),
+      h('div', { class: 'lk-acts' },
+        h('button', { class: 'btn small', type: 'button', 'aria-label': 'Ziel kopieren: ' + str(r.host), onclick: () => copy(r) }, app.ico('copy'), 'Ziel kopieren'),
+        h('button', { class: 'btn small ghost', type: 'button', disabled: !w, onclick: () => editNote(r) }, app.ico('stift'), 'Notiz'),
+        h('button', { class: 'btn small ghost danger', type: 'button', disabled: !w, 'aria-label': 'Eintrag löschen: ' + str(r.host), onclick: () => remove(r) }, 'Löschen')));
+  }
+
+  app.module('admin', 'links', {
+    count: () => (isAdmin() && L.loaded && L.rows.length ? L.rows.length : null),
+    render() {
+      if (!isAdmin()) {
+        return [panelHead('Link-Protokoll'),
+          h('div', { class: 'banner warn', role: 'status' }, h('div', { class: 'txt' }, h('strong', { text: 'Nur für Admins. ' }), 'Das Link-Protokoll enthält Ziele aus gemeldeten Mails und ist in der Datenbank nur für Admins lesbar.'),
+            h('button', { class: 'btn small', type: 'button', onclick: () => app.go('admin', 'zugaenge') }, 'Zugang anfragen'))];
+      }
+      if (!L.loaded) load();
+      const w = canWrite();
+      const list = filtered();
+      const total = rows().reduce((a, r) => a + (Number(r.anzahl) || 1), 0);
+
+      const url = h('textarea', { id: 'lk-url', rows: '3', placeholder: 'Link aus der Mail hier einfügen (Rechtsklick auf den Link › Link-Adresse kopieren)', autocomplete: 'off', spellcheck: 'false', disabled: !w || L.busy });
+      url.value = L.url;
+      url.addEventListener('input', () => { L.url = url.value; showPreview(); });
+      url.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); record(); } });
+      const note = h('input', { type: 'text', id: 'lk-note', maxlength: '500', placeholder: 'z. B. Mail vom 26.09., Absender unbekannt', autocomplete: 'off', value: L.note, disabled: !w || L.busy });
+      note.addEventListener('input', () => { L.note = note.value; });
+      note.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); record(); } });
+      // Vorschau aktualisiert sich beim Tippen an Ort und Stelle (ohne Neuaufbau, der Fokus bleibt im Feld).
+      const preview = h('p', { class: 'muted small lk-prev', 'aria-live': 'polite' });
+      const showPreview = () => {
+        const raw = str(L.url).trim();
+        if (!/^https?:\/\/\S+$/i.test(raw)) { preview.replaceChildren(raw ? 'Vorschau: noch keine vollständige Adresse (http:// oder https://).' : ''); return; }
+        const info = unwrap(raw), p = locate(info.host);
+        preview.replaceChildren('Vorschau: ', h('b', { text: info.host || 'keine gültige Adresse' }), info.via ? ' · über ' + info.via : ' · kein Schutz-Link erkannt', p ? ' · ' + p.ort : '');
+      };
+      showPreview();
+
+      const q = h('input', { type: 'search', id: 'lk-q', value: L.q, placeholder: 'Ziel, Notiz oder Ort …', autocomplete: 'off', 'aria-label': 'Link-Protokoll durchsuchen' });
+      q.addEventListener('input', () => { L.q = q.value; app.refresh(); });
+      const { svg, places } = mapSvg(list);
+      const unknown = list.filter(r => !locate(r.host)).length;
+
+      return [
+        panelHead('Link-Protokoll', rows().length ? rows().length + ' Ziele · ' + total + '× gemeldet' : null,
+          h('button', { class: 'btn small ghost', type: 'button', disabled: L.loading, onclick: () => app.linksReload() }, L.loading ? 'Lädt …' : 'Neu laden'),
+          'Schutz-Links aus Mails entpacken und das echte Ziel festhalten. Keine Risikobewertung: Prüfung und Meldung laufen weiter über die IT.'),
+        w ? null : h('div', { class: 'banner warn', role: 'status' }, h('div', { class: 'txt' }, h('strong', { text: 'Nur lesend. ' }), 'Für neue Einträge braucht es Schreibrechte („Kann bearbeiten“ im Teilen-Menü).')),
+        L.err ? h('div', { class: 'banner warn', role: 'alert' }, h('div', { class: 'txt', text: L.err })) : null,
+        h('div', { class: 'grid2' },
+          h('div', { class: 'card' }, h('h3', { text: 'Link aufzeichnen' }),
+            app.field('Link aus der Mail', url, { wide: true, hint: 'Strg+Enter speichert. Der Link wird nicht geöffnet.' }),
+            preview,
+            app.field('Notiz (optional)', note, { wide: true }),
+            h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', id: 'lk-save', disabled: !w || L.busy, onclick: record }, app.ico('plus'), L.busy ? 'Speichert …' : 'Aufzeichnen'))),
+          h('div', { class: 'card' }, h('h3', { text: 'So funktioniert es' }), h('ul', { class: 'ov-list' },
+            h('li', { class: 'ov-row ok' }, h('span', { class: 'tx' }, h('b', { text: 'Nie geöffnet: ' }), 'Ausgewertet wird nur der Text der Adresse. Kein Aufruf, keine DNS- oder Geo-IP-Abfrage; der Absender erfährt nichts.')),
+            h('li', { class: 'ov-row ok' }, h('span', { class: 'tx' }, h('b', { text: 'Entpackt: ' }), 'Hornetsecurity, Microsoft Safe Links, Google und übliche Weiterleitungen, bis zu 5 Ebenen.')),
+            h('li', { class: 'ov-row ok' }, h('span', { class: 'tx' }, h('b', { text: 'Datenschutz: ' }), 'E-Mail-Adressen im Ziel werden vor dem Speichern maskiert (pe***@example.com). Der Original-Schutzlink wird nicht gespeichert.')),
+            h('li', { class: 'ov-row ok' }, h('span', { class: 'tx' }, h('b', { text: 'Gleiches Ziel: ' }), 'wird nicht doppelt angelegt, sondern hochgezählt.')),
+            h('li', { class: 'ov-row warn' }, h('span', { class: 'tx' }, h('b', { text: 'Standort: ' }), 'nur grob aus Cloud-Region oder Länderendung abgeleitet, kein exakter Serverstandort.')))))
+        ,
+        h('div', { class: 'card section lk-mapcard' }, h('h3', { text: 'Karte der Ziele' + (L.q ? ' (gefiltert)' : '') }),
+          h('div', { class: 'lk-mapwrap' }, svg),
+          h('div', { class: 'lk-legend' },
+            places.size ? Array.from(places.values()).map(({ p, n, hosts }) => h('div', {}, h('b', { text: p.ort }), h('span', { class: 'muted small', text: Array.from(hosts).join(', ') + ' · ' + n + '× gemeldet · ' + p.quelle })))
+              : h('p', { class: 'muted small', text: 'Noch keine Standorte.' }),
+            unknown ? h('p', { class: 'muted small', text: 'Ohne ableitbaren Standort: ' + unknown }) : null)),
+        h('div', { class: 'section' },
+          h('div', { class: 'row lk-tools' }, h('h3', { text: 'Aufgezeichnete Ziele (' + list.length + (L.q ? ' von ' + rows().length : '') + ')' }), q),
+          !L.loaded ? h('p', { class: 'muted', text: 'Link-Protokoll wird geladen …' })
+            : list.length ? h('div', { class: 'stack lk-list' }, list.map(r => entryRow(r, w)))
+              : h('p', { class: 'muted', text: L.q ? 'Keine Treffer.' : 'Noch keine Links aufgezeichnet. Oben einen Link aus einer Mail einfügen.' }))
       ];
     }
   });
@@ -7418,7 +7850,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
           S.ui.adminPreview ? 'Vorschau beenden' : 'Vorschau testen'),
         h('button', { class: 'btn', type: 'button', id: 'adm-save', disabled: !w || !S.ui.adminDirty, onclick: saveDraft }, 'Entwurf speichern'),
         note,
-        h('button', { class: 'btn primary', type: 'button', id: 'adm-publish', disabled: !w, onclick: publish }, 'Veröffentlichen'),
+        h('button', { class: 'btn primary', type: 'button', id: 'adm-publish', disabled: !w, onclick: publish }, app.ico('up'), 'Veröffentlichen'),
         h('button', { class: 'btn ghost', type: 'button', id: 'adm-discard', disabled: !w || (!hasDraft() && !S.ui.adminDirty), onclick: discard }, 'Verwerfen')));
   }
 
@@ -7665,7 +8097,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     ta.value = ui.reqText;
     ta.addEventListener('input', () => { ui.reqText = ta.value; });
     box.append(app.field('Begründung (optional)', ta),
-      h('div', {}, h('button', { class: 'btn primary', type: 'button', disabled: app.ro(), onclick: requestAccess }, 'Zugang anfragen')),
+      h('div', {}, h('button', { class: 'btn primary', type: 'button', disabled: app.ro(), onclick: requestAccess }, app.ico('schluessel'), 'Zugang anfragen')),
       h('p', { class: 'muted small', text: 'Gespeichert werden nur deine Nutzer-ID, der Zeitpunkt und die Begründung.' }));
     return box;
   }
@@ -7683,7 +8115,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
         str(r.reason) ? h('span', { text: '„' + str(r.reason) + '“' }) : h('span', { class: 'muted small', text: 'ohne Begründung' }),
         r.status === 'offen'
           ? h('div', { class: 'acts' },
-            h('button', { class: 'btn primary', type: 'button', disabled: !w, onclick: () => decide(r, true) }, 'Genehmigen'),
+            h('button', { class: 'btn primary', type: 'button', disabled: !w, onclick: () => decide(r, true) }, app.ico('check'), 'Genehmigen'),
             h('button', { class: 'btn', type: 'button', disabled: !w, onclick: () => decide(r, false) }, 'Ablehnen'))
           : chip(r.status === 'genehmigt' ? 'green' : 'gone', str(r.status)));
       return [
@@ -7704,7 +8136,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
 
   /* ---------- Daten: Sicherung, Import über den Migrationsplan, alte Marketing-Leads ---------- */
   const ALL_COLLECTIONS = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'references', 'knowledge', 'tasks', 'briefings', 'activity',
-    'admin_requests', 'leads', 'settings', 'meta', 'budget', 'admin', 'meetings', 'checkliste', 'kb_items', 'kb_text', 'kb_projects'];
+    'admin_requests', 'leads', 'settings', 'meta', 'budget', 'admin', 'admin_links', 'meetings', 'checkliste', 'kb_items', 'kb_text', 'kb_projects'];
   const strip = r => { const d = Object.assign({}, r); delete d._id; return d; };
   async function dumpAll(masked) {
     const out = {};
@@ -7780,7 +8212,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
       p.warnings.length ? h('details', {}, h('summary', { text: 'Hinweise (' + p.warnings.length + ')' }), h('ul', {}, p.warnings.map(x => h('li', { text: x })))) : null,
       p.skipped.length ? h('details', {}, h('summary', { text: 'Übersprungen (' + p.skipped.length + ')' }), h('ul', {}, p.skipped.map(x => h('li', { text: x.from + ': ' + x.reason })))) : null,
       h('div', { class: 'tools' },
-        h('button', { class: 'btn primary', type: 'button', id: 'adm-apply', disabled: !canWrite() || ui.busy || !p.ops.length || !(v && v.ok), onclick: applyImport }, 'Plan übernehmen'),
+        h('button', { class: 'btn primary', type: 'button', id: 'adm-apply', disabled: !canWrite() || ui.busy || !p.ops.length || !(v && v.ok), onclick: applyImport }, app.ico('check'), 'Plan übernehmen'),
         app.exportButton('Bericht (Markdown)', 'Migrationsbericht-' + H.ymd(app.today()) + '.md', 'text/markdown', () => MG.reportMarkdown(p, v), 'adm-report'),
         h('button', { class: 'btn ghost', type: 'button', onclick: () => { ui.plan = null; ui.planCheck = null; ui.planMsg = ''; rerender(); } }, 'Plan verwerfen')));
   }
@@ -7882,7 +8314,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
           app.field('Datensatz als JSON', ta),
           ui.dataMsg ? h('p', { class: 'small', role: 'status', text: ui.dataMsg }) : null,
           h('div', { class: 'tools' },
-            h('button', { class: 'btn primary', type: 'button', disabled: !w, onclick: saveRecord }, cur ? 'Speichern' : 'Anlegen'),
+            h('button', { class: 'btn primary', type: 'button', disabled: !w, onclick: saveRecord }, app.ico(cur ? 'check' : 'plus'), cur ? 'Speichern' : 'Anlegen'),
             cur ? h('button', { class: 'btn', type: 'button', onclick: () => pickRecord(null) }, 'Neu') : null,
             cur ? h('button', { class: 'btn ghost danger', type: 'button', disabled: !w, onclick: deleteRecord }, 'Löschen') : null))));
   }
@@ -7971,7 +8403,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
   const statusLine = job => (job.status ? h('span', { class: 'small ai-status' + (job.err ? ' err' : ''), role: 'status', text: job.status }) : null);
   function row(job, label, busy, onclick) {
     return h('div', { class: 'ai-row' },
-      h('button', { class: 'btn primary', type: 'button', disabled: job.running || null, onclick }, job.running ? busy : label),
+      h('button', { class: 'btn primary', type: 'button', disabled: job.running || null, onclick }, app.ico('go'), job.running ? busy : label),
       job.running ? h('button', { class: 'btn', type: 'button', onclick: () => job.ctl && job.ctl.abort() }, 'Stopp') : null,
       statusLine(job),
       h('span', { class: 'muted small', text: PRIVACY }));
@@ -9093,7 +9525,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     const foot = h('footer', { class: 'mt-foot' },
       h('div', { class: 'row' },
         h('button', { class: 'btn', type: 'button', disabled: mt.idx <= 0, onclick: prev }, '← Zurück'),
-        h('button', { class: 'btn primary', type: 'button', disabled: mt.idx >= list.length - 1, onclick: next }, 'Weiter →')),
+        h('button', { class: 'btn primary', type: 'button', disabled: mt.idx >= list.length - 1, onclick: next }, 'Weiter', app.ico('go'))),
       h('span', { text: 'Tasten: ←/→ blättern · 1 erledigt · 2 in Arbeit · 3 blockiert · 4 verschieben · n Notiz · b Beschluss · a Agenda · Esc beenden' }),
       h('span', { class: 'muted', text: 'Gespeichert: ' + app.storeText() }));
     const focusEl = document.activeElement && document.activeElement.id;
@@ -9145,7 +9577,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     return h('div', { class: 'stack' },
       h('div', { class: 'tools' },
         closed ? (canWrite() ? h('button', { class: 'btn', type: 'button', onclick: async () => { if (await app.write('meetings/' + id, 'update', { status: 'offen', endedAt: null, updatedAt: Date.now() })) { app.log('Meeting wieder geöffnet', fmtD(m.date)); app.toast('Protokoll wieder geöffnet.'); } } }, 'Wieder öffnen') : h('span', { class: 'chip soft', text: 'abgeschlossen · nur lesen' }))
-          : h('button', { class: 'btn primary', type: 'button', disabled: !canWrite(), onclick: () => app.resumeMeeting(m) }, 'Meeting fortsetzen'),
+          : h('button', { class: 'btn primary', type: 'button', disabled: !canWrite(), onclick: () => app.resumeMeeting(m) }, app.ico('go'), 'Meeting fortsetzen'),
         app.exportButton('Markdown', 'Messe-Abstimmung-InfraTech-2027-' + str(m.date) + '.md', 'text/markdown', () => protocolMd(m), 'mt-md'),
         h('button', { class: 'btn ghost', type: 'button', onclick: async () => { try { await app.copyText(mailText(m)); app.toast('Protokoll als Mail-Text kopiert.'); } catch (e) { app.toast('Kopieren nicht möglich. Markdown-Export nutzen.', true); } } }, icon('copy'), 'Als Mail-Text kopieren'),
         h('a', { class: 'btn ghost', href: SP_URL, target: '_blank', rel: 'noopener noreferrer' }, icon('ext'), 'Ablageort in SharePoint')),
@@ -10665,6 +11097,8 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
       app.isAdmin() ? csv('ds-csv', 'Zugriffsprotokoll (CSV)', 'Feind-Cockpit-Klartextzugriffe.csv', schutzCsv) : null, print('ds', 'Datenschutz-Uebersicht', specSchutz)],
     'admin:status': () => [pdf('as', 'Statusbericht (PDF)', 'Statusbericht-Cockpit', specStatus),
       { id: 'as-backup', label: 'Sicherung herunterladen', short: 'Sicherung', icon: 'datenbank', tip: 'Alle Sammlungen als JSON-Datei; Personen nur als Kennung. Nur für Admins.', disabled: !app.isAdmin(), run: () => app.admBackup() }, print('as', 'Statusbericht-Cockpit', specStatus)],
+    'admin:links': () => (app.isAdmin() ? [csv('lk-csv', 'Link-Protokoll (CSV)', 'Feind-Cockpit-Link-Protokoll.csv', () => H.toCsv(['Zuletzt', 'Erstmals', 'Anzahl', 'Host', 'Standort (grob)', 'Standort-Quelle', 'Umgeschrieben durch', 'Ziel (E-Mails maskiert)', 'Notiz'],
+      app.linksFiltered().map(r => { const p = app.linkTools.locate(r.host); return [r.zuletzt || '', r.erstmals || '', Number(r.anzahl) || 1, r.host || '', p ? p.ort : '', p ? p.quelle : '', r.via || '', r.ziel || '', r.notiz || '']; })))] : []),
     'admin:konfiguration': () => [csv('ak-csv', 'Änderungsprotokoll (CSV)', 'Feind-Cockpit-Aenderungen.csv', changelogCsv)],
     'admin:zugaenge': () => [app.isAdmin() ? csv('az-csv', 'Anfragen als CSV', 'Feind-Cockpit-Zugangsanfragen.csv', requestsCsv) : { id: 'az-status', label: 'Eigenen Zugang prüfen', short: 'Status', icon: 'schild', run: () => app.go('admin', 'status') }],
     'admin:daten': () => [{ id: 'ad-backup', label: 'Sicherung herunterladen', short: 'Sicherung', icon: 'down', main: true, tip: 'Alle Sammlungen als JSON-Datei; Personen nur als Kennung. Nur für Admins.', disabled: !app.isAdmin(), run: () => app.admBackup() }, csv('ad-csv', 'Datenbestand (CSV)', 'Feind-Cockpit-Datenbestand.csv', dataCsv)],
@@ -10759,7 +11193,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
       more = h('div', { class: 'ab-more' + (rest.length ? '' : ' ab-mobile') }, toggle, menu);
     }
     bar.setAttribute('aria-label', 'Aktionen ' + app.moduleLabel(world, key));
-    bar.replaceChildren(h('span', { class: 'ab-label', 'aria-hidden': 'true' }, app.ico('check'), 'Aktionen'), h('div', { class: 'ab-scroll' }, vis.map(btn)), more);
+    bar.replaceChildren(h('span', { class: 'ab-label', 'aria-hidden': 'true' }, app.ico('check'), 'Aktionen'), h('div', { class: 'ab-scroll' }, vis.map(btn)), more || '');
     // Passt die Leiste nicht in eine Zeile, Kurzbeschriftungen für alle Knöpfe.
     const sc = bar.querySelector('.ab-scroll');
     bar.classList.remove('ab-compact');
@@ -11203,7 +11637,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
         h('h2', { text: days > 0 ? 'Noch ' + days + ' Tage bis zum Messebeginn' : days === 0 ? 'Die Messe beginnt heute' : ended ? 'Die Messe ist vorbei: Zeit fürs Nachfassen' : 'Die Messe läuft' }),
         h('p', { class: 'lead', text: pr.done + ' von ' + pr.total + ' Aufgaben erledigt (' + pr.pct + ' %). Stand der Aufgabenliste: ' + fmtD(app.today()) + '.' }),
         h('div', { class: 'row' },
-          h('button', { class: 'btn primary', type: 'button', onclick: () => app.go('infratech', 'dashboard') }, 'InfraTech-Dashboard'),
+          h('button', { class: 'btn primary', type: 'button', onclick: () => app.go('infratech', 'dashboard') }, app.ico('dashboard'), 'InfraTech-Dashboard'),
           h('button', { class: 'btn ghost-inv', type: 'button', onclick: () => app.go('infratech', 'aufgaben') }, 'Alle Aufgaben'))));
   }
 
@@ -11386,6 +11820,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
             ok('Schwärzung', 'IBAN, USt-ID, Telefonnummern und Passwörter erscheinen im gelesenen Text, in der KI-Abfrage und in der Sicherung nur geschwärzt.'),
             ok('Klartext', 'Nur Admins, nur nach Bestätigung, jeder Zugriff steht im Protokoll (unten). Die Anzeige blendet sich nach 60 Sekunden wieder aus.'),
             ok('Zugriffsregel', 'Der gelesene Volltext (Sammlung kb_text) ist in der Datenbank nur für Admins lesbar, nicht nur ausgeblendet.'),
+            ok('Link-Protokoll', 'Gemeldete Links werden nie geöffnet; E-Mail-Adressen im Ziel sind vor dem Speichern maskiert, der Original-Schutzlink wird nicht gespeichert. Sammlung admin_links nur für Admins lesbar.'),
             ok('Kennzeichnung', 'Einträge mit IBAN, USt-ID oder Zugangsdaten tragen „Vertraulich“. Neue Einträge werden beim Einlesen automatisch geprüft.'),
             ok('Datenminimierung', 'Lokale Schrift statt Google-Fonts, Karte offline bis zur Einwilligung, Firecrawl nur nach Erlaubnis über das eigene Konto.'),
             warn('Grenze', 'Originaldateien liegen im Dateispeicher der App. Das Cockpit zeigt den Link vertraulicher Originale nur Admins; wer die Datei-Adresse kennt, kann sie technisch öffnen. Besser: Original nach SharePoint (eingeschränkter Ordner) und hier löschen.'))),
@@ -11884,10 +12319,38 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     e.preventDefault();
     intake({ files, texts: text ? [text] : [] }, 'einfügen');
   });
+  // Schaltflächen: echtes Dateifeld im <label>, der Klick öffnet den Dialog nativ, ganz ohne Skript-Klick, den
+  // eingebettete Ansichten (Claude-Apps, WebViews) blocken können. Felder je Schaltfläche bleiben über Neuaufbauten
+  // erhalten, damit eine laufende Auswahl nicht ins Leere geht. pickFiles unten bleibt für Klicks auf die Ablagefläche.
+  const fileInputs = {};
+  function fileButton(key, dir, cls, ico, label, blocked) {
+    let inp = fileInputs[key];
+    if (!inp) {
+      inp = fileInputs[key] = h('input', { type: 'file', multiple: true, class: 'file-native', id: 'fi-' + key, tabindex: '-1', 'aria-hidden': 'true' });
+      if (dir) inp.setAttribute('webkitdirectory', '');
+      inp.addEventListener('change', () => {
+        const files = Array.from(inp.files || []).slice(0, MAX_BATCH);
+        inp.value = '';
+        if (!files.length) return;
+        app.toast(files.length === 1 ? '1 Datei übernommen, wird eingeordnet …' : files.length + ' Dateien übernommen, werden eingeordnet …');
+        intake({ files, texts: [] }, 'auswahl');
+      });
+    }
+    inp.disabled = !!blocked;
+    const lab = h('label', { class: cls + (blocked ? ' is-disabled' : ''), role: 'button', tabindex: blocked ? '-1' : '0', 'aria-disabled': blocked ? 'true' : null, title: blocked || null,
+      onkeydown: e => { if ((e.key === 'Enter' || e.key === ' ') && !blocked) { e.preventDefault(); inp.click(); } },
+      onclick: e => { if (blocked) { e.preventDefault(); app.toast(blocked, true); } } }, ico, label);
+    lab.append(inp);
+    return lab;
+  }
+  // Dateiauswahl: Das Feld bleibt im Layout (nur unsichtbar). Safari, iPhone/iPad und App-Ansichten öffnen den Dialog
+  // für ein Feld mit display:none (Attribut hidden) nicht; ein abgebrochener Dialog hinterlässt kein Feld.
   function pickFiles(dir) {
-    const inp = h('input', { type: 'file', multiple: true, hidden: true });
+    document.querySelectorAll('input.kb-pick').forEach(x => x.remove());
+    const inp = h('input', { type: 'file', multiple: true, class: 'kb-pick', tabindex: '-1', 'aria-hidden': 'true' });
     if (dir) inp.setAttribute('webkitdirectory', '');
     inp.addEventListener('change', () => { intake({ files: Array.from(inp.files || []).slice(0, MAX_BATCH), texts: [] }, 'auswahl'); inp.remove(); });
+    inp.addEventListener('cancel', () => inp.remove());
     document.body.append(inp);
     inp.click();
   }
@@ -11901,10 +12364,10 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     if (isImage(it) && (app.isAdmin() || !(G.isConf(it) || (it.pii && it.pii.found)))) return h('div', { class: 'kb-thumb' + (big ? ' big' : '') }, h('img', { src: blobUrl(it.assetId), alt: '', loading: 'lazy' }));
     return h('div', { class: 'kb-thumb icon' + (big ? ' big' : '') }, app.ico(kindIcon(it)), h('span', { text: (it.kind === 'datei' ? it.ext : it.kind === 'link' ? 'web' : 'text').toUpperCase().slice(0, 5) }));
   }
-  function itemCard(it) {
+  function itemCard(it, idx, _arr, track) {
     const proj = it.projectId ? projById(it.projectId) : null;
     const busy = W.steps.has(it.id) || it.status === 'in_arbeit';
-    return h('button', { class: 'kb-card' + (busy ? ' busy' : ''), type: 'button', 'data-status': str(it.status), 'aria-label': (str(it.title) || str(it.name)) + ', ' + (it.category ? K.catOf(it.category)[1] + ', ' : '') + K.statusLabel(it.status) + '. Details öffnen', onclick: () => openDetail(it.id) },
+    return h('button', { class: 'kb-card' + (busy ? ' busy' : '') + (track ? ' tracked' + (Date.now() - (it.createdAt || 0) < 8000 ? ' fresh' : '') : ''), style: track ? '--i:' + idx : null, type: 'button', 'data-status': str(it.status), 'aria-label': (str(it.title) || str(it.name)) + ', ' + (it.category ? K.catOf(it.category)[1] + ', ' : '') + K.statusLabel(it.status) + '. Details öffnen', onclick: () => openDetail(it.id) },
       thumb(it),
       h('div', { class: 'kb-body' },
         h('div', { class: 'kb-t', text: str(it.title) || str(it.name) }),
@@ -11916,25 +12379,48 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
           proj ? h('span', { class: 'chip' }, app.ico('pin'), str(proj.name).slice(0, 30)) : null,
           G.isConf(it) ? chip('red', 'Vertraulich') : null,
           it.pii && it.pii.found ? chip('red', 'Personendaten') : null,
-          statusChip(it))));
+          statusChip(it)), track ? flowTrack(it) : null));
+  }
+  // Fortschrittsspur je Eintrag (Wunsch David 06.10.2026): Aufgenommen → Verarbeitet → Zugewiesen, mit Platz in der Warteschlange.
+  function flowTrack(it) {
+    const st = str(it.status), live = W.steps.has(it.id) || st === 'in_arbeit';
+    let states, note;
+    if (live) { states = ['done', 'active', '']; note = W.steps.get(it.id) || 'Wird verarbeitet …'; }
+    else if (st === 'neu') {
+      const q = items().filter(x => x.status === 'neu').sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+      states = ['done', '', '']; note = 'Platz ' + (q.findIndex(x => x.id === it.id) + 1) + ' von ' + q.length + ' in der Warteschlange';
+    } else if (st === 'fehler') { states = ['done', 'err', '']; note = 'Fehler beim Verarbeiten' + (it.attempts ? ' (' + it.attempts + '. Versuch)' : ''); }
+    else if (st === 'pruefen') { states = ['done', 'done', 'warn']; note = 'Zugewiesen, wartet auf Prüfung'; }
+    else { states = ['done', 'done', 'done']; note = 'Zugewiesen' + (it.category ? ': ' + K.catOf(it.category)[1] : ''); }
+    const steps = ['Aufgenommen', 'Verarbeitet', 'Zugewiesen'];
+    return h('div', { class: 'kb-track', 'aria-label': 'Fortschritt: ' + note },
+      steps.map((t, i) => h('span', { class: 'tk' + (states[i] ? ' ' + states[i] : '') }, h('span', { class: 'bar', 'aria-hidden': 'true' }), h('span', { class: 'lbl', text: t }))),
+      h('small', { text: note }));
   }
   function emptyArchive() {
     return h('div', { class: 'empty' }, app.ico('leer'), h('strong', { text: 'Das Archiv ist noch leer. ' }), 'Dateien, Ordner, Texte oder Links einfach irgendwo auf das Cockpit ziehen oder außerhalb von Eingabefeldern mit Strg+V einfügen. Das Cockpit liest den Inhalt, ordnet ihn ein und verknüpft ihn mit Projekten, Referenzen und Events.',
-      h('div', { class: 'acts' }, h('button', { class: 'btn small primary', type: 'button', disabled: !!intakeBlocked(), onclick: () => pickFiles(false) }, icon('plus'), 'Dateien wählen')));
+      h('div', { class: 'acts' }, fileButton('empty-files', false, 'btn small primary', icon('plus'), 'Dateien wählen', intakeBlocked())));
   }
 
   /* ---------- Modul Eingang ---------- */
+  // Touch-Geräte (iPhone, iPad, Android): kein Ordner-Dialog; die ganze Fläche öffnet die Dateiauswahl nativ.
+  const isTouch = () => { try { return matchMedia('(pointer: coarse)').matches; } catch (e) { return false; } };
   function dropZone() {
     const blocked = intakeBlocked();
+    const touch = isTouch();
     const zone = h('div', { class: 'kb-drop' + (blocked ? ' blocked' : ''), id: 'kb-drop', tabindex: '0', role: 'button', 'aria-label': 'Dateien wählen oder hierher ziehen', 'aria-describedby': 'kb-drop-hint',
-      onclick: e => { if (!e.target.closest('button') && !blocked) pickFiles(false); },
+      onclick: e => { if (!e.target.closest('button, label, input') && !blocked) pickFiles(false); },
       onkeydown: e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.id === 'kb-drop' && !blocked) { e.preventDefault(); pickFiles(false); } } },
-      h('div', { class: 'kb-drop-ic', 'aria-hidden': 'true' }, app.ico('ablegen')),
-      h('div', {}, h('b', { text: blocked ? 'Ablegen gerade nicht möglich' : 'Dateien oder Ordner hierher ziehen' }),
-        h('p', { id: 'kb-drop-hint', class: 'small', text: blocked || 'Oder klicken. Klappt überall im Cockpit: auf die Seite ziehen oder außerhalb von Eingabefeldern Strg+V. PDF, Word, Excel, PowerPoint, Bilder, Videos, Text, CSV; höchstens 20 MB je Datei, 200 je Vorgang.' })),
+      // Symbol und Text sind ein <label> für dasselbe Dateifeld wie „Dateien wählen“: Tippen öffnet den Dialog nativ.
+      h(blocked ? 'div' : 'label', { class: 'kb-drop-txt', for: blocked ? null : 'fi-zone-files' },
+        h('div', { class: 'kb-drop-ic', 'aria-hidden': 'true' }, app.ico('ablegen')),
+        h('div', {}, h('b', { text: blocked ? 'Ablegen gerade nicht möglich' : touch ? 'Dateien oder Fotos hinzufügen' : 'Dateien oder Ordner hierher ziehen' }),
+          h('p', { id: 'kb-drop-hint', class: 'small', text: blocked || (touch
+            ? 'Hier tippen: Dateien, Fotos oder Kamera. PDF, Word, Excel, PowerPoint, Bilder, Videos, Text; höchstens 20 MB je Datei. Öffnet sich in der Claude-App nichts, das Cockpit im Browser (Safari oder Chrome) öffnen.'
+            : 'Oder klicken. Klappt überall im Cockpit: auf die Seite ziehen oder außerhalb von Eingabefeldern Strg+V. PDF, Word, Excel, PowerPoint, Bilder, Videos, Text, CSV; höchstens 20 MB je Datei, 200 je Vorgang.') }))),
       h('div', { class: 'row' },
-        h('button', { class: 'btn primary', type: 'button', disabled: !!blocked, onclick: () => pickFiles(false) }, icon('plus'), 'Dateien wählen'),
-        h('button', { class: 'btn', type: 'button', disabled: !!blocked, onclick: () => pickFiles(true) }, app.ico('ordner'), 'Ordner wählen')));
+        fileButton('zone-files', false, 'btn primary', icon('plus'), 'Dateien wählen', blocked),
+        touch ? null : fileButton('zone-dir', true, 'btn', app.ico('ordner'), 'Ordner wählen', blocked)));
     zone.addEventListener('dragenter', () => zone.classList.add('over'));
     zone.addEventListener('dragleave', e => { if (!zone.contains(e.relatedTarget)) zone.classList.remove('over'); });
     zone.addEventListener('drop', () => zone.classList.remove('over'));
@@ -11959,12 +12445,17 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     const n = k => all.filter(i => i.status === k).length;
     const auto = h('label', { class: 'check', for: 'kb-auto' }, h('input', { type: 'checkbox', id: 'kb-auto', checked: W.auto, onchange: e => { W.auto = e.target.checked; app.storeSet(AUTO_KEY, W.auto ? '1' : '0'); if (W.auto) kick(); rerender(); } }), ' Automatisch einordnen');
     const ai = !inViewer() ? 'KI nur im geteilten Cockpit in claude.ai; hier ordnen Regeln ein' : !featureOn() ? 'KI-Einordnung per Administration aus' : sampleOk === false ? 'KI nicht verfügbar: Einordnung nach Regeln' : sampleOk ? 'KI bereit, nutzt dein Claude-Kontingent' : 'KI wird geprüft …';
-    const tile = (k, lbl, cls, go) => h('button', { class: 'kpi' + (cls ? ' ' + cls : ''), type: 'button', onclick: go, 'aria-label': lbl + ': ' + n(k) + '. Anzeigen' }, h('div', { class: 'v', text: String(n(k)) }), h('div', { class: 'k', text: lbl }));
+    const prev = W.prevN || {}; W.prevN = {};
+    const tile = (k, lbl, cls, go) => { const v = n(k); W.prevN[k] = v; return h('button', { class: 'kpi' + (cls ? ' ' + cls : '') + (prev[k] != null && prev[k] !== v ? ' bump' : '') + (k === 'in_arbeit' && W.busy ? ' live' : ''), type: 'button', onclick: go, 'aria-label': lbl + ': ' + n(k) + '. Anzeigen' }, h('div', { class: 'v', text: String(v) }), h('div', { class: 'k', text: lbl })); };
+    const seg = [['neu', 'f-neu'], ['in_arbeit', 'f-in'], ['fertig', 'f-ok'], ['pruefen', 'f-pr'], ['fehler', 'f-err']];
+    const flow = h('div', { class: 'kb-flow' + (W.busy ? ' busy' : ''), role: 'img', 'aria-label': 'Verteilung: ' + seg.map(([k]) => K.statusLabel(k) + ' ' + n(k)).join(', ') },
+      seg.map(([k, c]) => h('i', { class: c, style: 'flex-grow:' + n(k) })));
     const show = st => () => { W.status = st; app.go('wissen', 'archiv'); };
     return h('div', { class: 'section' },
       h('div', { class: 'tools', style: 'margin:0;justify-content:space-between' }, h('h3', { text: 'Verarbeitung' }),
         h('div', { class: 'row' }, auto,
-          h('button', { class: 'btn small', type: 'button', disabled: W.busy || !canWrite() || !n('neu'), onclick: () => processQueue(true) }, icon('refresh'), W.busy ? 'Läuft …' : 'Jetzt einordnen'))),
+          h('button', { class: 'btn small' + (W.busy ? ' busy' : ''), type: 'button', disabled: W.busy || !canWrite() || !n('neu'), onclick: () => processQueue(true) }, icon('refresh'), W.busy ? 'Läuft …' : 'Jetzt einordnen'))),
+      flow,
       h('div', { class: 'strip' },
         tile('neu', 'Warten', n('neu') ? 'warn' : '', show('neu')),
         tile('in_arbeit', 'In Arbeit', '', show('in_arbeit')),
@@ -11982,7 +12473,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
         h('div', { class: 'grid2' }, dropZone(), textBox()),
         pipeline(),
         h('div', { class: 'section' }, h('h3', { text: 'Zuletzt abgelegt' }),
-          !S.loaded.kb_items ? app.skeleton(4, 'Lade Archiv') : recent.length ? h('div', { class: 'kb-grid' }, recent.map(itemCard)) : emptyArchive()),
+          !S.loaded.kb_items ? app.skeleton(4, 'Lade Archiv') : recent.length ? h('div', { class: 'kb-grid recent' }, recent.map((it, i) => itemCard(it, i, null, true))) : emptyArchive()),
         h('div', { class: 'section' }, h('h3', { text: 'So arbeitet das Archiv' }),
           h('ol', { class: 'small kb-steps' },
             h('li', { text: 'Ablegen: PDF, Bilder, Videos und Textdateien werden als Original gespeichert; Word, Excel und PowerPoint als gelesener Text mit Ablagevorschlag für SharePoint. Doppelte Dateien erkennt das Cockpit am Fingerabdruck.' }),
@@ -12050,7 +12541,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
       a.sources.length ? h('div', { class: 'chips' }, h('span', { class: 'label', style: 'align-self:center', text: 'Quellen' }), a.sources.map((i, n) => h('button', { class: 'chip', type: 'button', onclick: () => openDetail(i.id) }, '[' + (n + 1) + '] ' + str(i.title).slice(0, 40)))) : null) : null;
     return h('div', { class: 'card accentbar kb-ask' }, h('h3', {}, app.ico('kompass'), ' Frag das Archiv'),
       h('div', { class: 'row' }, h('label', { class: 'sr', for: 'kb-ask', text: 'Frage an das Archiv' }), input,
-        h('button', { class: 'btn primary', type: 'button', disabled: a.running || !items().length, onclick: ask }, a.running ? 'Sucht …' : 'Fragen'),
+        h('button', { class: 'btn primary', type: 'button', disabled: a.running || !items().length, onclick: ask }, app.ico('search'), a.running ? 'Sucht …' : 'Fragen'),
         a.running ? h('button', { class: 'btn', type: 'button', onclick: () => a.ctl && a.ctl.abort() }, 'Stopp') : null),
       h('p', { class: 'muted small', text: 'Antwortet nur aus den abgelegten Inhalten und nennt die Quellen. Nutzt dein Claude-Kontingent.' }), out);
   }
@@ -12104,6 +12595,73 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     if (W.fullText.has(id)) return W.fullText.get(id);
     try { const snap = await S.store.db.doc('kb_text/' + id).get(); const t = snap.exists ? str(snap.data().text) : ''; W.fullText.set(id, t); return t; } catch (e) { return ''; }
   }
+  /* ---------- Neues Projekt direkt aus dem Eintrag anlegen ---------- */
+  // Eingabemaske im selben Dialog (ein zweiter Dialog würde den offenen und seine ungespeicherten Änderungen schließen).
+  function newProjectBox(it, projSel, ro) {
+    const BL = (FC.data && FC.data.BUNDESLAENDER) || [];
+    const name = h('input', { type: 'text', id: 'np-name', maxlength: '120', required: true, 'aria-required': 'true', placeholder: 'z. B. A 14 Fahrbahnerneuerung Magdeburg' });
+    const place = h('input', { type: 'text', id: 'np-place', maxlength: '80', placeholder: 'z. B. Nossen' });
+    const state = app.dropdown('np-state', [['', '–']].concat(BL.map(b => [b, b])), '');
+    const year = h('input', { type: 'number', id: 'np-year', min: '1990', max: '2040', value: it.year ? String(it.year) : '' });
+    const services = h('select', { id: 'np-services', multiple: true, size: '4' }, K.SERVICES.map(x => h('option', { value: x, selected: arr(it.services).includes(x) }, x)));
+    const msg = h('p', { class: 'small np-msg', role: 'alert' });
+    const panel = h('div', { class: 'card np-panel', id: 'np-panel', hidden: true },
+      h('h4', {}, app.ico('pin'), ' Neues Projekt anlegen'),
+      app.field('Projektname *', name),
+      h('div', { class: 'form-grid' }, app.field('Ort', place, { hint: 'Für die Position auf der Projektkarte' }), app.field('Bundesland', state), app.field('Jahr', year), app.field('Leistungen', services, { hint: 'Mehrfachauswahl mit Strg oder Cmd' })),
+      msg,
+      h('div', { class: 'row' },
+        h('button', { class: 'btn primary', type: 'button', id: 'np-save', onclick: () => saveNew() }, app.ico('check'), 'Projekt speichern'),
+        h('button', { class: 'btn ghost', type: 'button', onclick: () => toggle(false) }, 'Abbrechen')),
+      h('p', { class: 'muted small', text: 'Das Projekt wird als Entwurf angelegt und diesem Eintrag zugeordnet. Auftraggeber und weitere Angaben später unter Wissen › Projektkarte ergänzen.' }));
+    const btn = h('button', { class: 'btn small', type: 'button', id: 'np-open', disabled: ro || null, 'aria-expanded': 'false', 'aria-controls': 'np-panel', onclick: () => toggle(panel.hidden) }, app.ico('plus'), 'Neues Projekt');
+    function toggle(open) {
+      panel.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+      msg.textContent = '';
+      if (open) { name.focus(); panel.scrollIntoView({ block: 'nearest' }); } else btn.focus();
+    }
+    name.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); saveNew(); } });
+    let busy = false;
+    async function saveNew() {
+      if (busy) return;
+      const n = name.value.trim().slice(0, 120);
+      if (!n) { msg.textContent = 'Bitte einen Projektnamen eingeben.'; name.setAttribute('aria-invalid', 'true'); name.focus(); return; }
+      name.removeAttribute('aria-invalid');
+      const f = K.fold;
+      const dup = projects().find(p => f(p.name) === f(n));
+      if (dup) {
+        projSel.value = dup.id;
+        toggle(false);
+        app.toast('Projekt „' + str(dup.name) + '“ gibt es schon: ausgewählt. Mit „Speichern“ zuordnen.');
+        return;
+      }
+      busy = true;
+      const pl = place.value.trim().slice(0, 80), st = state.value;
+      const g = pl ? locate(pl, st) : null;
+      if (pl && !g) app.toast('Ort nicht im Verzeichnis gefunden. Position später auf der Projektkarte setzen.', true);
+      const id = H.uid('p');
+      const doc = { id, name: n, place: (g && g.place) || pl, state: (g && g.state) || st, country: 'Deutschland', lat: g ? g.lat : null, lon: g ? g.lon : null, geoHow: g ? g.how : 'offen',
+        year: parseInt(year.value, 10) || null, services: Array.from(services.selectedOptions).map(o => o.value), machine: '', areaM2: null, summary: '', client: '', clientApproved: false,
+        status: 'entwurf', items: [it.id], refId: null, createdAt: Date.now(), updatedAt: Date.now(), auto: false };
+      const ok = await app.write('kb_projects/' + id, 'set', doc);
+      if (ok) {
+        const old = it.projectId && it.projectId !== id ? projById(it.projectId) : null;
+        if (await app.write('kb_items/' + it.id, 'update', { projectId: id, editedAt: Date.now() })) {
+          if (old) await app.write('kb_projects/' + old.id, 'update', { items: arr(old.items).filter(x => x !== it.id), updatedAt: Date.now() });
+          it.projectId = id;
+        }
+        projSel.append(h('option', { value: id }, n.slice(0, 50)));
+        projSel.value = id;
+        name.value = ''; place.value = ''; state.value = '';
+        toggle(false);
+        app.log('Projektkarte', 'Projekt angelegt: ' + n);
+        app.toast('Projekt „' + n + '“ angelegt und zugeordnet.');
+      }
+      busy = false;
+    }
+    return { field: h('div', { class: 'np-field' }, app.field('Projekt', projSel), ro ? null : btn), panel };
+  }
   function openDetail(id) {
     const it = byId(id);
     if (!it) return;
@@ -12116,6 +12674,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
     const tags = h('input', { type: 'text', id: 'kd-tags', value: arr(it.tags).join(', '), placeholder: 'kommagetrennt', disabled: ro });
     const services = h('select', { id: 'kd-services', multiple: true, size: '4', disabled: ro }, K.SERVICES.map(x => h('option', { value: x, selected: arr(it.services).includes(x) }, x)));
     const projSel = app.dropdown('kd-proj', [['', 'kein Projekt']].concat(projects().map(p => [p.id, str(p.name).slice(0, 50)])), it.projectId || ''); projSel.disabled = ro;
+    const np = newProjectBox(it, projSel, ro);
     const summary = h('textarea', { id: 'kd-sum', rows: '3', maxlength: '800', disabled: ro }); summary.value = str(it.summary);
     const textBox = h('pre', { class: 'code kb-text', text: 'Text wird geladen …' });
 let shown = false, hideT = null;
@@ -12155,7 +12714,8 @@ let shown = false, hideT = null;
       arr(it.review).length && it.status === 'pruefen' ? h('div', { class: 'banner warn' }, h('div', { class: 'txt' }, h('strong', { text: 'Zu prüfen: ' }), arr(it.review).join(' · '))) : null,
       it.error ? h('div', { class: 'banner crit' }, h('div', { class: 'txt' }, h('strong', { text: 'Fehler: ' }), str(it.error))) : null,
       app.field('Titel', title),
-      h('div', { class: 'form-grid' }, app.field('Kategorie', cat), app.field('Dokumenttyp', type), app.field('Jahr', year), app.field('Projekt', projSel), app.field('Schlagworte', tags), app.field('Leistungen', services, { hint: 'Mehrfachauswahl mit Strg oder Cmd' })),
+      h('div', { class: 'form-grid' }, app.field('Kategorie', cat), app.field('Dokumenttyp', type), app.field('Jahr', year), np.field, app.field('Schlagworte', tags), app.field('Leistungen', services, { hint: 'Mehrfachauswahl mit Strg oder Cmd' })),
+      np.panel,
       app.field('Zusammenfassung', summary),
       it.entities ? h('div', { class: 'kb-ents' }, [['Orte', 'places'], ['Organisationen', 'orgs'], ['Projekte', 'projects'], ['Maschinen', 'machines'], ['Daten', 'dates']].map(([l, k]) => (arr(it.entities[k]).length ? h('div', {}, h('span', { class: 'label', text: l }), h('div', { class: 'chips' }, arr(it.entities[k]).map(x => h('span', { class: 'chip', text: x })))) : null))) : null,
       sp ? h('div', { class: 'card' }, h('h4', { text: 'Ablagevorschlag SharePoint Marketing' }), h('div', { class: 'fname', text: sp.path }),
@@ -12360,7 +12920,7 @@ let shown = false, hideT = null;
   app.addBanner(() => {
     const n = items().filter(i => i.status === 'pruefen').length;
     if (!n || S.world !== 'wissen' || S.tab.wissen === 'pruefung') return null;
-    return h('div', { class: 'banner warn', role: 'status' }, h('div', { class: 'txt' }, h('strong', { text: n + (n === 1 ? ' Eintrag wartet' : ' Einträge warten') + ' auf Prüfung. ' }), 'Unsichere Einordnung, nicht lesbare Inhalte oder Verdacht auf personenbezogene Daten.'), h('button', { class: 'btn small', type: 'button', onclick: () => app.go('wissen', 'pruefung') }, 'Zur Prüfung'));
+    return h('div', { class: 'banner warn', role: 'status' }, h('div', { class: 'txt' }, h('strong', { text: n + (n === 1 ? ' Eintrag wartet' : ' Einträge warten') + ' auf Prüfung. ' }), 'Unsichere Einordnung, nicht lesbare Inhalte oder Verdacht auf personenbezogene Daten.'), h('button', { class: 'btn small', type: 'button', onclick: () => app.go('wissen', 'pruefung') }, app.ico('lupe'), 'Zur Prüfung'));
   });
   let lastKick = 0;
   const origRefresh = app.refresh;
@@ -12693,7 +13253,7 @@ let shown = false, hideT = null;
           p.kind === 'proj' ? h('button', { class: 'btn small', type: 'button', onclick: () => editProject(p.data) }, 'Bearbeiten') : null,
           p.kind === 'proj' || p.kind === 'ref' ? h('button', { class: 'btn small', type: 'button', disabled: !canWrite(), onclick: () => startSetPos(p) }, app.ico('pin'), hasPos(p) ? 'Position korrigieren' : 'Position setzen') : null,
           p.kind === 'proj' && p.status !== 'geprueft' ? h('button', { class: 'btn small primary', type: 'button', disabled: !canWrite() || !hasPos(p), onclick: async () => { if (await app.write('kb_projects/' + p.id, 'update', { status: 'geprueft', reviewedAt: Date.now() })) app.toast('Projekt bestätigt.'); } }, icon('check'), 'Als geprüft bestätigen') : null,
-          p.kind === 'ref' ? h('button', { class: 'btn small primary', type: 'button', disabled: !canWrite(), onclick: async () => { const id = await adoptRef(p.id, { lat: p.lat, lon: p.lon, place: p.place, state: p.state, geoHow: p.how }); if (id) { MP.sel = 'p:' + id; app.refresh(); } } }, 'Als Projekt übernehmen') : null,
+          p.kind === 'ref' ? h('button', { class: 'btn small primary', type: 'button', disabled: !canWrite(), onclick: async () => { const id = await adoptRef(p.id, { lat: p.lat, lon: p.lon, place: p.place, state: p.state, geoHow: p.how }); if (id) { MP.sel = 'p:' + id; app.refresh(); } } }, app.ico('stern'), 'Als Projekt übernehmen') : null,
           p.kind === 'proj' ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => { S.ui.kb.project = p.id; S.ui.kb.status = 'aktiv'; app.go('wissen', 'archiv'); } }, app.ico('buch'), 'Unterlagen im Archiv') : null,
           p.kind === 'ref' ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => app.go('marketing', 'references') }, app.ico('stern'), 'Zur Referenz') : null,
           p.kind === 'event' ? h('button', { class: 'btn small ghost', type: 'button', onclick: () => app.go('marketing', 'events') }, app.ico('messestand'), 'Zum Event') : null));
@@ -12923,7 +13483,7 @@ let shown = false, hideT = null;
   // Einwilligungsdialog direkt über der Karte (nicht modal): nennt Anbieter, Host, Zweck und Widerruf.
   function consentPanel(id, p) {
     const tid = 'gm-consent-' + id;
-    const yes = h('button', { class: 'btn primary', type: 'button', onclick: () => { asking = ''; failedHosts.delete(p.host); saveConsent(GL.consent.grant(p.host, new Date().toISOString())); } }, 'Einwilligen und laden');
+    const yes = h('button', { class: 'btn primary', type: 'button', onclick: () => { asking = ''; failedHosts.delete(p.host); saveConsent(GL.consent.grant(p.host, new Date().toISOString())); } }, app.ico('check'), 'Einwilligen und laden');
     const no = h('button', { class: 'btn ghost', type: 'button', onclick: () => { asking = ''; app.refresh(); } }, 'Abbrechen');
     const panel = h('div', { class: 'gm-consent', role: 'dialog', 'aria-modal': 'false', 'aria-labelledby': tid, onkeydown: ev => { if (ev.key === 'Escape') { asking = ''; app.refresh(); } } },
       h('h4', { id: tid, text: 'Einwilligung: Straßenkarte laden' }),
@@ -13127,7 +13687,7 @@ let shown = false, hideT = null;
       app.field('Beschluss', inp('beschluss', Object.assign(h('textarea', { id: 'cle-' + x.id, placeholder: 'Beschluss / Entscheidung der GL' }), { value: dr.beschluss })), { wide: true }),
       app.field('Notiz', inp('notiz', Object.assign(h('textarea', { id: 'cln-' + x.id, placeholder: 'Anmerkung – keine personenbezogenen Daten Dritter' }), { value: dr.notiz })), { wide: true }),
       h('div', { class: 'field wide' }, h('div', { class: 'row' },
-        h('button', { class: 'btn primary', type: 'button', disabled: ro(), onclick: async () => { const ok = await save(x.id, { status: dr.status || 'offen', rolle: dr.rolle, frist: dr.frist, budget: dr.budget.trim(), beschluss: dr.beschluss.trim(), notiz: dr.notiz.trim() }, 'Checkliste erfasst'); if (ok) { ui.open[x.id] = false; delete ui.drafts[x.id]; rerender(); } } }, 'Speichern'),
+        h('button', { class: 'btn primary', type: 'button', disabled: ro(), onclick: async () => { const ok = await save(x.id, { status: dr.status || 'offen', rolle: dr.rolle, frist: dr.frist, budget: dr.budget.trim(), beschluss: dr.beschluss.trim(), notiz: dr.notiz.trim() }, 'Checkliste erfasst'); if (ok) { ui.open[x.id] = false; delete ui.drafts[x.id]; rerender(); } } }, app.ico('check'), 'Speichern'),
         h('button', { class: 'btn ghost', type: 'button', onclick: () => { ui.open[x.id] = false; delete ui.drafts[x.id]; rerender(); } }, 'Schließen')))) : null;
     return h('li', { class: 'task' + (done ? ' done' : '') + (x.typ === 'drop' ? ' cl-drop' : '') },
       h('button', { class: 'cb', type: 'button', disabled: ro(), 'aria-pressed': String(done), 'aria-label': x.text + ': ' + (done ? 'als offen markieren' : 'als erledigt markieren'),
@@ -13218,3 +13778,5 @@ let shown = false, hideT = null;
   else window.FC.app.boot();
 })();
 </script>
+
+
