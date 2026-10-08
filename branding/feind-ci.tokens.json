@@ -136,6 +136,15 @@
       "2": "#e7ecec",
       "3": "#4d5858",
       "3-edge": "#b8bfbf"
+    },
+    "karte": {
+      "hinweis": "Länderflächen in Abstufungen (Deckkraft) von --map-fill; Grün für Zahlenkreise und Akzente (Farbsystem 1.2).",
+      "light": {
+        "map-fill": "#424e4e"
+      },
+      "dark": {
+        "map-fill": "#b8bfbf"
+      }
     }
   },
   "ausgeschlossen": [
@@ -144,5 +153,11 @@
     "Ocker/Bernstein",
     "Braun",
     "Beige"
-  ]
+  ],
+  "marke": {
+    "hinweis": "Standortmarke EF (Hausdach): Plakette brand-anth, Kürzel und Kontur Weiß, Dach accent; in beiden Themes gleich.",
+    "brand-anth": "#424e4e",
+    "kuerzel": "#ffffff",
+    "dach": "#84bb20"
+  }
 }

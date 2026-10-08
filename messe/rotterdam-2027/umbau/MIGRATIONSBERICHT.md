@@ -275,3 +275,17 @@ Position setzen (Klick auf freie Fläche), Projekt bearbeiten, Referenz überneh
 - `npm run test:cockpit`: 40 bestanden
 - `npm run test:cockpit:e2e`: 30 bestanden
 - `pytest`: 59 bestanden
+
+## Rückmeldung zu Version 49 (08.10.2026)
+
+- **Brennglas-Aufnahmeformular:** Neue Aktion „Aufnahmeformular (PDF, leer)“ in der Referenz-Bibliothek (unter „Mehr“).
+  Leeres, ausfüllbares A4-PDF mit denselben Feldern wie „Neues Referenzprojekt“, mit Verwendung (Website, Print mit
+  Medium, intern mit Zweck), Kundenfreigabe, Fotos und Quelle. Erfasst wird nur die Rolle, keine Namen.
+  Ergebnis: 2 Seiten, 26 Formularfelder. Lokal mit jsPDF 4.2.1 erzeugt; der SRI-Hash ist identisch mit dem im
+  Cockpit. Test: `aufnahmeformular.e2e.mjs`.
+- **Standortmarke EF mit Hausdach:** Die Form bleibt, darüber liegt ein Dach in Feind-Grün. Plakette Feind-Grau
+  (`--brand-anth`, in beiden Themes gleich), Kürzel und Kontur Weiß.
+- **Kartenflächen in Feind-Grau:** Die Länderflächen der Ausschreibungs- und der Referenzkarte zeigen ihre Abstufungen
+  jetzt in Feind-Grau (`--map-fill`: hell `#424E4E`, dunkel `#B8BFBF`) statt in Grün. Grün bleibt für Zahlenkreise
+  und Umrisse. Farbsystem auf Version 1.2 angehoben, Token-Datei ergänzt.
+- Tests: 40 Unit, 31 E2E.

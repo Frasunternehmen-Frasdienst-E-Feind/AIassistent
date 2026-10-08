@@ -32,6 +32,8 @@
   --chart-2: #424e4e;
   --chart-3: #c9d3d3;
   --chart-3-edge: #5f6969;
+  --map-fill: #424e4e; /* Länderflächen der Karten in Abstufungen (Wunsch David 08.10.2026); dunkel hell-grau */
+  --brand-anth: #424e4e; /* Feind-Grau für Logo-Marken, in beiden Themes gleich */
   --chart-track: #e6eaea;
   --ok: #5e8a14;
   --crit: #b8000a;
@@ -94,6 +96,7 @@
     --chart-2: #e7ecec;
     --chart-3: #4d5858;
     --chart-3-edge: #b8bfbf;
+    --map-fill: #b8bfbf;
     --chart-track: #384242;
     --ok: #a6d65a;
     --crit: #ff9a9f;
@@ -139,6 +142,7 @@
   --chart-2: #e7ecec;
   --chart-3: #4d5858;
   --chart-3-edge: #b8bfbf;
+  --map-fill: #b8bfbf;
   --chart-track: #384242;
   --ok: #a6d65a;
   --crit: #ff9a9f;
@@ -610,15 +614,15 @@ button.kpi:hover { border-color: var(--ink-muted); }
 .refmap-stage { position: relative; width: 100%; max-width: 440px; }
 .refmap-stage svg { display: block; width: 100%; height: auto; }
 .refmap-stage .land { fill: var(--surface-muted); stroke: var(--ink-muted); stroke-width: 1.5; stroke-linejoin: round; }
-/* Bundesländer: neutral, mit Referenzen in drei Grün-Stufen; Grenzverlauf Deutschland kräftiger obenauf. */
+/* Bundesländer: neutral, mit Referenzen in drei Feind-Grau-Stufen (--map-fill); Grenzverlauf Deutschland kräftiger obenauf. */
 /* Grenzverlauf der Bundeslaender: duenne, immer sichtbare Haarlinie (auch ohne Hover).
    non-scaling-stroke haelt sie auf jedem Bildschirm bei knapp 1 px. */
 .refmap-stage .bl { fill: var(--surface-muted); stroke: color-mix(in srgb, var(--ink-muted) 62%, transparent); stroke-width: .9; vector-effect: non-scaling-stroke; stroke-linejoin: round; transition: fill .2s ease; }
 .refmap-stage .bl:hover { fill: color-mix(in srgb, var(--ink-muted) 22%, var(--surface-muted)); }
-.refmap-stage .bl.n1 { fill: color-mix(in srgb, var(--accent) 22%, var(--surface)); }
-.refmap-stage .bl.n2 { fill: color-mix(in srgb, var(--accent) 42%, var(--surface)); }
-.refmap-stage .bl.n3 { fill: color-mix(in srgb, var(--accent) 65%, var(--surface)); }
-.refmap-stage .bl.n1:hover, .refmap-stage .bl.n2:hover, .refmap-stage .bl.n3:hover { fill: color-mix(in srgb, var(--accent) 80%, var(--surface)); }
+.refmap-stage .bl.n1 { fill: color-mix(in srgb, var(--map-fill) 22%, var(--surface)); }
+.refmap-stage .bl.n2 { fill: color-mix(in srgb, var(--map-fill) 42%, var(--surface)); }
+.refmap-stage .bl.n3 { fill: color-mix(in srgb, var(--map-fill) 65%, var(--surface)); }
+.refmap-stage .bl.n1:hover, .refmap-stage .bl.n2:hover, .refmap-stage .bl.n3:hover { fill: color-mix(in srgb, var(--map-fill) 80%, var(--surface)); }
 .refmap-stage .border { fill: none; stroke: var(--ink-strong); stroke-width: 1.1; stroke-linejoin: round; pointer-events: none; }
 .refmap-stage .cap circle { fill: var(--surface); stroke: var(--ink-muted); stroke-width: .9; opacity: .5; }
 .refmap-stage .cap text { font: 600 5.4px var(--font-sans); fill: var(--ink-muted); opacity: .55; paint-order: stroke; stroke: var(--surface); stroke-width: 2px; pointer-events: none; }
@@ -627,9 +631,9 @@ button.kpi:hover { border-color: var(--ink-muted); }
 .refmap-legend i.cap-on, .refmap-legend i.cap-off { border-radius: 50%; background: var(--surface); }
 .refmap-legend i.cap-off { border-color: var(--ink-muted); opacity: .55; }
 .refmap-legend i.sh { width: 12px; margin-right: 1px; border-color: var(--line); }
-.refmap-legend i.sh.n1 { background: color-mix(in srgb, var(--accent) 22%, var(--surface)); }
-.refmap-legend i.sh.n2 { background: color-mix(in srgb, var(--accent) 42%, var(--surface)); }
-.refmap-legend i.sh.n3 { background: color-mix(in srgb, var(--accent) 65%, var(--surface)); margin-right: 6px; }
+.refmap-legend i.sh.n1 { background: color-mix(in srgb, var(--map-fill) 22%, var(--surface)); }
+.refmap-legend i.sh.n2 { background: color-mix(in srgb, var(--map-fill) 42%, var(--surface)); }
+.refmap-legend i.sh.n3 { background: color-mix(in srgb, var(--map-fill) 65%, var(--surface)); margin-right: 6px; }
 .refmap-states .chips { margin-top: 4px; }
 .refmap-stage svg text.site-l { font-size: 6.4px; font-weight: 600; paint-order: stroke; stroke: var(--surface); stroke-width: 2px; }
 .refmap-stage .site { fill: var(--accent); stroke: var(--ink-strong); stroke-width: 1; }
@@ -655,7 +659,7 @@ button.kpi:hover { border-color: var(--ink-muted); }
 .refmap-legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; background: var(--accent); border: 1px solid var(--ink-strong); }
 .refmap-legend i.pin { width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--surface-inverse); color: var(--ink-inverse); border: 1.5px solid var(--accent); vertical-align: -5px; }
 .refmap-legend i.pin .ic { width: 12px; height: 12px; --ic-d: inline; --ic-accent: var(--accent); }
-.refmap-stage .site-fe .ef-use { color: var(--accent); fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.75; --ic-tone: 1; --ic-tone-c: var(--surface-inverse); --ic-accent: var(--accent); --ic-d: inline; pointer-events: none; overflow: visible; }
+.refmap-stage .site-fe .ef-use { color: var(--ink-inverse); fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.75; --ic-tone: 1; --ic-tone-c: var(--brand-anth); --ic-accent: var(--accent); --ic-d: inline; pointer-events: none; overflow: visible; }
 .refmap-detail .t { font-weight: 700; color: var(--ink-strong); }
 @media (max-width: 720px) { .refmap { grid-template-columns: 1fr; } .refmap-stage { margin: 0 auto; } }
 @media print { .refpin i { border-color: var(--print-ink); } }
@@ -2165,15 +2169,15 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
 .gm-legend .gm-scale span { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; min-width: 36px; }
 .gm-legend i { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--line); vertical-align: -3px; margin-right: 4px; position: relative; }
 .gm-legend .gm-scale i { width: 36px; height: 12px; margin: 0; background: var(--surface); }
-.gm-legend .gm-scale i::after { content: ""; position: absolute; inset: 0; background: var(--accent); opacity: var(--o, 0); }
+.gm-legend .gm-scale i::after { content: ""; position: absolute; inset: 0; background: var(--map-fill); opacity: var(--o, 0); }
 .gm-legend i.gm-l-home { border: 2px solid var(--accent); background: transparent; }
 .gm-legend i.gm-l-pin, .gm-legend i.gm-l-site, .gm-legend i.gm-l-cluster { border-radius: 50%; }
 .gm-legend i.gm-l-pin { background: var(--warn); border-color: var(--surface); }
 .gm-legend i.gm-l-site { width: auto; height: auto; background: none; border: 0; border-radius: 0; }
-/* Standortmarke EF in Markenfarben: Plakette Anthrazit, Kontur und Kürzel Feind-Grün (wie die Referenzkarte). */
-.ef-mark { display: inline-block; width: 33px; height: 24px; line-height: 0; color: var(--accent); --ic-tone: 1; --ic-tone-c: var(--surface-inverse); --ic-accent: var(--accent); --ic-d: inline; filter: drop-shadow(0 1px 2px var(--shadow)); }
+/* Standortmarke EF in Markenfarben: Hausdach Feind-Grün, Plakette Feind-Grau, Kürzel und Kontur Weiß (Wunsch David 08.10.2026). */
+.ef-mark { display: inline-block; width: 32px; height: 31px; line-height: 0; color: var(--ink-inverse); --ic-tone: 1; --ic-tone-c: var(--brand-anth); --ic-accent: var(--accent); --ic-d: inline; filter: drop-shadow(0 1px 2px var(--shadow)); }
 .ef-mark svg { width: 100%; height: 100%; overflow: visible; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
-.gm-legend .ef-mark, .mp-legend .ef-mark, .refmap-legend .ef-mark { width: 23px; height: 17px; filter: none; vertical-align: middle; flex: none; }
+.gm-legend .ef-mark, .mp-legend .ef-mark, .refmap-legend .ef-mark { width: 22px; height: 21px; filter: none; vertical-align: middle; flex: none; }
 .gm-home { background: none; border: 0; }
 /* Ausgewählter Pin (Projektkarte) und Wahl-Modus für „Position setzen“. */
 .gm-pin-wrap.sel { z-index: 900 !important; }
@@ -5376,9 +5380,9 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     muell: ['Messe', 'Müll / Entsorgung', 'Abfall, Sperrmüll, Reinigung', T('M6 7l1 14h10l1-14z') + L('M3.5 7h17M9 7V4h6v3M6 7l1 14h10l1-14') + L('M10 11v6M14 11v6', 1.5)],
     schloss: ['Messe', 'Schloss / Datenschutz', 'Datenschutz, geschützte Dateien', TR(4, 10, 16, 11, 2) + ZC(12, 14.5, 1.5) + R(4, 10, 16, 11, 2) + L('M8 10V7a4 4 0 0 1 8 0v3') + L('M12 15.5v2.5', 1.5)],
     /* ---------- Marke ---------- */
-    // Feind-Standort (Lübben, Wittenburg): Plakette mit dem Kürzel EF der freigegebenen Kurzform E.FEIND (Wunsch David 07.10.2026).
-    // In der Symbolsammlung als Linienzeichen; auf Karten in den Markenfarben über .ef-mark (Anthrazit-Fläche, Feind-Grün).
-    'standort-ef': ['Marke', 'Feind-Standort (EF)', 'Hauptstandorte Lübben und Wittenburg auf Karten und in Legenden', TR(2, 5, 20, 14, 2.5) + ZP('M22 14.5v2a2.5 2.5 0 0 1-2.5 2.5h-2.75z') + R(2, 5, 20, 14, 2.5) + L('M10.5 9H6v6h4.5M6 12h3.5', 2) + L('M18 9h-4.5v6M13.5 12h3.5', 2)],
+    // Feind-Standort (Lübben, Wittenburg): Plakette mit dem Kürzel EF der Kurzform E.FEIND unter einem Hausdach (Wunsch David 07./08.10.2026).
+    // Dach als Akzentfläche (Feind-Grün). Auf Karten über .ef-mark: Fläche Feind-Grau, Kürzel und Kontur Weiß, Dach Grün.
+    'standort-ef': ['Marke', 'Feind-Standort (EF)', 'Hauptstandorte Lübben und Wittenburg auf Karten und in Legenden', ZP('M1.5 10.8 12 3l10.5 7.8v2.4L12 5.5 1.5 13.2z') + TR(3, 12, 18, 10.5, 1.5) + '<rect x="3" y="12" width="18" height="10.5" rx="1.5" stroke-width="1"/>' + L('M10.25 14.5H6.5v5.5h3.75M6.5 17.25h3', 1.6) + L('M17.5 14.5h-3.75V20M13.75 17.25h3', 1.6)],
     /* ---------- Status ---------- */
     'st-open': ['Status', 'Offen', 'Status offen (leeres Quadrat)', R(4, 4, 16, 16, 2.5)],
     'st-progress': ['Status', 'In Arbeit', 'Status in Arbeit (halb gefüllter Kreis)', '<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" style="fill:currentColor;stroke:none"/>'],
@@ -6374,8 +6378,8 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     return svg;
   };
   // Standortmarke EF in Markenfarben (.ef-mark): als Element für Legenden, als HTML-Text für Leaflet-Marker.
-  // viewBox schneidet das 24er-Raster auf die Plakette (20 × 14) zu; Fläche über --ic-tone-c gefüllt.
-  const EF_HTML = '<span class="ef-mark" aria-hidden="true"><svg viewBox="1 4 22 16" focusable="false"><use href="#i-standort-ef" width="24" height="24"></use></svg></span>';
+  // viewBox schneidet das 24er-Raster auf Dach und Plakette (21 × 19,5 ab 1,5|3) zu; Fläche über --ic-tone-c gefüllt.
+  const EF_HTML = '<span class="ef-mark" aria-hidden="true"><svg viewBox="1 2 22 21" focusable="false"><use href="#i-standort-ef" width="24" height="24"></use></svg></span>';
   app.efMark = function (asHtml) {
     if (asHtml) return EF_HTML;
     const t = document.createElement('template');
@@ -7485,15 +7489,15 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       }
       return null;
     };
-    const sites = SITES.map(([name, lat, lng, anchor]) => { const [x, y] = proj(lat, lng); boxes.push([x - 6.6, y - 4.6, x + 6.6, y + 4.6]); return [name, x, y, anchor]; });
+    const sites = SITES.map(([name, lat, lng, anchor]) => { const [x, y] = proj(lat, lng); boxes.push([x - 6.6, y - 6.2, x + 6.6, y + 6.2]); return [name, x, y, anchor]; });
     for (const [name, x, y, anchor] of sites) {
       // Feind-Standort als Logo-Marke: Anthrazit-Fläche mit „EF“ in Feind-Grün, den beiden Buchstaben
       // der freigegebenen Kurzform E.FEIND (Wunsch David 07.10.2026).
       const lb = place(x, y, name, 6, SITE_FS, fitLabel(x, y, anchor === 'end' ? -8.5 : 8.5, 3, anchor, name, SITE_FS));
       svg.append(s('g', { class: 'site-fe' }, s('title', {}, 'Feind-Standort ' + name),
           // Kürzel aus der Symbolsammlung (standort-ef), damit Referenz- und Straßenkarte dieselbe Marke zeigen.
-          // <use> direkt (kein eingebettetes <svg>, das die Kartenregel auf volle Breite zöge): Raster 24, Plakette 20 × 14 ab (2|5), Maßstab 0,66.
-          s('use', { href: '#i-standort-ef', class: 'ef-use', x: (x - 7.92).toFixed(2), y: (y - 7.92).toFixed(2), width: 15.84, height: 15.84 })),
+          // <use> direkt (kein eingebettetes <svg>, das die Kartenregel auf volle Breite zöge): Raster 24, Marke 21 × 19,5 um (12|12,75), Maßstab 0,63.
+          s('use', { href: '#i-standort-ef', class: 'ef-use', x: (x - 7.56).toFixed(2), y: (y - 8.03).toFixed(2), width: 15.12, height: 15.12 })),
         lb ? s('text', { class: 'site-l', 'text-anchor': lb.anchor, x: lb.x.toFixed(1), y: lb.y.toFixed(1) }, name) : null);
     }
     for (const [state, city, lat, lng] of CAPITALS) {
@@ -12137,6 +12141,36 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       ]
     };
   }
+  // Leeres Brennglas-Aufnahmeformular für neue Referenzprojekte (Wunsch David 08.10.2026): dieselben Felder wie
+  // „Neues Referenzprojekt“ im Cockpit, zum Ausfüllen am Bildschirm oder ausgedruckt auf der Baustelle.
+  function specRefForm() {
+    return {
+      name: 'Aufnahmeformular Referenzprojekt', meta: false, approval: 'Ins Cockpit übertragen (Kürzel)',
+      subtitle: 'Leeres Formular · gleiche Felder wie „Neues Referenzprojekt“ in der Referenz-Bibliothek · am Bildschirm oder ausgedruckt ausfüllen',
+      blocks: [
+        { p: 'Pflicht sind Titel und mindestens eine Verwendung. Keine Namen, Telefonnummern oder E-Mail-Adressen von Personen eintragen; Kontakte gehören ins CRM. Den Kunden nur mit dokumentierter Freigabe nennen.', style: 'muted' },
+        { h: 'Projekt' },
+        { field: { label: 'Titel (Pflicht) · Projekt, nicht Kunde', name: 'Titel' } },
+        { fields: [{ label: 'Ort oder Abschnitt', name: 'Ort' }, { label: 'Bundesland', name: 'Bundesland' }] },
+        { fields: [{ label: 'Jahr', name: 'Jahr' }, { label: 'Monat und Jahr', name: 'Monat' }, { label: 'Leistungen (mit Komma)', name: 'Leistungen' }] },
+        { fields: [{ label: 'Projektseite (https)', name: 'Projektseite', optional: true }, { label: 'Breite (lat)', name: 'Breite', optional: true }, { label: 'Länge (lng)', name: 'Laenge', optional: true }] },
+        { field: { label: 'Zusammenfassung · Aufgabe und Ergebnis in ein bis zwei Sätzen', name: 'Zusammenfassung', h: 54 } },
+        { field: { label: 'Fakten · je Zeile einer, z. B. Fläche, Maschine, Bauzeit', name: 'Fakten', h: 54, optional: true } },
+        { h: 'Kunde' },
+        { field: { label: 'Kunde (Organisation)', name: 'Kunde', optional: true } },
+        { table: { zebra: false, cols: [{ t: '', w: 12, align: 'center' }, { t: 'Freigabe' }], rows: [[chk('Kundenfreigabe'), 'Kundenfreigabe liegt dokumentiert vor (sonst erscheint der Kunde nicht)']] } },
+        { h: 'Verwendung (Mehrfachauswahl, mindestens eine)' },
+        { table: { zebra: false, cols: [{ t: '', w: 12, align: 'center' }, { t: 'Verwendung', w: 62 }, { t: 'Angabe' }], rows: [
+          [chk('Verwendung_Online'), 'Online auf der Website fraesdienst-feind.de', mut('keine weitere Angabe')],
+          [chk('Verwendung_Print'), 'Nur in Printmedien', fld('Printmedium')],
+          [chk('Verwendung_Intern'), 'Nur interner Zweck', fld('Interner_Zweck')]] } },
+        { p: 'Ohne Haken bei „Online“ bietet das Cockpit keinen Website-Baustein an. Bei Fremdfotos, Kundengeländen oder erkennbaren Personen: Bitte Rechtsabteilung prüfen; für Fotos mit Personen ist eine Einwilligung erforderlich.', style: 'muted' },
+        { h: 'Fotos und Quelle' },
+        { fields: [{ label: 'Anzahl Fotos', name: 'Fotos', optional: true }, { label: 'Fotonachweis', name: 'Fotonachweis', optional: true }] },
+        { fields: [{ label: 'Quelle', name: 'Quelle' }, { label: 'Aufgenommen am', name: 'Aufgenommen_am' }, { label: 'Aufgenommen von (Rolle)', name: 'Aufgenommen_Rolle' }] }
+      ]
+    };
+  }
   const refsCsv = () => H.toCsv(['Jahr', 'Datum', 'Titel', 'Region', 'Ort', 'Breite', 'Länge', 'Kunde', 'Leistungen', 'Zusammenfassung', 'Projektseite', 'Verwendung', 'Quelle'],
     (app.mkFilteredRefs ? app.mkFilteredRefs() : S.data.references).map(r => [str(r.year), str(r.date), str(r.title), str(r.region), str(r.place), typeof r.lat === 'number' ? r.lat : '', typeof r.lng === 'number' ? r.lng : '',
       r.clientApproved === true ? str(r.client) : 'nicht freigegeben', arr(r.services).map(str).join(', '), str(r.summary), H.safeUrl(r.projectUrl) || '',
@@ -12593,7 +12627,10 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         tip: 'Legt ein Referenzprojekt über ein strukturiertes Formular an: Ort, Datum, Leistungen, Kundenfreigabe und die Verwendung (Website, Print, nur intern).',
         disabled: !(app.mkNewReference && app.mkCanWriteRef && app.mkCanWriteRef()),
         run: () => app.mkNewReference && app.mkNewReference() },
-      pdf('r', 'Referenzmappe (PDF)', 'Referenzmappe', specRefs), csv('r-csv', 'Referenzen als CSV', 'Feind-Referenzen.csv', refsCsv), print('r', 'Referenzmappe', specRefs)],
+      pdf('r', 'Referenzmappe (PDF)', 'Referenzmappe', specRefs), csv('r-csv', 'Referenzen als CSV', 'Feind-Referenzen.csv', refsCsv), print('r', 'Referenzmappe', specRefs),
+      { id: 'r-form-pdf', label: 'Aufnahmeformular (PDF, leer)', short: 'Formular', icon: 'dokument',
+        tip: 'Leeres, ausfüllbares Brennglas-PDF für ein neues Referenzprojekt: gleiche Felder wie „Neues Referenzprojekt“, mit Verwendung (Website, Print, intern). Zum Ausdrucken für die Baustelle.',
+        run: () => runPdf(specRefForm, 'Aufnahmeformular Referenzprojekt', false) }],
     'marketing:bibliothek': () => [{ id: 'kb-open', label: 'Upload-Ordner öffnen', short: 'Upload', icon: 'ext', main: true, tip: 'Öffnet den Dropbox-Ordner KI-Agent/Datenbank-UPLOADs in einem neuen Tab. Dort abgelegte Dateien verarbeitet Claude zum nächsten Termin.', run: () => { const w = window.open(app.kbInboxUrl(), '_blank', 'noopener'); if (!w) copy(app.kbInboxUrl(), 'Link zum Upload-Ordner kopiert.'); } },
       pdf('kb', 'Bestandsliste (PDF)', 'Wissensbibliothek', specBibliothek),
       csv('kb-csv', 'Bestand als CSV', 'Feind-Wissensbibliothek.csv', kbCsv),
@@ -12657,7 +12694,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     if (!f) return [];
     try { return f().filter(Boolean); } catch (e) { if (window.console) console.error('[Aktionen]', e); return []; }
   };
-  app.ACTION_SPECS = { specCopilot, specContent, specLeads, specTenders, specEvents, specSeo, specRefs, specBibliothek, specPlan90, specAblage, specDashboard, specAufgaben, specFristen, specBudget, specKpi, specLeadzaehler, specLessons, specFakten, specTeam, specProtokoll, specAgenda, specWissen, specStatus, specHeute, specCheckliste, specArchiv, specPruefung, specKarte, specSchutz };
+  app.ACTION_SPECS = { specCopilot, specContent, specLeads, specTenders, specEvents, specSeo, specRefs, specRefForm, specBibliothek, specPlan90, specAblage, specDashboard, specAufgaben, specFristen, specBudget, specKpi, specLeadzaehler, specLessons, specFakten, specTeam, specProtokoll, specAgenda, specWissen, specStatus, specHeute, specCheckliste, specArchiv, specPruefung, specKarte, specSchutz };
 
   /* ---------- Darstellung und Bedienung ---------- */
   const ab = { open: false, busy: null };
@@ -14950,7 +14987,7 @@ let shown = false, hideT = null;
   }
 
   const pinIcon = (p, home, sel) => home
-    ? L.divIcon({ className: 'gm-home', iconSize: [33, 24], iconAnchor: [16.5, 12], html: app.efMark(true) })
+    ? L.divIcon({ className: 'gm-home', iconSize: [32, 31], iconAnchor: [16, 15.5], html: app.efMark(true) })
     : L.divIcon({ className: 'gm-pin-wrap' + (sel ? ' sel' : ''), iconSize: [16, 16], iconAnchor: [8, 8],
       html: '<span class="gm-pin' + (p.kind === 'event' ? ' ev' : '') + (p.approx ? ' approx' : '') + '" style="--pin:var(' + (KIND[p.kind] || '--ink') + ')"></span>' });
 
@@ -14993,7 +15030,7 @@ let shown = false, hideT = null;
       map.fitBounds(DE_BOUNDS, { animate: false }); // Ansicht vor dem ersten Layer setzen, sonst fehlen Pixelgrenzen
       map.attributionControl.setPrefix(false);
       const G = data();
-      const de = tok('--surface'), line = tok('--line'), land = tok('--surface-muted'), ink = tok('--ink-muted'), acc = tok('--accent'), focus = tok('--focus');
+      const de = tok('--surface'), line = tok('--line'), land = tok('--surface-muted'), ink = tok('--ink-muted'), acc = tok('--accent'), focus = tok('--focus'), fillTone = tok('--map-fill');
       if (!on) {
         map.getContainer().style.background = tok('--line-soft');
         const feats = Object.entries(G.countries).filter(([cc]) => cc !== 'DE').flatMap(([, rings]) => rings.map(r => L.polygon(ring(r), { color: line, weight: 0.8, fillColor: land, fillOpacity: 1, interactive: false })));
@@ -15021,7 +15058,7 @@ let shown = false, hideT = null;
         const k = cls.classOf(s.n || 0), o = cls.legend[k].opacity;
         const poly = L.polygon(rings.map(ring), {
           color: s.sel ? focus : s.home ? acc : ink, opacity: s.sel || s.home ? 1 : 0.55, weight: s.sel ? 3 : s.home ? 2.5 : 1,
-          fillColor: k ? acc : de, fillOpacity: k ? (on ? o * 0.8 : o) : (on ? 0 : 1), interactive: !!(st && opts.onState)
+          fillColor: k ? fillTone : de, fillOpacity: k ? (on ? o * 0.8 : o) : (on ? 0 : 1), interactive: !!(st && opts.onState)
         });
         if (st && opts.onState) {
           const lab = name + ', ' + (s.n || 0) + ((s.n || 0) === 1 ? ' Ausschreibung' : ' Ausschreibungen') + (s.home ? ', Heimatregion' : '');

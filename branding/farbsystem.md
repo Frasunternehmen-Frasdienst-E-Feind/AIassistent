@@ -1,6 +1,6 @@
 # Farb- und Visualisierungssystem der Fräsdienst-Service E. Feind GmbH
 
-> **Version 1.1 vom 07.10.2026.** Arbeitsanweisung (global) für alle visuellen Arbeiten:
+> **Version 1.2 vom 08.10.2026.** Arbeitsanweisung (global) für alle visuellen Arbeiten:
 > Website, Cockpit-Dashboards, Druck, Social Media, Messe- und Standbau,
 > Fahrzeugbeschriftung, Präsentationen, Dokumente und interne Tools.
 >
@@ -125,7 +125,10 @@ Abstände: hell ≥ 18,8, dunkel ≥ 24,8 (alle Paare, normal und Rot-Grün-Schw
   Weiß unter 3:1 liegen (2,31 bzw. 1,53). Direkte Wertbeschriftung oder Legende
   ist Pflicht.
 - **Legende ist Pflicht**, **Tabelle als Fallback** (`<details>`) mit denselben Werten.
-- Abgestufte Werte (Karten, Heatmaps): Feind-Grün mit steigender Deckkraft.
+- Abgestufte Werte in Heatmaps: Feind-Grün mit steigender Deckkraft.
+- Länderflächen auf Karten: Feind-Grau mit steigender Deckkraft (`--map-fill`, hell `#424E4E`, dunkel `#B8BFBF`).
+  Grün bleibt dort für Zahlenkreise, Umrisse der Standort-Länder und Akzente.
+- Standortmarke EF: Plakette Feind-Grau `#424E4E` (`--brand-anth`, in beiden Themes gleich), Kürzel und Kontur Weiß, Hausdach Feind-Grün.
 
 ---
 
@@ -277,6 +280,7 @@ geprüftem AA-Kontrast und Änderungsantrag mit Begründung.
 |---|---|---|---|
 | 09.09.2026 | 1.0 | Erstfassung, basierend auf CI-Leitfaden v4 und CD-Handbuch 2019 | Marketing & Eventmanagement |
 | 07.10.2026 | 1.1 | Kontrastwerte nachgemessen; Grün-Text `#5E8A14` → `#4D7311` (4,10 → 5,56:1); Text gedämpft `#5F6969`; Rot aus der Diagramm-Reihenfolge; Ocker/Bernstein, Taupe, Tiefblau und Tannengrün als Diagrammfarben gestrichen (nicht unterscheidbar bzw. ausgeschlossen); Warnung = Signal-Gelbgrün `#D6E000` mit Anthrazit; ausgeschlossene Farbtöne (2.6); Dark-Werte für Diagramme ergänzt | Marketing & Eventmanagement |
+| 08.10.2026 | 1.2 | Länderflächen der Karten in Feind-Grau statt Grün; Standortmarke EF mit Hausdach (Feind-Grau, Weiß, Grün) | Marketing & Eventmanagement |
 
 ---
 

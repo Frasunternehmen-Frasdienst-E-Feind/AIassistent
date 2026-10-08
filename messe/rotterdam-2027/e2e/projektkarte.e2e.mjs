@@ -88,16 +88,17 @@ test('Position setzen: Klick auf freie Kartenfläche speichert die Lage als manu
   await ctx.close();
 });
 
-test('Dunkelmodus: Standortmarke in Markenfarben (Anthrazit-Fläche, Feind-Grün)', async () => {
+test('Dunkelmodus: Standortmarke in Markenfarben (Feind-Grau, Dach Grün, Kürzel Weiß)', async () => {
   const { page, ctx } = await open({ colorScheme: 'dark' });
   const c = await page.evaluate(() => {
     const ef = getComputedStyle(document.querySelector('.mp-legend .ef-mark'));
     const root = getComputedStyle(document.documentElement);
-    return { plate: ef.getPropertyValue('--ic-tone-c').trim(), tone: ef.getPropertyValue('--ic-tone').trim(), color: ef.color, inv: root.getPropertyValue('--surface-inverse').trim(), acc: root.getPropertyValue('--accent').trim() };
+    return { plate: ef.getPropertyValue('--ic-tone-c').trim(), tone: ef.getPropertyValue('--ic-tone').trim(), color: ef.color, inv: root.getPropertyValue('--brand-anth').trim(), acc: root.getPropertyValue('--accent').trim(), roof: ef.getPropertyValue('--ic-accent').trim() };
   });
   const hex = v => v.replace(/rgb\((\d+), (\d+), (\d+)\)/, (_, r, g, b) => '#' + [r, g, b].map(n => (+n).toString(16).padStart(2, '0')).join(''));
-  assert.equal(c.plate, c.inv, 'Plakette Anthrazit');
+  assert.equal(c.plate, c.inv, 'Plakette Feind-Grau');
+  assert.equal(c.roof, c.acc, 'Dach Feind-Grün');
   assert.equal(c.tone, '1', 'Fläche deckend');
-  assert.equal(hex(c.color), c.acc);
+  assert.equal(hex(c.color), '#ffffff', 'Kürzel Weiß');
   await ctx.close();
 });

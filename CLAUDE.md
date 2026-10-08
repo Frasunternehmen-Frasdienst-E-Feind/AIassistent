@@ -9,7 +9,7 @@ der Lohnabrechnung stehen.
 Farben, Schriften, Radien und Abstände stehen in `branding/feind-ci.tokens.json`
 und sind die einzige Quelle – keine eigenen Paletten erfinden, keine Farbwerte
 im Markup hart setzen. Regeln, Statusfarben, Diagrammfarben und Kontrastwerte
-stehen im Farbsystem `branding/farbsystem.md` (Version 1.1). Rangfolge:
+stehen im Farbsystem `branding/farbsystem.md` (Version 1.2). Rangfolge:
 CI-Leitfaden, dann Farbsystem, dann sonstige Vorgaben.
 
 * Grün `#84bb20` ist Akzent- und Flächenfarbe. Auf Grün steht Anthrazit
