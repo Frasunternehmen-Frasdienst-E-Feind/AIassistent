@@ -1,5 +1,7 @@
 # Feind Cockpit A1 (Live-Stand)
 
+> **Übernommen in v3 (08.10.2026):** Alle A1-Funktionen stecken jetzt im führenden Cockpit v3 (`messe/rotterdam-2027/feind-cockpit-v3.html`, Artefakt GRG81). `src/` bleibt die Quelle dieser Module; Änderungen dort in v3 übernehmen. A1 wird nach der Veröffentlichung von v3 eingefroren.
+
 **Live:** https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd (Version 17 vom 01.10.2026, Veröffentlichung nach Freigabe)
 
 > **Stand Repo 02.10.2026: vor der Live-Version.** Korrekturen aus dem Code-Review zu PR #36 (Schreibreihenfolge je

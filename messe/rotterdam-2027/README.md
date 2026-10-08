@@ -33,6 +33,7 @@ Einstieg/Überblick über das Gesamtsystem: **`SYSTEM-UEBERSICHT.md`**.
 - Datenhaltung: geteilte Artefakt-Datenbank (`db`): `tasks/<id>` (Aufgaben), `checkliste/<Kategorie-Punkt>` = `{ status, rolle, frist, budget, beschluss, notiz }` (Checkliste 26→27), Alt-Bestand `overrides/<taskId>`.
   Fällt die Datenbank aus, speichert die Seite pro Gerät lokal (localStorage).
 - Der eingebettete Aufgabenstand im HTML ist Erstbefüllung und Notfall-Anzeige.
+- **A1-Funktionen übernommen (08.10.2026):** Aktionsleiste je Reiter (PDF, Druck, CSV, Kalender, Kopieren), Brennglas-PDF (jsPDF 4.2.1 mit SRI), Erläuterungs-Bubbles, Notion-Stand im Kopf, Filter und Admin-Sicherung sowie die Notion-Korrekturen aus PR #36 (Schreibvorgänge je Aufgabe nacheinander, „Blockiert durch“ beim Anlegen). Quelle der Module: `../../cockpit-a1/src/`; `test/a1-module.test.mjs` prüft, dass sie unverändert eingebettet sind. Vor dem Veröffentlichen: Capability `downloads` und die drei Notion-Werkzeuge im Manifest deklarieren.
 
 ## Corporate Design
 
