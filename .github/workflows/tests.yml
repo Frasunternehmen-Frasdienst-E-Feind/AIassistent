@@ -43,8 +43,12 @@ jobs:
           grep -q "0 Löschungen" /tmp/plan.txt
       - run: npm run test:cockpit:e2e
       - name: A1-Abnahme gegen v3 (Aktionsleiste, Brennglas-PDF, Notion)
+        shell: bash
         run: |
-          node cockpit-a1/e2e/actions-smoke.mjs messe/rotterdam-2027/feind-cockpit-v3.html
-          # notion-smoke protokolliert nur; Abbruch bei einem „false“ oder einem nicht leeren Fehler-Array
-          node cockpit-a1/e2e/notion-smoke.mjs messe/rotterdam-2027/feind-cockpit-v3.html | tee /tmp/notion-smoke.txt
-          ! grep -qE ': false\b|^Fehler: \[.+\]' /tmp/notion-smoke.txt
+          set -euo pipefail
+          V="$GITHUB_WORKSPACE/messe/rotterdam-2027/feind-cockpit-v3.html"
+          node cockpit-a1/e2e/actions-smoke.mjs "$V"
+          # notion-smoke protokolliert nur: Abbruch bei Absturz, einem „false“ oder fehlendem leeren Fehler-Array
+          node cockpit-a1/e2e/notion-smoke.mjs "$V" | tee /tmp/notion-smoke.txt
+          ! grep -qE ': false\b|FEHLT|kein Dialog|Create-Aufruf: 0' /tmp/notion-smoke.txt
+          grep -qx 'Fehler: \[\]' /tmp/notion-smoke.txt
