@@ -47,6 +47,10 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
 - **Zuständigkeit / keine Kollision:** Das Cockpit-HTML (`feind-cockpit-v3.html`, Artefakt GRG81 „Feind Cockpit (Copy)“) wird von der
   Claude-Code-Session gepflegt. Du schreibst **nicht** in diese Datei; deine Änderungen laufen über
   die geteilte DB (`tasks`, `overrides`, `settings/general`), Recherche-Notizen und Erinnerungen.
+  `settings/general` enthält auch die Marketing-Schwellenwerte: nur einzelne Felder aktualisieren (update),
+  das Dokument nie komplett ersetzen.
+- **Datenschutz im Team:** Zuständigkeiten nur als Rolle (Werkstatt, Standbau, Vertrieb …), Personen
+  höchstens als opake Konto-ID (`userId`) – keine Klarnamen in der DB.
   So vermeiden wir parallele, widersprüchliche Stände.
 - **Fakten:** Alte ToDo-Angaben, die dem Faktencheck widersprechen (Messedatum 12.–15.01.,
   Innovationspreis-Frist), nicht ungeprüft übernehmen – verifizieren und markieren.
@@ -58,14 +62,14 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
 - `messe/rotterdam-2027/KATEGORISIERUNG-MANUS.md` – Herkunft/Integration der Daten
 - Artefakt-DB:
   - `tasks/<taskId>` = `{ id, title, cat, prio, owner, due, note, flags, deps, archived, origin, links, attachments, updatedAt }`
-  - `overrides/<taskId>` = `{ id, status, note, updatedAt }` (Alt-Bestand v1)
+  - `overrides/<taskId>` = `{ id, status, note, updatedAt }` (Alt-Bestand v1, nie löschen)
   - `checkliste/<Kategorie-Punkt>` = `{ status: offen|inArbeit|erledigt|zurueckgestellt, rolle, frist, budget, beschluss, notiz, updatedAt }` – Reiter „Checkliste 26→27“ (übernommene ToDo-Liste 2FT2wp; Texte stehen im HTML, nur die Erfassung in der DB; Verantwortliche nur als Rolle)
   - `settings/general` = `{ team, reminders:{ leadDays, escalateDays }, updatedAt }`
   - `budget/actuals` = `{ blocks:{ <key>:{ forecast, ist } }, updatedAt }`
   - `leads/counts` = `{ days:{ <JJJJ-MM-TT>:{ a,b,c } }, follow:{ a,b,c }, updatedAt }` (nur Stückzahlen, keine PII)
   - `acquisition/plan` = `{ slots:{ "<JJJJ-MM-TT>#<0|1>":{ target, note, done } }, targets:[{ id, name, segment, done }], updatedAt }` (nur Firmennamen)
   - `planning/materials` = `{ packing:[{ id, name, qty, detail, owner, packed, ret }], giveaways:[{ id, name, benefit, volume, qty, decision, note }], vendors:[{ id, name, role, status, note }], updatedAt }`
-  - `activity/<id>` = `{ id, ts, actorId, action, detail }` (Aktivitätsprotokoll, opake IDs)
+  - `activity/<id>` = `{ id, ts, actorId, action, detail }` (Aktivitätsprotokoll, opake IDs, max. 400)
 
 ## Check-In-Rhythmus (Vorschlag)
 - **Wöchentlich (Mo):** Fristen der nächsten 14 Tage prüfen, Fortschritt melden, Blocker eskalieren.

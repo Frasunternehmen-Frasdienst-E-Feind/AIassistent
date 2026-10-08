@@ -1,7 +1,7 @@
 # Abnahme Feind Cockpit v1.0 – 28.09.2026
 
 Grundlage: `Feind-Cockpit-Konsolidierung.md`, Kap. 10 (Akzeptanzkriterien), Kap. 4 (blinde Flecken)
-und Kap. 11 (Wellen 1–5). Die Prüfung ist automatisiert, soweit möglich: `npm run test:cockpit`
+und Kap. 11 (Wellen 1–5). Die Prüfung ist automatisiert, soweit möglich: `npm run test:cockpit-v1`
 (27 Unit-Tests) und `npm run e2e:cockpit` (13 E2E-Tests, Chromium, gemockte claude-Laufzeit).
 
 ## Akzeptanzkriterien
