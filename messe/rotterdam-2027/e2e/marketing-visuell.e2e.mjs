@@ -110,3 +110,21 @@ test('90-Tage-Plan: Ring-Kacheln, Fortschritt je Welle, Sprung aus dem Zeitplan 
   assert.deepEqual(errors, []);
   await ctx.close();
 });
+
+test('Referenzen: alle Karten gleich hoch, „Bearbeiten“ unten rechts auf gleicher Höhe', async () => {
+  const { page, ctx, errors } = await open('Referenzen');
+  await page.evaluate(() => {
+    const db = window.FC.app.state.store.db;
+    return Promise.all([
+      db.doc('references/rk1').set({ title: 'Lange Referenz mit viel Text', region: 'Sachsen', year: 2025, summary: 'Mehrere Sätze Beschreibung, damit diese Karte deutlich höher würde als die anderen.', facts: ['12.000 m²', 'Wirtgen W 210 Fi', '5 Arbeitstage'] }),
+      db.doc('references/rk2').set({ title: 'Kurz', region: 'Berlin', year: 2024 })
+    ]);
+  });
+  await page.waitForFunction(() => document.querySelectorAll('.refs > .card .ref-actions').length >= 2);
+  const m = await page.evaluate(() => [...document.querySelectorAll('.refs > .card')].map(c => { const a = c.getBoundingClientRect(), b = c.querySelector('.ref-actions .btn').getBoundingClientRect(); return { h: Math.round(a.height), unten: Math.round(a.bottom - b.bottom), rechts: Math.round(a.right - b.right) }; }));
+  assert.equal(new Set(m.map(x => x.h)).size, 1, 'gleiche Höhe');
+  assert.equal(new Set(m.map(x => x.unten)).size, 1, 'Knopf unten bündig');
+  assert.ok(m.every(x => x.rechts < 20), 'Knopf rechts');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});

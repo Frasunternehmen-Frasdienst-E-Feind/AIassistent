@@ -605,7 +605,10 @@ button.kpi:hover { border-color: var(--ink-muted); }
 .gaps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--s2); }
 
 /* ---------- Referenzen ---------- */
-.refs { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--s2); }
+.refs { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); grid-auto-rows: 1fr; gap: var(--s2); }
+/* Alle Projektkarten gleich hoch, „Bearbeiten“ immer unten rechts auf gleicher Höhe (Wunsch David 08.10.2026). */
+.refs > .card { height: 100%; }
+.refs .ref-actions { margin-top: auto; padding-top: var(--s2); justify-content: flex-end; }
 .refs .card ul { margin: 0; padding-left: 18px; font-size: 13.5px; }
 /* Projektfoto je Referenz: 3:2, randlos oben in der Karte, Ausschnitt über --pos. */
 .ref-photo { position: relative; margin: calc(-1 * var(--s2)) -12px 2px; aspect-ratio: 3 / 2; overflow: hidden; background: var(--raised); }
@@ -8171,7 +8174,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         arr(r.files).length ? h('div', { class: 'stack' }, h('span', { class: 'label', text: 'Dateien' }), arr(r.files).map(f => h('span', { class: 'path', text: str(f) }))) : null,
         refUrl(r) ? h('div', { class: 'small' }, h('a', { href: refUrl(r), target: '_blank', rel: 'noopener noreferrer' }, app.icon('ext'), ' Mehr zum Projekt')) : null,
         str(r.source) ? h('div', { class: 'muted small', text: 'Quelle: ' + str(r.source) }) : null,
-        canWriteRef() ? h('div', { class: 'row' }, h('button', { class: 'btn small ghost', type: 'button', 'aria-label': 'Referenz bearbeiten: ' + (str(r.title) || 'ohne Titel'), onclick: () => openRefForm(r) }, app.ico('stift'), 'Bearbeiten')) : null)))];
+        canWriteRef() ? h('div', { class: 'row ref-actions' }, h('button', { class: 'btn small ghost', type: 'button', 'aria-label': 'Referenz bearbeiten: ' + (str(r.title) || 'ohne Titel'), onclick: () => openRefForm(r) }, app.ico('stift'), 'Bearbeiten')) : null)))];
     }
   });
 })();
