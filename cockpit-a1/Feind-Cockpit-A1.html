@@ -7895,6 +7895,8 @@ label.check input { margin-top: 3px; }
       let n = 0;
       for (const t of list) { if (await createNotion(t.id, t)) { n++; await origPatch(t.id, { notionPending: false }); } else break; }
       app.toast(n + ' von ' + list.length + ' Aufgaben nach Notion übertragen.', n < list.length);
+      // Erst nach dem Neuladen kennt nt.byId die neuen Zeilen; vorher würde pending() sie erneut anbieten.
+      if (n) await load(true).catch(() => {});
     } finally { pushing = false; app.refresh(); }
   }
 
@@ -8017,7 +8019,12 @@ label.check input { margin-top: 3px; }
     if (t && interactive(t)) { hide(); return; }
     if (cur && !(bubble && bubble.contains(e.target))) hide();
   });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && cur) { e.preventDefault(); e.stopPropagation(); hide(); } }, true);
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape' || !cur) return;
+    const own = e.target === cur || (bubble && bubble.contains(e.target));
+    hide();
+    if (own) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
   window.addEventListener('scroll', () => { if (cur) { if (pinned) place(cur, bubble); else hide(); } }, true);
   window.addEventListener('resize', () => { if (cur) place(cur, bubble); });
 
