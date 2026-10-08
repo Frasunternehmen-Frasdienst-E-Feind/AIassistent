@@ -6,8 +6,10 @@
   "scripts": {
     "test": "node --test zeiterfassung/test/*.test.js",
     "start": "node -e \"const p=require('path').resolve('zeiterfassung/index.html');console.log('Im Browser öffnen: file://'+p)\"",
-    "test:cockpit": "node --test cockpit/test/*.test.mjs",
+    "test:cockpit": "node --test messe/rotterdam-2027/test/*.test.mjs",
+    "test:cockpit:e2e": "node --test --test-timeout=60000 messe/rotterdam-2027/e2e/*.e2e.mjs",
     "test:cockpit-a1": "node --test cockpit-a1/test/*.test.mjs",
+    "test:cockpit-v1": "node --test cockpit/test/*.test.mjs",
     "e2e:cockpit": "playwright test -c cockpit/playwright.config.mjs",
     "migrate:cockpit": "node cockpit/tools/migrate.mjs"
   },
@@ -15,6 +17,7 @@
   "devDependencies": {
     "@playwright/test": "1.56.1",
     "axe-core": "^4.13.0",
-    "jspdf": "^4.2.1"
+    "jspdf": "^4.2.1",
+    "playwright": "1.56.1"
   }
 }

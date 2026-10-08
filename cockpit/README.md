@@ -2,6 +2,8 @@
 
 > **Archiv (Stand 30.09.2026):** Dieser Ordner ist der ältere A4-Stand. A4 ist gelöscht; live und führend ist
 > A1 (https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd), Quelle unter `cockpit-a1/`.
+>
+> **Entscheidung 08.10.2026:** Künftig führend ist das Cockpit v3 (GRG81, `messe/rotterdam-2027/feind-cockpit-v3.html`). A1 bleibt live und Ziel von `/cockpit-sync`, bis seine Funktionen nach v3 übernommen sind; die Umstellung folgt in einem eigenen Schritt.
 
 Ein Artefakt für Marketing, InfraTech 2027 und Administration. Die Seite
 `Feind-Cockpit.html` ersetzt vier bisher getrennte Artefakte und führt deren Daten in
@@ -124,7 +126,7 @@ Der `mcp`-Eintrag bewirkt eine Zustimmungsabfrage beim ersten Aufruf und schlie�
 ## Befehle
 
 ```bash
-npm run test:cockpit                                   # Unit-Tests FeindCore
+npm run test:cockpit-v1                                # Unit-Tests FeindCore
 npm run e2e:cockpit                                    # Playwright-Smoke-Tests (Chromium)
 npm run migrate:cockpit -- --target backup.json \
   [--a2 a2.json] [--a3 a3.json] [--out plan.json]      # Migrationsplan offline berechnen

@@ -189,4 +189,4 @@ und den Plan paketweise (≤ 50) mit `ArtifactData batch` schreiben lassen.
 - **Protokoll max. 400:** Das Aktivitätsprotokoll (`activity`) wird automatisch auf 400 Einträge
   gekürzt, angezeigt werden 200. Für längere Nachweise vorher exportieren.
 - **Änderungsprotokoll der Konfiguration:** hält 40 Veröffentlichungen.
-- **Nach Code-Änderungen:** `npm run test:cockpit` und `npm run e2e:cockpit` vor dem Veröffentlichen.
+- **Nach Code-Änderungen:** `npm run test:cockpit-v1` und `npm run e2e:cockpit` vor dem Veröffentlichen.
