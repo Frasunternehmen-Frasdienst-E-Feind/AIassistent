@@ -1,6 +1,6 @@
 {
   "name": "Fräsdienst-Service E. Feind GmbH – Corporate Design",
-  "source": "Design-System-Artefakt (project/tokens.json), Stand 2026-09",
+  "source": "Design-System-Artefakt (project/tokens.json), Stand 2026-09; Farbsystem 1.1 (branding/farbsystem.md) vom 2026-10-07",
   "palette": {
     "feind-gruen": "#84bb20",
     "anthrazit": "#424e4e",
@@ -12,7 +12,7 @@
   "tokens": {
     "light": {
       "accent": "#84bb20",
-      "accent-text": "#5e8a14",
+      "accent-text": "#4d7311",
       "on-accent": "#424e4e",
       "signal": "#e3000b",
       "signal-text": "#b8000a",
@@ -21,14 +21,14 @@
       "surface-inverse": "#424e4e",
       "ink": "#3c5457",
       "ink-strong": "#424e4e",
-      "ink-muted": "#6b7575",
+      "ink-muted": "#5f6969",
       "ink-inverse": "#ffffff",
       "line": "#d5dada",
       "focus": "#424e4e"
     },
     "dark": {
       "accent": "#84bb20",
-      "accent-text": "#84bb20",
+      "accent-text": "#a6d65a",
       "on-accent": "#424e4e",
       "signal": "#e3000b",
       "signal-text": "#ff9a9f",
@@ -47,11 +47,117 @@
     "display": "Exo, \"Arial Black\", Arial, sans-serif",
     "sans": "\"Helvetica Neue\", Helvetica, Arial, sans-serif"
   },
-  "radius": { "default": "0px", "input": "2px", "button": "4px" },
-  "spacing": ["4px", "8px", "16px", "24px", "40px", "64px"],
+  "radius": {
+    "default": "0px",
+    "input": "2px",
+    "button": "4px"
+  },
+  "spacing": [
+    "4px",
+    "8px",
+    "16px",
+    "24px",
+    "40px",
+    "64px"
+  ],
   "kontrastregeln": [
-    "Feind-Grün auf Weiß erreicht nur 2,3:1 – niemals als Textfarbe auf hellem Grund; dafür accent-text verwenden.",
-    "Feind-Rot auf dunklem Grund erreicht nur 2,5:1 – dort signal-text verwenden, Rot nur als Fläche oder Linie.",
-    "Auf Grün steht Anthrazit (on-accent), nie Weiß."
-  ]
+    "Feind-Grün auf Weiß erreicht nur 2,31:1 – niemals als Textfarbe auf hellem Grund; dafür accent-text #4d7311 (5,56:1) verwenden.",
+    "#5e8a14 ist keine Textfarbe (4,10:1 auf Weiß), nur Fläche und Symbol.",
+    "Feind-Rot auf dunklem Grund erreicht nur 2,49:1 – dort signal-text verwenden, Rot nur als Fläche oder Linie.",
+    "Auf Grün steht Anthrazit (on-accent), nie Weiß.",
+    "Signal-Gelbgrün #d6e000 nur als Fläche mit Anthrazit-Schrift (5,97:1), nie als Text auf hellem Grund (1,45:1)."
+  ],
+  "status": {
+    "light": {
+      "ok": {
+        "fill": "#5e8a14",
+        "bg": "#eef5e1",
+        "text": "#4d7311",
+        "symbol": "✓"
+      },
+      "warn": {
+        "fill": "#d6e000",
+        "bg": "#d6e000",
+        "text": "#424e4e",
+        "symbol": "!"
+      },
+      "critical": {
+        "fill": "#b8000a",
+        "bg": "#fde8e8",
+        "text": "#b8000a",
+        "symbol": "×"
+      },
+      "info": {
+        "fill": "#2c5a7a",
+        "bg": "#e7eff5",
+        "text": "#1f455c",
+        "symbol": "i"
+      },
+      "inactive": {
+        "fill": "#5f6969",
+        "bg": "#f2f4f4",
+        "text": "#5f6969",
+        "symbol": "—"
+      }
+    },
+    "dark": {
+      "ok": {
+        "fill": "#5e8a14",
+        "text": "#a6d65a"
+      },
+      "warn": {
+        "fill": "#d6e000",
+        "text": "#424e4e"
+      },
+      "critical": {
+        "fill": "#b8000a",
+        "text": "#ff9a9f"
+      },
+      "info": {
+        "fill": "#2c5a7a",
+        "text": "#8fb6d1"
+      },
+      "inactive": {
+        "fill": "#5f6969",
+        "text": "#b8bfbf"
+      }
+    }
+  },
+  "chart": {
+    "hinweis": "Höchstens drei Füllfarben, Reihenfolge 1-2-3. Rot ist keine Serie. Farbe 3 immer mit Kontur.",
+    "light": {
+      "1": "#84bb20",
+      "2": "#424e4e",
+      "3": "#c9d3d3",
+      "3-edge": "#5f6969"
+    },
+    "dark": {
+      "1": "#84bb20",
+      "2": "#e7ecec",
+      "3": "#4d5858",
+      "3-edge": "#b8bfbf"
+    },
+    "karte": {
+      "hinweis": "Länderflächen in Abstufungen (Deckkraft) von --map-fill; Grün für Zahlenkreise und Akzente (Farbsystem 1.2).",
+      "light": {
+        "map-fill": "#424e4e"
+      },
+      "dark": {
+        "map-fill": "#b8bfbf"
+      }
+    }
+  },
+  "ausgeschlossen": [
+    "Lila/Violett",
+    "Rosa/Pink",
+    "Ocker/Bernstein",
+    "Braun",
+    "Beige"
+  ],
+  "marke": {
+    "hinweis": "Standortmarke EF (Hausdach): Plakette brand-anth, Kürzel und Kontur Weiß, Dach accent; in beiden Themes gleich.",
+    "brand-anth": "#424e4e",
+    "kuerzel": "#ffffff",
+    "dach": "#84bb20"
+  }
 }
