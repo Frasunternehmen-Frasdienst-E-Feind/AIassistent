@@ -12896,7 +12896,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   }
   const geoLabel = p => (p.lat == null || p.lon == null ? 'Position offen' : app.kbGeoHow && app.kbGeoHow[p.geoHow] ? app.kbGeoHow[p.geoHow] : 'Position gesetzt');
   function specKarte() {
-    const list = kbProjects().slice().sort((a, b) => (b.year || 0) - (a.year || 0) || str(a.name).localeCompare(str(b.name), 'de'));
+    const list = kbProjects().filter(p => p.kind !== 'thema').sort((a, b) => (b.year || 0) - (a.year || 0) || str(a.name).localeCompare(str(b.name), 'de'));
     return { name: 'Projektkarte Projektliste', subtitle: 'Wissen › Projektkarte · ' + stand(), meta: false,
       kpis: [{ v: n(list.length), k: 'Projekte' }, { v: n(list.filter(p => p.lat == null).length), k: 'ohne Position', signal: list.some(p => p.lat == null) }, { v: n(list.filter(p => p.status === 'geprueft').length), k: 'Position bestätigt' }],
       blocks: [{ p: 'Auftraggeber nur mit dokumentierter Freigabe. Geschätzte Positionen vor einer Veröffentlichung bestätigen.', style: 'muted' },
@@ -12905,7 +12905,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       approval: 'Geprüft (Kürzel)' };
   }
   const karteCsv = () => H.toCsv(['Projekt', 'Jahr', 'Ort', 'Bundesland', 'Breite', 'Länge', 'Position', 'Leistungen', 'Auftraggeber'],
-    kbProjects().map(p => [str(p.name), p.year || '', str(p.place), str(p.state), typeof p.lat === 'number' ? p.lat : '', typeof p.lon === 'number' ? p.lon : '', geoLabel(p), arr(p.services).join(', '), p.clientApproved === true ? str(p.client) : 'nicht freigegeben'].map(v => (typeof v === 'string' ? scrub(v) : v))));
+    kbProjects().filter(p => p.kind !== 'thema').map(p => [str(p.name), p.year || '', str(p.place), str(p.state), typeof p.lat === 'number' ? p.lat : '', typeof p.lon === 'number' ? p.lon : '', geoLabel(p), arr(p.services).join(', '), p.clientApproved === true ? str(p.client) : 'nicht freigegeben'].map(v => (typeof v === 'string' ? scrub(v) : v))));
   const schutzLog = () => (app.activityEntries ? app.activityEntries() : []).filter(e => e.action === 'Datenschutz');
   function specSchutz() {
     const conf = kbItems().filter(i => G().isConf(i));
@@ -13308,7 +13308,6 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
 (function(){var FC=window.FC;if(!FC||!FC.app)return;var rm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)');FC.app.haptic=function(ms){try{if(navigator.vibrate&&!(rm&&rm.matches))navigator.vibrate(ms||10);}catch(e){}};})();
 
 /* ---- kb-logic.js ---- */
-/* ---- kb-logic.js ---- */
 /* Feind Cockpit · Wissensarchiv, reine Logik: Taxonomie, Regel-Einordnung, Datenschutz-Prüfung, Duplikate,
    Verknüpfungen, Ortsverzeichnis (GeoNames, CC BY 4.0) und Projektion der Karte. Ohne DOM; als FC.kb. */
 (function (root, factory) {
@@ -13497,7 +13496,57 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   const project = (lon, lat) => [(lon - LON0) * CX * K, (LAT0 - lat) * K];
   const unproject = (x, y) => [x / (CX * K) + LON0, LAT0 - y / K];
 
-  return { CATS, CAT_KEYS, catOf, DOCTYPES, SERVICES, STATUS, statusLabel, fold, tokens, ruleClassify, piiScan, normUrl, related, cockpitLinks, score,
+  /* ---------- Themenprojekte (umbau/SPEC-themenprojekte.md) ----------
+     Häufen sich Einträge ohne Projekt zu einem Thema (erkannter Projektname, mehrteiliges Schlagwort, Dateithema),
+     schlägt das Cockpit ab „min“ Einträgen ein Themenprojekt vor. Jeder Eintrag zählt nur im größten Vorschlag. */
+  const TOPIC_RANK = { project: 3, fileTopic: 2, tag: 1 };
+  function topicsOf(it) {
+    const out = [];
+    const add = (raw, src) => { const t = str(raw).replace(/\s+/g, ' ').trim(); const k = fold(t); if (k && k.length > 2) out.push({ key: k, raw: t, src }); };
+    for (const n of arr(it && it.entities && it.entities.projects)) add(n, 'project');
+    if (it && it.fileTopic) add(it.fileTopic, 'fileTopic');
+    for (const t of arr(it && it.tags)) if (fold(t).split(' ').length >= 2) add(t, 'tag');
+    return out;
+  }
+  function topicSuggestions(items, projects, opts) {
+    const o = opts || {};
+    const min = o.min || 3;
+    const dismissed = new Set(arr(o.dismissed).map(fold));
+    const taken = new Set(arr(projects).map(p => fold(p && p.name)).filter(Boolean));
+    const groups = new Map();
+    for (const it of arr(items)) {
+      if (!it || it.projectId || it.status === 'archiviert') continue;
+      const seen = new Set();
+      for (const t of topicsOf(it)) {
+        if (seen.has(t.key) || taken.has(t.key) || dismissed.has(t.key)) continue;
+        seen.add(t.key);
+        if (!groups.has(t.key)) groups.set(t.key, { key: t.key, ids: [], names: new Map(), rank: 0 });
+        const g = groups.get(t.key);
+        g.ids.push(it.id);
+        g.names.set(t.raw, (g.names.get(t.raw) || 0) + 1);
+        g.rank = Math.max(g.rank, TOPIC_RANK[t.src]);
+      }
+    }
+    const order = Array.from(groups.values()).sort((a, b) => b.ids.length - a.ids.length || b.rank - a.rank || a.key.localeCompare(b.key));
+    const used = new Set();
+    const out = [];
+    for (const g of order) {
+      const ids = g.ids.filter(id => !used.has(id));
+      if (ids.length < min) continue;
+      ids.forEach(id => used.add(id));
+      const name = Array.from(g.names.entries()).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0][0];
+      out.push({ key: g.key, name, itemIds: ids });
+    }
+    return out.sort((a, b) => b.itemIds.length - a.itemIds.length || a.key.localeCompare(b.key));
+  }
+  // Neuer Eintrag: passt eines seiner Themen zu einem Themenprojekt (kind „thema“), liefert dessen Kennung.
+  function matchTheme(it, projects) {
+    const keys = new Set(topicsOf(it).map(t => t.key));
+    const hit = arr(projects).find(p => p && p.kind === 'thema' && keys.has(fold(p.name)));
+    return hit ? hit.id : null;
+  }
+
+  return { CATS, CAT_KEYS, catOf, DOCTYPES, SERVICES, STATUS, statusLabel, fold, tokens, topicSuggestions, matchTheme, ruleClassify, piiScan, normUrl, related, cockpitLinks, score,
     ADMIN1, loadGazetteer, gazReady, geocode, findPlaceInText, stateCentroid, project, unproject };
 });
 
@@ -13763,7 +13812,6 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   });
 })();
 
-/* ---- app-wissen.js ---- */
 /* ---- app-wissen.js ---- */
 /* Feind Cockpit · Welt „Wissen“: Wissensarchiv mit Drag & Drop, Einfügen und Links, automatischer Einordnung
    im Hintergrund (Text lesen, KI-Einordnung, Datenschutz-Prüfung, Duplikate, Verknüpfungen, Projektzuordnung,
@@ -14103,10 +14151,17 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   async function linkProject(it, c) {
     const p = c.project || {};
     const place = p.place || arr(c.entities && c.entities.places)[0] || null;
-    if (!(p.isProject || c.category === 'projekt') || (!p.name && !place)) return null;
+    if (!(p.isProject || c.category === 'projekt') || (!p.name && !place)) {
+      // Kein Bauprojekt: passt ein Thema zu einem angelegten Themenprojekt, dort zuordnen.
+      const tid = K.matchTheme(Object.assign({}, it, c), projects());
+      const t = tid && projById(tid);
+      if (!t) return null;
+      await app.write('kb_projects/' + tid, 'update', { items: Array.from(new Set(arr(t.items).concat([it.id]))), updatedAt: Date.now() });
+      return tid;
+    }
     const name = p.name || ('Projekt ' + place);
     const f = K.fold;
-    const hit = projects().find(x => f(x.name) === f(name) || (place && x.place && f(x.place) === f(place) && (!x.year || !p.year || x.year === p.year)));
+    const hit = projects().filter(x => x.kind !== 'thema').find(x => f(x.name) === f(name) || (place && x.place && f(x.place) === f(place) && (!x.year || !p.year || x.year === p.year)));
     if (hit) {
       const patch = { items: Array.from(new Set(arr(hit.items).concat([it.id]))), services: Array.from(new Set(arr(hit.services).concat(c.services))), updatedAt: Date.now() };
       if (!hit.year && (p.year || c.year)) patch.year = p.year || c.year;
@@ -14172,7 +14227,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       if (it.original === 'nur Text') review.push('Original (' + (it.ext || 'Datei').toUpperCase() + ') bitte in SharePoint ablegen; das Archiv hält den gelesenen Text');
       if (proj && proj.lat == null) review.push('Projektort nicht gefunden: Position auf der Karte setzen');
       const patch = {
-        title: G.mask(c.title), summary: G.mask(c.summary), category: c.category, docType: c.docType, services: c.services, tags: c.tags, entities: c.entities, year: c.year, language: c.language,
+        title: G.mask(c.title), summary: G.mask(c.summary), category: c.category, docType: c.docType, services: c.services, tags: c.tags, entities: c.entities, year: c.year, language: c.language, fileTopic: G.mask(str(c.fileTopic)),
         confidence: Math.round(c.confidence * 100) / 100, via: c.via, pii: { found: piiFound, kinds }, vertraulich: !!(it.vertraulich || G.confidential(text, kinds)), projectId, related: rel, links,
         sharepoint: shareSuggestion(it, c, proj), extract: ex.how, textChars: str(ex.text).length, review,
         status: review.length ? 'pruefen' : 'fertig', lock: null, error: null, processedAt: Date.now(), processedBy: c.via
@@ -14426,6 +14481,41 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         tile('fehler', 'Fehler', n('fehler') ? 'crit' : '', show('fehler'))),
       h('p', { class: 'muted small', role: 'status' }, W.busy ? h('b', { text: 'Ordnet gerade ein. ' }) : null, ai + '. Eingeordnet wird, solange das Cockpit bei einer Person mit Schreibrecht offen ist; der Stand ist für alle sofort sichtbar.'));
   }
+  /* ---------- Themenvorschläge: gehäufte Themen ohne Projekt (umbau/SPEC-themenprojekte.md) ---------- */
+  const DISMISS_KEY = 'feind-cockpit:kb-themen-aus';
+  const dismissedTopics = () => { try { return arr(JSON.parse(app.storeGet(DISMISS_KEY) || '[]')); } catch (e) { return []; } };
+  function dismissTopic(key) {
+    app.storeSet(DISMISS_KEY, JSON.stringify(Array.from(new Set(dismissedTopics().concat([key])))));
+    app.toast('Thema wird nicht mehr vorgeschlagen.');
+    rerender();
+  }
+  async function createTheme(sg) {
+    if (!canWrite()) return;
+    const id = H.uid('p');
+    const now = Date.now();
+    const doc = { id, kind: 'thema', name: G.mask(sg.name), topicKey: sg.key, place: '', state: '', country: '', lat: null, lon: null, geoHow: 'ohne',
+      year: null, services: [], status: 'entwurf', items: sg.itemIds.slice(), refId: null, createdAt: now, updatedAt: now, auto: false, createdFrom: 'themenvorschlag' };
+    if (!await app.write('kb_projects/' + id, 'set', doc)) return;
+    for (const iid of sg.itemIds) if (byId(iid)) await app.write('kb_items/' + iid, 'update', { projectId: id });
+    app.log('Themenprojekt angelegt', doc.name);
+    app.toast('Projekt „' + doc.name + '“ angelegt, ' + sg.itemIds.length + ' Einträge zugeordnet.');
+    rerender();
+  }
+  function themeCard() {
+    if (!S.loaded.kb_items) return null;
+    const list = K.topicSuggestions(items(), projects(), { dismissed: dismissedTopics() });
+    if (!list.length) return null;
+    const ro = !canWrite();
+    return h('div', { class: 'section kb-themes' }, h('h3', {}, app.ico('ordner'), ' Themenvorschläge'),
+      h('p', { class: 'muted small', text: 'Diese Themen tauchen in mehreren Einträgen ohne Projekt auf. Als Projekt angelegt, ordnet das Cockpit künftige Einträge zum Thema automatisch zu.' }),
+      h('div', { class: 'grid2' }, list.slice(0, 6).map(sg => h('article', { class: 'card accentbar kb-theme', 'data-key': sg.key },
+        h('h4', { text: sg.name }),
+        h('p', { class: 'small' }, h('b', { text: sg.itemIds.length + ' Einträge' }), ' ohne Projekt'),
+        h('ul', { class: 'small' }, sg.itemIds.slice(0, 3).map(iid => h('li', {}, h('button', { class: 'linkbtn', type: 'button', onclick: () => openDetail(iid) }, str((byId(iid) || {}).title).slice(0, 70))))),
+        h('div', { class: 'row' },
+          h('button', { class: 'btn small primary', type: 'button', disabled: ro, title: ro ? 'Braucht Schreibrecht' : null, onclick: () => createTheme(sg) }, app.ico('plus'), 'Als Projekt anlegen'),
+          h('button', { class: 'btn small', type: 'button', onclick: () => dismissTopic(sg.key) }, 'Nicht vorschlagen'))))));
+  }
   app.module('wissen', 'eingang', {
     count: () => items().filter(i => i.status === 'neu' || i.status === 'in_arbeit').length || null,
     render() {
@@ -14436,6 +14526,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         panelHead('Eingang · Wissensarchiv', items().length + ' Einträge', h('button', { class: 'btn', type: 'button', onclick: () => app.go('wissen', 'archiv') }, app.ico('buch'), 'Zum Archiv')),
         h('div', { class: 'grid2' }, dropZone(), textBox()),
         pipeline(),
+        themeCard(),
         h('div', { class: 'section' }, h('h3', { text: 'Zuletzt abgelegt' + (RQ.filter === 'alle' ? '' : ' · ' + (RECENT_FILTERS.find(f => f[0] === RQ.filter) || ['', ''])[1]) }),
           all.length ? recentTools(all, recent.length) : null,
           !S.loaded.kb_items ? app.skeleton(4, 'Lade Archiv') : recent.length ? h('div', { class: 'kb-grid recent' }, recent.map((it, i) => itemCard(it, i, null, true)))
@@ -14552,6 +14643,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       return [
         panelHead('Archiv · Unternehmenswissen', list.length + ' von ' + all.length, h('button', { class: 'btn primary', type: 'button', disabled: !!intakeBlocked(), onclick: () => app.kbQuickCapture() }, app.ico('ablegen'), 'Ablegen')),
         askBox(),
+        themeCard(),
         h('div', { class: 'section' }, tools, viewBtns, body, list.length > 300 && W.view === 'grid' ? h('p', { class: 'muted small', text: 'Es werden 300 Einträge gezeigt; Filter oder Liste nutzen.' }) : null)
       ];
     }
@@ -14925,7 +15017,7 @@ let shown = false, hideT = null;
   function points() {
     app.kbEnsureGaz();
     const out = [];
-    const projs = app.kbProjects();
+    const projs = app.kbProjects().filter(p => p.kind !== 'thema'); // Themenprojekte haben keinen Ort
     const linked = new Set(projs.map(p => p.refId).filter(Boolean));
     for (const p of projs) out.push({ key: 'p:' + p.id, kind: 'proj', id: p.id, name: str(p.name), lat: p.lat, lon: p.lon, year: p.year, services: arr(p.services), status: p.status === 'geprueft' ? 'geprueft' : 'entwurf', place: str(p.place), state: str(p.state), how: p.geoHow, n: arr(p.items).length, data: p });
     for (const r of (app.mkPubRefs ? app.mkPubRefs() : S.data.references) || []) {
@@ -15128,7 +15220,7 @@ let shown = false, hideT = null;
 
   /* ---------- Modul ---------- */
   app.module('wissen', 'karte', {
-    count: () => app.kbProjects().length || null,
+    count: () => app.kbProjects().filter(p => p.kind !== 'thema').length || null,
     render() {
       const f = MP.f;
       const q = h('input', { type: 'search', id: 'mp-q', value: f.q, placeholder: 'Projekt oder Ort', autocomplete: 'off' });

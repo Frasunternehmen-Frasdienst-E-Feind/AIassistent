@@ -318,3 +318,27 @@ dazu die Betriebsarten Viewer ohne Datenbank und Nur-Lesen.
 **Nicht geprüft:**
 - Die Live-Anbindungen an Notion, Microsoft 365, Canva und Firecrawl. In dieser Sitzung war kein erfolgreicher
   Aufruf möglich; ihr Code ist im Umbau unverändert.
+
+## Themenprojekte aus gehäuften Einträgen (Artefakt-Kommentar 09.10.2026)
+
+Wunsch: „Neue Projekte eigenständig anlegen, wenn bei der automatisierten Zuordnung auffällt, dass ein Thema
+mehrfach bzw. gehäuft auftritt, z. B. Messeplanung Rotterdam 2027.“ Entscheidungen: im führenden Cockpit,
+Vorschlag ab 3 Einträgen, Anlage mit einem Klick. Kurz-Spec: `umbau/SPEC-themenprojekte.md`.
+
+- Wissen › Eingang und Archiv zeigen die Karte „Themenvorschläge“, sobald mindestens 3 Einträge ohne Projekt
+  dasselbe Thema tragen. Als Thema zählen erkannte Projektnamen, Dateithema und mehrteilige Schlagwörter.
+- „Als Projekt anlegen“ schreibt `kb_projects/<id>` mit `kind: "thema"` ohne Ort und ordnet alle Einträge zu.
+  „Nicht vorschlagen“ blendet das Thema in diesem Browser aus, ohne Daten zu ändern.
+- Neue Einträge zu einem angelegten Themenprojekt ordnet die Einordnung automatisch zu. Bauprojekte mit Ort
+  behalten Vorrang.
+- Das Dateithema (`fileTopic`) wird jetzt am Eintrag gespeichert.
+- Themenprojekte erscheinen nicht auf der Projektkarte und nicht in deren Export.
+- Reine Logik in `kb-logic.js` (`topicSuggestions`, `matchTheme`). Doppelte Modulmarken für `kb-logic.js` und
+  `app-wissen.js` entfernt, damit das Modul in Tests ladbar ist.
+
+### Tests
+- `test/kb-themen.test.mjs`: 8 Unit-Tests (Schwelle, Faltung, bestehendes Projekt, ausgeblendetes Thema,
+  Überschneidung, archivierte und zugeordnete Einträge, Zuordnung neuer Einträge).
+- `e2e/themenprojekte.e2e.mjs`: Vorschlag in Eingang und Archiv, Anlage ordnet alle Einträge zu, Vorschlag
+  verschwindet, „Nicht vorschlagen“ blendet aus.
+- Gesamt: 48 Unit-Tests und 38 Browser-Tests grün.
