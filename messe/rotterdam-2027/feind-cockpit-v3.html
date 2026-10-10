@@ -9617,7 +9617,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   const { h, panelHead, chip } = app;
   const { str, arr, fmtTs } = H;
   const S = app.state;
-  const ui = S.ui.adm = { sec: 'module', note: '', reqText: '', stamp: null, plan: null, planInput: null, planCheck: null, planMsg: '', legacyMsg: '', busy: false };
+  const ui = S.ui.adm = { sec: 'module', note: '', reqText: '', stamp: null, plan: null, planInput: null, planCheck: null, planMsg: '', legacyMsg: '', busy: false, tilePreset: '' };
   const rerender = () => app.refresh();
   const live = () => C.merge(S.docs.adminConfig);
   const isAdmin = () => app.isAdmin();
@@ -9823,8 +9823,8 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
 
   // Kachelanbieter der Straßenkarte: leer = OpenStreetMap im Testbetrieb. Ein Wechsel fragt alle Personen neu
   // nach ihrer Einwilligung, weil sie je Anbieter-Host gilt (geo-logic.js).
-  const TILE_FIELDS = [['name', 'Anbietername', 'text', 'z. B. MapTiler'], ['url', 'Kachel-URL (https, mit {z}/{x}/{y})', 'url', 'https://…/{z}/{x}/{y}.png?key=…'],
-    ['attribution', 'Namensnennung des Anbieters', 'text', 'z. B. © MapTiler'], ['privacyUrl', 'Link Datenschutzhinweise', 'url', 'https://…']];
+  const TILE_FIELDS = [['name', 'Anbietername', 'text', 'z. B. Stadia Maps (EU)'], ['url', 'Kachel-URL (https, mit {z}/{x}/{y})', 'url', 'https://…/{z}/{x}/{y}.png?key=…'],
+    ['attribution', 'Namensnennung des Anbieters', 'text', 'z. B. © Stadia Maps © OpenMapTiles'], ['privacyUrl', 'Link Datenschutzhinweise', 'url', 'https://…']];
   function tilesCard(e, dis) {
     const t = Object.assign({ name: '', url: '', attribution: '', privacyUrl: '' }, e.mapTiles || {});
     const fields = TILE_FIELDS.map(([k, label, type, ph]) => {
@@ -9833,10 +9833,26 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       return app.field(label, inp);
     });
     const p = FC.geoLogic ? FC.geoLogic.provider(e.mapTiles) : null;
+    // Vorlage füllt alle vier Felder; den API-Key hängt der Admin an die Kachel-URL an.
+    const presets = FC.geoLogic && FC.geoLogic.presets ? FC.geoLogic.presets() : [];
+    // Auswahl im UI-Zustand, damit ein Renderlauf zwischen Wählen und Übernehmen sie nicht zurücksetzt.
+    const sel = h('select', { id: 'mt-preset', disabled: dis, onchange: ev => { ui.tilePreset = ev.target.value; } },
+      h('option', { value: '', text: 'Vorlage wählen …' }), presets.map(x => h('option', { value: x.id, text: x.label, selected: ui.tilePreset === x.id })));
+    const use = h('button', { class: 'btn', type: 'button', disabled: dis, onclick: () => {
+      const x = presets.find(q => q.id === (sel.value || ui.tilePreset));
+      if (!x) { sel.focus(); return; }
+      e.mapTiles = { name: x.name, url: x.url, attribution: x.attribution, privacyUrl: x.privacyUrl };
+      ui.tilePreset = '';
+      changed();
+    } }, 'Vorlage übernehmen');
+    const state = !p ? '' : p.error ? 'Ungültig: ' + p.error + ' Es gilt OpenStreetMap.'
+      : 'Wirksam: ' + p.name + ' (' + p.host + ')' + (p.testOnly ? ' · Testbetrieb' : p.eu ? ' · EU-Endpunkt' : ' · EU-Verarbeitung nicht belegt, Anbieter prüfen') + (p.warning ? ' · ' + p.warning : '');
     return h('div', { class: 'card', style: 'margin-top:var(--s3)' }, h('h3', { text: 'Straßenkarte: Kachelanbieter' }),
       h('p', { class: 'muted small', text: 'Leer lassen: OpenStreetMap, nur für Test und geringe Last (Tile Usage Policy). Für den Dauerbetrieb einen Anbieter mit EU-Verarbeitung eintragen. „© OpenStreetMap-Mitwirkende“ wird immer angezeigt. Nach einem Wechsel fragt die Karte alle Personen neu nach ihrer Einwilligung. Den Anbieter in der Datenschutzerklärung nennen – bitte Rechtsabteilung prüfen.' }),
+      presets.length ? h('div', { class: 'tools' }, app.field('Vorlage (EU-Endpunkt)', sel), use,
+        h('p', { class: 'muted small', text: 'Danach den API-Key des Anbieters an die Kachel-URL anhängen. Den Key nur hier pflegen, nicht im Repository.' })) : null,
       h('div', { class: 'form-grid' }, fields),
-      p ? h('p', { class: p.error ? 'small st y' : 'small', text: p.error ? 'Ungültig: ' + p.error + ' Es gilt OpenStreetMap.' : 'Wirksam: ' + p.name + ' (' + p.host + ')' + (p.testOnly ? ' · Testbetrieb' : '') }) : null);
+      p ? h('p', { class: p.error || p.warning ? 'small st y' : 'small', text: state }) : null);
   }
 
   function secAusbau(e, dis) {
@@ -15305,6 +15321,18 @@ let shown = false, hideT = null;
   const httpsUrl = v => { try { const u = new URL(str(v)); return u.protocol === 'https:' ? u : null; } catch (e) { return null; } };
   const hostOf = url => { const u = httpsUrl(url.replace(/\{[a-z]\}/g, 'a')); return u ? u.hostname : ''; };
 
+  // Hosts mit dokumentierter EU-only-Auslieferung. Stadia Maps: Server in Frankfurt und Paris,
+  // https://docs.stadiamaps.com/eu-gdpr-endpoints/ (abgerufen 01.10.2026). Andere Hosts gelten als „nicht belegt“.
+  const EU_HOSTS = ['tiles-eu.stadiamaps.com'];
+  // Vorlagen für Admin › Funktionen und Quellen. Der API-Key wird dort angehängt, nie hier im Code.
+  const PRESETS = [{
+    id: 'stadia-eu', label: 'Stadia Maps, EU-Endpunkt (Alidade Smooth)',
+    name: 'Stadia Maps (EU)', url: 'https://tiles-eu.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=',
+    attribution: '© Stadia Maps © OpenMapTiles', privacyUrl: 'https://stadiamaps.com/privacy/privacy-policy/'
+  }];
+  // Leerer Schlüssel-Parameter am Ende (…?api_key= oder …&key=): Kacheln würden abgelehnt.
+  const keyMissing = url => /[?&](api_?key|key)=(&|$)/i.test(url);
+
   function provider(cfg) {
     const c = cfg && typeof cfg === 'object' ? cfg : {};
     const url = str(c.url);
@@ -15315,10 +15343,12 @@ let shown = false, hideT = null;
     const base = own ? { name: str(c.name) || hostOf(url), url, privacyUrl: httpsUrl(c.privacyUrl) ? str(c.privacyUrl) : '' } : OSM;
     // ODbL/CC BY-SA: die OSM-Namensnennung steht immer da; eigener Text des Anbieters folgt als reiner Text.
     const extra = own ? esc(c.attribution) : '';
+    const host = hostOf(base.url);
     return {
-      name: base.name, url: base.url, host: hostOf(base.url), privacyUrl: base.privacyUrl,
+      name: base.name, url: base.url, host, privacyUrl: base.privacyUrl,
       attributionHtml: OSM_LINK + (extra ? ' · ' + extra : ''),
-      testOnly: !own, error
+      testOnly: !own, error, eu: EU_HOSTS.includes(host),
+      warning: own && keyMissing(url) ? 'API-Key fehlt in der Kachel-URL.' : ''
     };
   }
 
@@ -15338,7 +15368,9 @@ let shown = false, hideT = null;
     setOn(raw, on) { const o = parse(raw); return o ? JSON.stringify(Object.assign({}, o, { on: !!on })) : null; }
   };
 
-  return { classes, provider, consent };
+  const presets = () => PRESETS.map(p => Object.assign({}, p));
+
+  return { classes, provider, consent, presets };
 });
 
 /* ---- geomap.js ---- */
@@ -15398,6 +15430,7 @@ let shown = false, hideT = null;
       h('h4', { id: tid, text: 'Einwilligung: Straßenkarte laden' }),
       h('p', { text: 'Die Straßenkarte lädt Kartenkacheln von ' + p.name + ' (' + p.host + '). Dabei wird deine IP-Adresse an diesen Anbieter übertragen. Zweck: Darstellung der Straßenkarte. Die Einwilligung gilt nur für diesen Browser und lässt sich jederzeit über „Einwilligung widerrufen“ zurücknehmen.' }),
       p.testOnly ? h('p', { class: 'muted small', text: 'Testbetrieb: Die Kacheln von openstreetmap.org sind nur für geringe Last gedacht. Für den Dauerbetrieb trägt ein Admin einen EU-Anbieter unter Admin › Funktionen und Quellen ein.' }) : null,
+      p.eu ? h('p', { class: 'muted small', text: 'Der Anbieter liefert über einen EU-Endpunkt aus. Die Server stehen in der EU.' }) : null,
       p.error ? h('p', { class: 'gm-warn small', text: 'Konfigurierter Anbieter ungültig (' + p.error + ') – es gilt OpenStreetMap.' }) : null,
       p.privacyUrl ? h('p', { class: 'small' }, h('a', { href: p.privacyUrl, target: '_blank', rel: 'noopener', text: 'Datenschutzhinweise von ' + p.name })) : null,
       h('div', { class: 'row' }, yes, no));
