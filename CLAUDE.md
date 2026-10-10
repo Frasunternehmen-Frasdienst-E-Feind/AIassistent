@@ -51,11 +51,20 @@ Datenhaltung im Artefakt-Speicher (`db`), nicht im HTML:
     Tages-Soll, 0,5 Tage), `sonderurlaub`, `krank`, `feiertag` (je Soll 0),
     `gleittag` (volles Soll, Ist 0). Mit Tagesart dürfen `books` leer sein.
 * `settings/general` = `{ weekHours, workdays: [1..5], seeded: true,
-  vacation: { "2026": 30, "2027": 30 }, gleittag: false }`
+  vacation: { "2026": 30, "2027": 30 }, gleittag: false,
+  autoIn: { on: false, from: "05:00", to: "10:00" } }`
   * `vacation` = Urlaubsanspruch je Jahr, von Hand gepflegt (2026 vorläufig,
     Personalabteilung klärt). `gleittag` blendet die Tagesart ein.
+  * `autoIn` = automatisches Einstempeln beim Öffnen der Seite, nur im
+    Zeitfenster `from`–`to`, standardmäßig aus.
   * Das Dokument wird immer vollständig geschrieben – neue Felder in
     `settingsDoc()` ergänzen, sonst gehen sie beim Speichern verloren.
+
+Stempeluhr „Jetzt stempeln“: Standard ist die Erinnerung. An einem Arbeitstag
+ohne Feiertag, Tagesart und Buchung fragt die Seite nach, und erst der Klick
+bucht Kommen. Selbst bucht sie nur, wenn `autoIn.on` eingeschaltet ist.
+Gestempelt wird ins Artefakt, nicht in OptiTime; für die Abrechnung maßgeblich
+bleibt OptiTime. Die Seite wirkt nur, solange sie geöffnet ist.
 
 Feiertage Brandenburg werden im Artefakt berechnet (Ostern nach Gauß) und nur
 nach Klick auf „übernehmen“ als `type: "feiertag"` gespeichert.
