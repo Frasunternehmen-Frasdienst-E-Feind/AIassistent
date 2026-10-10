@@ -14,6 +14,7 @@
       "accent": "#84bb20",
       "accent-text": "#5e8a14",
       "on-accent": "#424e4e",
+      "on-accent-strong": "#1f2525",
       "signal": "#e3000b",
       "signal-text": "#b8000a",
       "surface": "#ffffff",
@@ -30,6 +31,7 @@
       "accent": "#84bb20",
       "accent-text": "#84bb20",
       "on-accent": "#424e4e",
+      "on-accent-strong": "#1f2525",
       "signal": "#e3000b",
       "signal-text": "#ff9a9f",
       "surface": "#2e3737",
@@ -52,6 +54,7 @@
   "kontrastregeln": [
     "Feind-Grün auf Weiß erreicht nur 2,3:1 – niemals als Textfarbe auf hellem Grund; dafür accent-text verwenden.",
     "Feind-Rot auf dunklem Grund erreicht nur 2,5:1 – dort signal-text verwenden, Rot nur als Fläche oder Linie.",
-    "Auf Grün steht Anthrazit (on-accent), nie Weiß."
+    "Auf Grün steht Anthrazit (on-accent), nie Weiß.",
+    "Schrift auf vollem Grün (Primär-Buttons) in on-accent-strong #1f2525 (6,9:1); on-accent #424e4e erreicht nur 3,74:1 und bleibt für Flächen, Symbole und große Schrift."
   ]
 }

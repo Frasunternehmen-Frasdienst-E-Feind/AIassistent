@@ -1,0 +1,235 @@
+{
+ "code": "DE",
+ "file": "Agenda_Rotterdam_2027_DE.pdf",
+ "title": "Standdienst- & Ablaufplan Rotterdam 2027",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Stand 5.209 · Di 12.–Fr 15. Januar 2027",
+ "chip": "Ablaufplan",
+ "src": "Ausfüllbarer Ablaufplan · Quelle: Projekt-Hub + ToDo-Brennglas · Stand 30.09.2026",
+ "intern": "INTERN / vertraulich – enthält Teamnamen, nicht veröffentlichen.",
+ "basis": "Basis: Projekt-Hub (Termine, Aufbau) + Handbuch InfraTech 2027",
+ "howto": "So funktioniert der Ablaufplan",
+ "howto_lines": [
+  "1)  Kästchen abhaken = erledigt.   2)  Status-Dropdown rechts: Offen / Bestätigt / Läuft / Erledigt / Entfällt.",
+  "3)  Notizfeld je Position – Uhrzeit, Namen, Ort, Link (max. 250 Zeichen).",
+  "Öffnung Di–Do 10:00–18:00, Fr 10:00–16:00 (lt. Handbuch – vor Druck final bestätigen); Auf-/Abbau-Slots über Ahoy-Portal.",
+  "Vorbelegung „Offen“; Standdienst-Namen ins Notizfeld eintragen. Druck in jedem PDF-Viewer."
+ ],
+ "legend_label": "Legende:",
+ "legend": [
+  [
+   "ok",
+   "fix / bestätigt"
+  ],
+  [
+   "warn",
+   "noch bestätigen"
+  ],
+  [
+   "none",
+   "offen / zu erledigen"
+  ],
+  [
+   "no",
+   "entfällt"
+  ],
+  [
+   "add",
+   "Hinweis"
+  ]
+ ],
+ "blocker_title": "Kernzeiten & Eckdaten (verbindlich)",
+ "blockers": [
+  [
+   "Messetage",
+   "Di 12.–Fr 15. Januar 2027 (verifiziert)"
+  ],
+  [
+   "Ort",
+   "Rotterdam Ahoy, Ahoyweg 10 · Stand 5.209"
+  ],
+  [
+   "Öffnungszeiten",
+   "Di–Do 10:00–18:00 · Fr 10:00–16:00 (lt. Handbuch – final best.)"
+  ],
+  [
+   "Aufbau",
+   "ab Mi 07.01.2027 – Slot lt. Ahoy-Portal"
+  ],
+  [
+   "Abbau",
+   "Fr 15.01. ab 16:00 (nach Schluss) – Slot lt. Ahoy-Portal"
+  ]
+ ],
+ "blocker_note": "Öffnung Di–Do 10:00–18:00, Fr 10:00–16:00 (lt. Handbuch – vor dem Druck final bestätigen). Auf- und Abbau-Zeitfenster über das Ahoy-Ausstellerportal buchen.",
+ "status": [
+  "Offen",
+  "Bestätigt",
+  "Läuft",
+  "Erledigt",
+  "Entfällt"
+ ],
+ "status_def": "Offen",
+ "tt_status": "Status: Offen / Bestätigt / Läuft / Erledigt / Entfällt",
+ "tt_note": "Uhrzeit, Namen, Ort, Link – max. 250 Zeichen",
+ "tt_done": "Erledigt abhaken",
+ "blind_banner": "Vor-Ort-Hinweise & Notfall",
+ "blind_sub": "Ergänzende Hinweise für den Messebetrieb. Rechtliches ist markiert.",
+ "dp_title": "Datenschutz & Recht",
+ "dp": [
+  "• Internes Arbeitsdokument mit Teamnamen – vertraulich behandeln, nicht an Externe/Aussteller weitergeben.",
+  "• Lead-Erfassung, Foto/Video am Stand und CRM-Import nur mit Einwilligung/DSGVO-Hinweis.",
+  "• Bei vertraglichen, steuerlichen oder arbeitsrechtlichen Fragen gilt: bitte Rechtsabteilung prüfen."
+ ],
+ "src_title": "Quellen & Arbeitsflächen",
+ "links": [
+  "Master · Messe Rotterdam 2027 (Notion)",
+  "ToDo-Liste Rotterdam 2027 (Notion)",
+  "Aufgaben-Tracker (ClickUp)",
+  "InfraTech-Handbuch 2027 V1.3 (PDF)"
+ ],
+ "link_urls": [
+  "https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db",
+  "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a",
+  "https://app.clickup.com/90122021025/v/l/li/901222034862",
+  "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"
+ ],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stand 5.209  ·  Stand 30.09.2026",
+ "page": "Seite",
+ "cont": "Fortsetzung",
+ "brand": "ABLAUFPLAN · Rotterdam 2027",
+ "slim": "Ablaufplan Rotterdam 2027",
+ "sections": [
+  [
+   "Aufbau (ab Mi 07.01.2027)",
+   [
+    [
+     "none",
+     "Anlieferung & Einfahrt Ahoy – Zeitfenster/Parkausweis klären"
+    ],
+    [
+     "none",
+     "Standaufbau Global Expo Stand B.V. / LOCO – Koordination vor Ort"
+    ],
+    [
+     "none",
+     "Exponate positionieren (Schleifwelle groß, Grinding-Schild, Kundenstopper)"
+    ],
+    [
+     "none",
+     "Technik anschließen: Strom, Internet/LAN, TV, LED, Präsentation"
+    ],
+    [
+     "warn",
+     "Endcheck Stand & Reinigung vor Tag 1"
+    ]
+   ]
+  ],
+  [
+   "Messetag-Ablauf (täglich Di–Fr)",
+   [
+    [
+     "ok",
+     "Team ab 09:00 vor Ort (1 h vor Öffnung) – Kurz-Briefing, Kaffeemaschine an"
+    ],
+    [
+     "ok",
+     "Öffnung 10:00: Ansprache auf der Messefläche starten (nicht nur am Stand)"
+    ],
+    [
+     "none",
+     "Lead-Erfassung im digitalen Gesprächsnotiz-Formular laufend"
+    ],
+    [
+     "warn",
+     "Schichtwechsel/Rotation ~14:00 – Pausen nach ArbZG (>6 h: 30 Min)"
+    ],
+    [
+     "none",
+     "Tagesabschluss ab Schluss (Di–Do 18:00, Fr 16:00): Leads sichern, Material & Give-aways auffüllen"
+    ]
+   ]
+  ],
+  [
+   "Standdienst-Schichten · 2-Schicht-Modell (Namen ins Notizfeld)",
+   [
+    [
+     "ok",
+     "Team vor Ort ab 09:00 – Kurz-Briefing (1 h vor Öffnung 10:00)"
+    ],
+    [
+     "none",
+     "Frühschicht 09:00–14:00 – Besetzung eintragen"
+    ],
+    [
+     "ok",
+     "Übergabe 13:45–14:00 – Leads & offene Gespräche briefen"
+    ],
+    [
+     "none",
+     "Spätschicht 13:45 bis Schluss +30 Min (Di–Do bis 18:30, Fr bis 16:30) – Besetzung eintragen"
+    ],
+    [
+     "add",
+     "Freitag verkürzt (Schluss 16:00): Schichtwechsel ggf. auf ~13:00 vorziehen"
+    ],
+    [
+     "none",
+     "Springer/Reserve – benennen"
+    ],
+    [
+     "none",
+     "Teamliste 2026 (Referenz): {{TEAM_2026}}"
+    ]
+   ]
+  ],
+  [
+   "Verpflegung & Pausen",
+   [
+    [
+     "none",
+     "Kaffee/Wasser/Snacks am Stand auffüllen"
+    ],
+    [
+     "warn",
+     "Team-Verpflegung & Pausenzeiten festlegen (nicht nur Kundencatering)"
+    ]
+   ]
+  ],
+  [
+   "Abbau (Fr 15.01. ab 16:00 nach Schluss)",
+   [
+    [
+     "none",
+     "Exponate & Technik sichern/verpacken"
+    ],
+    [
+     "none",
+     "Stand räumen, Übergabe an Dienstleister"
+    ],
+    [
+     "none",
+     "Rücktransport & Entsorgung Reststände organisieren"
+    ]
+   ]
+  ]
+ ],
+ "blind": [
+  [
+   "Vor-Ort-Hinweise & Notfall",
+   [
+    [
+     "add",
+     "Notfall-/Erste-Hilfe-Kontakte & Ansprechpartner Ahoy hinterlegen"
+    ],
+    [
+     "add",
+     "Foto-/Video-Einwilligung abgebildeter Personen beachten (DSGVO) – Rechtsabteilung prüfen"
+    ],
+    [
+     "add",
+     "Tägliches 5-Min-Debrief für Lessons Learned 2027"
+    ]
+   ]
+  ]
+ ]
+}

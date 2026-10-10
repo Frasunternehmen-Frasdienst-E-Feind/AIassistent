@@ -1,0 +1,84 @@
+{
+ "code": "NL",
+ "file": "Followup_Rotterdam_2027_NL.pdf",
+ "title": "Lead-opvolg- & nazorgformulier Rotterdam 2027",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Stand 5.209 · di 12 – vr 15 januari 2027",
+ "chip": "Opvolging",
+ "src": "Invulbaar opvolgformulier · Bron: Projecthub + focusdocument taken · per 28-09-2026",
+ "intern": "INTERN / vertrouwelijk – bevat teamnamen, niet publiceren.",
+ "basis": "Basis: Projecthub (nazorg) + leadproces (EPIC-06)",
+ "howto": "Zo werkt het opvolgformulier",
+ "howto_lines": [
+  "1)  Vakje aanvinken = klaar.   2)  Statuslijst rechts: Open / Loopt / Klaar / Wacht / N.v.t.",
+  "3)  Notitieveld per punt – lead/bedrijf, verantwoordelijke, datum, link (max. 250 tekens).",
+  "Termijnen zijn richtwaarden (48 u / 1 week); opvolgronde vanaf 29-01-2027 volgens Projecthub.",
+  "Standaard „Open”. Let op AVG: leads alleen met toestemming in CRM. Print in elke pdf-viewer."
+ ],
+ "legend_label": "Legenda:",
+ "legend": [["ok", "klaar / bevestigd"], ["warn", "urgent / let op termijn"], ["none", "open / te doen"], ["no", "vervalt"], ["add", "let op"]],
+ "blocker_title": "Opvolgtermijnen (richtwaarden)",
+ "blockers": [
+  ["Einde beurs", "vr 15 jan 2027 – daarna opvolging starten"],
+  ["Bedankt/eerste contact", "binnen 48 u (aanbevolen)"],
+  ["Offertes/details", "binnen 1 week (aanbevolen)"],
+  ["Opvolgronde", "vanaf 29 jan 2027 (volgens Projecthub)"],
+  ["ROI-/succesevaluatie", "als lessons learned 2027"]
+ ],
+ "blocker_note": "48 u en 1 week zijn aanbevelingen/richtwaarden. Bindend uit Projecthub: opvolgronde vanaf 29 jan 2027. Termijnen vóór verzending bevestigen.",
+ "status": ["Open", "Loopt", "Klaar", "Wacht", "N.v.t."],
+ "status_def": "Open",
+ "tt_status": "Status: Open / Loopt / Klaar / Wacht / N.v.t.",
+ "tt_note": "Lead/bedrijf, verantwoordelijke, datum, link – max. 250 tekens",
+ "tt_done": "Aanvinken indien klaar",
+ "blind_banner": "Aandachtspunten & AVG",
+ "blind_sub": "Aanvullende aandachtspunten voor de nazorg. Juridische punten zijn gemarkeerd.",
+ "dp_title": "Gegevensbescherming & juridisch",
+ "dp": [
+  "• Intern werkdocument met teamnamen – vertrouwelijk behandelen, niet delen met externen/exposanten.",
+  "• Leadregistratie, foto/video op de stand en CRM-import alleen met toestemming/AVG-melding.",
+  "• Bij contractuele, fiscale of arbeidsrechtelijke vragen: laat de juridische afdeling toetsen."
+ ],
+ "src_title": "Bronnen & werkruimtes",
+ "links": ["Master · Beurs Rotterdam 2027 (Notion)", "Takenlijst Rotterdam 2027 (Notion)", "Takentracker (ClickUp)", "InfraTech-handboek 2027 V1.3 (pdf)"],
+ "link_urls": ["https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db", "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a", "https://app.clickup.com/90122021025/v/l/li/901222034862", "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stand 5.209  ·  Per 28-09-2026",
+ "page": "Pagina",
+ "cont": "vervolg",
+ "brand": "OPVOLGING · Rotterdam 2027",
+ "slim": "Opvolging Rotterdam 2027",
+ "sections": [
+  ["Leadregistratie & kwalificatie", [
+   ["none", "Alle leads uit het digitale gespreksnotitie-formulier samenvoegen"],
+   ["none", "Visitekaartjes/contacten digitaliseren & ontdubbelen"],
+   ["none", "Leads prioriteren (A/B/C naar potentieel)"],
+   ["none", "Verantwoordelijke per lead vastleggen (in het notitieveld)"]
+  ]],
+  ["Directe opvolging (binnen 48 u)", [
+   ["warn", "Bedankt-/eerste-contact-mail naar alle relevante leads"],
+   ["none", "Individuele toezeggingen van de stand nakomen (documenten, monsters)"],
+   ["none", "Afspraken voor verkoopgesprekken maken"]
+  ]],
+  ["Offerte & verkoop (binnen 1 week)", [
+   ["none", "Offertes/detailinfo versturen"],
+   ["none", "Herinneringen/opvolgdata instellen"],
+   ["none", "Hete leads telefonisch opvolgen"]
+  ]],
+  ["CRM & gegevensbeheer (AVG)", [
+   ["warn", "Leads AVG-conform in CRM importeren (toestemming gecontroleerd) – juridisch toetsen"],
+   ["none", "Herkomst/toestemming & bewaartermijn documenteren"],
+   ["none", "Opt-out/afmelding borgen"]
+  ]],
+  ["Evaluatie & lessons learned", [
+   ["none", "Aantal leads & kwaliteit evalueren (KPI's)"],
+   ["none", "Kosten vs. opbrengst / ROI bepalen"],
+   ["none", "Lessons learned 2027 documenteren (voor volgende beurs)"]
+  ]]
+ ],
+ "blind": [
+  ["Aandachtspunten & AVG", [
+   ["add", "Foto-/videocontent alleen met toestemming gebruiken (AVG) – juridisch toetsen"],
+   ["add", "Opvolgteksten meertalig (NL/DE/EN/PL) klaarzetten"],
+   ["add", "Feedback van het standteam ophalen (korte debrief)"]
+  ]]
+ ]
+}

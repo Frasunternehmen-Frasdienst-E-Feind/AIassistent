@@ -1,0 +1,235 @@
+{
+ "code": "PL",
+ "file": "Agenda_Rotterdam_2027_PL.pdf",
+ "title": "Dyżury i harmonogram Rotterdam 2027",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Stoisko 5.209 · wt. 12 – pt. 15 stycznia 2027",
+ "chip": "Harmonogram",
+ "src": "Harmonogram do wypełnienia · Źródło: Hub projektu + lista zadań · stan 30.09.2026",
+ "intern": "WEWNĘTRZNE / poufne – zawiera nazwiska zespołu, nie publikować.",
+ "basis": "Podstawa: Hub projektu (terminy, montaż) + podręcznik InfraTech 2027",
+ "howto": "Jak korzystać z harmonogramu",
+ "howto_lines": [
+  "1)  Zaznacz pole = zrobione.   2)  Lista statusów po prawej: Otwarte / Potwierdzone / W toku / Zrobione / Nie dotyczy.",
+  "3)  Pole notatki przy pozycji – godzina, nazwiska, miejsce, link (maks. 250 znaków).",
+  "Otwarcie wt–czw 10:00–18:00, pt 10:00–16:00 (wg podręcznika – potwierdzić przed drukiem); sloty montażu/demontażu przez portal Ahoy.",
+  "Domyślnie „Otwarte”; nazwiska dyżurów wpisać w polu notatki. Druk w każdej przeglądarce PDF."
+ ],
+ "legend_label": "Legenda:",
+ "legend": [
+  [
+   "ok",
+   "stałe / potwierdzone"
+  ],
+  [
+   "warn",
+   "do potwierdzenia"
+  ],
+  [
+   "none",
+   "otwarte / do zrobienia"
+  ],
+  [
+   "no",
+   "pomijane"
+  ],
+  [
+   "add",
+   "uwaga"
+  ]
+ ],
+ "blocker_title": "Godziny kluczowe i dane (wiążące)",
+ "blockers": [
+  [
+   "Dni targowe",
+   "wt. 12 – pt. 15 stycznia 2027 (zweryfikowane)"
+  ],
+  [
+   "Miejsce",
+   "Rotterdam Ahoy, Ahoyweg 10 · Stoisko 5.209"
+  ],
+  [
+   "Godziny otwarcia",
+   "wt–czw 10:00–18:00 · pt 10:00–16:00 (wg podręcznika – potwierdzić)"
+  ],
+  [
+   "Montaż",
+   "od śr. 7 stycznia 2027 – slot wg portalu Ahoy"
+  ],
+  [
+   "Demontaż",
+   "pt. 15.01 od 16:00 (po zamknięciu) – slot wg portalu Ahoy"
+  ]
+ ],
+ "blocker_note": "Otwarcie wt–czw 10:00–18:00, pt 10:00–16:00 (wg podręcznika – potwierdzić przed drukiem). Sloty czasowe montażu i demontażu rezerwować przez portal wystawcy Ahoy.",
+ "status": [
+  "Otwarte",
+  "Potwierdzone",
+  "W toku",
+  "Zrobione",
+  "Nie dotyczy"
+ ],
+ "status_def": "Otwarte",
+ "tt_status": "Status: Otwarte / Potwierdzone / W toku / Zrobione / Nie dotyczy",
+ "tt_note": "Godzina, nazwiska, miejsce, link – maks. 250 znaków",
+ "tt_done": "Zaznacz po wykonaniu",
+ "blind_banner": "Wskazówki na miejscu i sytuacje awaryjne",
+ "blind_sub": "Dodatkowe wskazówki na czas targów. Kwestie prawne oznaczono.",
+ "dp_title": "Ochrona danych i kwestie prawne",
+ "dp": [
+  "• Wewnętrzny dokument roboczy z nazwiskami – traktować poufnie, nie udostępniać na zewnątrz/wystawcom.",
+  "• Pozyskiwanie leadów, foto/wideo na stoisku i import do CRM tylko za zgodą/z informacją RODO.",
+  "• W sprawach umownych, podatkowych lub prawa pracy: proszę o kontrolę działu prawnego."
+ ],
+ "src_title": "Źródła i przestrzenie robocze",
+ "links": [
+  "Master · Targi Rotterdam 2027 (Notion)",
+  "Lista zadań Rotterdam 2027 (Notion)",
+  "Tracker zadań (ClickUp)",
+  "Podręcznik InfraTech 2027 V1.3 (PDF)"
+ ],
+ "link_urls": [
+  "https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db",
+  "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a",
+  "https://app.clickup.com/90122021025/v/l/li/901222034862",
+  "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"
+ ],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stoisko 5.209  ·  Stan 30.09.2026",
+ "page": "Strona",
+ "cont": "c.d.",
+ "brand": "HARMONOGRAM · Rotterdam 2027",
+ "slim": "Harmonogram Rotterdam 2027",
+ "sections": [
+  [
+   "Montaż (od śr. 7 stycznia 2027)",
+   [
+    [
+     "none",
+     "Dostawa i wjazd Ahoy – ustalić okno czasowe/kartę parkingową"
+    ],
+    [
+     "none",
+     "Zabudowa stoiska Global Expo Stand B.V. / LOCO – koordynacja na miejscu"
+    ],
+    [
+     "none",
+     "Ustawić eksponaty (duży wał szlifierski, szyld grinding, customer stopper)"
+    ],
+    [
+     "none",
+     "Podłączyć technikę: prąd, internet/LAN, TV, LED, prezentacja"
+    ],
+    [
+     "warn",
+     "Kontrola końcowa stoiska i sprzątanie przed dniem 1"
+    ]
+   ]
+  ],
+  [
+   "Przebieg dnia targowego (codziennie wt–pt)",
+   [
+    [
+     "ok",
+     "Zespół na stoisku od 09:00 (1 h przed otwarciem) – krótki briefing, ekspres włączony"
+    ],
+    [
+     "ok",
+     "Otwarcie 10:00: zaczepianie na hali targowej (nie tylko przy stoisku)"
+    ],
+    [
+     "none",
+     "Bieżące pozyskiwanie leadów w cyfrowym formularzu notatek"
+    ],
+    [
+     "warn",
+     "Zmiana dyżuru/rotacja ~14:00 – przerwy wg czasu pracy (>6 h: 30 min)"
+    ],
+    [
+     "none",
+     "Koniec dnia od zamknięcia (wt–czw 18:00, pt 16:00): zabezpieczyć leady, uzupełnić materiały i gadżety"
+    ]
+   ]
+  ],
+  [
+   "Dyżury na stoisku · model 2 zmian (nazwiska w polu notatki)",
+   [
+    [
+     "ok",
+     "Zespół na stoisku od 09:00 – krótki briefing (1 h przed otwarciem 10:00)"
+    ],
+    [
+     "none",
+     "Zmiana poranna 09:00–14:00 – wpisać obsadę"
+    ],
+    [
+     "ok",
+     "Przekazanie 13:45–14:00 – omówić leady i bieżące rozmowy"
+    ],
+    [
+     "none",
+     "Zmiana późniejsza 13:45 do zamknięcia +30 min (wt–czw do 18:30, pt do 16:30) – wpisać obsadę"
+    ],
+    [
+     "add",
+     "Piątek krótszy (zamknięcie 16:00): zmianę ewentualnie przyspieszyć na ~13:00"
+    ],
+    [
+     "none",
+     "Osoba zastępcza/rezerwa – wyznaczyć"
+    ],
+    [
+     "none",
+     "Lista zespołu 2026 (odniesienie): {{TEAM_2026}}"
+    ]
+   ]
+  ],
+  [
+   "Catering i przerwy",
+   [
+    [
+     "none",
+     "Uzupełniać kawę/wodę/przekąski na stoisku"
+    ],
+    [
+     "warn",
+     "Ustalić catering zespołu i czas przerw (nie tylko catering dla klientów)"
+    ]
+   ]
+  ],
+  [
+   "Demontaż (pt. 15.01 od 16:00 po zamknięciu)",
+   [
+    [
+     "none",
+     "Zabezpieczyć/spakować eksponaty i technikę"
+    ],
+    [
+     "none",
+     "Opróżnić stoisko, przekazać dostawcy"
+    ],
+    [
+     "none",
+     "Zorganizować transport powrotny i utylizację pozostałości"
+    ]
+   ]
+  ]
+ ],
+ "blind": [
+  [
+   "Wskazówki na miejscu i sytuacje awaryjne",
+   [
+    [
+     "add",
+     "Zapisać kontakty pierwszej pomocy/awaryjne i osobę kontaktową Ahoy"
+    ],
+    [
+     "add",
+     "Przestrzegać zgody na foto/wideo osób (RODO) – kontrola prawna"
+    ],
+    [
+     "add",
+     "Codzienny 5-min debrief dla wniosków 2027"
+    ]
+   ]
+  ]
+ ]
+}
