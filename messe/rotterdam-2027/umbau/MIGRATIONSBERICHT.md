@@ -342,3 +342,34 @@ Vorschlag ab 3 Einträgen, Anlage mit einem Klick. Kurz-Spec: `umbau/SPEC-themen
 - `e2e/themenprojekte.e2e.mjs`: Vorschlag in Eingang und Archiv, Anlage ordnet alle Einträge zu, Vorschlag
   verschwindet, „Nicht vorschlagen“ blendet aus.
 - Gesamt: 48 Unit-Tests und 38 Browser-Tests grün.
+
+## Wissens-Upload M1 (Artefakt-Kommentar „Wissens-Upload“, Entscheidungen David 06.10.2026)
+
+Spec mit Prototyp-Regeln: `umbau/SPEC-wissens-upload.md`. Freigabe zum Start am 11.10.2026 („Stand liegt im Repo“).
+
+- Reiter Wissen › „Eingang“ heißt jetzt **„Wissens-Upload“**. Die Kennung `eingang` bleibt, Links und Aktionen
+  funktionieren weiter.
+- **Neue Fassung hochladen** im Detail eines Datei-Eintrags: Der bisherige Stand wandert nach `versions[]`
+  (neueste zuerst, höchstens 10, Ältestes samt Datei fällt heraus), `rev` steigt, der Eintrag wird neu gelesen und
+  eingeordnet. Gleiche Datei oder Datei eines anderen Eintrags wird abgewiesen. Liste „Frühere Fassungen“ mit
+  Link auf das alte Original (vertraulich: nur Admins).
+- **Sperre und Fassung:** `lock: {by, at, rev}` gilt 10 Minuten. Ein Ergebnis zur alten Fassung oder zu einem
+  gelöschten Eintrag wird verworfen. Versuche zählen nur echte Fehler; abgebrochene Läufe (Seite geschlossen,
+  Sperre abgelaufen) und die KI-Grenze zählen nicht. Abgebrochene Läufe warten nach 10 Minuten wieder.
+- **Sauberes Löschen:** Original und alle früheren Fassungen, gelesener Text, Projektzuordnung und Rückverweise
+  in `related` anderer Einträge; Protokolleintrag mit Anzahl der Dateien.
+- **Texterkennung (OCR):** Tesseract.js 5.1.1 im Browser für PDFs ohne Textebene (bis 20 Seiten, pdf.js rendert
+  die Seiten) und für Bilder (ab 60 % Sicherheit). Die Karte zeigt „Texterkennung Seite x/y“. Ist die Erkennung
+  nicht ladbar, steht ein Prüfhinweis am Eintrag, die Einordnung läuft ohne Text weiter.
+- Reine Logik in `kb-logic.js`: `versionPush`, `lockFree`, `stale`, `resultFresh`, `unlinkRelated`, `ocrPlan`,
+  `needsOcr`.
+
+### Tests
+- `test/kb-upload.test.mjs`: 8 Unit-Tests (Fassungen, Grenze 10, Sperre, abgebrochener Lauf, verworfenes
+  Ergebnis, Rückverweise, OCR-Seitenplan, Scan-Erkennung).
+- `e2e/wissens-upload.e2e.mjs`: Reitername, neue Fassung mit Neueinordnung, gleiche Datei abgewiesen, Löschen
+  räumt Text und Rückverweise ab.
+- Texterkennung einmal mit Netz geprüft (erfundener Scan, 2 Seiten, und Bild): Text erkannt, „Texterkennung
+  Seite 1/2“ sichtbar, 37 s inklusive Laden der Sprachdaten.
+- Abnahme `tools/abnahme.mjs`: 35 Module, keine Skript-, Kontrast- oder Überlauffehler (`umbau/abnahme.json`).
+- Gesamt: 56 Unit-Tests und 42 Browser-Tests grün.
