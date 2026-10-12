@@ -1407,10 +1407,8 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       ? "Keine bestätigten Buchungen für Personalnummer " + OWN_PNR + " im Protokoll gefunden."
       : "Keine bestätigten Buchungen im Protokoll gefunden."] };
     var names = Object.keys(persons).sort(function (a, b) { return persons[b] - persons[a]; });
-    var me = names[0];
-    var byDay = {};
+    var byDay = {};   /* alle Ereignisse sind per PNR geprüft – Anzeigenamen spielen keine Rolle */
     events.forEach(function (e) {
-      if (e.person !== me) return;
       (byDay[e.date] = byDay[e.date] || []).push(e);
     });
     var out = {}, n = 0;
@@ -2913,7 +2911,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       var next = {};
       snap.docs.forEach(function (doc) {
         var v = doc.data() || {};
-        if (v.deleted) return;
+        if (v.deleted || (v.date || doc.id) < ENTRY_DATE) return;   /* Altdaten vor Eintritt nicht mitrechnen */
         next[doc.id] = {
           date: v.date || doc.id,
           books: Array.isArray(v.books) ? v.books : [],
@@ -2922,7 +2920,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         };
         if (TYPES[v.type]) next[doc.id].type = v.type;
       });
-      gotDays = true; dataReady = true;
+      gotDays = true; dataReady = gotSettings;   /* Stempeln erst, wenn Tage UND Einstellungen da sind (Erstbefüllung) */
       dbDayCount = Object.keys(next).length;
       if (!dbDayCount && !settings.seeded) {
         days = fromEmbed();           /* Erstbestand bleibt sichtbar, bis er geschrieben ist */
@@ -2948,11 +2946,11 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
           settings.autoIn = { on: !!v.autoIn.on, from: v.autoIn.from || "05:00", to: v.autoIn.to || "10:00" };
         }
       });
-      gotSettings = true;
+      gotSettings = true; dataReady = gotDays;
       maybeSeed();
       render();
       maybeAutoIn();
-    }, function () { gotSettings = true; maybeSeed(); });
+    }, function () { gotSettings = true; dataReady = gotDays; maybeSeed(); render(); });
   }
 
   days = fromEmbed();
