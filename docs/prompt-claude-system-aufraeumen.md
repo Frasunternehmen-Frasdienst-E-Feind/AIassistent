@@ -34,7 +34,8 @@ a) Global: ~/.claude/ (Windows: %USERPROFILE%\.claude\) mit CLAUDE.md, settings.
    settings.local.json, skills/, agents/, commands/, plugins/, hooks; ~/.claude.json
    (nur die Schlüssel mcpServers/projects, keine Werte von Secrets); ~/.agents/skills/.
 b) Tools: `claude mcp list`, `claude plugin marketplace list`, installierte Plugins,
-   `npx skills list -g`.
+   `skills list -g` nur, wenn `skills` bereits installiert ist (`command -v skills`).
+   Kein `npx` in Phase 1 – es lädt und startet fehlende Pakete aus dem Netz.
 c) Repos: alle Git-Repos unter <REPO-STAMMORDNER> (Tiefe ≤ 4). Je Repo: CLAUDE.md,
    AGENTS.md, .claude/ (skills, agents, commands, settings*.json), .mcp.json,
    SessionStart-Hooks.
