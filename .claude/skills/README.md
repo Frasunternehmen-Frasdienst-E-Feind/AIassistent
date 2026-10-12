@@ -22,6 +22,11 @@ Claude Code erkennt sie automatisch über `.claude/skills/<name>/SKILL.md`.
 | `grilling` | Plan/Idee/Entscheidung im harten Interview auf Schwachstellen abklopfen |
 | `wait-what` | Eine missverständlich angekommene Aussage neu und klarer formulieren |
 | `teach` | Ein Konzept/Skill im Kontext dieses Workspaces erklären |
+| `grill-me` | Alias für `grilling` (nur per `/grill-me`) |
+| `to-spec` | Gesprächsstand als Spec `docs/SPEC-<thema>.md` festhalten (nur per `/to-spec`) |
+| `to-tickets` | Spec in Tracer-Bullet-Tickets unter `.scratch/<slug>/issues/` zerlegen (nur per `/to-tickets`) |
+
+Eigene Skills (nicht aus Matts Sammlung): `cockpit-sync`, `feind-brand`.
 
 ## Aktualisieren
 
@@ -31,4 +36,5 @@ möchte, kann stattdessen Matts Claude-Code-Plugin nutzen
 zu vermeiden.
 
 _Herkunft/Änderungen: unverändert übernommen aus dem Upload
-`mattpocock_skills-for-real-engineers` (Stand 2026-09), nur Auswahl getroffen._
+`mattpocock_skills-for-real-engineers` (Stand 2026-09), nur Auswahl getroffen. `to-spec`/`to-tickets` (2026-10 aus github.com/mattpocock/skills):
+Tracker-Zeile auf lokale Dateien umgestellt, sonst unverändert._

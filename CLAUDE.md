@@ -7,7 +7,8 @@ der Lohnabrechnung stehen.
 
 ## Corporate Design (verbindlich für Artefakte, Dashboards, Präsentationen)
 Farben, Schriften, Radien und Abstände stehen in `branding/feind-ci.tokens.json`
-und sind die einzige Quelle – keine eigenen Paletten erfinden, keine Farbwerte
+und sind die einzige Quelle (Skill `feind-brand` erzeugt daraus den
+Theme-Block; `brand-guidelines` ist Anthropic-CI und gilt hier nicht) – keine eigenen Paletten erfinden, keine Farbwerte
 im Markup hart setzen.
 
 * Grün `#84bb20` ist Akzent- und Flächenfarbe. Auf Grün steht Anthrazit
@@ -79,8 +80,9 @@ sollte:
   Artefakt-Speicher (`db`) berührt.
 * `to-tickets` – wenn die Spec in mehrere Arbeitsschritte zerfällt.
 
-Nur vorschlagen, nicht ungefragt ausführen. Ist das Plugin in der Sitzung
-nicht aktiv, darauf hinweisen und die Installation anbieten. Bei
+Alle drei liegen als Repo-Skills unter `.claude/skills/` (`grill-me` ruft
+`grilling` auf; `to-spec` schreibt nach `docs/SPEC-<thema>.md`, `to-tickets`
+nach `.scratch/<slug>/issues/`). Nur vorschlagen, nicht ungefragt ausführen. Bei
 Kleinständerungen (Tippfehler, Farbwert, Einzeiler) entfällt der Vorschlag.
 
 ## Arbeitsweise bei Entscheidungen
