@@ -79,3 +79,13 @@ test('Theme: beide Farbschemata, Primär-Button mit on-accent-strong, keine Date
   const pnr = html.match(/PNR=\d{3,}|Personalnummer \d+/g) || [];
   pnr.forEach((m) => assert.match(m, /1626$/));
 });
+
+test('Notfall-Datenstand beginnt am Eintrittsdatum und deckt sich mit seed-data.js', () => {
+  const html = fs.readFileSync(path.join(dir, 'index.html'), 'utf8');
+  const embed = JSON.parse(/var EMBED_DAYS = (\[.*?\]);\n/.exec(html)[1]);
+  assert.equal(embed[0].date, '2026-08-17');
+  const seed = require('../seed-data.js').bookings().filter((b) => b.date <= '2026-08-18');
+  const flat = embed.filter((d) => d.date <= '2026-08-18')
+    .flatMap((d) => d.books.map((b) => d.date + ' ' + b.start + '-' + b.end));
+  seed.forEach((b) => assert.ok(flat.includes(b.date + ' ' + b.start + '-' + b.end), 'fehlt: ' + b.date + ' ' + b.start));
+});

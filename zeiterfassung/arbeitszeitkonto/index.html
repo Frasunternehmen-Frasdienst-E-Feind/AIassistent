@@ -602,11 +602,11 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
   "use strict";
 
   /* ---------------------------------------------------------------
-     Notfall-Datenstand: identisch mit dem Erstbestand im Speicher.
+     Notfall-Datenstand (Stand 14.09.2026, 17./18.08. aus seed-data.js ergänzt).
      Wird nur benutzt, wenn keine Speicher-Verbindung besteht oder
      der Speicher noch leer ist (dann als Erstbefüllung geschrieben).
   --------------------------------------------------------------- */
-  var EMBED_DAYS = [{"date":"2026-08-18","books":[{"start":"11:16","end":"11:23","kind":"pause"},{"start":"11:23","end":"15:30","kind":"work"},{"start":"15:30","end":"15:35","kind":"pause"},{"start":"15:35","end":"16:53","kind":"work"}],"origin":"import"},{"date":"2026-08-19","books":[{"start":"06:42","end":"07:31","kind":"work"},{"start":"07:31","end":"07:36","kind":"pause"},{"start":"07:36","end":"13:38","kind":"work"},{"start":"13:38","end":"13:45","kind":"pause"},{"start":"13:45","end":"15:44","kind":"work"}],"origin":"import"},{"date":"2026-08-20","books":[{"start":"06:47","end":"09:48","kind":"work"},{"start":"09:48","end":"09:55","kind":"pause"},{"start":"09:55","end":"11:59","kind":"work"},{"start":"11:59","end":"12:05","kind":"pause"},{"start":"12:05","end":"15:08","kind":"work"},{"start":"15:08","end":"15:15","kind":"pause"},{"start":"15:15","end":null,"kind":"work"}],"origin":"import"},{"date":"2026-08-21","books":[{"start":"06:44","end":"09:21","kind":"work"},{"start":"09:21","end":"09:30","kind":"pause"},{"start":"09:30","end":"10:56","kind":"work"},{"start":"10:56","end":"11:01","kind":"pause"},{"start":"11:01","end":"13:29","kind":"work"},{"start":"13:29","end":"13:34","kind":"pause"},{"start":"13:34","end":"15:26","kind":"work"},{"start":"15:26","end":"15:33","kind":"pause"},{"start":"15:33","end":"15:46","kind":"work"}],"origin":"export"},{"date":"2026-08-24","books":[{"start":"06:48","end":"13:20","kind":"work"},{"start":"13:20","end":"13:24","kind":"pause"},{"start":"13:24","end":"14:59","kind":"work"}],"origin":"export"},{"date":"2026-08-25","books":[{"start":"06:42","end":"09:15","kind":"work"},{"start":"09:15","end":"09:19","kind":"pause"},{"start":"09:19","end":"12:50","kind":"work"},{"start":"12:50","end":"13:27","kind":"pause"},{"start":"13:27","end":"15:23","kind":"work"}],"origin":"export"},{"date":"2026-08-26","books":[{"start":"06:47","end":"09:48","kind":"work"},{"start":"09:48","end":"09:52","kind":"pause"},{"start":"09:52","end":"11:34","kind":"work"},{"start":"11:34","end":"11:38","kind":"pause"},{"start":"11:38","end":"14:57","kind":"work"}],"origin":"export"},{"date":"2026-08-27","books":[{"start":"07:00","end":"13:06","kind":"work"},{"start":"13:06","end":"13:11","kind":"pause"},{"start":"13:11","end":"15:00","kind":"work"}],"origin":"export"},{"date":"2026-08-28","books":[{"start":"06:54","end":"08:40","kind":"work"},{"start":"08:40","end":"08:45","kind":"pause"},{"start":"08:45","end":"15:05","kind":"work"}],"origin":"export"},{"date":"2026-08-31","books":[{"start":"07:00","end":"12:49","kind":"work"},{"start":"12:49","end":"13:03","kind":"pause"},{"start":"13:03","end":"16:11","kind":"work"}],"origin":"export"},{"date":"2026-09-01","books":[{"start":"06:50","end":"11:46","kind":"work"},{"start":"11:46","end":"11:54","kind":"pause"},{"start":"11:54","end":"16:30","kind":"work"}],"origin":"export"},{"date":"2026-09-02","books":[{"start":"07:09","end":"14:29","kind":"work"},{"start":"14:29","end":"14:38","kind":"pause"},{"start":"14:38","end":"17:05","kind":"work"}],"origin":"export"},{"date":"2026-09-03","books":[{"start":"06:42","end":"10:23","kind":"work"},{"start":"10:23","end":"13:00","kind":"pause"},{"start":"13:00","end":"15:36","kind":"work"}],"origin":"export"},{"date":"2026-09-04","books":[{"start":"07:03","end":"15:00","kind":"work"},{"start":"15:00","end":"15:07","kind":"pause"},{"start":"15:07","end":"16:16","kind":"work"}],"origin":"export"},{"date":"2026-09-07","books":[{"start":"06:54","end":"12:11","kind":"work"},{"start":"12:11","end":"12:15","kind":"pause"},{"start":"12:15","end":"15:16","kind":"work"}],"origin":"export"},{"date":"2026-09-08","books":[{"start":"06:46","end":"10:39","kind":"work"},{"start":"10:39","end":"10:46","kind":"pause"},{"start":"10:46","end":"14:57","kind":"work"}],"origin":"export"},{"date":"2026-09-09","books":[{"start":"06:56","end":"14:20","kind":"work"},{"start":"14:20","end":"14:27","kind":"pause"},{"start":"14:27","end":"16:39","kind":"work"}],"origin":"export"},{"date":"2026-09-10","books":[{"start":"06:58","end":"10:27","kind":"work"},{"start":"10:27","end":"10:50","kind":"pause"},{"start":"10:50","end":"16:53","kind":"work"}],"origin":"export"},{"date":"2026-09-11","books":[{"start":"06:31","end":"13:19","kind":"work"},{"start":"13:19","end":"13:23","kind":"pause"},{"start":"13:23","end":"15:25","kind":"work"},{"start":"15:25","end":"16:28","kind":"work"}],"origin":"export"},{"date":"2026-09-14","books":[{"start":"06:48","end":"14:37","kind":"work"},{"start":"14:37","end":"14:57","kind":"pause"},{"start":"14:57","end":null,"kind":"work"}],"origin":"export"}];
+  var EMBED_DAYS = [{"date":"2026-08-17","books":[{"start":"08:00","end":"15:30","kind":"work"}],"origin":"import"},{"date":"2026-08-18","books":[{"start":"08:01","end":"11:16","kind":"work"},{"start":"11:16","end":"11:23","kind":"pause"},{"start":"11:23","end":"15:30","kind":"work"},{"start":"15:30","end":"15:35","kind":"pause"},{"start":"15:35","end":"16:53","kind":"work"}],"origin":"import"},{"date":"2026-08-19","books":[{"start":"06:42","end":"07:31","kind":"work"},{"start":"07:31","end":"07:36","kind":"pause"},{"start":"07:36","end":"13:38","kind":"work"},{"start":"13:38","end":"13:45","kind":"pause"},{"start":"13:45","end":"15:44","kind":"work"}],"origin":"import"},{"date":"2026-08-20","books":[{"start":"06:47","end":"09:48","kind":"work"},{"start":"09:48","end":"09:55","kind":"pause"},{"start":"09:55","end":"11:59","kind":"work"},{"start":"11:59","end":"12:05","kind":"pause"},{"start":"12:05","end":"15:08","kind":"work"},{"start":"15:08","end":"15:15","kind":"pause"},{"start":"15:15","end":null,"kind":"work"}],"origin":"import"},{"date":"2026-08-21","books":[{"start":"06:44","end":"09:21","kind":"work"},{"start":"09:21","end":"09:30","kind":"pause"},{"start":"09:30","end":"10:56","kind":"work"},{"start":"10:56","end":"11:01","kind":"pause"},{"start":"11:01","end":"13:29","kind":"work"},{"start":"13:29","end":"13:34","kind":"pause"},{"start":"13:34","end":"15:26","kind":"work"},{"start":"15:26","end":"15:33","kind":"pause"},{"start":"15:33","end":"15:46","kind":"work"}],"origin":"export"},{"date":"2026-08-24","books":[{"start":"06:48","end":"13:20","kind":"work"},{"start":"13:20","end":"13:24","kind":"pause"},{"start":"13:24","end":"14:59","kind":"work"}],"origin":"export"},{"date":"2026-08-25","books":[{"start":"06:42","end":"09:15","kind":"work"},{"start":"09:15","end":"09:19","kind":"pause"},{"start":"09:19","end":"12:50","kind":"work"},{"start":"12:50","end":"13:27","kind":"pause"},{"start":"13:27","end":"15:23","kind":"work"}],"origin":"export"},{"date":"2026-08-26","books":[{"start":"06:47","end":"09:48","kind":"work"},{"start":"09:48","end":"09:52","kind":"pause"},{"start":"09:52","end":"11:34","kind":"work"},{"start":"11:34","end":"11:38","kind":"pause"},{"start":"11:38","end":"14:57","kind":"work"}],"origin":"export"},{"date":"2026-08-27","books":[{"start":"07:00","end":"13:06","kind":"work"},{"start":"13:06","end":"13:11","kind":"pause"},{"start":"13:11","end":"15:00","kind":"work"}],"origin":"export"},{"date":"2026-08-28","books":[{"start":"06:54","end":"08:40","kind":"work"},{"start":"08:40","end":"08:45","kind":"pause"},{"start":"08:45","end":"15:05","kind":"work"}],"origin":"export"},{"date":"2026-08-31","books":[{"start":"07:00","end":"12:49","kind":"work"},{"start":"12:49","end":"13:03","kind":"pause"},{"start":"13:03","end":"16:11","kind":"work"}],"origin":"export"},{"date":"2026-09-01","books":[{"start":"06:50","end":"11:46","kind":"work"},{"start":"11:46","end":"11:54","kind":"pause"},{"start":"11:54","end":"16:30","kind":"work"}],"origin":"export"},{"date":"2026-09-02","books":[{"start":"07:09","end":"14:29","kind":"work"},{"start":"14:29","end":"14:38","kind":"pause"},{"start":"14:38","end":"17:05","kind":"work"}],"origin":"export"},{"date":"2026-09-03","books":[{"start":"06:42","end":"10:23","kind":"work"},{"start":"10:23","end":"13:00","kind":"pause"},{"start":"13:00","end":"15:36","kind":"work"}],"origin":"export"},{"date":"2026-09-04","books":[{"start":"07:03","end":"15:00","kind":"work"},{"start":"15:00","end":"15:07","kind":"pause"},{"start":"15:07","end":"16:16","kind":"work"}],"origin":"export"},{"date":"2026-09-07","books":[{"start":"06:54","end":"12:11","kind":"work"},{"start":"12:11","end":"12:15","kind":"pause"},{"start":"12:15","end":"15:16","kind":"work"}],"origin":"export"},{"date":"2026-09-08","books":[{"start":"06:46","end":"10:39","kind":"work"},{"start":"10:39","end":"10:46","kind":"pause"},{"start":"10:46","end":"14:57","kind":"work"}],"origin":"export"},{"date":"2026-09-09","books":[{"start":"06:56","end":"14:20","kind":"work"},{"start":"14:20","end":"14:27","kind":"pause"},{"start":"14:27","end":"16:39","kind":"work"}],"origin":"export"},{"date":"2026-09-10","books":[{"start":"06:58","end":"10:27","kind":"work"},{"start":"10:27","end":"10:50","kind":"pause"},{"start":"10:50","end":"16:53","kind":"work"}],"origin":"export"},{"date":"2026-09-11","books":[{"start":"06:31","end":"13:19","kind":"work"},{"start":"13:19","end":"13:23","kind":"pause"},{"start":"13:23","end":"15:25","kind":"work"},{"start":"15:25","end":"16:28","kind":"work"}],"origin":"export"},{"date":"2026-09-14","books":[{"start":"06:48","end":"14:37","kind":"work"},{"start":"14:37","end":"14:57","kind":"pause"},{"start":"14:57","end":null,"kind":"work"}],"origin":"export"}];
   var DEFAULTS = { weekHours: 40, workdays: [1, 2, 3, 4, 5] };
   var WD = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
   var WDLONG = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
@@ -1379,17 +1379,23 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
      ("hat an-/um-/ausgestempelt"); die Tätigkeit steht in der Zeile
      davor (KST 000007 = Pause). Maßgeblich ist der Zeitstempel der
      Protokollzeile, weil BEG_STD und BEG_MIN beide die Stunde enthalten. */
+  var OWN_PNR = "1626";
   function parseOptiLog(text) {
     var lineRe = /^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):\d{2}\s+\d+\/\d+\[[^\]]*\]\s*-\s*(.*)$/;
-    var events = [], persons = {}, lastKst = null;
+    var events = [], persons = {}, lastKst = null, lastPnr = null, others = 0;
     String(text || "").split(/\r?\n/).forEach(function (raw) {
       var m = lineRe.exec(raw.trim());
       if (!m) return;
       var msg = m[6];
-      var k = /VerarbeiteBuchung:\s*PNR=\d+\s+KST=(\d+)/.exec(msg);
-      if (k) { lastKst = k[1]; return; }
+      var k = /VerarbeiteBuchung:\s*PNR=(\d+)\s+KST=(\d+)/.exec(msg);
+      if (k) { lastPnr = k[1]; lastKst = k[2]; return; }
       var st = /Erzeuge_Buchung_Online\s+Meldung:\s*(.+?)\s+hat\s+(an|um|aus)gestempelt/.exec(msg);
       if (!st) return;
+      /* Nur eigene Buchungen: Bestätigung muss direkt auf PNR 1626 folgen.
+         Buchungen anderer Personen werden weder gezählt noch gespeichert. */
+      var mine = lastPnr === OWN_PNR;
+      lastPnr = null;
+      if (!mine) { others++; lastKst = null; return; }
       persons[st[1]] = (persons[st[1]] || 0) + 1;
       events.push({
         date: m[3] + "-" + m[2] + "-" + m[1], time: m[4] + ":" + m[5],
@@ -1397,8 +1403,9 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       });
       lastKst = null;
     });
-    if (!events.length) return { days: {}, count: 0, persons: [], errs: ["Keine bestätigten Buchungen im Protokoll gefunden."] };
-    /* Bei mehreren Personen am selben Rechner die mit den meisten Buchungen */
+    if (!events.length) return { days: {}, count: 0, persons: [], errs: [others
+      ? "Keine bestätigten Buchungen für Personalnummer " + OWN_PNR + " im Protokoll gefunden."
+      : "Keine bestätigten Buchungen im Protokoll gefunden."] };
     var names = Object.keys(persons).sort(function (a, b) { return persons[b] - persons[a]; });
     var me = names[0];
     var byDay = {};
@@ -1546,6 +1553,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
   /* -------------------------- Validierung ------------------------- */
   function validate(d) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(d.date)) return "Bitte ein Datum angeben.";
+    if (d.date < ENTRY_DATE) return "Vor dem " + dLong(ENTRY_DATE) + " (Beginn des Arbeitsverhältnisses) wird nichts erfasst.";
     var books = (d.books || []).filter(function (b) { return b.start || b.end; });
     if (!books.length) {
       if (!typeOf(d)) return "Mindestens eine Buchung mit Von-Zeit angeben oder eine Tagesart wählen.";
@@ -1670,7 +1678,9 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       return renderPanel();
     }
     if (!res.count) { note = { type: "err", text: "Keine Buchungen erkannt." }; return renderPanel(); }
-    var dates = Object.keys(res.days).sort(), bad = null, docs = {};
+    var all = Object.keys(res.days).sort(), bad = null, docs = {};
+    var dates = all.filter(function (dt) { return dt >= ENTRY_DATE; }), early = all.length - dates.length;
+    if (!dates.length) { note = { type: "err", text: "Alle Buchungen liegen vor dem " + dLong(ENTRY_DATE) + " – nichts übernommen." }; return renderPanel(); }
     var types = res.types || {}, nTypes = 0;
     dates.forEach(function (dt) {
       var doc = { date: dt, books: res.days[dt], origin: "import", note: (days[dt] && days[dt].note) || "" };
@@ -1692,7 +1702,8 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     take.forEach(function (dt) { days[dt] = docs[dt]; n += docs[dt].books.length; });
     render();
     var summary = n + " Buchungen auf " + take.length + " Tagen übernommen, bis " + dLong(take[take.length - 1]) +
-      (nTypes ? ", davon " + nTypes + " Tag(e) mit Tagesart" : "") + ".";
+      (nTypes ? ", davon " + nTypes + " Tag(e) mit Tagesart" : "") + "." +
+      (early ? " " + early + " Tag(e) vor dem " + dLong(ENTRY_DATE) + " übersprungen." : "");
     if (skip.length) {
       summary += " " + skip.length + " Tag(e) unverändert gelassen (" + skip.slice(0, 5).map(dShort).join(", ") +
         (skip.length > 5 ? " …" : "") + "), dort ist der gespeicherte Stand vollständiger.";
@@ -1745,7 +1756,12 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
           "Exportformat." + (res.errs && res.errs[0] ? " (" + res.errs[0] + ")" : "") };
         return renderPanel();
       }
-      var dates = Object.keys(res.days).sort();
+      var dates = Object.keys(res.days).sort().filter(function (dt) { return dt >= ENTRY_DATE; });
+      if (!dates.length) {
+        draft.found = null;
+        note = { type: "err", text: "Alle Buchungen in \u201e" + file.name + "\u201c liegen vor dem " + dLong(ENTRY_DATE) + "." };
+        return renderPanel();
+      }
       var docs = {};
       dates.forEach(function (dt) { docs[dt] = { date: dt, books: res.days[dt] }; });
       var sp = splitByCompleteness(dates, docs);
@@ -2700,6 +2716,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     return !(d && (typeOf(d) || (d.books && d.books.length)));
   }
   function clockInAt(hmStr) {
+    if (!dataReady) return;   /* sonst überschreibt ein früher Klick den gespeicherten Tag */
     var s = liveState(); if (s.status !== "out" || s.hasType || stampBusy) return;
     var m = toMin(hmStr);
     if (m == null) { stampErr = "Bitte eine Uhrzeit angeben."; return renderStamp(); }
@@ -2752,34 +2769,40 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     if (r) r.textContent = restText();
   }
   function saveStamp(doc) {
+    var prev = days[doc.date];
     days[doc.date] = doc; stampErr = "";
     if (!db) { render(); return; }
     stampBusy = true; renderStamp();
     db.doc("days/" + doc.date).set(doc).then(function () {
       stampBusy = false; render();
     }, function (err) {
-      stampBusy = false; stampErr = "Stempeln fehlgeschlagen (" + ((err && err.code) || "Fehler") + ")."; renderStamp();
+      if (prev) days[doc.date] = prev; else delete days[doc.date];   /* nichts anzeigen, was nicht gespeichert ist */
+      stampBusy = false; stampErr = "Stempeln fehlgeschlagen (" + ((err && err.code) || "Fehler") + ") – bitte erneut versuchen."; render();
     });
   }
   function clockIn() {
+    if (!dataReady) return;   /* sonst überschreibt ein früher Klick den gespeicherten Tag */
     var s = liveState(); if (s.status !== "out" || s.hasType || stampBusy) return;
     var doc = todayDoc();
     doc.books = doc.books.concat([{ start: nowHM(), end: null, kind: "work" }]);
     saveStamp(doc);
   }
   function breakStart() {
+    if (!dataReady) return;   /* sonst überschreibt ein früher Klick den gespeicherten Tag */
     var s = liveState(); if (s.status !== "working" || stampBusy) return;
     var doc = todayDoc(), b = doc.books, now = nowHM();
     b[b.length - 1].end = now; b.push({ start: now, end: null, kind: "pause" });
     saveStamp(doc);
   }
   function breakEnd() {
+    if (!dataReady) return;   /* sonst überschreibt ein früher Klick den gespeicherten Tag */
     var s = liveState(); if (s.status !== "break" || stampBusy) return;
     var doc = todayDoc(), b = doc.books, now = nowHM();
     b[b.length - 1].end = now; b.push({ start: now, end: null, kind: "work" });
     saveStamp(doc);
   }
   function clockOut() {
+    if (!dataReady) return;   /* sonst überschreibt ein früher Klick den gespeicherten Tag */
     var s = liveState(); if (s.status === "out" || stampBusy) return;
     var doc = todayDoc(), b = doc.books, now = nowHM();
     b[b.length - 1].end = now;
@@ -2837,17 +2860,17 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     try { document.title = due ? "Einstempeln? – Arbeitszeitkonto 1626" : "Arbeitszeitkonto 1626"; } catch (e) { /* egal */ }
     if (due) {
       statusText = "Noch nicht eingestempelt";
-      btns = '<button type="button" class="primary" data-act="stamp-in"' + (stampBusy ? " disabled" : "") + ">Jetzt einstempeln (" + esc(nowHM()) + ")</button>" +
+      btns = '<button type="button" class="primary" data-act="stamp-in"' + (stampBusy || !dataReady ? " disabled" : "") + ">Jetzt einstempeln (" + esc(nowHM()) + ")</button>" +
         '<button type="button" data-act="stamp-at-open">Andere Uhrzeit</button>' +
         '<button type="button" class="ghost" data-act="stamp-snooze">Heute nicht</button>';
     } else if (s.status === "out") {
-      btns = '<button type="button" class="primary" data-act="stamp-in"' + (stampBusy ? " disabled" : "") + ">Einstempeln</button>";
+      btns = '<button type="button" class="primary" data-act="stamp-in"' + (stampBusy || !dataReady ? " disabled" : "") + ">Einstempeln</button>";
     } else if (s.status === "working") {
-      btns = '<button type="button" data-act="stamp-bstart"' + (stampBusy ? " disabled" : "") + ">Pause beginnen</button>" +
-        '<button type="button" class="primary" data-act="stamp-out"' + (stampBusy ? " disabled" : "") + ">Ausstempeln</button>";
+      btns = '<button type="button" data-act="stamp-bstart"' + (stampBusy || !dataReady ? " disabled" : "") + ">Pause beginnen</button>" +
+        '<button type="button" class="primary" data-act="stamp-out"' + (stampBusy || !dataReady ? " disabled" : "") + ">Ausstempeln</button>";
     } else {
-      btns = '<button type="button" class="primary" data-act="stamp-bend"' + (stampBusy ? " disabled" : "") + ">Pause beenden</button>" +
-        '<button type="button" data-act="stamp-out"' + (stampBusy ? " disabled" : "") + ">Ausstempeln</button>";
+      btns = '<button type="button" class="primary" data-act="stamp-bend"' + (stampBusy || !dataReady ? " disabled" : "") + ">Pause beenden</button>" +
+        '<button type="button" data-act="stamp-out"' + (stampBusy || !dataReady ? " disabled" : "") + ">Ausstempeln</button>";
     }
     host.innerHTML =
       '<div class="stamp"><div class="stamp-main">' +
@@ -2862,7 +2885,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         "übernehmen oder eine frühere Uhrzeit eintragen.</p>" : "") +
       (due && stampAt !== null ? '<div class="stamp-at"><div class="field"><label for="stamp-time">Kommen um</label>' +
         '<input id="stamp-time" type="time" value="' + esc(stampAt) + '"></div>' +
-        '<button type="button" class="primary" data-act="stamp-at-save"' + (stampBusy ? " disabled" : "") + ">Kommen buchen</button>" +
+        '<button type="button" class="primary" data-act="stamp-at-save"' + (stampBusy || !dataReady ? " disabled" : "") + ">Kommen buchen</button>" +
         '<button type="button" class="ghost" data-act="stamp-at-cancel">Abbrechen</button></div>' : "") +
       (stampErr ? '<p class="err">' + esc(stampErr) + "</p>" : "") +
       (autoNote ? '<p class="ok-msg">' + esc(autoNote) +
