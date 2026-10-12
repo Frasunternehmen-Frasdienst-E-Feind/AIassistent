@@ -227,6 +227,8 @@
       let n = 0;
       for (const t of list) { if (await createNotion(t.id, t)) { n++; await origPatch(t.id, { notionPending: false }); } else break; }
       app.toast(n + ' von ' + list.length + ' Aufgaben nach Notion übertragen.', n < list.length);
+      // Erst nach dem Neuladen kennt nt.byId die neuen Zeilen; vorher würde pending() sie erneut anbieten.
+      if (n) await load(true).catch(() => {});
     } finally { pushing = false; app.refresh(); }
   }
 

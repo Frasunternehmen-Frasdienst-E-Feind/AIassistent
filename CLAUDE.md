@@ -54,11 +54,20 @@ Datenhaltung im Artefakt-Speicher (`db`), nicht im HTML:
     Tages-Soll, 0,5 Tage), `sonderurlaub`, `krank`, `feiertag` (je Soll 0),
     `gleittag` (volles Soll, Ist 0). Mit Tagesart dürfen `books` leer sein.
 * `settings/general` = `{ weekHours, workdays: [1..5], seeded: true,
-  vacation: { "2026": 30, "2027": 30 }, gleittag: false }`
+  vacation: { "2026": 30, "2027": 30 }, gleittag: false,
+  autoIn: { on: false, from: "05:00", to: "10:00" } }`
   * `vacation` = Urlaubsanspruch je Jahr, von Hand gepflegt (2026 vorläufig,
     Personalabteilung klärt). `gleittag` blendet die Tagesart ein.
+  * `autoIn` = automatisches Einstempeln beim Öffnen der Seite, nur im
+    Zeitfenster `from`–`to`, standardmäßig aus.
   * Das Dokument wird immer vollständig geschrieben – neue Felder in
     `settingsDoc()` ergänzen, sonst gehen sie beim Speichern verloren.
+
+Stempeluhr „Jetzt stempeln“: Standard ist die Erinnerung. An einem Arbeitstag
+ohne Feiertag, Tagesart und Buchung fragt die Seite nach, und erst der Klick
+bucht Kommen. Selbst bucht sie nur, wenn `autoIn.on` eingeschaltet ist.
+Gestempelt wird ins Artefakt, nicht in OptiTime; für die Abrechnung maßgeblich
+bleibt OptiTime. Die Seite wirkt nur, solange sie geöffnet ist.
 
 Feiertage Brandenburg werden im Artefakt berechnet (Ostern nach Gauß) und nur
 nach Klick auf „übernehmen“ als `type: "feiertag"` gespeichert.
@@ -80,9 +89,8 @@ sollte:
   Artefakt-Speicher (`db`) berührt.
 * `to-tickets` – wenn die Spec in mehrere Arbeitsschritte zerfällt.
 
-Alle drei liegen als Repo-Skills unter `.claude/skills/` (`grill-me` ruft
-`grilling` auf; `to-spec` schreibt nach `docs/SPEC-<thema>.md`, `to-tickets`
-nach `.scratch/<slug>/issues/`). Nur vorschlagen, nicht ungefragt ausführen. Bei
+Nur vorschlagen, nicht ungefragt ausführen. Die Skills liegen unter
+`.claude/skills/` (siehe dortige README). Bei
 Kleinständerungen (Tippfehler, Farbwert, Einzeiler) entfällt der Vorschlag.
 
 ## Arbeitsweise bei Entscheidungen
@@ -107,3 +115,17 @@ Ausnahme zur Längengrenze (David, 2026-10-07): Das Standardformat mit fünf
 Abschnitten (Zusammenfassung, Empfehlung, Vorlage, Risiken, KPIs) hat Vorrang
 vor der 150-Wörter-Grenze. Innerhalb des Formats gilt weiter: keine
 Wiederholungen, keine Alternativen ohne Anfrage.
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues dieses Repos; in Cloud-Sessions ohne `gh` über die GitHub-MCP-Tools. Achtung: Solange das Repo öffentlich ist, sind auch Issues öffentlich – keine Personendaten. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Standard-Vokabular (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context (`GLOSSARY.md` + `docs/adr/` im Repo-Root, werden bei Bedarf angelegt). See `docs/agents/domain.md`.

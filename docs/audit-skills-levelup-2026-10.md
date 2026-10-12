@@ -37,8 +37,10 @@ als Summe (Repository ist öffentlich), Details nur im Chat.
 3. **CLAUDE.md verweist auf `grill-me`, `to-spec`, `to-tickets`** – im Repo
    heißt der erste `grilling`, die anderen beiden fehlen. Maßnahme: Verweise
    korrigieren oder die zwei Skills aus Matts Sammlung nachziehen.
-   **Erledigt:** `grill-me`, `to-spec`, `to-tickets` als Repo-Skills, Tracker
-   auf lokale Dateien umgestellt.
+   **Erledigt (über main, PR #64ff.):** komplette Sammlung inkl. `grill-me`,
+   `to-spec`, `to-tickets` und `setup-matt-pocock-skills` liegt in
+   `.claude/skills/`. Vor erstem `/to-spec` einmal `/setup-matt-pocock-skills`
+   ausführen (Tracker festlegen).
 4. **Namensdoppelung `prototype`** (claude.ai-Skill und Repo-Skill, unterschiedliches
    Verhalten). Maßnahme: einen umbenennen.
 

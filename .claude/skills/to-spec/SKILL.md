@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 This skill takes the current conversation context and codebase understanding and produces a spec. Do NOT interview the user; just synthesize what you already know.
 
-Tracker in diesem Repository (kein `/setup-matt-pocock-skills` nötig): Specs sind lokale Dateien `docs/SPEC-<thema>.md` (Vorbild: `docs/SPEC-arbeitszeitkonto-erweiterungen.md`), auf Deutsch. Kein Triage-Label; Status steht als Zeile `Status: ready-for-agent` am Dateianfang.
+The issue tracker and triage label vocabulary should have been provided to you. If not, tell the user to run `/setup-matt-pocock-skills`.
 
 ## Process
 
@@ -16,7 +16,7 @@ Tracker in diesem Repository (kein `/setup-matt-pocock-skills` nötig): Specs si
 
 Check with the user that these seams match their expectations.
 
-3. Write the spec using the template below, then save it as `docs/SPEC-<thema>.md`.
+3. Write the spec using the template below, then publish it to the project issue tracker. Apply the `ready-for-agent` triage label - no need for additional triage.
 
 <spec-template>
 
