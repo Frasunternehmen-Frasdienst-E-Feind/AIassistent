@@ -2323,10 +2323,27 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
 .kb-s { font-size: 12.5px; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .kb-thumb { flex: none; width: 52px; height: 52px; background: var(--raised); border: 1px solid var(--line-soft); display: grid; place-items: center; overflow: hidden; }
 .kb-thumb img { width: 100%; height: 100%; object-fit: cover; }
-.kb-thumb.icon { grid-template-rows: 1fr auto; padding: 4px 0 2px; }
-.kb-thumb.icon svg { width: 22px; height: 22px; fill: none; stroke: var(--ink-strong); stroke-width: 1.8; }
-.kb-thumb.icon span { font-size: 9px; font-weight: 700; letter-spacing: .06em; color: var(--ink-muted); }
+/* Themen-Kachel (Wunsch David 11.10.2026): Tönung je Kategorie, großes Detail-Symbol, Dateityp als Plakette unten rechts. */
+.kb-thumb.icon { position: relative; display: grid; place-items: center; padding: 0; --tt: var(--ink-muted);
+  background: radial-gradient(120% 90% at 20% 10%, color-mix(in srgb, var(--tt) 30%, var(--surface)) 0%, color-mix(in srgb, var(--tt) 12%, var(--surface)) 75%);
+  border-color: color-mix(in srgb, var(--tt) 30%, var(--line-soft)); box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 55%, transparent); }
+.kb-thumb.icon .kb-ti { width: 30px; height: 30px; fill: none; stroke: color-mix(in srgb, var(--tt) 60%, var(--ink-strong)); stroke-width: 1.8; --ic-d: inline; --ic-accent: var(--accent); --ic-tone-c: color-mix(in srgb, var(--tt) 25%, var(--surface)); }
+.kb-thumb.icon .kb-tb { position: absolute; right: 2px; bottom: 2px; font-size: 8px; line-height: 1; font-weight: 700; letter-spacing: .05em; padding: 2px 3px; border-radius: 2px; color: #fff; background: #5d6868; }
+.kb-thumb .kb-tb.tb-pdf { background: #b3261e; } .kb-thumb .kb-tb.tb-doc { background: #2b5797; } .kb-thumb .kb-tb.tb-xls { background: #1e7145; }
+.kb-thumb .kb-tb.tb-ppt { background: #c4501b; } .kb-thumb .kb-tb.tb-vid { background: #6b3fa0; } .kb-thumb .kb-tb.tb-web { background: #2c5a7a; } .kb-thumb .kb-tb.tb-txt { background: #424e4e; }
+.kb-thumb.tt-green { --tt: var(--accent); } .kb-thumb.tt-blue { --tt: #2c5a7a; } .kb-thumb.tt-violet { --tt: #6b4fa0; } .kb-thumb.tt-teal { --tt: #2a8c86; }
+.kb-thumb.tt-amber { --tt: #c98a12; } .kb-thumb.tt-slate { --tt: #5d6868; }
+.kb-thumb .kb-prev { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; background: #fff; opacity: 0; transition: opacity .25s ease; }
+.kb-thumb.has-prev .kb-prev { opacity: 1; } .kb-thumb.has-prev .kb-ti { visibility: hidden; } .kb-thumb.has-prev .kb-tb { z-index: 1; }
+@media (prefers-reduced-motion: reduce) { .kb-thumb .kb-prev { transition: none; } }
+.kb-thumb.big.icon .kb-ti { width: 56px; height: 56px; } .kb-thumb.big .kb-tb { font-size: 10px; padding: 3px 4px; }
+.kb-thumb.mid.icon .kb-ti { width: 34px; height: 34px; }
 .kb-thumb.big { width: 112px; height: 112px; }
+.kb-thumb.mid { width: 64px; height: 64px; }
+.kb-thumb.mid.icon svg { width: 28px; height: 28px; stroke-width: 1.6; }
+.kb-theme-head { display: flex; gap: var(--s2); align-items: center; margin-bottom: var(--s2); }
+.kb-theme-head h4 { margin: 0 0 2px; }
+.kb-theme-head p { margin: 0; }
 .kb-thumb.big.icon svg { width: 40px; height: 40px; }
 @keyframes kb-pulse { 50% { opacity: .25; } }
 
@@ -14432,9 +14449,112 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   const STATUS_CHIP = { neu: 'soft', in_arbeit: 'yellow', fertig: 'green', pruefen: 'yellow', fehler: 'red', archiviert: 'gone' };
   const statusChip = it => chip(W.steps.has(it.id) ? 'yellow' : STATUS_CHIP[it.status] || 'soft', W.steps.get(it.id) || K.statusLabel(it.status));
   const kindIcon = it => (it.kind === 'link' ? 'ext' : it.kind === 'text' ? 'stift' : /^image\//.test(str(it.mime)) ? 'kamera' : /^video\//.test(str(it.mime)) ? 'display' : K.catOf(it.category)[3] || 'dokument');
+  // Vorschau je Eintrag (Wunsch David 11.10.2026): Bild direkt, PDF erste Seite, Video ein Standbild. Ohne Vorschau ein
+  // Themen-Symbol: erst Stichworte im Titel (Messe, Grinding, Vertrag …), dann Dokumenttyp, dann Kategorie. Vertrauliches
+  // und Einträge mit Personendaten zeigen Nicht-Admins nur das Symbol. Vorschauen entstehen im Browser, erst wenn die
+  // Karte sichtbar wird, und bleiben je Datei zwischengespeichert (kein Upload, keine Anfrage an Dritte außer pdf.js).
+  const TOPIC_RULES = [
+    [/infratech|messe|ausstell|standbau|messestand|hausmesse/, 'messestand'], [/grinding|schleif|diamant/, 'schleifwelle'], [/grooving|rillen/, 'grooving'],
+    [/fräswalze|meißel/, 'fraeswalze'], [/fräs|maschine|wirtgen|kaltfräse/, 'fraese'], [/asphalt|deckschicht|straßenbau|autobahn|\bbab\b|\ba ?\d{1,3}\b/, 'asphalt'],
+    [/pflaster/, 'pflaster'], [/baustelle|verkehrssicherung|leitkegel/, 'leitkegel'], [/referenz/, 'stern'], [/ausschreibung|vergabe|submission|lv\b|leistungsverzeichnis/, 'ausschreibung'],
+    [/vertrag|vereinbarung|agb|angebot|auftrag/, 'dokument'], [/rechnung|budget|kosten|kalkulation|preis/, 'budget'], [/datenschutz|dsgvo|einwilligung|vertraulich/, 'schloss'],
+    [/recht|gesetz|norm|vorschrift/, 'recht'], [/hotel|übernachtung|unterkunft/, 'hotel'], [/anreise|parken|parkausweis|zufahrt/, 'anreise'], [/lkw|transport|logistik|spedition|tieflader/, 'lkw'],
+    [/catering|kaffee|bewirtung/, 'kaffee'], [/giveaway|werbemittel|merch/, 'giveaway'], [/flyer|broschüre|prospekt|folder/, 'flyer'], [/presse|pressemitteilung|artikel/, 'presse'],
+    [/social|linkedin|instagram|post\b|kampagne|newsletter/, 'megafon'], [/lead|visitenkarte|kontaktliste/, 'lead'], [/wettbewerb|konkurrenz/, 'fernglas'], [/\bteam|personal|schichtplan|recruiting|bewerbung/, 'team'],
+    [/termin|frist|kalender|zeitplan|deadline/, 'kalender'], [/protokoll|beschluss|sitzung/, 'hammer'], [/meeting|besprechung|workshop/, 'meeting'], [/wettbewerb|konkurrenz|markt/, 'fernglas'],
+    [/preis|award|auszeichnung|innovation/, 'pokal'], [/foto|bild|aufnahme/, 'kamera'], [/video|film|clip/, 'display'], [/präsentation|folien|pitch/, 'display'],
+    [/bericht|report|auswertung|analyse|kpi|seo/, 'chart'], [/leitfaden|handbuch|anleitung|wissen/, 'buch'], [/checkliste|todo|aufgabe/, 'liste'], [/logo|ci\b|corporate|design|grafik/, 'raster'],
+    [/mail|e-mail|anschreiben/, 'mail'], [/standort|lübben|wittenburg/, 'standort-ef'], [/rotterdam|niederlande|ahoy/, 'pin']
+  ];
+  const DOCTYPE_ICON = { 'Foto': 'kamera', 'Grafik/Design': 'raster', 'Video': 'display', 'Bericht': 'chart', 'Präsentation': 'display', 'Tabelle': 'chart', 'Angebot': 'dokument',
+    'Vertrag': 'dokument', 'Rechnung': 'budget', 'Leitfaden': 'buch', 'Protokoll': 'hammer', 'Pressetext': 'presse', 'Social-Post': 'megafon', 'Webseite': 'ext', 'Notiz': 'stift',
+    'E-Mail': 'mail', 'Datenblatt': 'fraese' };
+  const CAT_TONE = { projekt: 'green', content: 'violet', event: 'blue', ci: 'violet', technik: 'slate', report: 'teal', ausschreibung: 'amber', angebot: 'slate', recht: 'slate',
+    personal: 'teal', markt: 'blue', organisation: 'slate', sonstiges: 'slate' };
+  function topicIcon(it) {
+    const hay = (str(it.title) + ' ' + str(it.name) + ' ' + arr(it.tags).join(' ')).toLowerCase();
+    for (const [re, id] of TOPIC_RULES) if (re.test(hay)) return id;
+    if (DOCTYPE_ICON[it.docType]) return DOCTYPE_ICON[it.docType];
+    if (it.category) return K.catOf(it.category)[3] || kindIcon(it);
+    const more = str(it.summary).toLowerCase();
+    for (const [re, id] of TOPIC_RULES) if (re.test(more)) return id;
+    return kindIcon(it);
+  }
+  const typeLabel = it => (it.kind === 'datei' ? str(it.ext) || 'datei' : it.kind === 'link' ? 'web' : 'text').toUpperCase().slice(0, 4);
+  const TYPE_TONE = { PDF: 'pdf', DOC: 'doc', DOCX: 'doc', XLS: 'xls', XLSX: 'xls', CSV: 'xls', PPT: 'ppt', PPTX: 'ppt', MP4: 'vid', MOV: 'vid', WEB: 'web', TEXT: 'txt' };
+  const PREV = new Map(); // assetId -> data-URL (oder '' = nicht möglich)
+  const PREV_KEY = 'feind-cockpit:kb-prev';
+  try { const raw = JSON.parse(window.localStorage.getItem(PREV_KEY) || '{}'); for (const k of Object.keys(raw)) PREV.set(k, raw[k]); } catch (e) { /* ohne Speicher */ }
+  function savePrev() {
+    try { const ent = [...PREV].filter(([, v]) => v).slice(-40); window.localStorage.setItem(PREV_KEY, JSON.stringify(Object.fromEntries(ent))); } catch (e) { /* Speicher voll oder gesperrt */ }
+  }
+  const isPdf = it => it.assetId && (/pdf/.test(str(it.mime)) || /^pdf$/i.test(str(it.ext)));
+  const isVideo = it => it.assetId && /^video\//.test(str(it.mime));
+  const mayPreview = it => app.isAdmin() || !(G.isConf(it) || (it.pii && it.pii.found));
+  async function pdfThumb(id) {
+    await loadScript(CDN.pdf);
+    const lib = window.pdfjsLib;
+    lib.GlobalWorkerOptions.workerSrc = CDN.pdfWorker;
+    const res = await fetch(blobUrl(id));
+    if (!res.ok) throw new Error('Datei nicht ladbar');
+    const doc = await lib.getDocument({ data: new Uint8Array(await res.arrayBuffer()), isEvalSupported: false }).promise;
+    const page = await doc.getPage(1);
+    const v0 = page.getViewport({ scale: 1 }), scale = 240 / Math.max(v0.width, v0.height), vp = page.getViewport({ scale });
+    const cv = document.createElement('canvas'); cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+    const ctx = cv.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height);
+    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+    try { doc.destroy(); } catch (e) { /* egal */ }
+    return cv.toDataURL('image/jpeg', 0.72);
+  }
+  function videoThumb(id) {
+    return new Promise((res, rej) => {
+      const v = document.createElement('video');
+      v.muted = true; v.preload = 'metadata'; v.playsInline = true; v.src = blobUrl(id);
+      const t = setTimeout(() => rej(new Error('Zeitüberschreitung')), 15000);
+      v.addEventListener('error', () => { clearTimeout(t); rej(new Error('Video nicht ladbar')); });
+      v.addEventListener('loadedmetadata', () => { v.currentTime = Math.min(1, (v.duration || 2) / 3); });
+      v.addEventListener('seeked', () => {
+        clearTimeout(t);
+        try {
+          const k = 240 / Math.max(v.videoWidth || 240, v.videoHeight || 240), cv = document.createElement('canvas');
+          cv.width = Math.round((v.videoWidth || 240) * k); cv.height = Math.round((v.videoHeight || 135) * k);
+          cv.getContext('2d').drawImage(v, 0, 0, cv.width, cv.height);
+          res(cv.toDataURL('image/jpeg', 0.72));
+        } catch (e) { rej(e); }
+      }, { once: true });
+    });
+  }
+  let prevQueue = Promise.resolve();
+  function fillPreview(box, it) {
+    const id = it.assetId, cached = PREV.get(id);
+    const show = url => {
+      if (!url) return;
+      const img = h('img', { src: url, alt: '', class: 'kb-prev', decoding: 'async' });
+      img.addEventListener('load', () => box.classList.add('has-prev'), { once: true });
+      box.prepend(img);
+    };
+    if (cached != null) { show(cached); return; }
+    prevQueue = prevQueue.then(async () => {
+      if (!box.isConnected) return;
+      let url = '';
+      try { url = await (isPdf(it) ? pdfThumb(id) : videoThumb(id)); } catch (e) { url = ''; }
+      PREV.set(id, url); savePrev(); show(url);
+    });
+  }
+  const prevIO = window.IntersectionObserver ? new IntersectionObserver(es => {
+    for (const e of es) if (e.isIntersecting) { prevIO.unobserve(e.target); const it = e.target._kbIt; if (it) fillPreview(e.target, it); }
+  }, { rootMargin: '120px' }) : null;
   function thumb(it, big) {
-    if (isImage(it) && (app.isAdmin() || !(G.isConf(it) || (it.pii && it.pii.found)))) return h('div', { class: 'kb-thumb' + (big ? ' big' : '') }, h('img', { src: blobUrl(it.assetId), alt: '', loading: 'lazy' }));
-    return h('div', { class: 'kb-thumb icon' + (big ? ' big' : '') }, app.ico(kindIcon(it)), h('span', { text: (it.kind === 'datei' ? it.ext : it.kind === 'link' ? 'web' : 'text').toUpperCase().slice(0, 5) }));
+    if (isImage(it) && mayPreview(it)) return h('div', { class: 'kb-thumb' + (big ? ' big' : '') }, h('img', { src: blobUrl(it.assetId), alt: '', loading: 'lazy' }));
+    const lbl = typeLabel(it), tone = CAT_TONE[it.category] || (it.kind === 'link' ? 'blue' : 'slate');
+    const box = h('div', { class: 'kb-thumb icon tt-' + tone + (big ? ' big' : ''), 'data-topic': topicIcon(it) },
+      app.ico(topicIcon(it), 'kb-ti', 40), h('span', { class: 'kb-tb tb-' + (TYPE_TONE[lbl] || 'gen'), text: lbl }));
+    if ((isPdf(it) || isVideo(it)) && mayPreview(it)) {
+      box._kbIt = it;
+      if (PREV.get(it.assetId) != null) fillPreview(box, it);
+      else if (prevIO) prevIO.observe(box);
+    }
+    return box;
   }
   /* ---------- Priorität, Filter und Sortierung für „Zuletzt abgelegt“ ---------- */
   // Priorität setzt man im Eintrag (Hoch, Normal, Niedrig). Bei gleicher Priorität geht Handlungsbedarf vor:
@@ -14597,6 +14717,18 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     app.toast('Projekt „' + doc.name + '“ angelegt, ' + sg.itemIds.length + ' Einträge zugeordnet.');
     rerender();
   }
+  // Bild oder Symbol je Themenvorschlag (Wunsch David 11.10.2026): erstes freigegebenes Bild aus den Einträgen als Vorschau,
+  // sonst das Symbol der häufigsten Kategorie, sonst ein Ordner. Vertrauliche Einträge und solche mit Personendaten liefern nie ein Bild.
+  function themeThumb(sg) {
+    const its = sg.itemIds.map(byId).filter(Boolean);
+    const withImg = its.find(it => isImage(it) && (app.isAdmin() || !(G.isConf(it) || (it.pii && it.pii.found))));
+    if (withImg) { const t = thumb(withImg, false); t.classList.add('mid'); return t; }
+    const cnt = {};
+    for (const it of its) if (it.category) cnt[it.category] = (cnt[it.category] || 0) + 1;
+    const top = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
+    const ic = /messe|infratech|expo|stand/i.test(sg.name) ? 'messestand' : (top && K.catOf(top[0])[3]) || 'ordner';
+    return h('div', { class: 'kb-thumb icon mid tt-' + ((top && CAT_TONE[top[0]]) || 'slate'), 'aria-hidden': 'true', 'data-topic': ic }, app.ico(ic, 'kb-ti', 40), h('span', { class: 'kb-tb tb-gen', text: 'THEMA' }));
+  }
   function themeCard() {
     if (!S.loaded.kb_items) return null;
     const list = K.topicSuggestions(items(), projects(), { dismissed: dismissedTopics() });
@@ -14605,8 +14737,8 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     return h('div', { class: 'section kb-themes' }, h('h3', {}, app.ico('ordner'), ' Themenvorschläge'),
       h('p', { class: 'muted small', text: 'Diese Themen tauchen in mehreren Einträgen ohne Projekt auf. Als Projekt angelegt, ordnet das Cockpit künftige Einträge zum Thema automatisch zu.' }),
       h('div', { class: 'grid2' }, list.slice(0, 6).map(sg => h('article', { class: 'card accentbar kb-theme', 'data-key': sg.key },
-        h('h4', { text: sg.name }),
-        h('p', { class: 'small' }, h('b', { text: sg.itemIds.length + ' Einträge' }), ' ohne Projekt'),
+        h('div', { class: 'kb-theme-head' }, themeThumb(sg), h('div', { class: 'kb-body' }, h('h4', { text: sg.name }),
+          h('p', { class: 'small' }, h('b', { text: sg.itemIds.length + ' Einträge' }), ' ohne Projekt'))),
         h('ul', { class: 'small' }, sg.itemIds.slice(0, 3).map(iid => h('li', {}, h('button', { class: 'linkbtn', type: 'button', onclick: () => openDetail(iid) }, str((byId(iid) || {}).title).slice(0, 70))))),
         h('div', { class: 'row' },
           h('button', { class: 'btn small primary', type: 'button', disabled: ro, title: ro ? 'Braucht Schreibrecht' : null, onclick: () => createTheme(sg) }, app.ico('plus'), 'Als Projekt anlegen'),
