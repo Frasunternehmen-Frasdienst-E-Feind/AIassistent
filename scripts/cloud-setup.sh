@@ -7,15 +7,18 @@
 
 set -euo pipefail
 
+export DEBIAN_FRONTEND=noninteractive
+
 echo "[setup] Starte Tool-Installation…"
 
-apt-get update -qq
-apt-get install -y --no-install-recommends \
+apt-get -o Acquire::Retries=3 update -qq
+apt-get -o Acquire::Retries=3 install -y --no-install-recommends \
     shellcheck \
     jq \
-    curl
+    curl \
+    pandoc \
+    imagemagick
 
-# Weitere Tools hier ergänzen, z. B.:
-# apt-get install -y --no-install-recommends pandoc imagemagick
+# Weitere Tools hier ergänzen: Paketliste oben erweitern, Laufzeit < 5 min beachten.
 
 echo "[setup] Fertig."
