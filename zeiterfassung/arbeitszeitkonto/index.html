@@ -1,0 +1,2975 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Arbeitszeitkonto 1626</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo:wght@500;600;700&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --accent: #84bb20;
+    --accent-text: #5e8a14;
+    --on-accent: #424e4e;
+    --on-accent-strong: #1f2525;
+    --signal: #e3000b;
+    --signal-text: #b8000a;
+    --surface: #ffffff;
+    --surface-muted: #f2f4f4;
+    --surface-inverse: #424e4e;
+    --ink: #3c5457;
+    --ink-strong: #424e4e;
+    --ink-muted: #6b7575;
+    --ink-inverse: #ffffff;
+    --line: #d5dada;
+    --focus: #424e4e;
+    --font-display: Exo, "Arial Black", Arial, sans-serif;
+    --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --radius: 0px;
+    --radius-input: 2px;
+    --radius-button: 4px;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 16px;
+    --space-4: 24px;
+    --space-5: 40px;
+    --space-6: 64px;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --accent: #84bb20;
+      --accent-text: #84bb20;
+      --on-accent: #424e4e;
+      --on-accent-strong: #1f2525;
+      --signal: #e3000b;
+      --signal-text: #ff9a9f;
+      --surface: #2e3737;
+      --surface-muted: #384242;
+      --surface-inverse: #1f2525;
+      --ink: #e7ecec;
+      --ink-strong: #ffffff;
+      --ink-muted: #b8bfbf;
+      --ink-inverse: #ffffff;
+      --line: #4d5858;
+      --focus: #84bb20;
+    }
+  }
+  
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --accent: #84bb20;
+    --accent-text: #84bb20;
+    --on-accent: #424e4e;
+    --on-accent-strong: #1f2525;
+    --signal: #e3000b;
+    --signal-text: #ff9a9f;
+    --surface: #2e3737;
+    --surface-muted: #384242;
+    --surface-inverse: #1f2525;
+    --ink: #e7ecec;
+    --ink-strong: #ffffff;
+    --ink-muted: #b8bfbf;
+    --ink-inverse: #ffffff;
+    --line: #4d5858;
+    --focus: #84bb20;
+  }
+
+  /* Theme-Block oben: unverändert aus branding/feind-ci.tokens.json (Skill feind-brand).
+     Kurznamen und Rasterfarbe leiten sich davon ab – keine eigenen Werte. */
+  :root {
+    --s1: var(--space-1); --s2: var(--space-2); --s3: var(--space-3);
+    --s4: var(--space-4); --s5: var(--space-5); --s6: var(--space-6);
+    --r-input: var(--radius-input); --r-btn: var(--radius-button);
+    --display: var(--font-display); --sans: var(--font-sans);
+    --grid: color-mix(in srgb, var(--line) 55%, var(--surface));
+    --ink-inverse-muted: color-mix(in srgb, var(--ink-inverse) 80%, var(--surface-inverse));
+  }
+
+  /* Handy: kein Tipp-Blitz, keine Schriftaufblähung, kein Zoom in Eingaben,
+     sofortige Tipp-Reaktion, Knopftexte nicht markierbar. */
+  html { -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; }
+  button { touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+    transition: transform 100ms ease-out, background-color 100ms ease-out; }
+  button:active:not(:disabled) { transform: scale(0.97); }
+  @media (pointer: coarse) {
+    input, select, textarea { font-size: 16px; }
+    button { min-height: 40px; }
+    button.link { min-height: 0; padding: var(--s2) 0; }
+  }
+  @media (hover: hover) and (pointer: fine) {
+    button:hover:not(:disabled) { background: var(--surface-muted); }
+    button.primary:hover:not(:disabled) { background: var(--accent); filter: brightness(1.05); }
+    button.link:hover { background: none; }
+  }
+
+  body {
+    background: var(--surface-muted);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding-left: var(--s3);
+    padding-right: var(--s3);
+    padding-block: var(--s4) var(--s6);
+  }
+  h1, h2, h3, .fig-val, .num {
+    font-family: var(--display);
+    font-weight: 600;
+    color: var(--ink-strong);
+    text-wrap: balance;
+  }
+  .num, td.num, .fig-val { font-variant-numeric: tabular-nums; }
+  a { color: var(--accent-text); }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  /* ---- Kopf ---- */
+  .masthead {
+    background: var(--surface-inverse);
+    color: var(--ink-inverse);
+    padding: var(--s4) var(--s3);
+    margin-bottom: var(--s3);
+  }
+  .masthead .wrap { padding-block: 0; }
+  .masthead h1 { color: var(--ink-inverse); font-size: 28px; margin: 0; letter-spacing: .01em; }
+  .masthead .sub { color: var(--ink-inverse-muted); font-size: 13px; margin-top: var(--s1); }
+  .rule { height: 3px; background: var(--accent); }
+  .statusbar {
+    display: flex; flex-wrap: wrap; gap: var(--s2);
+    align-items: center; margin-top: var(--s3);
+  }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; letter-spacing: .04em; text-transform: uppercase;
+    padding: 4px var(--s2); border-radius: var(--r-input);
+    border: 1px solid color-mix(in srgb, var(--ink-inverse) 28%, transparent); color: var(--ink-inverse-muted);
+  }
+  .chip .dot { width: 8px; height: 8px; background: var(--accent); }
+  .chip.warn .dot { background: var(--signal); }
+  .chip.local .dot { background: var(--ink-inverse-muted); }
+
+  /* ---- Kennzahlen ---- */
+  .figures {
+    display: grid; gap: var(--s2);
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    margin-bottom: var(--s3);
+  }
+  .fig {
+    background: var(--surface); border: 1px solid var(--line);
+    padding: var(--s3);
+  }
+  .fig-lab {
+    font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .fig-val { font-size: 30px; line-height: 1.1; margin-top: var(--s1); }
+  .fig-val.pos { color: var(--accent-text); }
+  .fig-val.neg { color: var(--signal-text); }
+  .fig-note { font-size: 12px; color: var(--ink-muted); margin-top: var(--s1); }
+
+  /* ---- Karten ---- */
+  .card {
+    background: var(--surface); border: 1px solid var(--line);
+    padding: var(--s3); margin-bottom: var(--s3);
+  }
+  .card > h2 {
+    font-size: 16px; margin: 0 0 var(--s1);
+  }
+  .card .hint { font-size: 12px; color: var(--ink-muted); margin: 0 0 var(--s3); }
+  .head-row {
+    display: flex; flex-wrap: wrap; gap: var(--s2);
+    align-items: baseline; justify-content: space-between;
+  }
+
+  /* ---- Chart ---- */
+  .chart { width: 100%; height: auto; display: block; }
+  .legend { display: flex; flex-wrap: wrap; gap: var(--s3); font-size: 12px; color: var(--ink-muted); margin-top: var(--s2); }
+  .legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; }
+  .legend i.key-line { width: 14px; height: 0; border-top: 2px solid var(--ink-strong); vertical-align: 3px; }
+  .chart .hit { fill: transparent; }
+  .chart g.col:focus { outline: none; }
+  .chart g.col:focus .hit, .chart g.col.on .hit { fill: var(--ink-strong); fill-opacity: .06; }
+  @media (hover: hover) and (pointer: fine) { .chart g.col:hover .hit { fill: var(--ink-strong); fill-opacity: .06; } }
+  .chart-tip { font-size: 13px; color: var(--ink); min-height: 1.5em; margin-top: var(--s1); font-variant-numeric: tabular-nums; }
+
+  /* ---- Hinweise ---- */
+  ul.flags { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s2); }
+  ul.flags li {
+    display: flex; gap: var(--s2); align-items: flex-start;
+    border-left: 3px solid var(--line); padding-left: var(--s2);
+    font-size: 14px;
+  }
+  ul.flags li.sig { border-left-color: var(--signal); }
+  ul.flags li.warn { border-left-color: var(--accent); }
+  ul.flags b { font-family: var(--display); color: var(--ink-strong); }
+
+  /* ---- Wochen/Tage ---- */
+  .week { margin-bottom: var(--s4); }
+  .week-head {
+    display: flex; flex-wrap: wrap; gap: var(--s2);
+    justify-content: space-between; align-items: baseline;
+    border-bottom: 2px solid var(--ink-strong); padding-bottom: 6px; margin-bottom: 0;
+  }
+  .week-head h3 { font-size: 15px; margin: 0; }
+  .week-head .sum { font-size: 13px; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+  .week-head .sum b { font-family: var(--display); }
+  .week-head .sum b.pos { color: var(--accent-text); }
+  .week-head .sum b.neg { color: var(--signal-text); }
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 14px; }
+  .tablewrap { overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  @media (max-width: 600px) {
+    /* Handy: erste Spalte bleibt beim Wischen stehen */
+    .tablewrap th:first-child, .tablewrap td:first-child { position: sticky; left: 0; background: var(--surface); z-index: 1; }
+    .week .tablewrap th:first-child, .week .tablewrap td:first-child, .tablewrap tr.open td:first-child { background: var(--surface-muted); }
+  }
+  th, td { text-align: right; padding: 7px var(--s2); border-bottom: 1px solid var(--line); }
+  th:first-child, td:first-child { text-align: left; }
+  th {
+    font-family: var(--sans); font-weight: 400;
+    font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--ink-muted); white-space: nowrap;
+  }
+  tbody tr.open td { background: var(--surface-muted); }
+  table.mk { min-width: 480px; }
+  table.mk td.pos { color: var(--accent-text); }
+  table.mk td.neg { color: var(--signal-text); }
+  td.saldo.pos { color: var(--accent-text); }
+  td.saldo.neg { color: var(--signal-text); }
+  .track {
+    display: block; position: relative; height: 6px; width: 72px;
+    background: var(--grid); margin-top: 4px; margin-left: auto;
+  }
+  .track .fill { position: absolute; top: 0; bottom: 0; left: 0; background: var(--accent); min-width: 2px; }
+  .track .mark { position: absolute; top: -2px; bottom: -2px; width: 1px; background: var(--ink-strong); }
+  .pill {
+    display: inline-block; font-size: 11px; letter-spacing: .04em;
+    padding: 2px 6px; border-radius: var(--r-input); white-space: nowrap;
+    border: 1px solid var(--line); color: var(--ink-muted);
+  }
+  .pill.sig { border-color: var(--signal); color: var(--signal-text); }
+  .pill.ok { border-color: var(--accent); color: var(--accent-text); }
+  .pill.type { border-color: var(--ink-strong); color: var(--ink-strong); }
+  table.vac { min-width: 520px; }
+  table.vac td.neg { color: var(--signal-text); }
+  .vac-list { font-size: 13px; margin: var(--s2) 0 0; display: grid; gap: var(--s1); }
+  .vac-list b { font-family: var(--display); color: var(--ink-strong); font-weight: 600; }
+  .hol { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; margin-top: var(--s2); font-size: 13px; }
+  ul.flags li .act { margin-left: auto; white-space: nowrap; }
+
+  /* ---- Buttons / Formulare ---- */
+  button {
+    font-family: var(--sans); font-size: 13px; cursor: pointer;
+    border-radius: var(--r-btn); border: 1px solid var(--ink-strong);
+    background: var(--surface); color: var(--ink-strong);
+    padding: 6px var(--s2);
+  }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent-strong); font-weight: 700; }
+  button.ghost { border-color: var(--line); color: var(--ink-muted); }
+  button.danger { border-color: var(--signal); color: var(--signal-text); }
+  button.link {
+    border: 0; background: none; color: var(--accent-text);
+    text-decoration: underline; padding: 2px 0;
+  }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .btnrow { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
+  input, select, textarea {
+    font-family: var(--sans); font-size: 14px;
+    background: var(--surface); color: var(--ink);
+    border: 1px solid var(--line); border-radius: var(--r-input);
+    padding: 5px 6px; max-width: 100%;
+  }
+  input[type="time"], input[type="date"] { font-variant-numeric: tabular-nums; }
+  textarea { width: 100%; min-height: 120px; font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 12.5px; }
+  label { font-size: 12px; color: var(--ink-muted); }
+  fieldset { border: 1px solid var(--line); padding: var(--s2) var(--s3) var(--s3); margin: 0 0 var(--s3); }
+  legend { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-muted); padding: 0 6px; }
+  .formgrid { display: grid; gap: var(--s2); grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .bookrow {
+    display: grid; gap: var(--s2); align-items: end;
+    grid-template-columns: 1fr 1fr 1.2fr auto; margin-bottom: var(--s2);
+  }
+  @media (max-width: 520px) { .bookrow { grid-template-columns: 1fr 1fr; } }
+  .field { display: grid; gap: 2px; }
+  .err {
+    color: var(--signal-text); font-size: 13px; margin: var(--s2) 0 0;
+    border-left: 3px solid var(--signal); padding-left: var(--s2);
+  }
+  .ok-msg {
+    color: var(--accent-text); font-size: 13px; margin: var(--s2) 0 0;
+    border-left: 3px solid var(--accent); padding-left: var(--s2);
+  }
+  .panel { border-top: 3px solid var(--accent); }
+  /* ---- Stempeluhr ---- */
+  .stamp { display: flex; flex-wrap: wrap; gap: var(--s3); align-items: center; justify-content: space-between; }
+  .stamp-main { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); align-items: baseline; }
+  .stamp-state { display: inline-flex; align-items: center; gap: var(--s2); }
+  .stamp-dot { width: 12px; height: 12px; flex: none; border-radius: 50%; background: var(--ink-muted); }
+  .stamp-dot.on { background: var(--accent); }
+  .stamp-dot.pause { background: var(--ink-strong); }
+  .stamp-status { font-family: var(--display); font-weight: 600; color: var(--ink-strong); font-size: 16px; }
+  .stamp-since { color: var(--ink-muted); font-size: 13px; }
+  .stamp-net { color: var(--ink-muted); font-size: 14px; }
+  .stamp-net b { color: var(--ink-strong); font-size: 18px; }
+  .stamp-btns { flex: none; }
+  .stamp-remind { border-left: 3px solid var(--accent); padding-left: var(--s2); margin: var(--s2) 0 0; font-size: 14px; }
+  .stamp-remind b { font-family: var(--display); color: var(--ink-strong); }
+  .stamp-at { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: end; margin-top: var(--s2); }
+  footer.legal { font-size: 12px; color: var(--ink-muted); margin-top: var(--s4); }
+  .checks { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); }
+  .checks label { display: inline-flex; gap: 6px; align-items: center; color: var(--ink); font-size: 13px; }
+  .drop {
+    border: 1px dashed var(--line); background: var(--surface-muted);
+    padding: var(--s4) var(--s3); text-align: center; border-radius: var(--r-input);
+  }
+  .drop.over { border-color: var(--accent); border-style: solid; }
+  .drop input[type="file"] { display: block; margin: var(--s2) auto 0; max-width: 100%; }
+  .drop .big { font-family: var(--display); font-weight: 600; color: var(--ink-strong); font-size: 15px; }
+  .found { margin-top: var(--s3); border-left: 3px solid var(--accent); padding-left: var(--s2); font-size: 14px; }
+  .found b { font-family: var(--display); color: var(--ink-strong); }
+
+  /* ---- Bericht (Brennglas) ---- */
+  .rep-toolbar { display: grid; gap: var(--s2); grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); align-items: end; }
+  .rep-actions { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; margin-top: var(--s3); }
+  .pwbox { border: 1px solid var(--line); border-left: 3px solid var(--accent); padding: var(--s3); margin-top: var(--s3); background: var(--surface-muted); }
+  .pwbox h3 { margin: 0 0 var(--s1); font-size: 14px; }
+  .pwbox .req { font-size: 12px; color: var(--ink-muted); margin: 0 0 var(--s2); }
+  .pwbox .req li.ok { color: var(--accent-text); }
+  .pwbox ul { margin: 0; padding-left: 18px; }
+  .meter { height: 6px; background: var(--grid); margin: 6px 0 var(--s2); }
+  .meter i { display: block; height: 100%; background: var(--signal); width: 0; transition: width .2s; }
+  .meter i.mid { background: var(--ink-muted); }
+  .meter i.good { background: var(--accent); }
+
+  .report { --p-ink: #3c5457; --p-strong: #424e4e; --p-muted: #6b7575; --p-line: #d5dada; --p-acc: #84bb20; --p-acct: #5e8a14; --p-sig: #e3000b; --p-sigt: #b8000a; --p-soft: #f2f4f4;
+    background: #ffffff; color: var(--p-ink); margin-top: var(--s3); font-family: var(--sans); font-size: 11pt; line-height: 1.4; }
+  .report .page { width: 100%; max-width: 210mm; margin: 0 auto var(--s3); padding: 12mm 12mm 10mm; border: 1px solid var(--line); box-sizing: border-box; background: #fff; position: relative; }
+  .report .p-head { background: #424e4e; color: #fff; padding: 8pt 12pt; margin: -12mm -12mm 0; }
+  .report .p-head .t { font-family: var(--display); font-weight: 700; font-size: 16pt; color: #fff; margin: 0; }
+  .report .p-head .s { font-size: 11pt; color: #cfd6d6; margin: 2pt 0 0; }
+  .report .p-rule { height: 3pt; background: var(--p-acc); margin: 0 -12mm 8pt; }
+  .report .p-conf { font-size: 11pt; color: var(--p-muted); text-align: right; margin: 0 0 6pt; }
+  .report h2 { font-family: var(--display); font-size: 12.5pt; color: var(--p-strong); margin: 10pt 0 4pt; border-bottom: 1.5pt solid var(--p-strong); padding-bottom: 2pt; text-wrap: balance; }
+  .report h2 .n { color: var(--p-acct); margin-right: 6pt; }
+  .report p, .report li { font-size: 11pt; margin: 0 0 3pt; color: var(--p-ink); }
+  .report ul, .report ol { margin: 0; padding-left: 16pt; }
+  .report .kern { border: 2pt solid var(--p-acc); background: #f3f8e8; padding: 8pt 10pt; margin: 8pt 0; }
+  .report .kern .lab { font-size: 11pt; letter-spacing: .06em; text-transform: uppercase; color: var(--p-acct); }
+  .report .kern .val { font-family: var(--display); font-weight: 700; font-size: 22pt; color: var(--p-strong); line-height: 1.15; margin: 2pt 0; }
+  .report .kern .val.neg { color: var(--p-sigt); }
+  .report table { width: 100%; min-width: 0; border-collapse: collapse; font-size: 11pt; margin: 4pt 0 6pt; }
+  .report th, .report td { padding: 3pt 5pt; border-bottom: .75pt solid var(--p-line); text-align: right; font-size: 11pt; color: var(--p-ink); }
+  .report th { font-family: var(--sans); text-transform: none; letter-spacing: 0; color: var(--p-muted); font-weight: 400; border-bottom: 1pt solid var(--p-strong); }
+  .report th:first-child, .report td:first-child { text-align: left; }
+  .report td.pos { color: var(--p-acct); } .report td.neg { color: var(--p-sigt); }
+  .report tr.sum td { font-weight: 700; border-top: 1pt solid var(--p-strong); border-bottom: 0; }
+  .report tr.open td { background: var(--p-soft); }
+  .report .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6pt; margin: 4pt 0 6pt; }
+  .report .fact { border: .75pt solid var(--p-line); padding: 5pt 7pt; }
+  .report .fact .l { font-size: 11pt; color: var(--p-muted); }
+  .report .fact .v { font-family: var(--display); font-weight: 700; font-size: 14pt; color: var(--p-strong); }
+  .report .fact .v.neg { color: var(--p-sigt); } .report .fact .v.pos { color: var(--p-acct); }
+  .report .risk { border-left: 3pt solid var(--p-sig); padding-left: 6pt; margin: 0 0 4pt; }
+  .report .risk.ok { border-left-color: var(--p-acc); }
+  .report .chart { width: 100%; height: auto; display: block; margin: 2pt 0 4pt; }
+  .report .legend { font-size: 11pt; color: var(--p-muted); margin: 0 0 6pt; }
+  .report .legend i { display: inline-block; width: 9pt; height: 9pt; margin: 0 4pt 0 0; vertical-align: -1pt; }
+  .report .src { font-size: 11pt; color: var(--p-muted); }
+  .report .p-foot { position: absolute; left: 12mm; right: 12mm; bottom: 5mm; font-size: 11pt; color: var(--p-muted); display: flex; justify-content: space-between; border-top: .75pt solid var(--p-line); padding-top: 3pt; }
+  .report .tl { display: flex; height: 16pt; border: .75pt solid var(--p-line); margin: 4pt 0 2pt; }
+  .report .tl i { display: block; height: 100%; }
+  .report .tl i.w { background: var(--p-acc); } .report .tl i.p { background: var(--p-line); } .report .tl i.o { background: repeating-linear-gradient(45deg, #f7c9cb 0 4px, #fff 4px 8px); }
+  .report .tl-ax { display: flex; justify-content: space-between; font-size: 11pt; color: var(--p-muted); }
+  @media (max-width: 600px) { .report .facts { grid-template-columns: 1fr 1fr; } .report .page { padding: 6mm; } .report .p-head, .report .p-rule { margin-left: -6mm; margin-right: -6mm; } .report .p-foot { left: 6mm; right: 6mm; } }
+  @media print {
+    @page { size: A4 portrait; margin: 12mm; }
+    body { background: #fff; }
+    body.printing > *:not(.print-root) { display: none !important; }
+    .print-root .report { margin: 0; }
+    .print-root .report .page { max-width: none; border: 0; margin: 0; padding: 0 0 8mm; break-after: page; page-break-after: always; box-shadow: none; }
+    .print-root .report .page:last-child { break-after: auto; page-break-after: auto; }
+    .print-root .report .p-head { margin: 0; break-inside: avoid; page-break-inside: avoid; }
+    .print-root .report .p-rule { margin: 0 0 8pt; }
+    .print-root .report h2, .print-root .report .kern, .print-root .report .fact, .print-root .report tr { break-inside: avoid; page-break-inside: avoid; }
+    .print-root .report .p-foot { position: static; margin-top: 6pt; }
+    .report, .report .page { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+
+<header class="masthead">
+  <div class="wrap">
+    <h1>Arbeitszeitkonto 1626</h1>
+    <p class="sub">Personalnummer 1626 &middot; Fräsdienst-Service E. Feind GmbH &middot; Buchungen aus OptiTime</p>
+    <div class="statusbar">
+      <span class="chip" id="chip-db"><span class="dot"></span><span id="chip-db-text">Verbindung wird geprüft</span></span>
+      <span class="chip" id="chip-period"><span class="dot"></span><span id="chip-period-text">Zeitraum</span></span>
+    </div>
+  </div>
+</header>
+<div class="rule"></div>
+
+<div class="wrap">
+
+  <section class="card panel" aria-labelledby="h-stamp">
+    <div class="head-row">
+      <h2 id="h-stamp">Jetzt stempeln</h2>
+      <span class="hint" style="margin:0">Kommen, Pause und Gehen für heute</span>
+    </div>
+    <div id="stamp-host"></div>
+  </section>
+
+  <section class="figures" id="figures" aria-label="Kennzahlen"></section>
+
+  <section class="card" aria-labelledby="h-mk">
+    <div class="head-row">
+      <h2 id="h-mk">Mehrarbeitskonto</h2>
+      <span class="hint" style="margin:0">Stand je Monat ab Beginn des Arbeitsverhältnisses</span>
+    </div>
+    <div id="mk-host"></div>
+    <p class="hint" style="margin:var(--s2) 0 0">Laut Arbeitsvertrag § 4 Abs. 2 ist Mehrarbeit mit dem Gehalt abgegolten;
+      die Übersicht dient der Dokumentation. Bitte Rechtsabteilung prüfen.</p>
+  </section>
+
+  <section class="card" aria-labelledby="h-vac">
+    <div class="head-row">
+      <h2 id="h-vac">Urlaub und Abwesenheiten</h2>
+      <div class="btnrow">
+        <button type="button" id="btn-absence">Abwesenheit eintragen</button>
+      </div>
+    </div>
+    <p class="hint">Anspruch je Jahr unter &bdquo;Soll-Zeiten&ldquo;. Verplant = Urlaubstage nach heute,
+      genommen = bis einschließlich heute. Führend ist OptiTime.</p>
+    <div id="vac-host"></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-chart">
+    <div class="head-row">
+      <h2 id="h-chart">Kontostand im Verlauf</h2>
+      <span class="hint" style="margin:0">Kumuliertes Plus/Minus gegenüber dem Tages-Soll</span>
+    </div>
+    <div id="chart-host"></div>
+    <div class="legend">
+      <span><i style="background:var(--accent)"></i>Kontostand</span>
+      <span><i style="background:var(--signal)"></i>Tag im Minus</span>
+      <span><i style="background:var(--ink-muted)"></i>Null-Linie (Soll erfüllt)</span>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="h-days-chart">
+    <div class="head-row">
+      <h2 id="h-days-chart">Tage und Wochen</h2>
+      <span class="hint" style="margin:0">Netto-Arbeitszeit mit Pause je Tag, darunter Ist und Soll je Kalenderwoche</span>
+    </div>
+    <div id="daybars-host"></div>
+    <div class="legend">
+      <span><i style="background:var(--accent)"></i>Netto (Ist)</span>
+      <span><i style="background:var(--ink-muted)"></i>Pause</span>
+      <span><i class="key-line"></i>Tages-Soll</span>
+    </div>
+    <div id="weekbars-host" style="margin-top:var(--s4)"></div>
+    <div class="legend">
+      <span><i style="background:var(--accent)"></i>Ist je Woche</span>
+      <span><i style="background:var(--ink-muted)"></i>Soll je Woche</span>
+    </div>
+    <p class="hint" style="margin:var(--s2) 0 0">Werte auch in den Wochentabellen unten; Tipp oder Mauszeiger auf eine Säule zeigt die Zahlen.</p>
+  </section>
+
+  <section class="card" aria-labelledby="h-flags">
+    <h2 id="h-flags">Zu klären</h2>
+    <p class="hint">Automatisch geprüft: fehlende Buchungen, Pausenzeiten und Arbeitsblöcke nach ArbZG §4,
+      lange Pausen, Überschneidungen und Buchungen mit Ende vor Beginn.</p>
+    <ul class="flags" id="flags"></ul>
+  </section>
+
+  <section aria-labelledby="h-days">
+    <div class="head-row" style="margin-bottom:var(--s2)">
+      <h2 id="h-days" style="font-size:16px">Tage nach Kalenderwoche</h2>
+      <div class="btnrow">
+        <button type="button" id="btn-add">Tag erfassen</button>
+        <button type="button" id="btn-fetch" class="primary">Zeitdaten holen</button>
+        <button type="button" id="btn-import" class="ghost">Einfügen</button>
+        <button type="button" id="btn-report">Bericht / PDF</button>
+        <button type="button" id="btn-export" class="ghost">CSV</button>
+        <button type="button" id="btn-settings" class="ghost">Soll-Zeiten</button>
+      </div>
+    </div>
+    <div id="panel-host"></div>
+    <div id="weeks"></div>
+  </section>
+
+  <footer class="legal">
+    <p>Berechnung: Arbeitszeit ohne Pausen, Tages-Soll aus den hinterlegten Soll-Zeiten, Pausenprüfung nach
+      ArbZG §4 (über 6 h: 30 Minuten, über 9 h: 45 Minuten). Die Auswertung ersetzt keine arbeitsrechtliche
+      Bewertung &ndash; bei Abweichungen im Pausen- oder Mehrarbeitskonto bitte Rechtsabteilung prüfen.</p>
+    <p>Die Seite enthält ausschließlich die eigenen Buchungen von Personalnummer 1626; keine Daten Dritter.</p>
+  </footer>
+</div>
+
+<script>
+/* <pruefung.js> – Zusatzprüfungen je Tag. Wird unverändert in index.html
+   eingebettet (Test prüft die Gleichheit); läuft im Browser und in Node.
+   Nur Anzeige: nichts wird automatisch korrigiert. */
+var AzkPruefung = (function () {
+  "use strict";
+  /* ArbZG §4 Satz 2/3: höchstens 6 h am Stück; als Ruhepause zählen
+     Abschnitte ab 15 Minuten. Grenze für "ungewöhnlich lange Pause" ist
+     eine Annahme (2 h) – bitte Rechtsabteilung prüfen. */
+  var BLOCK_MAX = 360, REST_MIN = 15, LONG_PAUSE = 120;
+
+  function toMin(t) {
+    var m = /^(\d{1,2}):(\d{2})/.exec(t || "");
+    if (!m || +m[1] > 23 || +m[2] > 59) return null;
+    return +m[1] * 60 + +m[2];
+  }
+  function sorted(books) {
+    return (books || []).filter(function (b) { return b && toMin(b.start) != null; })
+      .slice().sort(function (a, b) { return toMin(a.start) - toMin(b.start); });
+  }
+
+  /* Arbeitsblöcke: Arbeit am Stück, nur durch Pausen ab REST_MIN getrennt.
+     Kürzere Pausen und Lücken unterbrechen den Block nicht, zählen aber
+     nicht als Arbeitszeit. Offene Buchungen beenden die Auswertung. */
+  function blocks(books) {
+    var out = [], cur = null;
+    sorted(books).forEach(function (b) {
+      var s = toMin(b.start), e = toMin(b.end);
+      if (e == null || e <= s) return;
+      if (b.kind === "pause") {
+        if (e - s >= REST_MIN && cur) { out.push(cur); cur = null; }
+        return;
+      }
+      if (!cur) cur = { start: b.start, end: b.end, work: 0 };
+      cur.end = b.end;
+      cur.work += e - s;
+    });
+    if (cur) out.push(cur);
+    return out;
+  }
+
+  function check(books) {
+    var list = sorted(books), res = { longBlocks: [], longPauses: [], overlaps: [], endBeforeStart: [] };
+    blocks(list).forEach(function (bl) {
+      var span = toMin(bl.end) - toMin(bl.start);
+      if (span > BLOCK_MAX) res.longBlocks.push({ start: bl.start, end: bl.end, min: span });
+    });
+    var prevEnd = null, prev = null;
+    list.forEach(function (b) {
+      var s = toMin(b.start), e = toMin(b.end);
+      if (e != null && e <= s) res.endBeforeStart.push({ start: b.start, end: b.end });
+      else if (b.kind === "pause" && e != null && e - s > LONG_PAUSE) res.longPauses.push({ start: b.start, end: b.end, min: e - s });
+      if (prevEnd != null && s < prevEnd) res.overlaps.push({ a: prev.start + "–" + prev.end, b: b.start + "–" + (b.end || "offen") });
+      if (e != null && e > s && (prevEnd == null || e > prevEnd)) { prevEnd = e; prev = b; }
+    });
+    res.any = res.longBlocks.length + res.longPauses.length + res.overlaps.length + res.endBeforeStart.length > 0;
+    return res;
+  }
+
+  /* Anwesenheit brutto: erstes Kommen bis letztes Gehen; offen = null. */
+  function brutto(books) {
+    var list = sorted(books);
+    if (!list.length) return 0;
+    var s = toMin(list[0].start), last = -1;
+    for (var i = 0; i < list.length; i++) {
+      var e = toMin(list[i].end);
+      if (e == null) return null;
+      if (e > last) last = e;
+    }
+    return last > s ? last - s : 0;
+  }
+
+  /* Laufende Netto-Arbeitszeit in Sekunden bis jetzt (offene Arbeitsbuchung
+     läuft mit). nowSec = Sekunden seit Mitternacht. */
+  function liveSeconds(books, nowSec) {
+    var sum = 0;
+    sorted(books).forEach(function (b) {
+      if (b.kind === "pause") return;
+      var s = toMin(b.start) * 60, e = b.end == null ? nowSec : toMin(b.end);
+      if (b.end != null) e = e == null ? null : e * 60;
+      if (e != null && e > s) sum += e - s;
+    });
+    return sum;
+  }
+
+  return { BLOCK_MAX: BLOCK_MAX, REST_MIN: REST_MIN, LONG_PAUSE: LONG_PAUSE,
+    blocks: blocks, check: check, brutto: brutto, liveSeconds: liveSeconds };
+})();
+if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
+/* </pruefung.js> */
+</script>
+<script>
+(function () {
+  "use strict";
+
+  /* ---------------------------------------------------------------
+     Notfall-Datenstand (Stand 14.09.2026, 17./18.08. aus seed-data.js ergänzt).
+     Wird nur benutzt, wenn keine Speicher-Verbindung besteht oder
+     der Speicher noch leer ist (dann als Erstbefüllung geschrieben).
+  --------------------------------------------------------------- */
+  var EMBED_DAYS = [{"date":"2026-08-17","books":[{"start":"08:00","end":"15:30","kind":"work"}],"origin":"import"},{"date":"2026-08-18","books":[{"start":"08:01","end":"11:16","kind":"work"},{"start":"11:16","end":"11:23","kind":"pause"},{"start":"11:23","end":"15:30","kind":"work"},{"start":"15:30","end":"15:35","kind":"pause"},{"start":"15:35","end":"16:53","kind":"work"}],"origin":"import"},{"date":"2026-08-19","books":[{"start":"06:42","end":"07:31","kind":"work"},{"start":"07:31","end":"07:36","kind":"pause"},{"start":"07:36","end":"13:38","kind":"work"},{"start":"13:38","end":"13:45","kind":"pause"},{"start":"13:45","end":"15:44","kind":"work"}],"origin":"import"},{"date":"2026-08-20","books":[{"start":"06:47","end":"09:48","kind":"work"},{"start":"09:48","end":"09:55","kind":"pause"},{"start":"09:55","end":"11:59","kind":"work"},{"start":"11:59","end":"12:05","kind":"pause"},{"start":"12:05","end":"15:08","kind":"work"},{"start":"15:08","end":"15:15","kind":"pause"},{"start":"15:15","end":null,"kind":"work"}],"origin":"import"},{"date":"2026-08-21","books":[{"start":"06:44","end":"09:21","kind":"work"},{"start":"09:21","end":"09:30","kind":"pause"},{"start":"09:30","end":"10:56","kind":"work"},{"start":"10:56","end":"11:01","kind":"pause"},{"start":"11:01","end":"13:29","kind":"work"},{"start":"13:29","end":"13:34","kind":"pause"},{"start":"13:34","end":"15:26","kind":"work"},{"start":"15:26","end":"15:33","kind":"pause"},{"start":"15:33","end":"15:46","kind":"work"}],"origin":"export"},{"date":"2026-08-24","books":[{"start":"06:48","end":"13:20","kind":"work"},{"start":"13:20","end":"13:24","kind":"pause"},{"start":"13:24","end":"14:59","kind":"work"}],"origin":"export"},{"date":"2026-08-25","books":[{"start":"06:42","end":"09:15","kind":"work"},{"start":"09:15","end":"09:19","kind":"pause"},{"start":"09:19","end":"12:50","kind":"work"},{"start":"12:50","end":"13:27","kind":"pause"},{"start":"13:27","end":"15:23","kind":"work"}],"origin":"export"},{"date":"2026-08-26","books":[{"start":"06:47","end":"09:48","kind":"work"},{"start":"09:48","end":"09:52","kind":"pause"},{"start":"09:52","end":"11:34","kind":"work"},{"start":"11:34","end":"11:38","kind":"pause"},{"start":"11:38","end":"14:57","kind":"work"}],"origin":"export"},{"date":"2026-08-27","books":[{"start":"07:00","end":"13:06","kind":"work"},{"start":"13:06","end":"13:11","kind":"pause"},{"start":"13:11","end":"15:00","kind":"work"}],"origin":"export"},{"date":"2026-08-28","books":[{"start":"06:54","end":"08:40","kind":"work"},{"start":"08:40","end":"08:45","kind":"pause"},{"start":"08:45","end":"15:05","kind":"work"}],"origin":"export"},{"date":"2026-08-31","books":[{"start":"07:00","end":"12:49","kind":"work"},{"start":"12:49","end":"13:03","kind":"pause"},{"start":"13:03","end":"16:11","kind":"work"}],"origin":"export"},{"date":"2026-09-01","books":[{"start":"06:50","end":"11:46","kind":"work"},{"start":"11:46","end":"11:54","kind":"pause"},{"start":"11:54","end":"16:30","kind":"work"}],"origin":"export"},{"date":"2026-09-02","books":[{"start":"07:09","end":"14:29","kind":"work"},{"start":"14:29","end":"14:38","kind":"pause"},{"start":"14:38","end":"17:05","kind":"work"}],"origin":"export"},{"date":"2026-09-03","books":[{"start":"06:42","end":"10:23","kind":"work"},{"start":"10:23","end":"13:00","kind":"pause"},{"start":"13:00","end":"15:36","kind":"work"}],"origin":"export"},{"date":"2026-09-04","books":[{"start":"07:03","end":"15:00","kind":"work"},{"start":"15:00","end":"15:07","kind":"pause"},{"start":"15:07","end":"16:16","kind":"work"}],"origin":"export"},{"date":"2026-09-07","books":[{"start":"06:54","end":"12:11","kind":"work"},{"start":"12:11","end":"12:15","kind":"pause"},{"start":"12:15","end":"15:16","kind":"work"}],"origin":"export"},{"date":"2026-09-08","books":[{"start":"06:46","end":"10:39","kind":"work"},{"start":"10:39","end":"10:46","kind":"pause"},{"start":"10:46","end":"14:57","kind":"work"}],"origin":"export"},{"date":"2026-09-09","books":[{"start":"06:56","end":"14:20","kind":"work"},{"start":"14:20","end":"14:27","kind":"pause"},{"start":"14:27","end":"16:39","kind":"work"}],"origin":"export"},{"date":"2026-09-10","books":[{"start":"06:58","end":"10:27","kind":"work"},{"start":"10:27","end":"10:50","kind":"pause"},{"start":"10:50","end":"16:53","kind":"work"}],"origin":"export"},{"date":"2026-09-11","books":[{"start":"06:31","end":"13:19","kind":"work"},{"start":"13:19","end":"13:23","kind":"pause"},{"start":"13:23","end":"15:25","kind":"work"},{"start":"15:25","end":"16:28","kind":"work"}],"origin":"export"},{"date":"2026-09-14","books":[{"start":"06:48","end":"14:37","kind":"work"},{"start":"14:37","end":"14:57","kind":"pause"},{"start":"14:57","end":null,"kind":"work"}],"origin":"export"}];
+  var DEFAULTS = { weekHours: 40, workdays: [1, 2, 3, 4, 5] };
+  var WD = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+  var WDLONG = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
+
+  var db = null;
+  var days = {};
+  var settings = { weekHours: DEFAULTS.weekHours, workdays: DEFAULTS.workdays.slice(), seeded: false,
+    vacation: { "2026": 30, "2027": 30 }, gleittag: false,
+    autoIn: { on: false, from: "05:00", to: "10:00" } };
+  var gotDays = false, gotSettings = false, seedRunning = false;
+  var dbDayCount = null;   /* Dokumente im Speicher; null = noch nicht gelesen */
+  var panel = null;     /* { kind, date } */
+  var draft = null;     /* Formularzustand */
+  var note = null;      /* { type: "err" | "ok", text } */
+
+  /* ---------------------------- Helfer ---------------------------- */
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function toMin(t) {
+    if (!t) return null;
+    var m = /^(\d{1,2}):(\d{2})/.exec(t);
+    if (!m) return null;
+    var h = +m[1], mi = +m[2];
+    if (h > 23 || mi > 59) return null;
+    return h * 60 + mi;
+  }
+  function hm(min) { return Math.floor(min / 60) + ":" + pad(min % 60); }
+  function signed(min) { return (min < 0 ? "−" : "+") + hm(Math.abs(min)); }
+  function dShort(iso) { var p = iso.split("-"); return p[2] + "." + p[1] + "."; }
+  function dLong(iso) { var p = iso.split("-"); return p[2] + "." + p[1] + "." + p[0]; }
+  function wdOf(iso) {
+    var p = iso.split("-");
+    return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])).getUTCDay();
+  }
+  function isoWeek(iso) {
+    var p = iso.split("-");
+    var d = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2]));
+    var dow = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dow);
+    var y0 = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return { year: d.getUTCFullYear(), week: Math.ceil(((d - y0) / 86400000 + 1) / 7) };
+  }
+  function todayISO() {
+    var d = new Date();
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  }
+  function sollFor(iso) {
+    var wd = wdOf(iso);
+    var list = settings.workdays && settings.workdays.length ? settings.workdays : DEFAULTS.workdays;
+    if (list.indexOf(wd) < 0) return 0;
+    return Math.round((settings.weekHours * 60) / list.length);
+  }
+
+  /* ------------------------- Tagesarten --------------------------- */
+  /* soll = Anteil am Tages-Soll, vac = Tage gegen den Urlaubsanspruch.
+     Führend ist OptiTime; hier wird nur übernommen und angezeigt. */
+  var TYPES = {
+    urlaub:       { label: "Urlaub",              soll: 0,   vac: 1 },
+    urlaub_halb:  { label: "Urlaub (halber Tag)", soll: 0.5, vac: 0.5 },
+    sonderurlaub: { label: "Sonderurlaub",        soll: 0,   vac: 0 },
+    krank:        { label: "Krank",               soll: 0,   vac: 0 },
+    feiertag:     { label: "Feiertag",            soll: 0,   vac: 0 },
+    gleittag:     { label: "Gleittag",            soll: 1,   vac: 0 }
+  };
+  var TYPE_ORDER = ["urlaub", "urlaub_halb", "sonderurlaub", "krank", "feiertag", "gleittag"];
+  var VAC_DEFAULT = 30;   /* Voreinstellung je Jahr; verbindlich ist die Personalabteilung */
+  function typeOf(doc) { return doc && TYPES[doc.type] ? doc.type : ""; }
+  /* Stichwort-Erkennung für Importzeilen ohne Uhrzeit (Reihenfolge zählt). */
+  function typeFromText(t) {
+    t = String(t || "").toLowerCase();
+    if (/halb/.test(t) && /urlaub/.test(t)) return "urlaub_halb";
+    if (/sonder|000004/.test(t)) return "sonderurlaub";
+    if (/urlaub/.test(t)) return "urlaub";
+    if (/krank/.test(t)) return "krank";
+    if (/feiertag/.test(t)) return "feiertag";
+    if (/gleit/.test(t)) return "gleittag";
+    return "";
+  }
+  function vacFor(year) {
+    var v = settings.vacation && settings.vacation[year];
+    return typeof v === "number" && v >= 0 ? v : VAC_DEFAULT;
+  }
+
+  /* Feiertage Brandenburg – berechnet, Ostersonntag nach der Gaußschen
+     Osterformel (mit Ergänzung von Lichtenberg). */
+  function easter(y) {
+    var k = Math.floor(y / 100), m = 15 + Math.floor((3 * k + 3) / 4) - Math.floor((8 * k + 13) / 25);
+    var s = 2 - Math.floor((3 * k + 3) / 4), a = y % 19, d = (19 * a + m) % 30;
+    var r = Math.floor((d + Math.floor(a / 11)) / 29), og = 21 + d - r;
+    var sz = 7 - (y + Math.floor(y / 4) + s) % 7, oe = 7 - (og - sz) % 7;
+    return new Date(Date.UTC(y, 2, og + oe));   /* März + Tage, Überlauf in den April */
+  }
+  var holCache = {};
+  function holidaysBB(y) {
+    if (holCache[y]) return holCache[y];
+    var e = easter(y), out = {};
+    var add = function (iso, name) { out[iso] = name; };
+    var rel = function (n, name) { var d = new Date(e.getTime()); d.setUTCDate(d.getUTCDate() + n); add(isoOf(d), name); };
+    add(y + "-01-01", "Neujahr");
+    rel(-2, "Karfreitag"); rel(0, "Ostersonntag"); rel(1, "Ostermontag");
+    add(y + "-05-01", "Tag der Arbeit");
+    rel(39, "Christi Himmelfahrt"); rel(49, "Pfingstsonntag"); rel(50, "Pfingstmontag");
+    add(y + "-10-03", "Tag der Deutschen Einheit");
+    add(y + "-10-31", "Reformationstag");
+    add(y + "-12-25", "1. Weihnachtstag"); add(y + "-12-26", "2. Weihnachtstag");
+    holCache[y] = out;
+    return out;
+  }
+  function holidayName(iso) { return holidaysBB(+iso.slice(0, 4))[iso] || ""; }
+  function isWorkday(iso) {
+    var list = settings.workdays && settings.workdays.length ? settings.workdays : DEFAULTS.workdays;
+    return list.indexOf(wdOf(iso)) >= 0;
+  }
+
+  /* ------------------------- Berechnung -------------------------- */
+  function sortBooks(books) {
+    return books.slice().sort(function (a, b) {
+      var x = toMin(a.start), y = toMin(b.start);
+      return (x == null ? 0 : x) - (y == null ? 0 : y);
+    });
+  }
+  function statOf(doc) {
+    var books = sortBooks(doc.books || []);
+    var work = 0, pause = 0, first = null, last = null, open = false;
+    books.forEach(function (b) {
+      var s = toMin(b.start), e = toMin(b.end);
+      if (s == null) return;
+      if (first === null) first = b.start;
+      if (e == null) { open = true; return; }
+      last = b.end;
+      var d = e - s;
+      if (d <= 0) return;
+      if (b.kind === "pause") pause += d; else work += d;
+    });
+    var noStart = books.length > 0 && books[0].kind === "pause";
+    var type = typeOf(doc);
+    var soll = type ? Math.round(sollFor(doc.date) * TYPES[type].soll) : sollFor(doc.date);
+    var req = work > 540 ? 45 : (work > 360 ? 30 : 0);
+    return {
+      date: doc.date, books: books, work: work, pause: pause,
+      first: first, last: last, open: open, noStart: noStart,
+      soll: soll, saldo: work - soll, req: req,
+      breakShort: !open && req > 0 && pause < req,
+      origin: doc.origin || "manuell", note: doc.note || "",
+      type: type, typeLabel: type ? TYPES[type].label : "",
+      brutto: AzkPruefung.brutto(books), chk: AzkPruefung.check(books)
+    };
+  }
+  function allStats() {
+    return Object.keys(days).sort().map(function (k) { return statOf(days[k]); });
+  }
+
+  /* --------------------------- Ausgabe --------------------------- */
+  function setChip(id, text, cls) {
+    var chip = document.getElementById(id);
+    document.getElementById(id + "-text").textContent = text;
+    chip.className = "chip" + (cls ? " " + cls : "");
+  }
+
+  function renderFigures(st) {
+    var work = 0, soll = 0, openN = 0, pause = 0, brut = 0, brutN = 0;
+    st.forEach(function (d) {
+      work += d.work; soll += d.soll; pause += d.pause;
+      if (d.open || d.noStart) openN++;
+      if (d.brutto) { brut += d.brutto; brutN++; }
+    });
+    var saldo = work - soll;
+    var plain = st.filter(function (d) { return d.soll > 0 && !d.type; });
+    var counted = plain.length;
+    var avg = counted ? Math.round(plain.reduce(function (a, d) { return a + d.work; }, 0) / counted) : 0;
+    var tag = Math.round((settings.weekHours * 60) / (settings.workdays.length || 5));
+    var fig = [
+      ["Ist-Zeit", hm(work), st.length + " erfasste Tage"],
+      ["Soll-Zeit", hm(soll), settings.weekHours + " h/Woche · Tag " + hm(tag)],
+      ["Kontostand", signed(saldo), saldo >= 0 ? "Mehrarbeit" : "Rückstand", saldo >= 0 ? "pos" : "neg"],
+      ["Ø pro Arbeitstag", hm(avg), openN ? openN + " Tag(e) unvollständig" : "alle Tage vollständig"],
+      ["Pausen gesamt", hm(pause), brutN ? "Anwesend brutto " + hm(brut) + " · Ø " + hm(Math.round(brut / brutN)) + "/Tag" : "keine abgeschlossenen Tage"]
+    ];
+    document.getElementById("figures").innerHTML = fig.map(function (f) {
+      return '<div class="fig"><div class="fig-lab">' + esc(f[0]) + '</div>' +
+        '<div class="fig-val' + (f[3] ? " " + f[3] : "") + '">' + esc(f[1]) + '</div>' +
+        '<div class="fig-note">' + esc(f[2]) + '</div></div>';
+    }).join("");
+    var per = st.length ? dLong(st[0].date) + " – " + dLong(st[st.length - 1].date) : "keine Buchungen";
+    setChip("chip-period", per, "");
+  }
+
+  /* Mehrarbeitskonto: Monatsverlauf, neuester Monat oben. Summe aller
+     Monate = Kennzahl "Kontostand" (gleiche Tagessalden). */
+  function renderMk(st) {
+    var host = document.getElementById("mk-host");
+    if (!st.length) { host.innerHTML = '<p class="hint" style="margin:0">Noch keine Buchungen erfasst.</p>'; return; }
+    var months = [], cur = null;
+    st.forEach(function (d) {
+      var key = d.date.slice(0, 7);
+      if (!cur || cur.key !== key) { cur = { key: key, saldo: 0, prelim: false }; months.push(cur); }
+      cur.saldo += d.saldo;
+      if (d.open || d.noStart) cur.prelim = true;
+    });
+    var run = 0;
+    months.forEach(function (m) { m.before = run; run += m.saldo; m.after = run; });
+    var td = function (v) { return '<td class="num ' + (v >= 0 ? "pos" : "neg") + '">' + esc(signed(v)) + "</td>"; };
+    host.innerHTML = '<div class="tablewrap"><table class="mk"><thead><tr><th>Monat</th><th>Stand Vormonat</th>' +
+      '<th>Plus/Minus im Monat</th><th>Stand Monatsende</th></tr></thead><tbody>' +
+      months.slice().reverse().map(function (m) {
+        return "<tr><td><strong>" + esc(monthLabel(m.key)) + "</strong>" +
+          (m.prelim ? ' <span class="pill sig">vorläufig</span>' : "") + "</td>" +
+          td(m.before) + td(m.saldo) + td(m.after) + "</tr>";
+      }).join("") + "</tbody></table></div>";
+  }
+
+  /* ---------------------- Urlaub je Jahr -------------------------- */
+  function vacCounts(iso) { return isWorkday(iso) && !holidayName(iso); }
+  function fmtDays(n) { return String(n).replace(".", ","); }
+  function vacYear(y) {
+    var today = todayISO(), r = { year: y, claim: vacFor(y), planned: 0, taken: 0, plannedDates: [], other: {}, holidays: [] };
+    TYPE_ORDER.forEach(function (t) { r.other[t] = 0; });
+    Object.keys(days).sort().forEach(function (k) {
+      if (k.slice(0, 4) !== y) return;
+      var t = typeOf(days[k]);
+      if (!t) return;
+      r.other[t] += TYPES[t].vac === 0.5 ? 0.5 : 1;
+      if (!TYPES[t].vac || !vacCounts(k)) return;
+      if (k > today) { r.planned += TYPES[t].vac; r.plannedDates.push(k); } else r.taken += TYPES[t].vac;
+    });
+    r.rest = r.claim - r.planned - r.taken;
+    var hol = holidaysBB(+y);
+    Object.keys(hol).sort().forEach(function (iso) {
+      if (iso < ENTRY_DATE || !isWorkday(iso) || typeOf(days[iso])) return;
+      r.holidays.push(iso);
+    });
+    return r;
+  }
+  function vacYears() {
+    var m = {}, cur = todayISO().slice(0, 4);
+    m[cur] = 1;
+    Object.keys(settings.vacation || {}).forEach(function (y) { m[y] = 1; });
+    Object.keys(days).forEach(function (k) { if (typeOf(days[k])) m[k.slice(0, 4)] = 1; });
+    return Object.keys(m).filter(function (y) { return y >= ENTRY_DATE.slice(0, 4); }).sort();
+  }
+  function ranges(list) {   /* aufeinanderfolgende Tage zusammenfassen */
+    var out = [], a = null, b = null;
+    list.forEach(function (iso) {
+      if (b) { var n = dateOf(b); n.setUTCDate(n.getUTCDate() + 1); while (!isWorkday(isoOf(n)) && isoOf(n) < iso) n.setUTCDate(n.getUTCDate() + 1); }
+      if (b && isoOf(n) === iso) { b = iso; return; }
+      if (a) out.push(a === b ? dShort(a) : dShort(a) + "–" + dShort(b));
+      a = b = iso;
+    });
+    if (a) out.push(a === b ? dShort(a) : dShort(a) + "–" + dShort(b));
+    return out.join(", ");
+  }
+  function renderVac() {
+    var host = document.getElementById("vac-host");
+    var yrs = vacYears().map(vacYear);
+    var h = '<div class="tablewrap"><table class="vac"><thead><tr><th>Jahr</th><th>Anspruch</th><th>verplant</th>' +
+      '<th>genommen</th><th>Rest</th></tr></thead><tbody>' +
+      yrs.map(function (r) {
+        return "<tr><td><strong>" + esc(r.year) + "</strong>" +
+          (r.year === ENTRY_DATE.slice(0, 4) ? ' <span class="pill">vorläufig</span>' : "") + "</td>" +
+          '<td class="num">' + esc(fmtDays(r.claim)) + '</td><td class="num">' + esc(fmtDays(r.planned)) + "</td>" +
+          '<td class="num">' + esc(fmtDays(r.taken)) + '</td><td class="num' + (r.rest < 0 ? " neg" : "") + '"><strong>' +
+          esc(fmtDays(r.rest)) + "</strong></td></tr>";
+      }).join("") + "</tbody></table></div>";
+    h += '<div class="vac-list">';
+    yrs.forEach(function (r) {
+      var o = r.other, parts = [];
+      if (r.plannedDates.length) parts.push("verplant " + ranges(r.plannedDates));
+      ["krank", "sonderurlaub", "feiertag", "gleittag"].forEach(function (t) {
+        if (o[t]) parts.push(TYPES[t].label + " " + fmtDays(o[t]));
+      });
+      if (parts.length) h += "<span><b>" + esc(r.year) + "</b> &middot; " + esc(parts.join(" · ")) + "</span>";
+      if (r.holidays.length) {
+        h += '<div class="hol"><span><b>Feiertage ' + esc(r.year) + '</b> auf Arbeitstagen, noch nicht übernommen: ' +
+          esc(r.holidays.map(function (iso) { return dShort(iso) + " " + holidayName(iso); }).join(" · ")) + "</span>" +
+          '<button type="button" class="link" data-act="takehol" data-year="' + esc(r.year) + '">übernehmen</button></div>';
+      }
+    });
+    h += "</div>";
+    if (yrs.some(function (r) { return r.year === ENTRY_DATE.slice(0, 4); })) {
+      h += '<p class="hint" style="margin:var(--s2) 0 0">Anspruch ' + ENTRY_DATE.slice(0, 4) + " vorläufig: anteiliges " +
+        "Eintrittsjahr und Probezeit klärt die Personalabteilung. 24.12. und 31.12. zählen laut Betriebsordnung " +
+        "als Urlaubstag – bitte Rechtsabteilung prüfen.</p>";
+    }
+    host.innerHTML = h;
+  }
+
+  function renderChart(st) {
+    var host = document.getElementById("chart-host");
+    if (!st.length) { host.innerHTML = '<p class="hint">Noch keine Buchungen erfasst.</p>'; return; }
+    var cum = 0;
+    var pts = st.map(function (d) { cum += d.saldo; return { date: d.date, v: cum, day: d.saldo }; });
+    host.innerHTML = chartSVG(pts, { W: chartW("chart-host") });
+  }
+
+  /* Diagramme in echter Containerbreite zeichnen, damit die Schrift auf dem
+     Handy nicht mitschrumpft (viewBox = Pixelbreite). */
+  function chartW(id) {
+    var el = document.getElementById(id), w = el ? el.clientWidth : 0;
+    return Math.max(300, Math.min(1040, Math.round(w || 840)));
+  }
+  var lastW = 0, resizeT = null;
+  window.addEventListener("resize", function () {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(function () {
+      var w = chartW("chart-host");
+      if (Math.abs(w - lastW) < 24) return;
+      lastW = w; var st = allStats(); renderChart(st); renderBars(st);
+    }, 150);
+  });
+
+  /* Säulen mit 4-px-Rundung oben, eckig an der Grundlinie. */
+  function colPath(x, y, w, h) {
+    if (h <= 0) return "";
+    var r = Math.min(4, w / 2, h);
+    return "M" + x.toFixed(1) + " " + (y + h).toFixed(1) + "V" + (y + r).toFixed(1) +
+      "Q" + x.toFixed(1) + " " + y.toFixed(1) + " " + (x + r).toFixed(1) + " " + y.toFixed(1) +
+      "H" + (x + w - r).toFixed(1) + "Q" + (x + w).toFixed(1) + " " + y.toFixed(1) + " " + (x + w).toFixed(1) + " " + (y + r).toFixed(1) +
+      "V" + (y + h).toFixed(1) + "Z";
+  }
+  function axisMax(v) { return Math.max(600, Math.ceil(v / 120) * 120); }
+
+  /* Tagesbalken: Netto unten, Pause oben aufgesetzt (2 px Abstand), Soll als
+     Strich. Nur die letzten 30 erfassten Tage, damit die Säulen lesbar bleiben. */
+  function dayBarsSVG(st) {
+    var rows = st.filter(function (d) { return d.books.length; }).slice(-30);
+    if (!rows.length) return '<p class="hint" style="margin:0">Noch keine Buchungen erfasst.</p>';
+    var W = chartW("daybars-host"), H = 220, L = 44, R = 8, T = 12, B = 28, n = rows.length;
+    var max = axisMax(Math.max.apply(null, rows.map(function (d) { return Math.max(d.work + d.pause, d.soll); })));
+    var y = function (v) { return T + (H - T - B) * (1 - v / max); };
+    var slot = (W - L - R) / n, bw = Math.max(4, Math.min(24, slot * 0.6));
+    var svg = '<svg class="chart" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Netto-Arbeitszeit und Pause der letzten ' + n +
+      ' erfassten Tage mit Tages-Soll">';
+    for (var v = 0; v <= max; v += 120) {
+      svg += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '" stroke="var(--grid)" stroke-width="1"/>' +
+        '<text x="' + (L - 6) + '" y="' + (y(v) + 4).toFixed(1) + '" text-anchor="end" font-size="11" fill="var(--ink-muted)">' + (v / 60) + " h</text>";
+    }
+    var every = Math.ceil(n / Math.max(3, Math.floor((W - L - R) / 64)));   /* Datum braucht ~64 px */
+    rows.forEach(function (d, i) {
+      var cx = L + slot * i + slot / 2, x = cx - bw / 2;
+      var yw = y(d.work), yp = y(d.work + d.pause) - 2;   /* 2 px Abstand zwischen Netto und Pause */
+      var tip = WD[wdOf(d.date)] + " " + dShort(d.date) + ": Netto " + hm(d.work) + ", Pause " + hm(d.pause) +
+        ", Soll " + (d.soll ? hm(d.soll) : "–") + ", Saldo " + signed(d.saldo) + (d.open ? " (offen)" : "");
+      svg += '<g class="col" tabindex="0" data-tip="' + esc(tip) + '"><title>' + esc(tip) + "</title>" +
+        '<rect class="hit" x="' + (cx - slot / 2).toFixed(1) + '" y="' + T + '" width="' + slot.toFixed(1) + '" height="' + (H - T - B) + '"/>';
+      if (d.pause) svg += '<path d="' + colPath(x, yp, bw, y(d.work) - 2 - yp) + '" fill="var(--ink-muted)"/>';
+      if (d.work) svg += '<path d="' + colPath(x, yw, bw, y(0) - yw) + '" fill="var(--accent)"/>';
+      if (d.soll) svg += '<line x1="' + (x - 3).toFixed(1) + '" x2="' + (x + bw + 3).toFixed(1) + '" y1="' + y(d.soll).toFixed(1) + '" y2="' + y(d.soll).toFixed(1) +
+        '" stroke="var(--ink-strong)" stroke-width="2" stroke-linecap="round"/>';
+      svg += "</g>";
+      if ((i % every === 0 && n - 1 - i >= every) || i === n - 1) {
+        svg += '<text x="' + cx.toFixed(1) + '" y="' + (H - 9) + '" text-anchor="middle" font-size="11" fill="var(--ink-muted)">' + esc(dShort(d.date)) + "</text>";
+      }
+    });
+    return svg + "</svg>";
+  }
+
+  /* Wochen-Soll/Ist: Ist (Grün) neben Soll (Grau), letzte 12 Wochen. */
+  function weekBarsSVG(st) {
+    var weeks = [], cur = null;
+    st.forEach(function (d) {
+      var w = isoWeek(d.date), key = w.year + "-" + w.week;
+      if (!cur || cur.key !== key) { cur = { key: key, week: w.week, from: d.date, to: d.date, work: 0, soll: 0 }; weeks.push(cur); }
+      cur.to = d.date; cur.work += d.work; cur.soll += d.soll;
+    });
+    weeks = weeks.slice(-12);
+    if (!weeks.length) return "";
+    var W = chartW("weekbars-host"), H = 200, L = 44, R = 8, T = 18, B = 28, n = weeks.length;
+    var max = Math.max(60, Math.max.apply(null, weeks.map(function (g) { return Math.max(g.work, g.soll); })));
+    max = Math.ceil(max / 600) * 600;
+    var y = function (v) { return T + (H - T - B) * (1 - v / max); };
+    var slot = (W - L - R) / n, bw = Math.min(24, slot * 0.3);
+    var svg = '<svg class="chart" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Ist- und Soll-Stunden der letzten ' + n + ' Kalenderwochen">';
+    for (var v = 0; v <= max; v += 600) {
+      svg += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '" stroke="var(--grid)" stroke-width="1"/>' +
+        '<text x="' + (L - 6) + '" y="' + (y(v) + 4).toFixed(1) + '" text-anchor="end" font-size="11" fill="var(--ink-muted)">' + (v / 60) + " h</text>";
+    }
+    weeks.forEach(function (g, i) {
+      var cx = L + slot * i + slot / 2, saldo = g.work - g.soll;
+      var tip = "KW " + g.week + " (" + dShort(g.from) + " – " + dShort(g.to) + "): Ist " + hm(g.work) + ", Soll " + hm(g.soll) + ", Saldo " + signed(saldo);
+      svg += '<g class="col" tabindex="0" data-tip="' + esc(tip) + '"><title>' + esc(tip) + "</title>" +
+        '<rect class="hit" x="' + (cx - slot / 2).toFixed(1) + '" y="' + T + '" width="' + slot.toFixed(1) + '" height="' + (H - T - B) + '"/>' +
+        '<path d="' + colPath(cx - bw - 1, y(g.work), bw, y(0) - y(g.work)) + '" fill="var(--accent)"/>' +
+        '<path d="' + colPath(cx + 1, y(g.soll), bw, y(0) - y(g.soll)) + '" fill="var(--ink-muted)"/></g>' +
+        ((n - 1 - i) % Math.ceil(40 / slot) === 0 ? '<text x="' + cx.toFixed(1) + '" y="' + (H - 9) + '" text-anchor="middle" font-size="11" fill="var(--ink-muted)">KW ' + g.week + "</text>" : "");
+      if (i === n - 1) {
+        svg += '<text x="' + cx.toFixed(1) + '" y="' + (Math.min(y(g.work), y(g.soll)) - 6).toFixed(1) + '" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink-strong)">' +
+          esc(signed(saldo)) + "</text>";
+      }
+    });
+    return svg + "</svg>";
+  }
+  function renderBars(st) {
+    document.getElementById("daybars-host").innerHTML = dayBarsSVG(st) + '<p class="chart-tip" aria-live="polite"></p>';
+    document.getElementById("weekbars-host").innerHTML = weekBarsSVG(st) + '<p class="chart-tip" aria-live="polite"></p>';
+  }
+  /* Lesezeile unter dem Diagramm: Maus, Tipp und Tastatur (Fokus). */
+  function showTip(ev) {
+    var g = ev.target && ev.target.closest ? ev.target.closest("g.col") : null;
+    if (!g) return;
+    var host = g.closest("svg").parentNode, tip = host.querySelector(".chart-tip");
+    host.querySelectorAll("g.col.on").forEach(function (o) { o.classList.remove("on"); });
+    g.classList.add("on");
+    if (tip) tip.textContent = g.getAttribute("data-tip");
+  }
+  document.addEventListener("pointerover", showTip);
+  document.addEventListener("focusin", showTip);
+
+  function renderFlags(st) {
+    var items = [], short = [], gap = 0, longB = [], longP = [];
+    st.forEach(function (d) {
+      if (d.open) {
+        items.push(["sig", dLong(d.date), "Letzte Buchung ohne Gehen-Zeit – Ist-Zeit unvollständig."]);
+      }
+      if (d.noStart) {
+        items.push(["sig", dLong(d.date), "Erste Buchung ist eine Pause – Kommen-Buchung fehlt."]);
+      }
+      if (d.breakShort) { short.push(d); gap += d.req - d.pause; }
+      d.chk.overlaps.forEach(function (o) {
+        items.push(["sig", dLong(d.date), "Buchungen überschneiden sich (" + o.a + " und " + o.b + ") – Ist-Zeit doppelt gezählt."]);
+      });
+      d.chk.endBeforeStart.forEach(function (o) {
+        items.push(["sig", dLong(d.date), "Buchung " + o.start + "–" + o.end + " endet vor dem Beginn – zählt nicht. Über Mitternacht bitte auf zwei Tage aufteilen."]);
+      });
+      if (d.chk.longBlocks.length) longB.push(d);
+      d.chk.longPauses.forEach(function (o) { longP.push(dShort(d.date) + " " + o.start + "–" + o.end + " (" + hm(o.min) + ")"); });
+      if ((d.type === "urlaub" || d.type === "urlaub_halb") && !vacCounts(d.date)) {
+        items.push(["warn", dLong(d.date), d.typeLabel + " an einem " + (holidayName(d.date) ? "Feiertag (" + holidayName(d.date) + ")" : "arbeitsfreien Tag") +
+          " – zählt nicht gegen den Urlaubsanspruch."]);
+      }
+    });
+    var today = todayISO(), yr = today.slice(0, 4);
+    [yr + "-12-24", yr + "-12-31"].forEach(function (iso) {
+      if (iso < ENTRY_DATE || !isWorkday(iso) || holidayName(iso) || typeOf(days[iso])) return;
+      items.push(["warn", dLong(iso), "Laut Betriebsordnung gilt der Tag als Urlaubstag (BO F § 1). Eintrag nur nach Bestätigung in OptiTime.",
+        '<button type="button" class="link" data-act="settype" data-date="' + iso + '" data-type="urlaub">als Urlaub eintragen</button>']);
+    });
+    if (today >= yr + "-11-01") {
+      var vy = vacYear(yr);
+      if (vy.rest > 0) {
+        items.push(["warn", "Resturlaub " + yr + ": " + fmtDays(vy.rest) + " Tage",
+          today <= yr + "-11-15" ? "Antrag auf Resturlaub bis 15.11. stellen (BO F § 1 Abs. 4)."
+            : "Frist 15.11. für den Antrag auf Resturlaub ist vorbei (BO F § 1 Abs. 4) – bitte mit der Personalabteilung klären."]);
+      }
+    }
+    if (short.length) {
+      var names = short.slice(0, 4).map(function (d) { return dShort(d.date); }).join(", ");
+      items.push(["warn", short.length + " Tage mit zu kurzer Pause",
+        "Fehlbetrag zusammen " + hm(gap) + " (ArbZG §4: über 6 h 30 Minuten, über 9 h 45 Minuten). " +
+        "Betroffen: " + names + (short.length > 4 ? " und " + (short.length - 4) + " weitere" : "") +
+        " – Pausen erscheinen in OptiTime nur, wenn sie gebucht sind. " +
+        "Vor einer Korrektur der Vergangenheit bitte Rechtsabteilung prüfen."]);
+    }
+    if (longB.length) {
+      var lb = longB.slice(0, 4).map(function (d) {
+        var b = d.chk.longBlocks[0];
+        return dShort(d.date) + " " + b.start + "–" + b.end + " (" + hm(b.min) + ")";
+      }).join(", ");
+      items.push(["warn", longB.length + " Tage mit Arbeitsblock über 6 h ohne Ruhepause",
+        "ArbZG §4: nach spätestens 6 h am Stück eine Ruhepause; als Ruhepause zählen Abschnitte ab " +
+        AzkPruefung.REST_MIN + " Minuten. Betroffen: " + lb + (longB.length > 4 ? " und " + (longB.length - 4) + " weitere" : "") +
+        " – nur Anzeige, keine Korrektur. Bitte Rechtsabteilung prüfen."]);
+    }
+    if (longP.length) {
+      items.push(["warn", longP.length + " ungewöhnlich lange Pause(n) über " + hm(AzkPruefung.LONG_PAUSE),
+        longP.slice(0, 4).join(", ") + (longP.length > 4 ? " und " + (longP.length - 4) + " weitere" : "") +
+        " – stimmt die Buchung (z. B. Arzttermin, vergessenes Weiter-Stempeln)?"]);
+    }
+    var host = document.getElementById("flags");
+    if (!items.length) {
+      host.innerHTML = '<li class="warn"><span><b>Nichts offen.</b> Alle erfassten Tage sind vollständig und ' +
+        'die Pausenzeiten erfüllen ArbZG §4.</span></li>';
+      return;
+    }
+    host.innerHTML = items.map(function (it) {
+      return '<li class="' + it[0] + '"><span><b>' + esc(it[1]) + '</b> &middot; ' + esc(it[2]) + '</span>' +
+        (it[3] ? '<span class="act">' + it[3] + "</span>" : "") + "</li>";
+    }).join("");
+  }
+
+  function pillsFor(d) {
+    var out = [];
+    if (d.type) out.push('<span class="pill type">' + esc(d.typeLabel) + "</span>");
+    if (d.open) out.push('<span class="pill sig">offen</span>');
+    if (d.noStart) out.push('<span class="pill sig">kein Kommen</span>');
+    if (d.breakShort) out.push('<span class="pill sig">Pause ' + d.req + " min</span>");
+    if (d.chk.longBlocks.length) out.push('<span class="pill sig">Block &gt; 6 h</span>');
+    if (d.chk.overlaps.length || d.chk.endBeforeStart.length) out.push('<span class="pill sig">Zeitfehler</span>');
+    if (d.chk.longPauses.length) out.push('<span class="pill">lange Pause</span>');
+    if (!out.length || (d.type && out.length === 1 && d.books.length)) out.push('<span class="pill ok">vollständig</span>');
+    if (d.origin === "manuell") out.push('<span class="pill">manuell</span>');
+    return out.join(" ");
+  }
+
+  function renderWeeks(st) {
+    if (!st.length) {
+      document.getElementById("weeks").innerHTML =
+        '<div class="card"><p class="hint" style="margin:0">Noch keine Tage erfasst. ' +
+        '&bdquo;Tag erfassen&ldquo; oder &bdquo;Buchungen importieren&ldquo; anlegen.</p></div>';
+      return;
+    }
+    var groups = [], cur = null;
+    st.forEach(function (d) {
+      var w = isoWeek(d.date), key = w.year + "-" + w.week;
+      if (!cur || cur.key !== key) { cur = { key: key, week: w.week, rows: [] }; groups.push(cur); }
+      cur.rows.push(d);
+    });
+    document.getElementById("weeks").innerHTML = groups.map(function (g) {
+      var work = 0, soll = 0;
+      g.rows.forEach(function (d) { work += d.work; soll += d.soll; });
+      var saldo = work - soll;
+      var rows = g.rows.map(function (d) {
+        var scale = 600;   /* 10-h-Skala, damit die Balken untereinander vergleichbar sind */
+        var barW = Math.min(100, Math.round((d.work / scale) * 100));
+        var markW = d.soll ? Math.min(100, Math.round((d.soll / scale) * 100)) : 0;
+        return '<tr class="' + (d.open || d.noStart ? "open" : "") + '">' +
+          '<td><strong>' + esc(WD[wdOf(d.date)]) + '</strong> ' + esc(dShort(d.date)) + '</td>' +
+          '<td class="num">' + (d.books.length ? esc(d.first || "–") + " – " + esc(d.open ? "offen" : (d.last || "–"))
+            : '<span class="hint" style="margin:0">' + esc(d.typeLabel || "–") + "</span>") + '</td>' +
+          '<td class="num">' + esc(hm(d.work)) +
+          '<span class="track"><span class="fill" style="width:' + barW + '%"></span>' +
+          (markW ? '<span class="mark" style="left:' + markW + '%"></span>' : "") + "</span></td>" +
+          '<td class="num">' + esc(hm(d.pause)) + '</td>' +
+          '<td class="num">' + esc(d.brutto ? hm(d.brutto) : "–") + '</td>' +
+          '<td class="num">' + esc(d.soll ? hm(d.soll) : "–") + '</td>' +
+          '<td class="num saldo' + (d.saldo >= 0 ? "pos" : "neg") + '">' + esc(signed(d.saldo)) + '</td>' +
+          '<td>' + pillsFor(d) + '</td>' +
+          '<td><button type="button" class="link" data-act="edit" data-date="' + esc(d.date) + '">bearbeiten</button></td>' +
+          '</tr>';
+      }).join("");
+      return '<div class="week"><div class="week-head"><h3>KW ' + g.week + " · " +
+        esc(dShort(g.rows[0].date)) + " – " + esc(dShort(g.rows[g.rows.length - 1].date)) + '</h3>' +
+        '<span class="sum">Ist ' + esc(hm(work)) + " / Soll " + esc(hm(soll)) +
+        ' · <b class="' + (saldo >= 0 ? "pos" : "neg") + '">' + esc(signed(saldo)) + '</b></span></div>' +
+        '<div class="tablewrap"><table><thead><tr>' +
+        '<th>Tag</th><th>Kommen – Gehen</th><th>Ist</th><th>Pause</th><th>Anwesend</th><th>Soll</th><th>Saldo</th>' +
+        '<th>Status</th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div></div>";
+    }).join("");
+  }
+
+  /* ---------------------------- Panels ---------------------------- */
+  function noteHTML() {
+    if (!note) return "";
+    return '<p class="' + (note.type === "err" ? "err" : "ok-msg") + '">' + esc(note.text) + "</p>";
+  }
+
+  function bookRows() {
+    return draft.books.map(function (b, i) {
+      return '<div class="bookrow">' +
+        '<div class="field"><label for="bk-s' + i + '">Von</label>' +
+        '<input id="bk-s' + i + '" type="time" data-f="start" data-i="' + i + '" value="' + esc(b.start || "") + '"></div>' +
+        '<div class="field"><label for="bk-e' + i + '">Bis</label>' +
+        '<input id="bk-e' + i + '" type="time" data-f="end" data-i="' + i + '" value="' + esc(b.end || "") + '"></div>' +
+        '<div class="field"><label for="bk-k' + i + '">Art</label>' +
+        '<select id="bk-k' + i + '" data-f="kind" data-i="' + i + '">' +
+        '<option value="work"' + (b.kind !== "pause" ? " selected" : "") + '>Arbeitszeit</option>' +
+        '<option value="pause"' + (b.kind === "pause" ? " selected" : "") + '>Pause</option></select></div>' +
+        '<div><button type="button" class="ghost" data-act="rmrow" data-i="' + i + '" ' +
+        'aria-label="Buchung ' + (i + 1) + ' entfernen">entfernen</button></div>' +
+        "</div>";
+    }).join("");
+  }
+
+  function renderPanel() {
+    var host = document.getElementById("panel-host");
+    if (!panel) { host.innerHTML = noteHTML(); return; }
+    var h = "";
+
+    if (panel.kind === "edit" || panel.kind === "add") {
+      var isNew = panel.kind === "add";
+      var st = draft.books.length || draft.type ? statOf({ date: draft.date, books: draft.books, type: draft.type }) : null;
+      h = '<div class="card panel"><div class="head-row"><h2>' +
+        (isNew ? "Tag erfassen" : WDLONG[wdOf(draft.date)] + ", " + dLong(draft.date)) + "</h2>" +
+        '<button type="button" class="ghost" data-act="close">schließen</button></div>' +
+        '<p class="hint">Buchungen in der Reihenfolge des Tages. Das letzte Feld &bdquo;Bis&ldquo; darf leer ' +
+        "bleiben, solange der Tag noch läuft. Mit einer Tagesart (Urlaub, Krank …) sind Buchungen optional." +
+        (draft.date && holidayName(draft.date) ? " <strong>" + esc(dLong(draft.date)) + " ist Feiertag in Brandenburg (" + esc(holidayName(draft.date)) + ").</strong>" : "") +
+        "</p>" +
+        '<fieldset><legend>' + (isNew ? "Datum" : "Datum") + "</legend>" +
+        '<div class="formgrid"><div class="field"><label for="f-date">Datum</label>' +
+        '<input id="f-date" type="date" data-f="date" value="' + esc(draft.date) + '"' +
+        (isNew ? "" : " readonly") + "></div>" +
+        '<div class="field"><label for="f-type">Tagesart</label><select id="f-type" data-f="type">' +
+        '<option value="">Arbeitstag</option>' +
+        TYPE_ORDER.filter(function (t) { return t !== "gleittag" || settings.gleittag || draft.type === "gleittag"; }).map(function (t) {
+          return '<option value="' + t + '"' + (draft.type === t ? " selected" : "") + ">" + esc(TYPES[t].label) + "</option>";
+        }).join("") + "</select></div>" +
+        '<div class="field"><label for="f-note">Notiz (optional)</label>' +
+        '<input id="f-note" type="text" data-f="note" value="' + esc(draft.note || "") +
+        '" placeholder="z. B. Dienstreise"></div></div></fieldset>' +
+        '<fieldset><legend>Buchungen</legend>' + bookRows() +
+        '<div class="btnrow"><button type="button" data-act="addrow">Buchung hinzufügen</button>' +
+        (st ? '<span class="hint" id="calc-hint" style="margin:0">Ergibt: Ist ' + esc(hm(st.work)) + ", Pause " +
+          esc(hm(st.pause)) + ", Soll " + esc(st.soll ? hm(st.soll) : "0:00") + ", Saldo " +
+          esc(signed(st.saldo)) + "</span>" : "") +
+        "</div></fieldset>" + noteHTML() +
+        '<div class="btnrow"><button type="button" class="primary" data-act="save">Speichern</button>' +
+        '<button type="button" class="ghost" data-act="close">Abbrechen</button>' +
+        (isNew ? "" : '<button type="button" class="danger" data-act="del">Tag löschen</button>') +
+        "</div></div>";
+    } else if (panel.kind === "import") {
+      h = '<div class="card panel"><div class="head-row"><h2>Buchungen importieren</h2>' +
+        '<button type="button" class="ghost" data-act="close">schließen</button></div>' +
+        '<p class="hint">OptiTime-Export einfügen &ndash; eine Buchung pro Zeile, Felder mit Semikolon oder ' +
+        "Tabulator getrennt: <code>Datum;Von;Bis;Art</code>. Datum als 2026-09-14 oder 14.09.2026. " +
+        "Enthält &bdquo;Pause&ldquo; in Art oder Tätigkeit, wird die Buchung als Pause gewertet. " +
+        "Zeilen ohne Uhrzeit sind Tagesarten, z. B. <code>2026-12-28;;;Urlaub</code> &ndash; erkannt werden " +
+        "Urlaub, halber Urlaub, Sonderurlaub (000004), Krank, Feiertag und Gleittag. " +
+        "Importierte Tage ersetzen den bisherigen Stand dieses Tages vollständig.</p>" +
+        '<label for="f-import">Exportzeilen</label>' +
+        '<textarea id="f-import" data-f="text" placeholder="Datum;Start;Ende;Art;Taetigkeit;Notiz&#10;' +
+        '2026-09-15;06:40;09:10;Arbeitszeit;Kommen;&#10;2026-09-15;09:10;09:25;Pause;*Pause*;">' +
+        esc(draft.text || "") + "</textarea>" + noteHTML() +
+        '<div class="btnrow" style="margin-top:var(--s2)">' +
+        '<button type="button" class="primary" data-act="doimport">Prüfen und übernehmen</button>' +
+        '<button type="button" class="ghost" data-act="close">Abbrechen</button></div></div>';
+    } else if (panel.kind === "fetch") {
+      h = '<div class="card panel"><div class="head-row"><h2>Zeitdaten holen</h2>' +
+        '<button type="button" class="ghost" data-act="close">schließen</button></div>' +
+        '<p class="hint">Diese Seite läuft im Browser und darf aus Sicherheitsgründen nicht selbst auf den ' +
+        "Rechner zugreifen. Deshalb hier die Datei auswählen – der Rest läuft automatisch: Person, Tage und " +
+        "Buchungen werden erkannt und mit dem Konto zusammengeführt.</p>" +
+        '<div class="drop" id="dropzone"><span class="big">Datei auswählen oder hierher ziehen</span>' +
+        '<p class="hint" style="margin:var(--s1) 0 0">' +
+        "<code>logger.txt</code> aus <code>%LOCALAPPDATA%\\OptiTime</code> &middot; " +
+        "<code>data.json</code> der Stempeluhr &middot; oder eine CSV im Exportformat</p>" +
+        '<input type="file" id="f-file" data-f="file" accept=".txt,.log,.json,.csv,text/plain,application/json"></div>' +
+        (draft.found ? '<div class="found"><b>' + esc(draft.found.title) + "</b><br>" + esc(draft.found.detail) + "</div>" : "") +
+        noteHTML() +
+        '<div class="btnrow" style="margin-top:var(--s3)">' +
+        '<button type="button" class="primary" data-act="dofetch"' + (draft.found ? "" : " disabled") + '>' +
+        (draft.found ? "Übernehmen" : "Übernehmen") + "</button>" +
+        '<button type="button" class="ghost" data-act="close">Abbrechen</button>' +
+        '<span class="hint" style="margin:0">Tage werden ersetzt, aber nie gekürzt: Enthält der gespeicherte ' +
+        "Stand mehr Arbeitszeit, bleibt er stehen.</span>" +
+        "</div></div>";
+    } else if (panel.kind === "export") {
+      var mons = exportMonths();
+      if (mons.indexOf(draft.month) < 0) draft.month = mons.indexOf(todayISO().slice(0, 7)) >= 0 ? todayISO().slice(0, 7) : (mons[0] || "");
+      var isDay = draft.mode !== "buch";
+      h = '<div class="card panel"><div class="head-row"><h2>Export</h2>' +
+        '<button type="button" class="ghost" data-act="close">schließen</button></div>' +
+        '<p class="hint">' + (isDay
+          ? "Eine Zeile je Arbeitstag mit Summenzeile – Dauern in Dezimalstunden, damit Excel rechnen kann. " +
+            "Tage ohne Buchung stehen mit Soll 0,00 und verändern den Saldo nicht."
+          : "Alle Buchungen im Importformat – dient als Sicherung und lässt sich über „Einfügen“ wieder einlesen.") +
+        " Für einen Bericht als Dokument &bdquo;Bericht / PDF&ldquo; nutzen.</p>" +
+        '<div class="formgrid"><div class="field"><label for="f-mode">Inhalt</label><select id="f-mode" data-f="mode">' +
+        '<option value="tag"' + (isDay ? " selected" : "") + '>Tagesübersicht (Monat)</option>' +
+        '<option value="buch"' + (isDay ? "" : " selected") + '>Buchungen (Importformat)</option></select></div>' +
+        (isDay ? '<div class="field"><label for="f-month">Monat</label><select id="f-month" data-f="month">' +
+          mons.map(function (m) { return '<option value="' + m + '"' + (m === draft.month ? " selected" : "") + ">" + esc(monthLabel(m)) + "</option>"; }).join("") +
+          "</select></div>" : "") + "</div>" +
+        '<label for="f-export" style="display:block;margin-top:var(--s3)">CSV (Semikolon-getrennt)</label>' +
+        '<textarea id="f-export" readonly>' + esc(exportText()) + "</textarea>" + noteHTML() +
+        '<div class="btnrow" style="margin-top:var(--s2)">' +
+        '<button type="button" class="primary" data-act="download">Herunterladen</button>' +
+        '<button type="button" data-act="copy">In die Zwischenablage</button>' +
+        '<button type="button" class="ghost" data-act="close">schließen</button></div></div>';
+    } else if (panel.kind === "report") {
+      h = reportPanelHTML();
+    } else if (panel.kind === "settings") {
+      var list = draft.workdays;
+      h = '<div class="card panel"><div class="head-row"><h2>Soll-Zeiten</h2>' +
+        '<button type="button" class="ghost" data-act="close">schließen</button></div>' +
+        '<p class="hint">Grundlage für Tages-Soll und Kontostand. Das Tages-Soll ergibt sich aus ' +
+        "Wochenstunden geteilt durch die Zahl der Arbeitstage.</p>" +
+        '<div class="formgrid"><div class="field"><label for="f-wh">Wochenstunden</label>' +
+        '<input id="f-wh" type="number" min="1" max="60" step="0.5" data-f="weekHours" value="' +
+        esc(draft.weekHours) + '"></div></div>' +
+        '<fieldset style="margin-top:var(--s3)"><legend>Arbeitstage</legend><div class="checks">' +
+        [1, 2, 3, 4, 5, 6, 0].map(function (wd) {
+          return '<label><input type="checkbox" data-f="wd" data-wd="' + wd + '"' +
+            (list.indexOf(wd) >= 0 ? " checked" : "") + "> " + WDLONG[wd] + "</label>";
+        }).join("") + "</div></fieldset>" +
+        '<p class="hint">Aktuelles Tages-Soll: <strong id="soll-hint">' +
+        esc(hm(Math.round((draft.weekHours * 60) / (list.length || 5)))) + "</strong> · Soll wird nur " +
+        "für Tage gerechnet, an denen Buchungen oder eine Tagesart vorliegen – Urlaub und Krankheit bleiben neutral.</p>" +
+        '<fieldset><legend>Urlaubsanspruch (Tage)</legend><div class="formgrid">' +
+        Object.keys(draft.vacation).sort().map(function (y) {
+          return '<div class="field"><label for="f-vac-' + y + '">Urlaubsanspruch ' + y + '</label>' +
+            '<input id="f-vac-' + y + '" type="number" min="0" max="60" step="0.5" data-f="vac" data-y="' + y + '" value="' + esc(draft.vacation[y]) + '"></div>';
+        }).join("") + '</div><p class="hint" style="margin:var(--s2) 0 0">Wert so eintragen, wie ihn die Personalabteilung bestätigt – ' +
+        "das Artefakt rechnet den Anspruch nicht selbst aus.</p></fieldset>" +
+        '<fieldset><legend>Automatisch einstempeln</legend><div class="checks">' +
+        '<label><input type="checkbox" data-f="autoOn"' + (draft.autoOn ? " checked" : "") +
+        "> Beim Öffnen dieser Seite einstempeln</label></div>" +
+        '<div class="formgrid" style="margin-top:var(--s2)">' +
+        '<div class="field"><label for="f-afrom">Nur zwischen</label>' +
+        '<input id="f-afrom" type="time" data-f="autoFrom" value="' + esc(draft.autoFrom) + '"></div>' +
+        '<div class="field"><label for="f-ato">und</label>' +
+        '<input id="f-ato" type="time" data-f="autoTo" value="' + esc(draft.autoTo) + '"></div></div>' +
+        '<p class="hint" style="margin:var(--s2) 0 0">Stempelt nur an einem Arbeitstag ohne Feiertag und ohne ' +
+        "Tagesart, nur wenn für heute noch keine Buchung vorliegt, und nur einmal je Seitenaufruf. Die Seite " +
+        "läuft nur, solange sie offen ist: der Stempel entsteht beim Öffnen, nicht zu einer festen Uhrzeit. " +
+        "Führend für die Abrechnung bleibt OptiTime &ndash; dort ebenfalls stempeln.</p></fieldset>" +
+        '<fieldset><legend>Gleittage</legend><div class="checks"><label><input type="checkbox" data-f="gleit"' +
+        (draft.gleittag ? " checked" : "") + '> Tagesart &bdquo;Gleittag&ldquo; anbieten (Soll 8:00, Ist 0:00)</label></div>' +
+        '<p class="hint" style="margin:var(--s2) 0 0">Erst einschalten, wenn die Personalabteilung Gleittage bestätigt hat.</p></fieldset>' +
+        noteHTML() +
+        '<div class="btnrow"><button type="button" class="primary" data-act="savesettings">Speichern</button>' +
+        '<button type="button" class="ghost" data-act="close">Abbrechen</button></div></div>';
+    }
+    host.innerHTML = h;
+    if (panel.kind === "report") { renderReportPreview(); return; }
+    if (panel.kind === "fetch") { wireDropzone(); return; }
+    var first = host.querySelector("input:not([readonly]), textarea, select");
+    if (first) first.focus();
+  }
+
+  /* ------------------------- Import/Export ------------------------ */
+  function isRealDate(y, mo, d) {
+    var t = new Date(Date.UTC(y, mo - 1, d));
+    return t.getUTCFullYear() === y && t.getUTCMonth() === mo - 1 && t.getUTCDate() === d;
+  }
+  function normDate(s) {
+    s = (s || "").trim();
+    var y, mo, d;
+    var m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(s);
+    if (m) { y = +m[1]; mo = +m[2]; d = +m[3]; }
+    else {
+      m = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(s);
+      if (!m) return null;
+      y = +m[3]; mo = +m[2]; d = +m[1];
+    }
+    if (!isRealDate(y, mo, d)) return null;
+    return y + "-" + pad(mo) + "-" + pad(d);
+  }
+  function normTime(s) {
+    s = (s || "").trim();
+    if (!s) return null;
+    var m = /^(\d{1,2}):(\d{2})/.exec(s);
+    if (!m || +m[1] > 23 || +m[2] > 59) return undefined;
+    return pad(+m[1]) + ":" + m[2];
+  }
+  function parseImport(text) {
+    var lines = String(text || "").split(/\r?\n/);
+    var out = {}, types = {}, errs = [], n = 0;
+    lines.forEach(function (raw, idx) {
+      var line = raw.trim();
+      if (!line || /^datum/i.test(line)) return;
+      var f = line.split(/[;\t]/);
+      if (f.length < 3) f = line.split(/\s*,\s*/);
+      if (f.length < 3) { errs.push("Zeile " + (idx + 1) + ": weniger als drei Felder."); return; }
+      var date = normDate(f[0]);
+      if (!date) { errs.push("Zeile " + (idx + 1) + ": Datum „" + f[0] + "“ nicht erkannt."); return; }
+      var s = normTime(f[1]), e = normTime(f[2]);
+      if (s === null && e === null) {   /* Zeile ohne Uhrzeit = Tagesart */
+        var ty = typeFromText(f.slice(3).join(" "));
+        if (!ty) { errs.push("Zeile " + (idx + 1) + ": ohne Uhrzeit, Tagesart „" + (f.slice(3).join(" ").trim() || "leer") + "“ nicht erkannt."); return; }
+        out[date] = out[date] || [];
+        types[date] = ty;
+        n++;
+        return;
+      }
+      if (!s) { errs.push("Zeile " + (idx + 1) + ": Von-Zeit „" + f[1] + "“ nicht erkannt."); return; }
+      if (e === undefined) { errs.push("Zeile " + (idx + 1) + ": Bis-Zeit „" + f[2] + "“ nicht erkannt."); return; }
+      var kindSrc = ((f[3] || "") + " " + (f[4] || "")).toLowerCase();
+      out[date] = out[date] || [];
+      out[date].push({ start: s, end: e, kind: /pause/.test(kindSrc) ? "pause" : "work" });
+      n++;
+    });
+    return { days: out, types: types, errs: errs, count: n };
+  }
+  /* Protokoll des OptiTime-Erfassungsplatzes (logger.txt) lesen.
+     Eine Buchung zählt nur, wenn das Terminal sie bestätigt hat
+     ("hat an-/um-/ausgestempelt"); die Tätigkeit steht in der Zeile
+     davor (KST 000007 = Pause). Maßgeblich ist der Zeitstempel der
+     Protokollzeile, weil BEG_STD und BEG_MIN beide die Stunde enthalten. */
+  var OWN_PNR = "1626";
+  function parseOptiLog(text) {
+    var lineRe = /^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):\d{2}\s+\d+\/\d+\[[^\]]*\]\s*-\s*(.*)$/;
+    var events = [], persons = {}, lastKst = null, lastPnr = null, others = 0;
+    String(text || "").split(/\r?\n/).forEach(function (raw) {
+      var m = lineRe.exec(raw.trim());
+      if (!m) return;
+      var msg = m[6];
+      var k = /VerarbeiteBuchung:\s*PNR=(\d+)\s+KST=(\d+)/.exec(msg);
+      if (k) { lastPnr = k[1]; lastKst = k[2]; return; }
+      var st = /Erzeuge_Buchung_Online\s+Meldung:\s*(.+?)\s+hat\s+(an|um|aus)gestempelt/.exec(msg);
+      if (!st) return;
+      /* Nur eigene Buchungen: Bestätigung muss direkt auf PNR 1626 folgen.
+         Buchungen anderer Personen werden weder gezählt noch gespeichert. */
+      var mine = lastPnr === OWN_PNR;
+      lastPnr = null;
+      if (!mine) { others++; lastKst = null; return; }
+      persons[st[1]] = (persons[st[1]] || 0) + 1;
+      events.push({
+        date: m[3] + "-" + m[2] + "-" + m[1], time: m[4] + ":" + m[5],
+        person: st[1], action: st[2], kind: lastKst === "000007" ? "pause" : "work"
+      });
+      lastKst = null;
+    });
+    if (!events.length) return { days: {}, count: 0, persons: [], errs: [others
+      ? "Keine bestätigten Buchungen für Personalnummer " + OWN_PNR + " im Protokoll gefunden."
+      : "Keine bestätigten Buchungen im Protokoll gefunden."] };
+    var names = Object.keys(persons).sort(function (a, b) { return persons[b] - persons[a]; });
+    var me = names[0];
+    var byDay = {};
+    events.forEach(function (e) {
+      if (e.person !== me) return;
+      (byDay[e.date] = byDay[e.date] || []).push(e);
+    });
+    var out = {}, n = 0;
+    Object.keys(byDay).forEach(function (date) {
+      var evs = byDay[date].sort(function (a, b) { return a.time < b.time ? -1 : (a.time > b.time ? 1 : 0); });
+      var books = [];
+      evs.forEach(function (e) {
+        if (books.length) books[books.length - 1].end = e.time;   /* jede Buchung beendet die vorherige */
+        if (e.action === "aus") return;                            /* Gehen eröffnet nichts Neues */
+        books.push({ start: e.time, end: null, kind: e.kind });
+      });
+      /* Abschnitte ohne Dauer verwerfen: Umstempeln in derselben Minute ergibt
+         keine Zeit und würde die Prüfung "Bis nach Von" verletzen. */
+      books = books.filter(function (b) { return b.end === null || b.end > b.start; });
+      if (books.length) { out[date] = books; n += books.length; }
+    });
+    return { days: out, count: n, persons: names, errs: [] };
+  }
+
+  /* data.json der Stempeluhr (Sammellauf) lesen. */
+  function parseStempeluhr(text) {
+    var doc;
+    try { doc = JSON.parse(text); } catch (e) { return null; }
+    var arr = Array.isArray(doc) ? doc : (doc && Array.isArray(doc.bookings) ? doc.bookings : null);
+    if (!arr) return null;
+    var out = {}, n = 0, errs = [];
+    arr.forEach(function (b, i) {
+      var date = normDate(b && b.date), s = normTime(b && b.start), e = normTime(b && b.end);
+      if (!date || !s || e === undefined) { errs.push("Buchung " + (i + 1) + " unvollständig."); return; }
+      (out[date] = out[date] || []).push({
+        start: s, end: e,
+        kind: /pause/i.test((b.kind || "") + " " + (b.activity || "")) ? "pause" : "work"
+      });
+      n++;
+    });
+    return { days: out, count: n, persons: [], errs: errs.slice(0, 3) };
+  }
+
+  /* Datei nach Inhalt erkennen, nicht nach Endung. */
+  function parseFile(name, text) {
+    if (/^\s*[\[{]/.test(text)) {
+      var j = parseStempeluhr(text);
+      if (j) { j.how = "Stempeluhr-Datei"; return j; }
+    }
+    if (/\[[^\]]*\]\s*-\s*/.test(text) && /gestempelt/.test(text)) {
+      var l = parseOptiLog(text);
+      l.how = "OptiTime-Protokoll";
+      return l;
+    }
+    var c = parseImport(text);
+    c.how = "Exportzeilen";
+    c.persons = [];
+    return c;
+  }
+
+  function buildCSV() {
+    var rows = ["Datum;Start;Ende;Art;Taetigkeit;Notiz"];
+    allStats().forEach(function (d) {
+      if (d.type) rows.push([d.date, "", "", d.typeLabel, "", (d.note || "").replace(/[;\r\n]/g, " ")].join(";"));
+      d.books.forEach(function (b) {
+        rows.push([d.date, b.start, b.end || "",
+          b.kind === "pause" ? "Pause" : "Arbeitszeit",
+          b.kind === "pause" ? "*Pause*" : "Kommen",
+          (d.note || "").replace(/[;\r\n]/g, " ")].join(";"));
+      });
+    });
+    return rows.join("\n");
+  }
+
+  /* ---------------- Monatsexport: Tagesübersicht ----------------- */
+  var ENTRY_DATE = "2026-08-17";   /* Beginn des Arbeitsverhältnisses */
+  function dec(min) {   /* Minuten -> Dezimalstunden mit Komma, z. B. -0,25 */
+    var v = (Math.round(Math.abs(min) / 60 * 100) / 100).toFixed(2).replace(".", ",");
+    return (min < 0 && v !== "0,00" ? "-" : "") + v;
+  }
+  function exportMonths() {
+    var m = {};
+    Object.keys(days).forEach(function (k) { m[k.slice(0, 7)] = 1; });
+    return Object.keys(m).sort().reverse();
+  }
+  function monthRows(ym) {
+    var p = ym.split("-"), last = new Date(Date.UTC(+p[0], +p[1], 0)).getUTCDate();
+    var today = todayISO(), list = settings.workdays && settings.workdays.length ? settings.workdays : DEFAULTS.workdays;
+    var rows = [], sum = { work: 0, pause: 0, soll: 0, saldo: 0 };
+    for (var i = 1; i <= last; i++) {
+      var iso = ym + "-" + pad(i);
+      if (iso < ENTRY_DATE) continue;
+      var has = !!days[iso];
+      if (!has && (iso > today || list.indexOf(wdOf(iso)) < 0)) continue;
+      if (!has) { rows.push({ date: iso, empty: true, hol: holidayName(iso) }); continue; }
+      var d = statOf(days[iso]), status = [];
+      if (d.type) status.push(d.typeLabel);
+      if (d.open) status.push("offen");
+      if (d.noStart) status.push("kein Kommen");
+      if (d.breakShort) status.push("Pause < " + d.req + " min");
+      if (!status.length || (d.type && status.length === 1 && d.books.length)) status.push("vollständig");
+      d.status = status.join(" / ");
+      sum.work += d.work; sum.pause += d.pause; sum.soll += d.soll; sum.saldo += d.saldo;
+      rows.push(d);
+    }
+    return { rows: rows, sum: sum };
+  }
+  function buildMonthCSV(ym) {
+    var r = monthRows(ym), out = ["Datum;Wochentag;Kommen;Gehen;Ist;Pause;Soll;Saldo;Status"];
+    r.rows.forEach(function (d) {
+      var wd = WD[wdOf(d.date)];
+      if (d.empty) { out.push([d.date, wd, "", "", "", "", "0,00", "0,00", d.hol ? "keine Buchung (Feiertag " + d.hol + ")" : "keine Buchung"].join(";")); return; }
+      out.push([d.date, wd, d.first || "", d.open ? "" : (d.last || ""), dec(d.work), dec(d.pause), dec(d.soll), dec(d.saldo), d.status].join(";"));
+    });
+    out.push(["Summe", "", "", "", dec(r.sum.work), dec(r.sum.pause), dec(r.sum.soll), dec(r.sum.saldo), ""].join(";"));
+    return out.join("\r\n");
+  }
+  function exportText() {
+    if (draft && draft.mode === "buch") return buildCSV();
+    return draft && draft.month ? buildMonthCSV(draft.month) : "";
+  }
+  function exportDownload() {
+    var isDay = draft.mode !== "buch";
+    if (isDay && !draft.month) { note = { type: "err", text: "Kein Monat mit Buchungen vorhanden." }; return renderPanel(); }
+    var filename = isDay ? "Arbeitszeit_1626_" + draft.month + ".csv" : "Arbeitszeit_1626_Buchungen_" + todayISO() + ".csv";
+    var text = isDay ? buildMonthCSV(draft.month) : buildCSV().replace(/\n/g, "\r\n");
+    var dl = (typeof claude !== "undefined" && claude && typeof claude.use === "function") ? claude.use("downloads") : Promise.resolve(null);
+    dl.then(function (downloads) {
+      if (!downloads || typeof downloads.save !== "function") throw { code: "unavailable" };
+      /* BOM, damit Excel die Umlaute als UTF-8 liest */
+      return downloads.save({ filename: filename, data: new Blob(["﻿" + text], { type: "text/csv;charset=utf-8" }) });
+    }).then(function () {
+      note = { type: "ok", text: filename + " gespeichert." };
+      renderPanel();
+    }, function (err) {
+      var code = err && err.code;
+      note = { type: "err", text: code === "declined" ? "Speichern abgebrochen – nichts wurde gespeichert."
+        : code === "unavailable" || code === "not_granted" ? "Datei-Download ist in dieser Ansicht nicht verfügbar – bitte „In die Zwischenablage“ nutzen."
+          : code === "rate_limited" ? "Es ist bereits eine Speicher-Abfrage offen – bitte kurz warten."
+            : "Datei konnte nicht gespeichert werden (" + (code || (err && err.message) || "Fehler") + ")." };
+      renderPanel();
+    });
+  }
+
+  /* -------------------------- Validierung ------------------------- */
+  function validate(d) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(d.date)) return "Bitte ein Datum angeben.";
+    if (d.date < ENTRY_DATE) return "Vor dem " + dLong(ENTRY_DATE) + " (Beginn des Arbeitsverhältnisses) wird nichts erfasst.";
+    var books = (d.books || []).filter(function (b) { return b.start || b.end; });
+    if (!books.length) {
+      if (!typeOf(d)) return "Mindestens eine Buchung mit Von-Zeit angeben oder eine Tagesart wählen.";
+      d.books = [];
+      return null;
+    }
+    var sorted = sortBooks(books);
+    for (var i = 0; i < sorted.length; i++) {
+      var b = sorted[i], s = toMin(b.start), e = toMin(b.end);
+      if (s == null) return "Buchung " + (i + 1) + ": Von-Zeit fehlt oder ist ungültig.";
+      if (!b.end && i < sorted.length - 1) return "Nur die letzte Buchung darf ohne Bis-Zeit bleiben.";
+      if (b.end && e == null) return "Buchung " + (i + 1) + ": Bis-Zeit ist ungültig.";
+      if (e != null && e <= s) return "Buchung " + (i + 1) + ": Bis-Zeit muss nach der Von-Zeit liegen.";
+      if (i > 0) {
+        var prev = toMin(sorted[i - 1].end);
+        if (prev != null && s < prev) return "Buchung " + (i + 1) + " überlappt mit der vorherigen.";
+      }
+    }
+    d.books = sorted;
+    return null;
+  }
+
+  /* --------------------------- Speichern -------------------------- */
+  function fromEmbed() {
+    var out = {};
+    EMBED_DAYS.forEach(function (d) {
+      out[d.date] = { date: d.date, books: d.books.slice(), origin: d.origin || "export", note: d.note || "" };
+    });
+    return out;
+  }
+  function offline(text) {
+    db = null; dataReady = true;
+    if (!Object.keys(days).length) days = fromEmbed();
+    setChip("chip-db", text, "local");
+    render();
+  }
+  function saveDay(doc) {
+    days[doc.date] = doc;
+    if (!db) { panel = null; note = { type: "ok", text: "Gespeichert (nur in dieser Ansicht)." }; render(); renderPanel(); return; }
+    db.doc("days/" + doc.date).set(doc).then(function () {
+      panel = null; note = { type: "ok", text: dLong(doc.date) + " gespeichert." }; render(); renderPanel();
+    }, function (err) {
+      note = { type: "err", text: "Speichern fehlgeschlagen (" + ((err && err.code) || "Fehler") + ")." };
+      renderPanel();
+    });
+  }
+  function removeDay(date) {
+    delete days[date];
+    if (!db) { panel = null; note = { type: "ok", text: "Tag entfernt (nur in dieser Ansicht)." }; render(); renderPanel(); return; }
+    var ref = db.doc("days/" + date);
+    var tomb = { date: date, books: [], deleted: true };
+    var op = typeof ref.delete === "function" ? ref.delete() : ref.set(tomb);
+    Promise.resolve(op).then(null, function () { return ref.set(tomb); }).then(function () {
+      panel = null; note = { type: "ok", text: dLong(date) + " gelöscht." }; render(); renderPanel();
+    }, function (err) {
+      note = { type: "err", text: "Löschen fehlgeschlagen (" + ((err && err.code) || "Fehler") + ")." };
+      renderPanel();
+    });
+  }
+  function saveSettings(next) {
+    settings.weekHours = next.weekHours;
+    settings.workdays = next.workdays.slice();
+    if (next.vacation) settings.vacation = JSON.parse(JSON.stringify(next.vacation));
+    if (typeof next.gleittag === "boolean") settings.gleittag = next.gleittag;
+    if (next.autoIn) settings.autoIn = { on: !!next.autoIn.on, from: next.autoIn.from, to: next.autoIn.to };
+    var doc = settingsDoc();
+    if (!db) { panel = null; note = { type: "ok", text: "Soll-Zeiten übernommen (nur in dieser Ansicht)." }; render(); renderPanel(); return; }
+    db.doc("settings/general").set(doc).then(function () {
+      panel = null; note = { type: "ok", text: "Soll-Zeiten gespeichert." }; render(); renderPanel();
+    }, function (err) {
+      note = { type: "err", text: "Speichern fehlgeschlagen (" + ((err && err.code) || "Fehler") + ")." };
+      renderPanel();
+    });
+  }
+  /* settings/general wird immer vollständig geschrieben – neue Felder nie weglassen. */
+  function settingsDoc() {
+    return { weekHours: settings.weekHours, workdays: settings.workdays, seeded: true,
+      vacation: settings.vacation, gleittag: !!settings.gleittag, autoIn: settings.autoIn };
+  }
+  function maybeSeed() {
+    if (!db || seedRunning || !gotDays || !gotSettings || settings.seeded) return;
+    if (dbDayCount) {
+      seedRunning = true;
+      db.doc("settings/general").set(settingsDoc());
+      return;
+    }
+    seedRunning = true;
+    setChip("chip-db", "Erstbestand wird gespeichert", "local");
+    var base = fromEmbed();
+    Promise.all(Object.keys(base).map(function (k) { return db.doc("days/" + k).set(base[k]); }))
+      .then(function () {
+        return db.doc("settings/general").set(settingsDoc());
+      })
+      .then(function () { setChip("chip-db", "Im Artefakt gespeichert", ""); },
+        function (err) {
+          setChip("chip-db", "Nur Lesezugriff (" + ((err && err.code) || "Fehler") + ")", "warn");
+        });
+  }
+
+  /* Tagesart für einzelne Tage setzen; vorhandene Buchungen bleiben. */
+  function setTypes(list, msg) {
+    var docs = list.map(function (x) {
+      var cur = days[x.date];
+      var doc = { date: x.date, books: cur ? cur.books.slice() : [], origin: cur ? (cur.origin || "manuell") : "manuell",
+        note: cur && cur.note ? cur.note : (x.note || ""), type: x.type };
+      days[x.date] = doc;
+      return doc;
+    });
+    if (!db) { note = { type: "ok", text: msg + " (nur in dieser Ansicht)" }; render(); renderPanel(); return; }
+    Promise.all(docs.map(function (d) { return db.doc("days/" + d.date).set(d); })).then(function () {
+      note = { type: "ok", text: msg }; render(); renderPanel();
+    }, function (err) {
+      note = { type: "err", text: "Speichern fehlgeschlagen (" + ((err && err.code) || "Fehler") + ")." }; renderPanel();
+    });
+  }
+
+  /* Geparste Tage prüfen, übernehmen und speichern – gemeinsam für
+     "Zeitdaten holen" und das Einfügen von Exportzeilen. */
+  function applyParsed(res) {
+    if (res.errs && res.errs.length) {
+      note = { type: "err", text: res.errs.slice(0, 5).join(" ") + (res.errs.length > 5 ? " …" : "") + " Nichts übernommen." };
+      return renderPanel();
+    }
+    if (!res.count) { note = { type: "err", text: "Keine Buchungen erkannt." }; return renderPanel(); }
+    var all = Object.keys(res.days).sort(), bad = null, docs = {};
+    var dates = all.filter(function (dt) { return dt >= ENTRY_DATE; }), early = all.length - dates.length;
+    if (!dates.length) { note = { type: "err", text: "Alle Buchungen liegen vor dem " + dLong(ENTRY_DATE) + " – nichts übernommen." }; return renderPanel(); }
+    var types = res.types || {}, nTypes = 0;
+    dates.forEach(function (dt) {
+      var doc = { date: dt, books: res.days[dt], origin: "import", note: (days[dt] && days[dt].note) || "" };
+      if (types[dt]) {
+        doc.type = types[dt]; nTypes++;
+        if (!doc.books.length && days[dt] && days[dt].books.length) { doc.books = days[dt].books.slice(); doc.origin = days[dt].origin || "import"; }
+      }
+      var e = validate(doc);
+      if (e && !bad) bad = dLong(dt) + ": " + e;
+      docs[dt] = doc;
+    });
+    if (bad) { note = { type: "err", text: bad + " Nichts übernommen." }; return renderPanel(); }
+    var split = splitByCompleteness(dates, docs), take = split.take, skip = split.skip;
+    if (!take.length) {
+      note = { type: "err", text: "Nichts übernommen: an allen " + dates.length + " Tagen enthält der gespeicherte Stand mehr Arbeitszeit als die Datei. Einzelne Tage lassen sich über „bearbeiten“ ändern." };
+      return renderPanel();
+    }
+    var n = 0;
+    take.forEach(function (dt) { days[dt] = docs[dt]; n += docs[dt].books.length; });
+    render();
+    var summary = n + " Buchungen auf " + take.length + " Tagen übernommen, bis " + dLong(take[take.length - 1]) +
+      (nTypes ? ", davon " + nTypes + " Tag(e) mit Tagesart" : "") + "." +
+      (early ? " " + early + " Tag(e) vor dem " + dLong(ENTRY_DATE) + " übersprungen." : "");
+    if (skip.length) {
+      summary += " " + skip.length + " Tag(e) unverändert gelassen (" + skip.slice(0, 5).map(dShort).join(", ") +
+        (skip.length > 5 ? " …" : "") + "), dort ist der gespeicherte Stand vollständiger.";
+    }
+    if (!db) {
+      panel = null; note = { type: "ok", text: summary + " (nur in dieser Ansicht)" };
+      render(); renderPanel(); return;
+    }
+    Promise.all(take.map(function (dt) { return db.doc("days/" + dt).set(docs[dt]); })).then(function () {
+      panel = null; note = { type: "ok", text: summary };
+      render(); renderPanel();
+    }, function (e2) {
+      note = { type: "err", text: "Speichern fehlgeschlagen (" + ((e2 && e2.code) || "Fehler") + ")." };
+      renderPanel();
+    });
+  }
+
+  /* Ein Tag wird nur ersetzt, wenn die Datei mindestens so viel Arbeitszeit
+     enthält wie der gespeicherte Stand. Das lokale Protokoll kennt einen
+     serverseitigen Tagesabschluss nicht und wäre sonst ein Rückschritt. */
+  function splitByCompleteness(dates, docs) {
+    var take = [], skip = [];
+    dates.forEach(function (dt) {
+      var cur = days[dt];
+      if (cur && statOf(docs[dt]).work < statOf(cur).work) skip.push(dt); else take.push(dt);
+    });
+    return { take: take, skip: skip };
+  }
+
+  /* Ausgewählte Datei lesen und den Fund im Panel anzeigen. */
+  function readFile(file) {
+    if (!file) return;
+    if (file.size > 20 * 1024 * 1024) {
+      draft.found = null;
+      note = { type: "err", text: "Datei ist größer als 20 MB – bitte das aktuelle Protokoll verwenden." };
+      return renderPanel();
+    }
+    var fr = new FileReader();
+    fr.onerror = function () {
+      draft.found = null;
+      note = { type: "err", text: "Datei konnte nicht gelesen werden." };
+      renderPanel();
+    };
+    fr.onload = function () {
+      var res = parseFile(file.name, String(fr.result || ""));
+      if (!res.count) {
+        draft.found = null;
+        note = { type: "err", text: "In \u201e" + file.name + "\u201c wurden keine Buchungen gefunden. " +
+          "Erwartet werden logger.txt aus dem OptiTime-Ordner, data.json der Stempeluhr oder eine CSV im " +
+          "Exportformat." + (res.errs && res.errs[0] ? " (" + res.errs[0] + ")" : "") };
+        return renderPanel();
+      }
+      var dates = Object.keys(res.days).sort().filter(function (dt) { return dt >= ENTRY_DATE; });
+      if (!dates.length) {
+        draft.found = null;
+        note = { type: "err", text: "Alle Buchungen in \u201e" + file.name + "\u201c liegen vor dem " + dLong(ENTRY_DATE) + "." };
+        return renderPanel();
+      }
+      var docs = {};
+      dates.forEach(function (dt) { docs[dt] = { date: dt, books: res.days[dt] }; });
+      var sp = splitByCompleteness(dates, docs);
+      var neu = sp.take.filter(function (dt) { return !days[dt]; }).length;
+      draft.found = {
+        res: res,
+        title: res.count + " Buchungen auf " + dates.length + " Tagen gefunden",
+        detail: res.how + " · " + dLong(dates[0]) + " bis " + dLong(dates[dates.length - 1]) +
+          (res.persons && res.persons.length ? " · " + res.persons[0] : "") + " · " +
+          neu + " neue Tage, " + (sp.take.length - neu) + " werden aktualisiert" +
+          (sp.skip.length ? ", " + sp.skip.length + " bleiben unverändert (gespeicherter Stand ist dort vollständiger)" : "")
+      };
+      note = null;
+      renderPanel();
+    };
+    fr.readAsText(file, "utf-8");
+  }
+
+  /* --------------------------- Interaktion ------------------------ */
+  function updateHints() {
+    if (!panel || !draft) return;
+    if (panel.kind === "edit" || panel.kind === "add") {
+      var el = document.getElementById("calc-hint");
+      if (!el) return;
+      var st = statOf({ date: draft.date, books: draft.books, type: draft.type });
+      el.textContent = "Ergibt: Ist " + hm(st.work) + ", Pause " + hm(st.pause) +
+        ", Soll " + (st.soll ? hm(st.soll) : "0:00") + ", Saldo " + signed(st.saldo);
+    } else if (panel.kind === "settings") {
+      var t = document.getElementById("soll-hint");
+      if (t) t.textContent = hm(Math.round((draft.weekHours * 60) / (draft.workdays.length || 5)));
+    }
+  }
+
+  document.addEventListener("input", onField, true);
+  document.addEventListener("change", onField, true);
+  function onField(ev) {
+    var el = ev.target;
+    if (!el || !el.dataset || !el.dataset.f || !draft) return;
+    var f = el.dataset.f;
+    if (f === "file") { return readFile(el.files && el.files[0]); }
+    if (el.dataset.i != null) {
+      var b = draft.books[+el.dataset.i];
+      if (!b) return;
+      if (f === "end") b.end = el.value || null;
+      else if (f === "start") b.start = el.value || "";
+      else b.kind = el.value;
+    } else if (f === "wd") {
+      var wd = +el.dataset.wd, at = draft.workdays.indexOf(wd);
+      if (el.checked && at < 0) draft.workdays.push(wd);
+      if (!el.checked && at >= 0) draft.workdays.splice(at, 1);
+      draft.workdays.sort();
+    } else if (f === "weekHours") {
+      draft.weekHours = parseFloat(el.value) || 0;
+    } else if (f === "vac") {
+      var vv = parseFloat(String(el.value).replace(",", "."));
+      draft.vacation[el.dataset.y] = isNaN(vv) ? null : vv;
+    } else if (f === "gleit") {
+      draft.gleittag = !!el.checked;
+    } else if (f === "autoOn") {
+      draft.autoOn = !!el.checked;
+    } else {
+      draft[f] = el.value;
+    }
+    if (panel && panel.kind === "report") { reportFieldChanged(f); return; }
+    if (panel && panel.kind === "export") { note = null; renderPanel(); return; }
+    if (f === "type" || (f === "date" && ev.type === "change")) { renderPanel(); return; }
+    updateHints();
+  }
+
+  document.addEventListener("click", function (ev) {
+    var btn = ev.target.closest ? ev.target.closest("button") : null;
+    if (!btn) return;
+    var id = btn.id, act = btn.dataset ? btn.dataset.act : null;
+
+    if (id === "btn-add") {
+      note = null;
+      panel = { kind: "add" };
+      draft = { date: todayISO(), note: "", books: [{ start: "", end: null, kind: "work" }] };
+      return renderPanel();
+    }
+    if (id === "btn-absence") {
+      note = null;
+      panel = { kind: "add" };
+      draft = { date: todayISO(), note: "", type: "urlaub", books: [{ start: "", end: null, kind: "work" }] };
+      renderPanel();
+      var ph = document.getElementById("panel-host"); if (ph && ph.scrollIntoView) ph.scrollIntoView({ block: "start" });
+      return;
+    }
+    if (act === "settype") {
+      var sd = btn.dataset.date;
+      return setTypes([{ date: sd, type: btn.dataset.type }], dLong(sd) + " als " + TYPES[btn.dataset.type].label + " eingetragen.");
+    }
+    if (act === "takehol") {
+      var hy = vacYear(btn.dataset.year).holidays;
+      if (!hy.length) return;
+      return setTypes(hy.map(function (iso) { return { date: iso, type: "feiertag", note: holidayName(iso) }; }),
+        hy.length + " Feiertag(e) " + btn.dataset.year + " übernommen.");
+    }
+    if (id === "btn-fetch") {
+      note = null; panel = { kind: "fetch" }; draft = { found: null }; return renderPanel();
+    }
+    if (id === "btn-import") {
+      note = null; panel = { kind: "import" }; draft = { text: "" }; return renderPanel();
+    }
+    if (id === "btn-export") {
+      note = null; panel = { kind: "export" }; draft = { mode: "tag", month: "" }; return renderPanel();
+    }
+    if (id === "btn-report") {
+      note = null; panel = { kind: "report" };
+      draft = { gran: "all", key: "", pw1: "", pw2: "", askPw: false, busy: false };
+      return renderPanel();
+    }
+    if (act === "rep-print") { return reportPrint(); }
+    if (act === "rep-pdf") { draft.askPw = true; note = null; renderPanel(); var pf = document.getElementById("f-pw1"); if (pf) pf.focus(); return; }
+    if (act === "rep-pdf-cancel") { draft.askPw = false; draft.pw1 = ""; draft.pw2 = ""; note = null; return renderPanel(); }
+    if (act === "rep-pdf-go") { return reportSavePDF(); }
+    if (id === "btn-settings") {
+      note = null; panel = { kind: "settings" };
+      var vac = {};
+      vacYears().concat([String(+todayISO().slice(0, 4) + 1)]).forEach(function (y) { vac[y] = vacFor(y); });
+      Object.keys(settings.vacation || {}).forEach(function (y) { vac[y] = vacFor(y); });
+      var ai = settings.autoIn || {};
+      draft = { weekHours: settings.weekHours, workdays: settings.workdays.slice(), vacation: vac, gleittag: !!settings.gleittag,
+        autoOn: !!ai.on, autoFrom: ai.from || "05:00", autoTo: ai.to || "10:00" };
+      return renderPanel();
+    }
+    if (act === "stamp-in") { return clockIn(); }
+    if (act === "stamp-bstart") { return breakStart(); }
+    if (act === "stamp-bend") { return breakEnd(); }
+    if (act === "stamp-out") { return clockOut(); }
+    if (act === "stamp-at-open") {
+      stampAt = nowHM(); stampErr = ""; renderStamp();
+      var ti = document.getElementById("stamp-time"); if (ti) ti.focus();
+      return;
+    }
+    if (act === "stamp-at-cancel") { stampAt = null; stampErr = ""; return renderStamp(); }
+    if (act === "stamp-at-save") {
+      var tv = document.getElementById("stamp-time");
+      return clockInAt(tv ? tv.value : "");
+    }
+    if (act === "stamp-snooze") {
+      snoozeMem = todayISO();
+      try { window.localStorage.setItem(SNOOZE_KEY, todayISO()); } catch (e) { /* nur für diese Ansicht */ }
+      stampAt = null; return render();
+    }
+    if (act === "stamp-undo") { return undoAutoIn(); }
+    if (!act) return;
+
+    if (act === "edit") {
+      note = null;
+      var d = days[btn.dataset.date];
+      if (!d) return;
+      panel = { kind: "edit", date: d.date };
+      draft = {
+        date: d.date, note: d.note || "", origin: d.origin, type: typeOf(d),
+        books: sortBooks(d.books).map(function (b) {
+          return { start: b.start, end: b.end || null, kind: b.kind === "pause" ? "pause" : "work" };
+        })
+      };
+      return renderPanel();
+    }
+    if (act === "close") { panel = null; draft = null; note = null; return renderPanel(); }
+    if (act === "addrow") {
+      var last = draft.books[draft.books.length - 1];
+      draft.books.push({ start: (last && last.end) || "", end: null, kind: "work" });
+      return renderPanel();
+    }
+    if (act === "rmrow") { draft.books.splice(+btn.dataset.i, 1); return renderPanel(); }
+    if (act === "save") {
+      var doc = {
+        date: draft.date, note: draft.note || "",
+        origin: panel.kind === "add" ? "manuell" : (draft.origin || "manuell"),
+        books: draft.books.filter(function (b) { return b.start || b.end; })
+      };
+      if (TYPES[draft.type]) doc.type = draft.type;
+      if (panel.kind === "add" && days[doc.date]) {
+        note = { type: "err", text: dLong(doc.date) + " ist schon erfasst – bitte in der Wochenliste „bearbeiten“ nutzen." };
+        return renderPanel();
+      }
+      var err = validate(doc);
+      if (err) { note = { type: "err", text: err }; return renderPanel(); }
+      note = null;
+      return saveDay(doc);
+    }
+    if (act === "del") {
+      if (!draft.confirmDel) {
+        draft.confirmDel = true;
+        note = { type: "err", text: "Tag wirklich löschen? Zum Bestätigen erneut auf „Tag löschen“ klicken." };
+        return renderPanel();
+      }
+      return removeDay(panel.date);
+    }
+    if (act === "doimport") { return applyParsed(parseImport(draft.text)); }
+    if (act === "dofetch") {
+      if (!draft.found) { note = { type: "err", text: "Bitte zuerst eine Datei auswählen." }; return renderPanel(); }
+      return applyParsed(draft.found.res);
+    }
+    if (act === "download") { return exportDownload(); }
+    if (act === "copy") {
+      var ta = document.getElementById("f-export");
+      var done = function () { note = { type: "ok", text: "CSV in der Zwischenablage." }; renderPanel(); };
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(ta.value).then(done, function () {
+            ta.select();
+            note = { type: "err", text: "Zwischenablage gesperrt – Text ist markiert, bitte mit Strg+C kopieren." };
+            renderPanel();
+          });
+          return;
+        }
+      } catch (e) { /* weiter zum Fallback */ }
+      ta.select();
+      note = { type: "err", text: "Zwischenablage nicht verfügbar – Text ist markiert, bitte mit Strg+C kopieren." };
+      return renderPanel();
+    }
+    if (act === "savesettings") {
+      if (!draft.weekHours || draft.weekHours <= 0) {
+        note = { type: "err", text: "Wochenstunden müssen größer als 0 sein." }; return renderPanel();
+      }
+      if (!draft.workdays.length) {
+        note = { type: "err", text: "Mindestens einen Arbeitstag auswählen." }; return renderPanel();
+      }
+      var badY = Object.keys(draft.vacation).filter(function (y) { var v = draft.vacation[y]; return typeof v !== "number" || v < 0 || v > 60; });
+      if (badY.length) { note = { type: "err", text: "Urlaubsanspruch " + badY.join(", ") + ": bitte eine Zahl zwischen 0 und 60 eintragen." }; return renderPanel(); }
+      var af = toMin(draft.autoFrom), at2 = toMin(draft.autoTo);
+      if (draft.autoOn && (af == null || at2 == null || at2 <= af)) {
+        note = { type: "err", text: "Zeitfenster fürs automatische Einstempeln: „Nur zwischen“ muss vor „und“ liegen." };
+        return renderPanel();
+      }
+      draft.autoIn = { on: !!draft.autoOn, from: draft.autoFrom || "05:00", to: draft.autoTo || "10:00" };
+      note = null;
+      return saveSettings(draft);
+    }
+  });
+
+  /* ======================= Bericht (Brennglas) ======================= */
+  var PDFLIB_URL = "https://cdn.jsdelivr.net/npm/@cantoo/pdf-lib@2.11.1/dist/pdf-lib.min.js";
+  var MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+  var PW_MIN = 12;
+  var PAL = { acc: "#84bb20", acct: "#5e8a14", sig: "#e3000b", sigt: "#b8000a", strong: "#424e4e", ink: "#3c5457", muted: "#6b7575", line: "#d5dada", grid: "#e6eaea", soft: "#f2f4f4", white: "#ffffff" };
+  var GRAN_LABEL = { day: "Tagesbericht", week: "Wochenbericht", month: "Monatsbericht", year: "Jahresbericht", all: "Gesamtbericht" };
+  var repCache = null;   /* zuletzt gebauter Bericht */
+
+  function isoOf(d) { return d.getUTCFullYear() + "-" + pad(d.getUTCMonth() + 1) + "-" + pad(d.getUTCDate()); }
+  function dateOf(iso) { var p = iso.split("-"); return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])); }
+  function weekRange(iso) {
+    var d = dateOf(iso), dow = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() - dow + 1);
+    var from = isoOf(d); d.setUTCDate(d.getUTCDate() + 6);
+    return [from, isoOf(d)];
+  }
+  function monthLabel(ym) { var p = ym.split("-"); return MONTHS[+p[1] - 1] + " " + p[0]; }
+  function nowLabel() {
+    var d = new Date();
+    return pad(d.getDate()) + "." + pad(d.getMonth() + 1) + "." + d.getFullYear() + ", " + pad(d.getHours()) + ":" + pad(d.getMinutes()) + " Uhr";
+  }
+  function yearAllowed() {
+    var m = {}; Object.keys(days).forEach(function (k) { m[k.slice(0, 7)] = 1; });
+    return Object.keys(m).length >= 3;
+  }
+  function periodsFor(gran) {
+    var st = allStats(), out = [], seen = {};
+    st.forEach(function (d) {
+      var key, label, from, to, w, r, p;
+      if (gran === "day") { key = d.date; from = to = d.date; label = WDLONG[wdOf(d.date)] + ", " + dLong(d.date); }
+      else if (gran === "week") {
+        w = isoWeek(d.date); r = weekRange(d.date); key = w.year + "-W" + pad(w.week); from = r[0]; to = r[1];
+        label = "KW " + w.week + "/" + w.year + " (" + dShort(from) + " – " + dShort(to) + ")";
+      } else if (gran === "month") {
+        key = d.date.slice(0, 7); p = key.split("-"); from = key + "-01";
+        to = key + "-" + pad(new Date(Date.UTC(+p[0], +p[1], 0)).getUTCDate()); label = monthLabel(key);
+      } else if (gran === "year") { key = d.date.slice(0, 4); from = key + "-01-01"; to = key + "-12-31"; label = key; }
+      else { key = "all"; from = st[0].date; to = st[st.length - 1].date; label = "Gesamt (" + dLong(from) + " – " + dLong(to) + ")"; }
+      if (!seen[key]) { seen[key] = 1; out.push({ key: key, label: label, from: from, to: to }); }
+    });
+    return out.reverse();   /* neueste zuerst */
+  }
+
+  /* ------------------------- Datenmodell ------------------------- */
+  function buildReport(gran, per) {
+    var st = allStats();
+    var rows = st.filter(function (d) { return d.date >= per.from && d.date <= per.to; });
+    var carry = 0;
+    st.forEach(function (d) { if (d.date < per.from) carry += d.saldo; });
+    var t = { work: 0, soll: 0, pause: 0, saldo: 0, open: 0, noStart: 0, breakShort: 0, breakGap: 0, longDays: 0, counted: 0, maxDay: null };
+    var openDates = [], shortDates = [], longDates = [];
+    rows.forEach(function (d) {
+      t.work += d.work; t.soll += d.soll; t.pause += d.pause; t.saldo += d.saldo;
+      if (d.soll > 0) t.counted++;
+      if (d.open) { t.open++; openDates.push(d.date); }
+      if (d.noStart) { t.noStart++; openDates.push(d.date); }
+      if (d.breakShort) { t.breakShort++; t.breakGap += d.req - d.pause; shortDates.push(d.date); }
+      if (d.work > 600) { t.longDays++; longDates.push(d.date); }
+      if (!t.maxDay || d.work > t.maxDay.work) t.maxDay = d;
+    });
+    t.avg = t.counted ? Math.round(t.work / t.counted) : 0;
+    t.end = carry + t.saldo;
+    /* Wochen */
+    var weeks = [], cur = null;
+    rows.forEach(function (d) {
+      var w = isoWeek(d.date), key = w.year + "-" + w.week;
+      if (!cur || cur.key !== key) { cur = { key: key, week: w.week, year: w.year, rows: [], work: 0, soll: 0, pause: 0, saldo: 0 }; weeks.push(cur); }
+      cur.rows.push(d); cur.work += d.work; cur.soll += d.soll; cur.pause += d.pause; cur.saldo += d.saldo;
+    });
+    /* Monate */
+    var months = [], mc = null;
+    rows.forEach(function (d) {
+      var key = d.date.slice(0, 7);
+      if (!mc || mc.key !== key) { mc = { key: key, label: monthLabel(key), rows: [], work: 0, soll: 0, saldo: 0 }; months.push(mc); }
+      mc.rows.push(d); mc.work += d.work; mc.soll += d.soll; mc.saldo += d.saldo;
+    });
+    /* Verlauf */
+    var cum = carry;
+    var pts = rows.map(function (d) { cum += d.saldo; return { date: d.date, v: cum, day: d.saldo }; });
+    /* Trend: letzte vs. vorletzte Woche */
+    var trend = null;
+    if (weeks.length >= 2 && weeks[weeks.length - 1].rows.length >= 3) trend = weeks[weeks.length - 1].saldo - weeks[weeks.length - 2].saldo;
+
+    var why = [], risks = [], steps = [], todo = [];
+    if (t.open + t.noStart) {
+      why.push((t.open + t.noStart) + " Tag(e) unvollständig gebucht (" + openDates.map(dShort).join(", ") + ") – Ist-Zeit und Kontostand sind dort zu niedrig.");
+      todo.push("Fehlende Kommen-/Gehen-Zeiten für " + openDates.map(dShort).join(", ") + " in OptiTime nachtragen.");
+    }
+    if (t.breakShort) {
+      why.push(t.breakShort + " Tag(e) unter der gesetzlichen Pause (ArbZG §4), Fehlbetrag zusammen " + hm(t.breakGap) + ".");
+      todo.push("Pausen künftig in OptiTime buchen – nur gebuchte Pausen erscheinen im Nachweis.");
+      risks.push(["Pausenzeiten unter ArbZG §4 (" + t.breakShort + " Tage)", "Pausen konsequent buchen; rückwirkende Korrektur nur nach Rücksprache – bitte Rechtsabteilung prüfen."]);
+    }
+    if (t.longDays) {
+      why.push(t.longDays + " Tag(e) über 10 h Arbeitszeit (" + longDates.map(dShort).join(", ") + ") – Höchstgrenze nach ArbZG §3.");
+      risks.push(["Arbeitszeit über 10 h/Tag (ArbZG §3)", "Tage über 10 h vermeiden; Ausgleich innerhalb von 6 Monaten sicherstellen."]);
+    }
+    if (trend !== null) why.push("Wochensaldo " + (trend >= 0 ? "gestiegen" : "gesunken") + " um " + hm(Math.abs(trend)) + " gegenüber der Vorwoche (zuletzt " + signed(weeks[weeks.length - 1].saldo) + ").");
+    if (!why.length) why.push("Zeitraum vollständig dokumentiert, keine Auffälligkeiten – Bericht dient der Ablage und dem Nachweis.");
+    if (Math.abs(t.end) > 600) {
+      risks.push([(t.end > 0 ? "Mehrarbeit" : "Rückstand") + " über 10 h im Konto (" + signed(t.end) + ")", t.end > 0 ? "Abbau durch Freizeitausgleich planen, Absprache mit Vorgesetztem." : "Ausgleich in den nächsten Wochen einplanen."]);
+    }
+    if (t.open + t.noStart) risks.push(["Unvollständige Buchungen (" + (t.open + t.noStart) + " Tage)", "Nachweis ist lückenhaft; vor Weitergabe des Berichts Buchungen vervollständigen."]);
+    if (!risks.length) risks.push(["Keine wesentlichen Risiken im Zeitraum", "Buchungsdisziplin beibehalten; monatlichen Export als Nachweis ablegen."]);
+    risks = risks.slice(0, 3);
+    todo.push("Kontostand (" + signed(t.end) + ") mit dem Vorgesetzten abgleichen und Ausgleich vereinbaren.");
+    steps = [
+      { t: todo[0], w: "David", d: "10 Min" },
+      { t: todo.length > 1 ? todo[1] : "Nächsten Bericht zum Monatsende exportieren und ablegen.", w: "David", d: "15 Min" },
+      { t: "Bericht als passwortgeschützte PDF ablegen; Passwort getrennt aufbewahren.", w: "David", d: "5 Min" }
+    ];
+    return {
+      gran: gran, per: per, rows: rows, carry: carry, t: t, weeks: weeks, months: months, pts: pts, trend: trend,
+      why: why, risks: risks, steps: steps, created: nowLabel(),
+      title: "Arbeitszeitkonto 1626 · " + GRAN_LABEL[gran], last: rows.length ? rows[rows.length - 1].date : per.to,
+      sub: per.label
+    };
+  }
+
+  /* --------------------------- Grafiken --------------------------- */
+  function chartSVG(pts, o) {
+    var W = o.W || 840, H = o.H || 210, L = 52, R = 16, T = 18, B = 30;
+    var c = o.pal || { acc: "var(--accent)", sig: "var(--signal)", muted: "var(--ink-muted)", grid: "var(--grid)", surface: "var(--surface)", strong: "var(--ink-strong)" };
+    if (!pts.length) return "";
+    var vals = pts.map(function (p) { return p.v; }).concat([0]);
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    if (hi === lo) { hi = lo + 60; }
+    var padv = (hi - lo) * 0.12;
+    lo -= padv; hi += padv;
+    var x = function (i) { return pts.length === 1 ? L : L + (i * (W - L - R)) / (pts.length - 1); };
+    var y = function (v) { return T + ((hi - v) * (H - T - B)) / (hi - lo); };
+    var y0 = y(0);
+    var line = pts.map(function (p, i) { return (i ? "L" : "M") + x(i).toFixed(1) + " " + y(p.v).toFixed(1); }).join(" ");
+    var area = "M" + x(0).toFixed(1) + " " + y0.toFixed(1) + " " + line.replace(/^M/, "L") +
+      " L" + x(pts.length - 1).toFixed(1) + " " + y0.toFixed(1) + " Z";
+    var fs = o.fs || 11, ff = "Helvetica Neue, Helvetica, Arial, sans-serif";
+    var svg = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+      'aria-label="Kontostand von ' + esc(dLong(pts[0].date)) + ' bis ' + esc(dLong(pts[pts.length - 1].date)) +
+      ', aktuell ' + esc(signed(pts[pts.length - 1].v)) + ' Stunden">';
+    svg += '<line x1="' + L + '" y1="' + y0.toFixed(1) + '" x2="' + (W - R) + '" y2="' + y0.toFixed(1) +
+      '" stroke="' + c.muted + '" stroke-width="1" stroke-dasharray="4 3"/>';
+    [hi - padv, 0, lo + padv].forEach(function (v) {
+      var yy = y(v);
+      if (Math.abs(yy - y0) > 12 || v === 0) {
+        if (v !== 0) svg += '<line x1="' + L + '" y1="' + yy.toFixed(1) + '" x2="' + (W - R) + '" y2="' + yy.toFixed(1) + '" stroke="' + c.grid + '" stroke-width="1"/>';
+        svg += '<text x="' + (L - 8) + '" y="' + (yy + 4).toFixed(1) + '" text-anchor="end" font-size="' + fs + '" fill="' + c.muted + '" font-family="' + ff + '">' + esc(signed(Math.round(v))) + '</text>';
+      }
+    });
+    svg += '<path d="' + area + '" fill="' + c.acc + '" fill-opacity="0.16" stroke="none"/>';
+    svg += '<path d="' + line + '" fill="none" stroke="' + c.acc + '" stroke-width="2.5" stroke-linejoin="round"/>';
+    pts.forEach(function (p, i) {
+      var isLast = i === pts.length - 1;
+      svg += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(p.v).toFixed(1) + '" r="' + (isLast ? 5 : 3.2) + '" fill="' + (p.day < 0 ? c.sig : c.acc) +
+        '" stroke="' + c.surface + '" stroke-width="' + (isLast ? 2 : 1) + '"><title>' + esc(dLong(p.date) + ": Tag " + signed(p.day) + ", Konto " + signed(p.v)) + '</title></circle>';
+    });
+    [0, Math.floor((pts.length - 1) / 2), pts.length - 1].filter(function (i, n, a) { return a.indexOf(i) === n; }).forEach(function (i) {
+      var anchor = i === 0 ? "start" : (i === pts.length - 1 ? "end" : "middle");
+      svg += '<text x="' + x(i).toFixed(1) + '" y="' + (H - 10) + '" text-anchor="' + anchor + '" font-size="' + fs + '" fill="' + c.muted + '" font-family="' + ff + '">' + esc(dShort(pts[i].date)) + '</text>';
+    });
+    svg += '<text x="' + (W - R) + '" y="' + (y(pts[pts.length - 1].v) - 12).toFixed(1) + '" text-anchor="end" font-size="' + (fs + 2) + '" font-weight="700" fill="' + c.strong + '" font-family="Exo, Arial, sans-serif">' + esc(signed(pts[pts.length - 1].v)) + ' h</text>';
+    return svg + "</svg>";
+  }
+  function barsSVG(groups, labelOf) {
+    /* Ist (grün) neben Soll (grau) je Gruppe */
+    var W = 840, H = 200, L = 52, R = 16, T = 16, B = 34, n = groups.length;
+    if (!n) return "";
+    var max = 60; groups.forEach(function (g) { max = Math.max(max, g.work, g.soll); });
+    max = Math.ceil(max / 300) * 300;
+    var gw = (W - L - R) / n, bw = Math.min(28, gw * 0.32);
+    var y = function (v) { return T + (H - T - B) * (1 - v / max); };
+    var svg = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Ist- und Soll-Stunden je Zeitraum">';
+    for (var v = 0; v <= max; v += 300) {
+      svg += '<line x1="' + L + '" y1="' + y(v).toFixed(1) + '" x2="' + (W - R) + '" y2="' + y(v).toFixed(1) + '" stroke="' + PAL.grid + '" stroke-width="1"/>' +
+        '<text x="' + (L - 8) + '" y="' + (y(v) + 4).toFixed(1) + '" text-anchor="end" font-size="18" fill="' + PAL.muted + '" font-family="Helvetica, Arial, sans-serif">' + (v / 60) + ' h</text>';
+    }
+    groups.forEach(function (g, i) {
+      var cx = L + gw * i + gw / 2;
+      svg += '<rect x="' + (cx - bw - 2).toFixed(1) + '" y="' + y(g.work).toFixed(1) + '" width="' + bw + '" height="' + (y(0) - y(g.work)).toFixed(1) + '" fill="' + PAL.acc + '"/>';
+      svg += '<rect x="' + (cx + 2).toFixed(1) + '" y="' + y(g.soll).toFixed(1) + '" width="' + bw + '" height="' + (y(0) - y(g.soll)).toFixed(1) + '" fill="' + PAL.line + '"/>';
+      svg += '<text x="' + cx.toFixed(1) + '" y="' + (H - 12) + '" text-anchor="middle" font-size="18" fill="' + PAL.muted + '" font-family="Helvetica, Arial, sans-serif">' + esc(labelOf(g)) + '</text>';
+    });
+    return svg + "</svg>";
+  }
+  function timelineHTML(d) {
+    var s0 = toMin(d.first), s1 = d.open ? Math.max(toMin(d.books[d.books.length - 1].start) + 60, s0 + 60) : toMin(d.last);
+    if (s0 == null || s1 == null || s1 <= s0) return "";
+    var span = s1 - s0, h = '<div class="tl">';
+    d.books.forEach(function (b) {
+      var a = toMin(b.start), e = toMin(b.end);
+      if (a == null) return;
+      if (e == null) { h += '<i class="o" style="width:' + ((s1 - a) / span * 100).toFixed(1) + '%" title="offen"></i>'; return; }
+      h += '<i class="' + (b.kind === "pause" ? "p" : "w") + '" style="width:' + ((e - a) / span * 100).toFixed(1) + '%" title="' + esc(b.start + "–" + b.end) + '"></i>';
+    });
+    return h + '</div><div class="tl-ax"><span>' + esc(d.first) + '</span><span>' + esc(d.open ? "offen" : d.last) + '</span></div>';
+  }
+
+  /* ------------------------ HTML-Ausgabe ------------------------- */
+  function pageHTML(inner, n, N, r) {
+    return '<div class="page"><div class="p-head"><p class="t">' + esc(r.title) + '</p><p class="s">' + esc(r.sub) +
+      ' &middot; Fräsdienst-Service E. Feind GmbH &middot; Personalnummer 1626</p></div><div class="p-rule"></div>' +
+      '<p class="p-conf">Brennglas-Dokument &middot; Vertraulich – personenbezogene Daten &middot; Stand ' + esc(r.created) + '</p>' +
+      inner + '<div class="p-foot"><span>Arbeitszeitkonto 1626 &middot; Brennglas &middot; Vertraulich</span><span>Seite ' + n + ' / ' + N + '</span></div></div>';
+  }
+  function cls(v) { return v >= 0 ? "pos" : "neg"; }
+  function compareTableHTML(r) {
+    var h, rows;
+    if (r.gran === "day") {
+      var d = r.rows[0];
+      h = '<table><thead><tr><th>Buchung</th><th>Art</th><th>Dauer</th></tr></thead><tbody>';
+      d.books.forEach(function (b) {
+        var a = toMin(b.start), e = toMin(b.end);
+        h += '<tr' + (e == null ? ' class="open"' : "") + '><td>' + esc(b.start) + " – " + esc(b.end || "offen") + '</td><td>' + (b.kind === "pause" ? "Pause" : "Arbeitszeit") +
+          '</td><td>' + (e == null ? "–" : esc(hm(e - a))) + '</td></tr>';
+      });
+      h += '<tr class="sum"><td>Ist / Soll</td><td>' + esc(hm(d.work)) + " / " + esc(d.soll ? hm(d.soll) : "0:00") + '</td><td class="' + cls(d.saldo) + '">' + esc(signed(d.saldo)) + '</td></tr></tbody></table>';
+      return h + timelineHTML(d) + '<p class="legend"><i style="background:' + PAL.acc + '"></i>Arbeitszeit <i style="background:' + PAL.line + '"></i>Pause' + (d.open ? ' <i style="background:#f7c9cb"></i>offen' : "") + '</p>';
+    }
+    if (r.gran === "week") {
+      rows = r.rows.map(function (d) { return [WD[wdOf(d.date)] + " " + dShort(d.date), hm(d.work) + " / " + (d.soll ? hm(d.soll) : "0:00"), d.saldo]; });
+    } else if (r.weeks.length > 10) {
+      rows = r.months.map(function (m) { return [m.label, hm(m.work) + " / " + hm(m.soll), m.saldo]; });
+    } else {
+      rows = r.weeks.map(function (w) { return ["KW " + w.week + " (" + dShort(w.rows[0].date) + " – " + dShort(w.rows[w.rows.length - 1].date) + ")", hm(w.work) + " / " + hm(w.soll), w.saldo]; });
+    }
+    h = '<table><thead><tr><th>Zeitraum</th><th>Ist / Soll</th><th>Saldo</th></tr></thead><tbody>';
+    rows.forEach(function (x) { h += '<tr><td>' + esc(x[0]) + '</td><td>' + esc(x[1]) + '</td><td class="' + cls(x[2]) + '">' + esc(signed(x[2])) + '</td></tr>'; });
+    h += '<tr class="sum"><td>Summe Zeitraum</td><td>' + esc(hm(r.t.work)) + " / " + esc(hm(r.t.soll)) + '</td><td class="' + cls(r.t.saldo) + '">' + esc(signed(r.t.saldo)) + '</td></tr></tbody></table>';
+    return h;
+  }
+  function factsHTML(r) {
+    var t = r.t, f = [
+      ["Ist-Zeit", hm(t.work), ""], ["Soll-Zeit", hm(t.soll), ""], ["Saldo im Zeitraum", signed(t.saldo), cls(t.saldo)],
+      ["Übertrag vor Zeitraum", signed(r.carry), cls(r.carry)], ["Kontostand Ende", signed(t.end), cls(t.end)], ["Ø je Arbeitstag", hm(t.avg), ""],
+      ["Pausen gesamt", hm(t.pause), ""], ["Längster Tag", t.maxDay ? hm(t.maxDay.work) + " (" + dShort(t.maxDay.date) + ")" : "–", ""], ["Erfasste Tage", String(r.rows.length), ""]
+    ];
+    return '<div class="facts">' + f.map(function (x) { return '<div class="fact"><div class="l">' + esc(x[0]) + '</div><div class="v ' + x[2] + '">' + esc(x[1]) + '</div></div>'; }).join("") + '</div>';
+  }
+  function kpiRows(r) {
+    var t = r.t, n = r.rows.length;
+    return [
+      ["Kontostand", signed(t.end) + " h", "zwischen −5 h und +10 h", t.end >= -300 && t.end <= 600],
+      ["Vollständig gebuchte Tage", (n - t.open - t.noStart) + " von " + n, "100 %", t.open + t.noStart === 0],
+      ["Pausen nach ArbZG §4", (n - t.breakShort) + " von " + n, "100 %", t.breakShort === 0],
+      ["Tage über 10 h (ArbZG §3)", String(t.longDays), "0", t.longDays === 0]
+    ];
+  }
+  function reportHTML(r) {
+    var pages = [];
+    var p1 = '<div class="kern"><div class="lab">Kernaussage</div><div class="val ' + cls(r.t.end) + '">Kontostand ' + esc(signed(r.t.end)) + ' h zum ' + esc(dLong(r.last)) + '</div>' +
+      '<p>Im Zeitraum ' + esc(r.sub) + ': Ist ' + esc(hm(r.t.work)) + ' h gegenüber Soll ' + esc(hm(r.t.soll)) + ' h, Saldo ' + esc(signed(r.t.saldo)) + ' h' +
+      (r.gran === "all" ? "" : "; Übertrag aus Vorzeiträumen " + esc(signed(r.carry)) + " h") + '. ' + (r.t.open + r.t.noStart ? (r.t.open + r.t.noStart) + " Tag(e) unvollständig." : "Alle Tage vollständig.") + '</p></div>';
+    p1 += '<h2><span class="n">1</span>Warum jetzt</h2><ul>' + r.why.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + '</ul>';
+    p1 += '<h2><span class="n">2</span>Vergleich Ist / Soll</h2>' + compareTableHTML(r);
+    p1 += '<h2><span class="n">3</span>Umsetzung</h2><ol>' + r.steps.map(function (s) { return "<li>" + esc(s.t) + " <span class=\"src\">(" + esc(s.w) + ", " + esc(s.d) + ")</span></li>"; }).join("") + '</ol>';
+    p1 += '<h2><span class="n">4</span>Risiken &amp; Gegenmaßnahmen</h2>' + r.risks.map(function (x) { return '<p class="risk' + (/Keine wesentlichen/.test(x[0]) ? " ok" : "") + '"><strong>' + esc(x[0]) + '</strong> – ' + esc(x[1]) + '</p>'; }).join("");
+    pages.push(p1);
+
+    var p2 = '<h2><span class="n">5</span>Kontostand im Verlauf</h2>';
+    if (r.pts.length >= 2) {
+      p2 += chartSVG(r.pts, { pal: { acc: PAL.acc, sig: PAL.sig, muted: PAL.muted, grid: PAL.grid, surface: PAL.white, strong: PAL.strong }, fs: 18 }) +
+        '<p class="legend"><i style="background:' + PAL.acc + '"></i>Kontostand (inkl. Übertrag) <i style="background:' + PAL.sig + '"></i>Tag im Minus <i style="background:' + PAL.muted + '"></i>Null-Linie</p>';
+    } else {
+      p2 += '<p class="src">Verlaufsgrafik ab Wochenebene – für einen Einzeltag siehe Zeitstrahl in Abschnitt 2.</p>';
+    }
+    p2 += '<h2><span class="n">6</span>Nächste drei Schritte</h2><ol>' + r.steps.map(function (s) { return "<li>" + esc(s.t) + ' <span class="src">(' + esc(s.w) + ", " + esc(s.d) + ")</span></li>"; }).join("") + '</ol>';
+    p2 += '<h2><span class="n">7</span>Fakten</h2>' + factsHTML(r);
+    p2 += '<h2><span class="n">8</span>KPIs</h2><table><thead><tr><th>Kennzahl</th><th>Wert</th><th>Ziel</th></tr></thead><tbody>' +
+      kpiRows(r).map(function (k) { return '<tr><td>' + esc(k[0]) + '</td><td class="' + (k[3] ? "pos" : "neg") + '">' + esc(k[1]) + '</td><td>' + esc(k[2]) + '</td></tr>'; }).join("") + '</tbody></table>';
+    p2 += '<h2><span class="n">9</span>Quellen</h2><p class="src">OptiTime-Buchungen Personalnummer 1626 (Import/Export), Datenstand ' + esc(r.created) + ' · Soll: ' + esc(String(settings.weekHours)) + ' h/Woche auf ' +
+      settings.workdays.length + ' Arbeitstage · Pausen nach ArbZG §4 (über 6 h: 30 Min, über 9 h: 45 Min), Höchstarbeitszeit ArbZG §3 · Ziele für KPIs sind Annahmen und ersetzen keine arbeitsrechtliche Bewertung – bitte Rechtsabteilung prüfen.</p>';
+    pages.push(p2);
+
+    if (r.gran !== "day") {
+      var groups = r.weeks.length > 10 ? r.months : r.weeks;
+      var a1 = '<h2>Anhang A – Ist und Soll je ' + (r.weeks.length > 10 ? "Monat" : "Kalenderwoche") + '</h2>' +
+        barsSVG(groups, function (g) { return g.label ? g.label.slice(0, 3) + " " + g.key.slice(0, 4) : "KW " + g.week; }) +
+        '<p class="legend"><i style="background:' + PAL.acc + '"></i>Ist <i style="background:' + PAL.line + '"></i>Soll</p>';
+      var chunks = [], per = 2, first = true;
+      for (var i = 0; i < r.weeks.length; i += per) { chunks.push(r.weeks.slice(i, i + per)); per = 3; }
+      chunks.forEach(function (ch, ci) {
+        var h = ci === 0 ? a1 + '<h2>Anhang B – Tagesdetails</h2>' : '<h2>Anhang B – Tagesdetails (Fortsetzung)</h2>';
+        ch.forEach(function (w) {
+          h += '<p><strong>KW ' + w.week + '/' + w.year + '</strong> · Ist ' + esc(hm(w.work)) + ' / Soll ' + esc(hm(w.soll)) + ' · Saldo ' + esc(signed(w.saldo)) + '</p>' +
+            '<table><thead><tr><th>Tag</th><th>Kommen – Gehen</th><th>Ist</th><th>Pause</th><th>Soll</th><th>Saldo</th><th>Status</th></tr></thead><tbody>';
+          w.rows.forEach(function (d) {
+            var stx = d.open ? "offen" : d.noStart ? "kein Kommen" : d.breakShort ? "Pause " + d.req + " min" : d.work > 600 ? "> 10 h" : d.type && !d.books.length ? "" : "vollständig";
+            if (d.type) stx = d.typeLabel + (stx ? " / " + stx : "");
+            h += '<tr' + (d.open || d.noStart ? ' class="open"' : "") + '><td>' + esc(WD[wdOf(d.date)] + " " + dShort(d.date)) + '</td><td>' + esc(d.books.length ? (d.first || "–") + " – " + (d.open ? "offen" : (d.last || "–")) : "–") +
+              '</td><td>' + esc(hm(d.work)) + '</td><td>' + esc(hm(d.pause)) + '</td><td>' + esc(d.soll ? hm(d.soll) : "–") + '</td><td class="' + cls(d.saldo) + '">' + esc(signed(d.saldo)) + '</td><td>' + esc(stx) + '</td></tr>';
+          });
+          h += '</tbody></table>';
+        });
+        pages.push(h);
+      });
+    }
+    var N = pages.length;
+    return '<div class="report">' + pages.map(function (p, i) { return pageHTML(p, i + 1, N, r); }).join("") + '</div>';
+  }
+
+  /* --------------------------- Panel ----------------------------- */
+  function pwCheck(pw, pw2) {
+    var classes = [/[a-zäöüß]/.test(pw), /[A-ZÄÖÜ]/.test(pw), /\d/.test(pw), /[^A-Za-z0-9ÄÖÜäöüß]/.test(pw)].filter(Boolean).length;
+    var low = pw.toLowerCase();
+    var r = {
+      len: pw.length >= PW_MIN,
+      mix: classes >= 3 || (pw.length >= 16 && classes >= 2),
+      noTriv: pw.length > 0 && !/1626|feind|passw|1234|qwert|arbeitszeit/.test(low),
+      same: pw.length > 0 && pw === pw2
+    };
+    r.ok = r.len && r.mix && r.noTriv && r.same;
+    r.score = Math.max(0, Math.min(100, Math.round(pw.length * 4 + classes * 10 + (r.noTriv ? 8 : -20))));
+    return r;
+  }
+  function reportPanelHTML() {
+    var pers = periodsFor(draft.gran);
+    if (!pers.some(function (p) { return p.key === draft.key; })) draft.key = pers.length ? pers[0].key : "";
+    var yr = yearAllowed();
+    var h = '<div class="card panel"><div class="head-row"><h2>Bericht erstellen</h2><button type="button" class="ghost" data-act="close">schließen</button></div>' +
+      '<p class="hint">Brennglas-Dokument (Seite 1–2) plus Anhang mit Verlauf und Tagesdetails – Design wie diese Seite. Zeitraum wählen, prüfen, dann drucken oder als passwortgeschützte PDF speichern.</p>' +
+      '<div class="rep-toolbar"><div class="field"><label for="f-gran">Zeitraum-Art</label><select id="f-gran" data-f="gran">' +
+      [["all", "Gesamt (alle Daten)"], ["day", "Tag"], ["week", "Woche"], ["month", "Monat"], ["year", "Jahr" + (yr ? "" : " – ab 3 Monaten Daten")]].map(function (g) {
+        return '<option value="' + g[0] + '"' + (draft.gran === g[0] ? " selected" : "") + (g[0] === "year" && !yr ? " disabled" : "") + '>' + g[1] + '</option>';
+      }).join("") + '</select></div>' +
+      '<div class="field"><label for="f-key">Zeitraum</label><select id="f-key" data-f="key">' +
+      pers.map(function (p) { return '<option value="' + esc(p.key) + '"' + (p.key === draft.key ? " selected" : "") + '>' + esc(p.label) + '</option>'; }).join("") + '</select></div></div>' +
+      '<div class="rep-actions"><button type="button" data-act="rep-print">Drucken</button>' +
+      '<button type="button" class="primary" data-act="rep-pdf"' + (draft.askPw ? " disabled" : "") + '>Als PDF speichern (passwortgeschützt)</button>' +
+      '<span class="hint" style="margin:0">Druck: Browser-Dialog, dort auch „Als PDF speichern“ ohne Passwort möglich – dann eigenverantwortlich schützen.</span></div>';
+    if (draft.askPw) {
+      var c = pwCheck(draft.pw1 || "", draft.pw2 || "");
+      h += '<div class="pwbox"><h3>PDF-Passwort festlegen (Pflicht)</h3>' +
+        '<p class="req">Die Datei enthält personenbezogene Arbeitszeitdaten (Art. 4 DSGVO). Sie wird mit AES-256 verschlüsselt; ohne Passwort ist sie nicht lesbar. Das Passwort wird nicht gespeichert – bitte sicher notieren und getrennt von der Datei übermitteln.</p>' +
+        '<div class="formgrid"><div class="field"><label for="f-pw1">Passwort</label><input id="f-pw1" type="password" data-f="pw1" autocomplete="new-password" spellcheck="false" value="' + esc(draft.pw1 || "") + '"></div>' +
+        '<div class="field"><label for="f-pw2">Passwort wiederholen</label><input id="f-pw2" type="password" data-f="pw2" autocomplete="new-password" spellcheck="false" value="' + esc(draft.pw2 || "") + '"></div></div>' +
+        '<div class="meter"><i id="pw-meter" class="' + (c.score >= 80 ? "good" : c.score >= 50 ? "mid" : "") + '" style="width:' + c.score + '%"></i></div>' +
+        '<ul class="req" id="pw-req"><li class="' + (c.len ? "ok" : "") + '">Mindestens ' + PW_MIN + ' Zeichen</li>' +
+        '<li class="' + (c.mix ? "ok" : "") + '">Drei Zeichenarten (Groß, Klein, Ziffer, Sonderzeichen) – oder ab 16 Zeichen zwei</li>' +
+        '<li class="' + (c.noTriv ? "ok" : "") + '">Keine naheliegenden Bestandteile (1626, Feind, 1234, Passwort)</li>' +
+        '<li class="' + (c.same ? "ok" : "") + '">Beide Eingaben stimmen überein</li></ul>' + noteHTML() +
+        '<div class="btnrow"><button type="button" class="primary" data-act="rep-pdf-go"' + (c.ok && !draft.busy ? "" : " disabled") + '>' + (draft.busy ? "PDF wird erzeugt …" : "Verschlüsselte PDF speichern") + '</button>' +
+        '<button type="button" class="ghost" data-act="rep-pdf-cancel">Abbrechen</button></div></div>';
+    } else {
+      h += noteHTML();
+    }
+    return h + '<div id="rep-preview"></div></div>';
+  }
+  /* Ziehen und Ablegen auf die Auswahlfläche. */
+  function wireDropzone() {
+    var z = document.getElementById("dropzone");
+    if (!z) return;
+    ["dragenter", "dragover"].forEach(function (t) {
+      z.addEventListener(t, function (ev) { ev.preventDefault(); z.classList.add("over"); });
+    });
+    ["dragleave", "dragend"].forEach(function (t) {
+      z.addEventListener(t, function () { z.classList.remove("over"); });
+    });
+    z.addEventListener("drop", function (ev) {
+      ev.preventDefault();
+      z.classList.remove("over");
+      var f = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0];
+      if (f) readFile(f);
+    });
+  }
+
+  function currentPeriod() {
+    var pers = periodsFor(draft.gran);
+    for (var i = 0; i < pers.length; i++) if (pers[i].key === draft.key) return pers[i];
+    return pers[0] || null;
+  }
+  function renderReportPreview() {
+    var host = document.getElementById("rep-preview");
+    if (!host) return;
+    var per = currentPeriod();
+    if (!per) { host.innerHTML = '<p class="hint">Keine Buchungen im gewählten Zeitraum.</p>'; repCache = null; return; }
+    repCache = buildReport(draft.gran, per);
+    host.innerHTML = reportHTML(repCache);
+  }
+  function reportFieldChanged(f) {
+    if (f === "gran") { draft.key = ""; renderPanel(); return; }
+    if (f === "key") { renderReportPreview(); return; }
+    if (f === "pw1" || f === "pw2") {
+      var c = pwCheck(draft.pw1 || "", draft.pw2 || "");
+      var m = document.getElementById("pw-meter");
+      if (m) { m.style.width = c.score + "%"; m.className = c.score >= 80 ? "good" : c.score >= 50 ? "mid" : ""; }
+      var lis = document.querySelectorAll("#pw-req li");
+      [c.len, c.mix, c.noTriv, c.same].forEach(function (ok, i) { if (lis[i]) lis[i].className = ok ? "ok" : ""; });
+      var go = document.querySelector('button[data-act="rep-pdf-go"]');
+      if (go) go.disabled = !c.ok || draft.busy;
+    }
+  }
+  function reportPrint() {
+    if (!repCache) return;
+    var root = document.createElement("div");
+    root.className = "print-root";
+    root.innerHTML = reportHTML(repCache);
+    document.body.appendChild(root);
+    document.body.classList.add("printing");
+    var done = function () { document.body.classList.remove("printing"); if (root.parentNode) root.parentNode.removeChild(root); window.removeEventListener("afterprint", done); };
+    window.addEventListener("afterprint", done);
+    try { window.print(); } catch (e) { done(); note = { type: "err", text: "Drucken ist in dieser Ansicht gesperrt – bitte stattdessen „Als PDF speichern“ nutzen." }; renderPanel(); return; }
+    setTimeout(done, 1500);
+  }
+
+  /* --------------------------- PDF ------------------------------- */
+  function loadPdfLib() {
+    if (window.PDFLib && window.PDFLib.PDFDocument) return Promise.resolve(window.PDFLib);
+    return new Promise(function (res, rej) {
+      var s = document.createElement("script");
+      s.src = PDFLIB_URL; s.async = true;
+      s.onload = function () { window.PDFLib ? res(window.PDFLib) : rej(new Error("PDF-Bibliothek nicht geladen")); };
+      s.onerror = function () { rej(new Error("PDF-Bibliothek konnte nicht geladen werden")); };
+      document.head.appendChild(s);
+    });
+  }
+  function ws(s) {   /* WinAnsi-sicher */
+    return String(s == null ? "" : s).replace(/−/g, "-").replace(/→/g, "->").replace(/[✓✔]/g, "x").replace(/ /g, " ").replace(/[^\u0000-ÿ–—‘’‚“”„•…€‰‹›ŠšŽžŒœŸˆ˜™]/g, "?");
+  }
+  function hex(c) { var n = parseInt(c.slice(1), 16); return PDFLib.rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255); }
+  function randomHex(n) {
+    var a = new Uint8Array(n); crypto.getRandomValues(a);
+    return Array.prototype.map.call(a, function (b) { return ("0" + b.toString(16)).slice(-2); }).join("");
+  }
+  function buildPDF(r, password) {
+    return loadPdfLib().then(function (L) {
+      return L.PDFDocument.create().then(function (doc) {
+        return Promise.all([doc.embedFont(L.StandardFonts.Helvetica), doc.embedFont(L.StandardFonts.HelveticaBold)]).then(function (fonts) {
+          var F = fonts[0], FB = fonts[1];
+          var PW = 595.28, PH = 841.89, M = 36, CW = PW - 2 * M;
+          var C = { ink: hex(PAL.ink), strong: hex(PAL.strong), muted: hex(PAL.muted), line: hex(PAL.line), acc: hex(PAL.acc), acct: hex(PAL.acct), sig: hex(PAL.sig), sigt: hex(PAL.sigt), soft: hex(PAL.soft), white: hex(PAL.white), grid: hex(PAL.grid), kern: hex("#f3f8e8") };
+          var pages = [], page, y;
+          function newPage() {
+            page = doc.addPage([PW, PH]); pages.push(page);
+            page.drawRectangle({ x: 0, y: PH - 52, width: PW, height: 52, color: C.strong });
+            page.drawText(ws(r.title), { x: M, y: PH - 26, size: 15, font: FB, color: C.white });
+            page.drawText(ws(r.sub + " · Fräsdienst-Service E. Feind GmbH · Personalnummer 1626"), { x: M, y: PH - 42, size: 11, font: F, color: hex("#cfd6d6") });
+            page.drawRectangle({ x: 0, y: PH - 55, width: PW, height: 3, color: C.acc });
+            var conf = ws("Brennglas-Dokument · Vertraulich – personenbezogene Daten · Stand " + r.created);
+            page.drawText(conf, { x: PW - M - F.widthOfTextAtSize(conf, 11), y: PH - 70, size: 11, font: F, color: C.muted });
+            y = PH - 84;
+          }
+          function ensure(h) { if (y - h < M + 22) newPage(); }
+          function wrap(text, font, size, width) {
+            var words = ws(text).split(/\s+/), lines = [], cur = "";
+            words.forEach(function (w) {
+              var t = cur ? cur + " " + w : w;
+              if (font.widthOfTextAtSize(t, size) <= width) cur = t; else { if (cur) lines.push(cur); cur = w; }
+            });
+            if (cur) lines.push(cur);
+            return lines;
+          }
+          function para(text, o) {
+            o = o || {}; var size = o.size || 11, font = o.font || F, lh = size * 1.32, x = M + (o.indent || 0), w = CW - (o.indent || 0);
+            var lines = wrap(text, font, size, w);
+            lines.forEach(function (ln) { ensure(lh); page.drawText(ln, { x: x, y: y - size, size: size, font: font, color: o.color || C.ink }); y -= lh; });
+            y -= o.after == null ? 3 : o.after;
+          }
+          function h2(n, title) {
+            ensure(30); y -= 8;
+            var tx = ws(title), nx = M;
+            if (n) { page.drawText(String(n), { x: M, y: y - 12.5, size: 12.5, font: FB, color: C.acct }); nx += FB.widthOfTextAtSize(String(n), 12.5) + 6; }
+            page.drawText(tx, { x: nx, y: y - 12.5, size: 12.5, font: FB, color: C.strong });
+            y -= 17; page.drawLine({ start: { x: M, y: y }, end: { x: PW - M, y: y }, thickness: 1.5, color: C.strong }); y -= 6;
+          }
+          function bullets(items, numbered) {
+            items.forEach(function (it, i) {
+              var mark = numbered ? (i + 1) + "." : "•";
+              ensure(16);
+              page.drawText(mark, { x: M + 2, y: y - 11, size: 11, font: F, color: C.ink });
+              para(it, { indent: 16, after: 1 });
+            });
+            y -= 3;
+          }
+          function table(cols, head, rows) {
+            var rh = 16.5, x0 = M, tw = cols.reduce(function (a, c) { return a + c.w; }, 0), sc = CW / tw;
+            function row(cells, opt) {
+              ensure(rh);
+              if (opt.bg) page.drawRectangle({ x: x0, y: y - rh, width: CW, height: rh, color: opt.bg });
+              var x = x0;
+              cells.forEach(function (c, i) {
+                var col = cols[i], w = col.w * sc, txt = typeof c === "object" && c ? c.t : c, colr = typeof c === "object" && c && c.cls ? (c.cls === "pos" ? C.acct : C.sigt) : (opt.color || C.ink);
+                var font = opt.bold ? FB : F, s = ws(txt);
+                while (font.widthOfTextAtSize(s, 11) > w - 8 && s.length > 3) s = s.slice(0, -2) + "…";
+                var tx = col.a === "r" ? x + w - 4 - font.widthOfTextAtSize(s, 11) : x + 4;
+                page.drawText(s, { x: tx, y: y - 11.5, size: 11, font: font, color: colr });
+                x += w;
+              });
+              y -= rh;
+              page.drawLine({ start: { x: x0, y: y }, end: { x: x0 + CW, y: y }, thickness: opt.thick ? 1 : 0.6, color: opt.thick ? C.strong : C.line });
+            }
+            row(head, { color: C.muted, thick: true });
+            rows.forEach(function (rw) { row(rw.cells || rw, { bg: rw.open ? C.soft : null, bold: !!rw.sum }); });
+            y -= 6;
+          }
+          function lineChart(pts, h) {
+            var Wc = CW, Lp = 44, Rp = 8, Tp = 12, Bp = 18;
+            ensure(h + 8);
+            var top = y;
+            var vals = pts.map(function (p) { return p.v; }).concat([0]);
+            var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+            if (hi === lo) hi = lo + 60;
+            var padv = (hi - lo) * 0.12; lo -= padv; hi += padv;
+            var xf = function (i) { return M + Lp + (pts.length === 1 ? 0 : (i * (Wc - Lp - Rp)) / (pts.length - 1)); };
+            var yf = function (v) { return top - Tp - ((hi - v) * (h - Tp - Bp)) / (hi - lo); };
+            var y0 = yf(0);
+            page.drawLine({ start: { x: M + Lp, y: y0 }, end: { x: M + Wc - Rp, y: y0 }, thickness: 0.8, color: C.muted, dashArray: [3, 2] });
+            [hi - padv, 0, lo + padv].forEach(function (v) {
+              var yy = yf(v);
+              if (Math.abs(yy - y0) > 10 || v === 0) {
+                if (v !== 0) page.drawLine({ start: { x: M + Lp, y: yy }, end: { x: M + Wc - Rp, y: yy }, thickness: 0.6, color: C.grid });
+                var s = ws(signed(Math.round(v)));
+                page.drawText(s, { x: M + Lp - 6 - F.widthOfTextAtSize(s, 11), y: yy - 4, size: 11, font: F, color: C.muted });
+              }
+            });
+            /* Fläche + Linie als SVG-Pfad (Ursprung oben links, y nach unten) */
+            var ox = M, oy = top, rel = function (i, v) { return (xf(i) - ox).toFixed(1) + " " + (oy - yf(v)).toFixed(1); };
+            var line = pts.map(function (p, i) { return (i ? "L" : "M") + rel(i, p.v); }).join(" ");
+            var area = "M" + rel(0, 0) + " " + line.replace(/^M/, "L") + " L" + rel(pts.length - 1, 0) + " Z";
+            page.drawSvgPath(area, { x: ox, y: oy, color: C.acc, opacity: 0.16, borderWidth: 0 });
+            page.drawSvgPath(line, { x: ox, y: oy, borderColor: C.acc, borderWidth: 2 });
+            pts.forEach(function (p, i) {
+              var last = i === pts.length - 1;
+              page.drawCircle({ x: xf(i), y: yf(p.v), size: last ? 4 : 2.6, color: p.day < 0 ? C.sig : C.acc, borderColor: C.white, borderWidth: last ? 1.5 : 0.8 });
+            });
+            [0, Math.floor((pts.length - 1) / 2), pts.length - 1].filter(function (i, n, a) { return a.indexOf(i) === n; }).forEach(function (i) {
+              var s = dShort(pts[i].date), w = F.widthOfTextAtSize(s, 11);
+              var tx = i === 0 ? xf(i) : (i === pts.length - 1 ? xf(i) - w : xf(i) - w / 2);
+              page.drawText(s, { x: tx, y: top - h + 4, size: 11, font: F, color: C.muted });
+            });
+            var lab = ws(signed(pts[pts.length - 1].v) + " h");
+            page.drawText(lab, { x: M + Wc - Rp - FB.widthOfTextAtSize(lab, 12), y: yf(pts[pts.length - 1].v) + 8, size: 12, font: FB, color: C.strong });
+            y = top - h - 4;
+          }
+          function barChart(groups, labelOf, h) {
+            ensure(h + 8);
+            var top = y, Lp = 44, Rp = 8, Tp = 8, Bp = 18, n = groups.length;
+            var max = 60; groups.forEach(function (g) { max = Math.max(max, g.work, g.soll); }); max = Math.ceil(max / 300) * 300;
+            var gw = (CW - Lp - Rp) / n, bw = Math.min(20, gw * 0.32);
+            var yf = function (v) { return top - Tp - (h - Tp - Bp) * (1 - v / max); };
+            for (var v = 0; v <= max; v += 300) {
+              page.drawLine({ start: { x: M + Lp, y: yf(v) }, end: { x: M + CW - Rp, y: yf(v) }, thickness: 0.6, color: C.grid });
+              var s = (v / 60) + " h"; page.drawText(s, { x: M + Lp - 6 - F.widthOfTextAtSize(s, 11), y: yf(v) - 4, size: 11, font: F, color: C.muted });
+            }
+            groups.forEach(function (g, i) {
+              var cx = M + Lp + gw * i + gw / 2;
+              page.drawRectangle({ x: cx - bw - 1.5, y: yf(0), width: bw, height: yf(g.work) - yf(0), color: C.acc });
+              page.drawRectangle({ x: cx + 1.5, y: yf(0), width: bw, height: yf(g.soll) - yf(0), color: C.line });
+              var s2 = ws(labelOf(g)); page.drawText(s2, { x: cx - F.widthOfTextAtSize(s2, 11) / 2, y: top - h + 4, size: 11, font: F, color: C.muted });
+            });
+            y = top - h - 4;
+          }
+          function legend(items) {
+            var x = M; ensure(14);
+            items.forEach(function (it) {
+              page.drawRectangle({ x: x, y: y - 10, width: 8, height: 8, color: it[0] });
+              page.drawText(ws(it[1]), { x: x + 11, y: y - 10, size: 11, font: F, color: C.muted });
+              x += 11 + F.widthOfTextAtSize(ws(it[1]), 11) + 14;
+            });
+            y -= 16;
+          }
+          function facts(list) {
+            var cw = (CW - 12) / 3, bh = 34;
+            for (var i = 0; i < list.length; i += 3) {
+              ensure(bh + 6);
+              for (var j = 0; j < 3 && i + j < list.length; j++) {
+                var f = list[i + j], x = M + j * (cw + 6);
+                page.drawRectangle({ x: x, y: y - bh, width: cw, height: bh, borderColor: C.line, borderWidth: 0.6 });
+                page.drawText(ws(f[0]), { x: x + 6, y: y - 12, size: 11, font: F, color: C.muted });
+                page.drawText(ws(f[1]), { x: x + 6, y: y - 28, size: 13, font: FB, color: f[2] === "pos" ? C.acct : f[2] === "neg" ? C.sigt : C.strong });
+              }
+              y -= bh + 6;
+            }
+          }
+          var t = r.t, sgn = function (v) { return { t: signed(v), cls: cls(v) }; };
+
+          /* ---- Seite 1 ---- */
+          newPage();
+          var kh = 78; ensure(kh);
+          page.drawRectangle({ x: M, y: y - kh, width: CW, height: kh, color: C.kern, borderColor: C.acc, borderWidth: 2 });
+          page.drawText("KERNAUSSAGE", { x: M + 10, y: y - 16, size: 11, font: F, color: C.acct });
+          page.drawText(ws("Kontostand " + signed(t.end) + " h zum " + dLong(r.last)), { x: M + 10, y: y - 40, size: 20, font: FB, color: t.end >= 0 ? C.strong : C.sigt });
+          var ktxt = wrap("Zeitraum " + r.sub + ": Ist " + hm(t.work) + " h / Soll " + hm(t.soll) + " h, Saldo " + signed(t.saldo) + " h" + (r.gran === "all" ? "" : "; Übertrag " + signed(r.carry) + " h") + ". " + (t.open + t.noStart ? (t.open + t.noStart) + " Tag(e) unvollständig." : "Alle Tage vollständig."), F, 11, CW - 20);
+          page.drawText(ktxt[0] || "", { x: M + 10, y: y - 58, size: 11, font: F, color: C.ink });
+          if (ktxt[1]) page.drawText(ktxt[1], { x: M + 10, y: y - 72, size: 11, font: F, color: C.ink });
+          y -= kh + 4;
+          h2(1, "Warum jetzt"); bullets(r.why);
+          h2(2, "Vergleich Ist / Soll");
+          if (r.gran === "day") {
+            var d0 = r.rows[0];
+            table([{ w: 40 }, { w: 30 }, { w: 30, a: "r" }], ["Buchung", "Art", "Dauer"],
+              d0.books.map(function (b) { var a = toMin(b.start), e = toMin(b.end); return { cells: [b.start + " – " + (b.end || "offen"), b.kind === "pause" ? "Pause" : "Arbeitszeit", e == null ? "–" : hm(e - a)], open: e == null }; })
+                .concat([{ cells: ["Ist / Soll", hm(d0.work) + " / " + (d0.soll ? hm(d0.soll) : "0:00"), sgn(d0.saldo)], sum: true }]));
+          } else {
+            var crow = r.gran === "week" ? r.rows.map(function (d) { return [WD[wdOf(d.date)] + " " + dShort(d.date), hm(d.work) + " / " + (d.soll ? hm(d.soll) : "0:00"), sgn(d.saldo)]; })
+              : r.weeks.length > 10 ? r.months.map(function (m) { return [m.label, hm(m.work) + " / " + hm(m.soll), sgn(m.saldo)]; })
+                : r.weeks.map(function (w) { return ["KW " + w.week + " (" + dShort(w.rows[0].date) + " – " + dShort(w.rows[w.rows.length - 1].date) + ")", hm(w.work) + " / " + hm(w.soll), sgn(w.saldo)]; });
+            crow.push({ cells: ["Summe Zeitraum", hm(t.work) + " / " + hm(t.soll), sgn(t.saldo)], sum: true });
+            table([{ w: 50 }, { w: 30, a: "r" }, { w: 20, a: "r" }], ["Zeitraum", "Ist / Soll", "Saldo"], crow);
+          }
+          h2(3, "Umsetzung"); bullets(r.steps.map(function (s) { return s.t + " (" + s.w + ", " + s.d + ")"; }), true);
+          h2(4, "Risiken & Gegenmaßnahmen");
+          r.risks.forEach(function (x) {
+            ensure(30); var top = y;
+            para(x[0] + " – " + x[1], { indent: 8, after: 2 });
+            page.drawRectangle({ x: M, y: y + 2, width: 2.5, height: top - y - 2, color: /Keine wesentlichen/.test(x[0]) ? C.acc : C.sig });
+          });
+
+          /* ---- Seite 2 ---- */
+          newPage();
+          h2(5, "Kontostand im Verlauf");
+          if (r.pts.length >= 2) {
+            lineChart(r.pts, 170);
+            legend([[C.acc, "Kontostand (inkl. Übertrag)"], [C.sig, "Tag im Minus"], [C.muted, "Null-Linie"]]);
+          } else para("Verlaufsgrafik ab Wochenebene – für einen Einzeltag siehe Abschnitt 2.", { color: C.muted });
+          h2(6, "Nächste drei Schritte"); bullets(r.steps.map(function (s) { return s.t + " (" + s.w + ", " + s.d + ")"; }), true);
+          h2(7, "Fakten");
+          facts([["Ist-Zeit", hm(t.work), ""], ["Soll-Zeit", hm(t.soll), ""], ["Saldo im Zeitraum", signed(t.saldo), cls(t.saldo)],
+            ["Übertrag vor Zeitraum", signed(r.carry), cls(r.carry)], ["Kontostand Ende", signed(t.end), cls(t.end)], ["Ø je Arbeitstag", hm(t.avg), ""],
+            ["Pausen gesamt", hm(t.pause), ""], ["Längster Tag", t.maxDay ? hm(t.maxDay.work) + " (" + dShort(t.maxDay.date) + ")" : "–", ""], ["Erfasste Tage", String(r.rows.length), ""]]);
+          h2(8, "KPIs");
+          table([{ w: 45 }, { w: 25, a: "r" }, { w: 30, a: "r" }], ["Kennzahl", "Wert", "Ziel"], kpiRows(r).map(function (k) { return [k[0], { t: k[1], cls: k[3] ? "pos" : "neg" }, k[2]]; }));
+          h2(9, "Quellen");
+          para("OptiTime-Buchungen Personalnummer 1626 (Import/Export), Datenstand " + r.created + " · Soll: " + settings.weekHours + " h/Woche auf " + settings.workdays.length +
+            " Arbeitstage · Pausen nach ArbZG §4 (über 6 h: 30 Min, über 9 h: 45 Min), Höchstarbeitszeit ArbZG §3 · Ziele für KPIs sind Annahmen und ersetzen keine arbeitsrechtliche Bewertung – bitte Rechtsabteilung prüfen.", { color: C.muted });
+
+          /* ---- Anhang ---- */
+          if (r.gran !== "day") {
+            newPage();
+            var groups = r.weeks.length > 10 ? r.months : r.weeks;
+            h2(null, "Anhang A – Ist und Soll je " + (r.weeks.length > 10 ? "Monat" : "Kalenderwoche"));
+            barChart(groups, function (g) { return g.label ? g.label.slice(0, 3) + " " + g.key.slice(0, 4) : "KW " + g.week; }, 150);
+            legend([[C.acc, "Ist"], [C.line, "Soll"]]);
+            h2(null, "Anhang B – Tagesdetails");
+            r.weeks.forEach(function (w) {
+              ensure(Math.min(300, 40 + (w.rows.length + 1) * 16.5));
+              para("KW " + w.week + "/" + w.year + " · Ist " + hm(w.work) + " / Soll " + hm(w.soll) + " · Saldo " + signed(w.saldo), { font: FB, after: 2 });
+              table([{ w: 14 }, { w: 19 }, { w: 10, a: "r" }, { w: 10, a: "r" }, { w: 10, a: "r" }, { w: 11, a: "r" }, { w: 26 }],
+                ["Tag", "Kommen – Gehen", "Ist", "Pause", "Soll", "Saldo", "Status"],
+                w.rows.map(function (d) {
+                  var stx = d.open ? "offen" : d.noStart ? "kein Kommen" : d.breakShort ? "Pause " + d.req + " min" : d.work > 600 ? "> 10 h" : d.type && !d.books.length ? "" : "vollständig";
+            if (d.type) stx = d.typeLabel + (stx ? " / " + stx : "");
+                  return { cells: [WD[wdOf(d.date)] + " " + dShort(d.date), d.books.length ? (d.first || "–") + " – " + (d.open ? "offen" : (d.last || "–")) : "–", hm(d.work), hm(d.pause), d.soll ? hm(d.soll) : "–", sgn(d.saldo), stx], open: d.open || d.noStart };
+                }));
+            });
+          }
+          /* Fußzeilen */
+          pages.forEach(function (pg, i) {
+            pg.drawLine({ start: { x: M, y: M - 4 }, end: { x: PW - M, y: M - 4 }, thickness: 0.6, color: C.line });
+            pg.drawText(ws("Arbeitszeitkonto 1626 · Brennglas · Vertraulich"), { x: M, y: M - 16, size: 11, font: F, color: C.muted });
+            var s = "Seite " + (i + 1) + " / " + pages.length;
+            pg.drawText(s, { x: PW - M - F.widthOfTextAtSize(s, 11), y: M - 16, size: 11, font: F, color: C.muted });
+          });
+          doc.setTitle(ws(r.title + " – " + r.sub)); doc.setAuthor("Personalnummer 1626"); doc.setSubject("Arbeitszeitnachweis, vertraulich");
+          doc.setProducer("Arbeitszeitkonto 1626 (Artefakt)"); doc.setCreator("Arbeitszeitkonto 1626"); doc.setCreationDate(new Date()); doc.setModificationDate(new Date());
+          doc.encrypt({
+            userPassword: password, ownerPassword: randomHex(24),
+            permissions: { printing: "highResolution", modifying: false, copying: false, annotating: false, fillingForms: false, contentAccessibility: true, documentAssembly: false }
+          });
+          return doc.save();
+        });
+      });
+    });
+  }
+  function reportSavePDF() {
+    if (!repCache || draft.busy) return;
+    var c = pwCheck(draft.pw1 || "", draft.pw2 || "");
+    if (!c.ok) { note = { type: "err", text: "Passwort erfüllt die Anforderungen noch nicht." }; return renderPanel(); }
+    var pw = draft.pw1, r = repCache;
+    draft.busy = true; note = null; renderPanel();
+    var slug = r.per.key === "all" ? "Gesamt_" + r.per.from + "_" + r.per.to : r.per.key;
+    var filename = "Arbeitszeitkonto_1626_" + slug.replace(/[^A-Za-z0-9_-]/g, "-") + "_verschluesselt.pdf";
+    var dl = (typeof claude !== "undefined" && claude && typeof claude.use === "function") ? claude.use("downloads") : Promise.resolve(null);
+    Promise.all([buildPDF(r, pw), dl]).then(function (res) {
+      var bytes = res[0], downloads = res[1];
+      pw = null; draft.pw1 = ""; draft.pw2 = "";
+      if (!downloads || typeof downloads.save !== "function") {
+        throw { code: "unavailable" };
+      }
+      return downloads.save({ filename: filename, data: new Blob([bytes], { type: "application/pdf" }) });
+    }).then(function () {
+      draft.busy = false; draft.askPw = false;
+      note = { type: "ok", text: "Verschlüsselte PDF gespeichert (" + filename + "). Passwort getrennt von der Datei aufbewahren bzw. übermitteln – es ist hier nicht gespeichert." };
+      renderPanel();
+    }, function (err) {
+      draft.busy = false; draft.pw1 = ""; draft.pw2 = "";
+      var code = err && err.code;
+      var msg = code === "declined" ? "Speichern abgebrochen – nichts wurde gespeichert."
+        : code === "unavailable" || code === "not_granted" ? "Datei-Download ist in dieser Ansicht nicht verfügbar. Bitte „Drucken“ nutzen und dort „Als PDF speichern“ wählen – die Datei dann eigenverantwortlich verschlüsseln."
+          : code === "rate_limited" ? "Es ist bereits eine Speicher-Abfrage offen – bitte kurz warten."
+            : "PDF konnte nicht erzeugt werden (" + (code || (err && err.message) || "Fehler") + ").";
+      note = { type: "err", text: msg };
+      renderPanel();
+    });
+  }
+
+  /* ------------------------------ Start --------------------------- */
+  /* ------------------------- Stempeluhr --------------------------
+     Live-Erfassung Kommen/Pause/Gehen für heute. Bildet sich vollständig
+     im bestehenden days/<heute>.books-Modell ab (laufender Stempel = offene
+     Buchung mit end:null). Kein zusätzliches Dokument, keine Migration;
+     statOf() rechnet den offenen Abschnitt korrekt noch nicht in Ist/Soll.
+  --------------------------------------------------------------- */
+  var stampBusy = false, stampErr = "";
+  /* Erinnerung (Standard): Die Seite fragt an einem Arbeitstag ohne Buchung
+     nach – ein Klick bucht Kommen. Bucht nur selbst, wenn unter „Soll-Zeiten“
+     das automatische Einstempeln eingeschaltet ist (siehe maybeAutoIn).
+     Läuft nur, solange die Seite offen ist; maßgeblich bleibt OptiTime. */
+  var dataReady = false, stampAt = null;   /* stampAt: Uhrzeit-Feld offen (String) oder null */
+  var SNOOZE_KEY = "azk1626-remind-off";
+  var snoozeMem = "";   /* Rückfall, falls der Browser-Speicher gesperrt ist */
+  function snoozedToday() {
+    if (snoozeMem === todayISO()) return true;
+    try { return window.localStorage.getItem(SNOOZE_KEY) === todayISO(); } catch (e) { return false; }
+  }
+  function remindDue() {
+    var t = todayISO(), d = days[t];
+    if (!dataReady || t < ENTRY_DATE || !isWorkday(t) || holidayName(t) || snoozedToday()) return false;
+    return !(d && (typeOf(d) || (d.books && d.books.length)));
+  }
+  function clockInAt(hmStr) {
+    if (!dataReady) return;   /* sonst überschreibt ein früher Klick den gespeicherten Tag */
+    var s = liveState(); if (s.status !== "out" || s.hasType || stampBusy) return;
+    var m = toMin(hmStr);
+    if (m == null) { stampErr = "Bitte eine Uhrzeit angeben."; return renderStamp(); }
+    if (m > curMin()) { stampErr = "Kommen kann nicht in der Zukunft liegen."; return renderStamp(); }
+    stampAt = null;
+    var doc = todayDoc();
+    doc.books = doc.books.concat([{ start: pad(Math.floor(m / 60)) + ":" + pad(m % 60), end: null, kind: "work" }]);
+    saveStamp(doc);
+  }
+  function nowHM() { var d = new Date(); return pad(d.getHours()) + ":" + pad(d.getMinutes()); }
+  function curMin() { var d = new Date(); return d.getHours() * 60 + d.getMinutes(); }
+  function todayDoc() {
+    var t = todayISO(), d = days[t];
+    var doc = { date: t, origin: "manuell", note: (d && d.note) || "",
+      books: (d && d.books ? d.books.map(function (b) { return { start: b.start, end: (b.end == null ? null : b.end), kind: b.kind === "pause" ? "pause" : "work" }; }) : []) };
+    if (d && typeOf(d)) doc.type = d.type;
+    return doc;
+  }
+  function liveState() {
+    var t = todayISO(), d = days[t], books = (d && d.books) ? d.books : [];
+    var last = null;
+    for (var i = books.length - 1; i >= 0; i--) { if (books[i] && (books[i].start || books[i].end)) { last = books[i]; break; } }
+    var hasType = !!(d && typeOf(d));
+    if (last && last.end == null && last.start) return { status: last.kind === "pause" ? "break" : "working", since: last.start, hasType: hasType };
+    return { status: "out", since: null, hasType: hasType };
+  }
+  /* Laufender Timer: Netto heute sekundengenau, Dauer des laufenden
+     Abschnitts und was zum Tages-Soll noch fehlt. */
+  function nowSec() { var d = new Date(); return d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds(); }
+  function liveClock() {
+    var d = days[todayISO()], sec = d ? AzkPruefung.liveSeconds(d.books, nowSec()) : 0;
+    return Math.floor(sec / 3600) + ":" + pad(Math.floor(sec / 60) % 60) + ":" + pad(sec % 60);
+  }
+  function sinceText(since) {
+    var m = Math.floor(nowSec() / 60) - toMin(since);
+    return m >= 0 ? "(" + hm(m) + " h)" : "";
+  }
+  function restText() {
+    var t = todayISO(), d = days[t], soll = d && typeOf(d) ? 0 : sollFor(t);
+    if (!soll || !d || !d.books || !d.books.length) return "";
+    var left = soll * 60 - AzkPruefung.liveSeconds(d.books, nowSec());
+    return left > 0 ? " · bis Soll noch " + hm(Math.ceil(left / 60)) : " · Soll erreicht (" + signed(Math.floor(-left / 60)) + ")";
+  }
+  function tickStamp() {
+    var a = document.getElementById("stamp-live");
+    if (!a) return;
+    a.textContent = liveClock();
+    var s = liveState(), f = document.getElementById("stamp-for"), r = document.getElementById("stamp-rest");
+    if (f && s.since) f.textContent = sinceText(s.since);
+    if (r) r.textContent = restText();
+  }
+  function saveStamp(doc) {
+    var prev = days[doc.date];
+    days[doc.date] = doc; stampErr = "";
+    if (!db) { render(); return; }
+    stampBusy = true; renderStamp();
+    db.doc("days/" + doc.date).set(doc).then(function () {
+      stampBusy = false; render();
+    }, function (err) {
+      if (prev) days[doc.date] = prev; else delete days[doc.date];   /* nichts anzeigen, was nicht gespeichert ist */
+      stampBusy = false; stampErr = "Stempeln fehlgeschlagen (" + ((err && err.code) || "Fehler") + ") – bitte erneut versuchen."; render();
+    });
+  }
+  function clockIn() {
+    if (!dataReady) return;   /* sonst überschreibt ein früher Klick den gespeicherten Tag */
+    var s = liveState(); if (s.status !== "out" || s.hasType || stampBusy) return;
+    var doc = todayDoc();
+    doc.books = doc.books.concat([{ start: nowHM(), end: null, kind: "work" }]);
+    saveStamp(doc);
+  }
+  function breakStart() {
+    if (!dataReady) return;   /* sonst überschreibt ein früher Klick den gespeicherten Tag */
+    var s = liveState(); if (s.status !== "working" || stampBusy) return;
+    var doc = todayDoc(), b = doc.books, now = nowHM();
+    b[b.length - 1].end = now; b.push({ start: now, end: null, kind: "pause" });
+    saveStamp(doc);
+  }
+  function breakEnd() {
+    if (!dataReady) return;   /* sonst überschreibt ein früher Klick den gespeicherten Tag */
+    var s = liveState(); if (s.status !== "break" || stampBusy) return;
+    var doc = todayDoc(), b = doc.books, now = nowHM();
+    b[b.length - 1].end = now; b.push({ start: now, end: null, kind: "work" });
+    saveStamp(doc);
+  }
+  function clockOut() {
+    if (!dataReady) return;   /* sonst überschreibt ein früher Klick den gespeicherten Tag */
+    var s = liveState(); if (s.status === "out" || stampBusy) return;
+    var doc = todayDoc(), b = doc.books, now = nowHM();
+    b[b.length - 1].end = now;
+    saveStamp(doc);
+  }
+  /* Automatisch einstempeln. Einmal je Seitenaufruf, und nur wenn alles
+     zusammenpasst: Arbeitstag, kein Feiertag, keine Tagesart, heute noch keine
+     Buchung, Uhrzeit im eingestellten Fenster. Eine Seite kann nicht zu einer
+     festen Uhrzeit stempeln – sie läuft nur, solange sie offen ist. Deshalb
+     ist der Stempel die Ankunftszeit nur dann, wenn die Seite beim Ankommen
+     geöffnet wird; führend für die Abrechnung bleibt OptiTime. */
+  var autoTried = false, autoNote = "";
+  function maybeAutoIn() {
+    if (autoTried || !db || !gotDays || !gotSettings) return;
+    var a = settings.autoIn || {};
+    if (!a.on) return;
+    autoTried = true;
+    var t = todayISO(), d = days[t];
+    if (d && (typeOf(d) || (d.books && d.books.length))) return;
+    if (!isWorkday(t) || holidayName(t)) return;
+    var from = toMin(a.from || "05:00"), to = toMin(a.to || "10:00"), now = curMin();
+    if (from == null || to == null || now < from || now > to) return;
+    autoNote = "Automatisch eingestempelt um " + nowHM() + " Uhr.";
+    clockIn();
+  }
+  /* Nimmt nur den eigenen Stempel zurück: genau eine offene Buchung für heute. */
+  function undoAutoIn() {
+    var t = todayISO(), d = days[t];
+    autoNote = "";
+    if (!d || !d.books || d.books.length !== 1 || d.books[0].end != null || typeOf(d)) { render(); return; }
+    delete days[t];
+    render();
+    if (!db) return;
+    var ref = db.doc("days/" + t), tomb = { date: t, books: [], deleted: true };
+    var op = typeof ref.delete === "function" ? ref.delete() : ref.set(tomb);
+    Promise.resolve(op).then(null, function () { return ref.set(tomb); });
+  }
+
+  function renderStamp() {
+    var host = document.getElementById("stamp-host");
+    if (!host) return;
+    var s = liveState();
+    if (s.hasType && s.status === "out") {
+      var td = days[todayISO()];
+      host.innerHTML = '<div class="stamp"><div class="stamp-state"><span class="stamp-dot"></span>' +
+        '<span class="stamp-status">Heute: ' + esc(TYPES[td.type].label) + '</span></div></div>' +
+        '<p class="hint" style="margin:var(--s2) 0 0">Für einen Tag mit Tagesart wird nicht gestempelt.</p>';
+      return;
+    }
+    var statusText, dotCls;
+    if (s.status === "working") { statusText = "Arbeitszeit läuft"; dotCls = "on"; }
+    else if (s.status === "break") { statusText = "Pause läuft"; dotCls = "pause"; }
+    else { statusText = "Ausgestempelt"; dotCls = ""; }
+    var btns, due = s.status === "out" && remindDue();
+    try { document.title = due ? "Einstempeln? – Arbeitszeitkonto 1626" : "Arbeitszeitkonto 1626"; } catch (e) { /* egal */ }
+    if (due) {
+      statusText = "Noch nicht eingestempelt";
+      btns = '<button type="button" class="primary" data-act="stamp-in"' + (stampBusy || !dataReady ? " disabled" : "") + ">Jetzt einstempeln (" + esc(nowHM()) + ")</button>" +
+        '<button type="button" data-act="stamp-at-open">Andere Uhrzeit</button>' +
+        '<button type="button" class="ghost" data-act="stamp-snooze">Heute nicht</button>';
+    } else if (s.status === "out") {
+      btns = '<button type="button" class="primary" data-act="stamp-in"' + (stampBusy || !dataReady ? " disabled" : "") + ">Einstempeln</button>";
+    } else if (s.status === "working") {
+      btns = '<button type="button" data-act="stamp-bstart"' + (stampBusy || !dataReady ? " disabled" : "") + ">Pause beginnen</button>" +
+        '<button type="button" class="primary" data-act="stamp-out"' + (stampBusy || !dataReady ? " disabled" : "") + ">Ausstempeln</button>";
+    } else {
+      btns = '<button type="button" class="primary" data-act="stamp-bend"' + (stampBusy || !dataReady ? " disabled" : "") + ">Pause beenden</button>" +
+        '<button type="button" data-act="stamp-out"' + (stampBusy || !dataReady ? " disabled" : "") + ">Ausstempeln</button>";
+    }
+    host.innerHTML =
+      '<div class="stamp"><div class="stamp-main">' +
+        '<div class="stamp-state"><span class="stamp-dot ' + dotCls + '"></span>' +
+        '<span class="stamp-status">' + statusText + "</span>" +
+        (s.since ? '<span class="stamp-since">seit ' + esc(s.since) + ' <span id="stamp-for">' + esc(sinceText(s.since)) + "</span></span>" : "") + "</div>" +
+        '<div class="stamp-net">Heute netto <b class="num" id="stamp-live">' + esc(liveClock()) + "</b>" +
+        '<span class="stamp-since" id="stamp-rest">' + esc(restText()) + "</span></div>" +
+      "</div>" +
+      '<div class="btnrow stamp-btns">' + btns + "</div></div>" +
+      (due ? '<p class="stamp-remind"><b>Heute ist Arbeitstag.</b> Kommen ist noch nicht gebucht – mit einem Klick ' +
+        "übernehmen oder eine frühere Uhrzeit eintragen.</p>" : "") +
+      (due && stampAt !== null ? '<div class="stamp-at"><div class="field"><label for="stamp-time">Kommen um</label>' +
+        '<input id="stamp-time" type="time" value="' + esc(stampAt) + '"></div>' +
+        '<button type="button" class="primary" data-act="stamp-at-save"' + (stampBusy || !dataReady ? " disabled" : "") + ">Kommen buchen</button>" +
+        '<button type="button" class="ghost" data-act="stamp-at-cancel">Abbrechen</button></div>' : "") +
+      (stampErr ? '<p class="err">' + esc(stampErr) + "</p>" : "") +
+      (autoNote ? '<p class="ok-msg">' + esc(autoNote) +
+        ' <button type="button" class="link" data-act="stamp-undo">Rückgängig</button></p>' : "") +
+      (s.status !== "out" ? '<p class="hint" style="margin:var(--s2) 0 0">Läuft bis zum Ausstempeln – eine offene Buchung zählt erst nach dem Gehen in Ist und Saldo.</p>' : "");
+  }
+
+  function render() {
+    var st = allStats();
+    renderStamp();
+    renderFigures(st);
+    renderMk(st);
+    renderVac();
+    renderChart(st);
+    renderBars(st);
+    renderFlags(st);
+    renderWeeks(st);
+  }
+
+  function connect(resolved) {
+    db = resolved;
+    if (!db) { return offline("Nur lokal – Änderungen werden nicht gespeichert"); }
+    setChip("chip-db", "Im Artefakt gespeichert", "");
+    db.collection("days").onSnapshot(function (snap) {
+      var next = {};
+      snap.docs.forEach(function (doc) {
+        var v = doc.data() || {};
+        if (v.deleted) return;
+        next[doc.id] = {
+          date: v.date || doc.id,
+          books: Array.isArray(v.books) ? v.books : [],
+          origin: v.origin || "manuell",
+          note: v.note || ""
+        };
+        if (TYPES[v.type]) next[doc.id].type = v.type;
+      });
+      gotDays = true; dataReady = true;
+      dbDayCount = Object.keys(next).length;
+      if (!dbDayCount && !settings.seeded) {
+        days = fromEmbed();           /* Erstbestand bleibt sichtbar, bis er geschrieben ist */
+      } else {
+        days = next;
+      }
+      maybeSeed();
+      render();
+      maybeAutoIn();
+    }, function (err) {
+      offline("Speicher nicht lesbar (" + ((err && err.code) || "Fehler") + ")");
+    });
+    db.collection("settings").onSnapshot(function (snap) {
+      snap.docs.forEach(function (doc) {
+        if (doc.id !== "general") return;
+        var v = doc.data() || {};
+        if (typeof v.weekHours === "number" && v.weekHours > 0) settings.weekHours = v.weekHours;
+        if (Array.isArray(v.workdays) && v.workdays.length) settings.workdays = v.workdays.slice();
+        if (v.seeded) settings.seeded = true;
+        if (v.vacation && typeof v.vacation === "object") settings.vacation = v.vacation;
+        if (typeof v.gleittag === "boolean") settings.gleittag = v.gleittag;
+        if (v.autoIn && typeof v.autoIn === "object") {
+          settings.autoIn = { on: !!v.autoIn.on, from: v.autoIn.from || "05:00", to: v.autoIn.to || "10:00" };
+        }
+      });
+      gotSettings = true;
+      maybeSeed();
+      render();
+      maybeAutoIn();
+    }, function () { gotSettings = true; maybeSeed(); });
+  }
+
+  days = fromEmbed();
+  render();
+  /* Laufende Zeit und Erinnerung aktuell halten (auch Tageswechsel); nicht,
+     während das Uhrzeit-Feld offen ist. */
+  setInterval(function () { if (stampAt === null) renderStamp(); }, 30000);
+  setInterval(function () { if (liveState().status !== "out") tickStamp(); }, 1000);
+  if (typeof claude !== "undefined" && claude && typeof claude.use === "function") {
+    setChip("chip-db", "Speicher wird verbunden", "local");
+    claude.use("db").then(connect, function () { offline("Speicher nicht erreichbar – nur lokal"); });
+  } else {
+    offline("Nur lokal – keine Speicher-Verbindung");
+  }
+})();
+</script>
+
+
+
+</body></html>
