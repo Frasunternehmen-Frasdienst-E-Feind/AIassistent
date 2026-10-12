@@ -52,4 +52,4 @@ möchte, kann stattdessen Matts Claude-Code-Plugin nutzen
 zu vermeiden.
 
 _Herkunft/Änderungen: unverändert aus mattpocock/skills @ `f3fc563` (08.10.2026);
-`resolving-merge-conflicts` stammt aus dem Upload vom 2026-09. `cockpit-sync` ist ein eigener Skill dieses Repos._
+`resolving-merge-conflicts` stammt aus dem Upload vom 2026-09. `cockpit-sync` und `feind-brand` sind eigene Skills dieses Repos._
