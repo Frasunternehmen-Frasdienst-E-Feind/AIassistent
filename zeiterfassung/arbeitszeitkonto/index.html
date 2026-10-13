@@ -749,8 +749,13 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     var type = typeOf(doc);
     var soll = type ? Math.round(sollFor(doc.date) * TYPES[type].soll) : sollFor(doc.date);
     var req = work > 540 ? 45 : (work > 360 ? 30 : 0);
+    /* Heute noch nicht ausgestempelt: Tag zählt neutral (Ist 0, Soll 0), bis Gehen
+       gebucht ist – sonst springt der Kontostand beim Einstempeln um das Tages-Soll
+       ins Minus. Ältere offene Tage bleiben angerechnet und als Fehlbuchung markiert. */
+    var running = open && doc.date === todayISO(), workSoFar = work;
+    if (running) { work = 0; if (!type) soll = 0; }
     return {
-      date: doc.date, books: books, work: work, pause: pause,
+      date: doc.date, books: books, work: work, pause: pause, running: running, workSoFar: workSoFar,
       first: first, last: last, open: open, noStart: noStart,
       soll: soll, saldo: work - soll, req: req,
       breakShort: !open && req > 0 && pause < req,
@@ -1021,7 +1026,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
   function renderFlags(st) {
     var items = [], short = [], gap = 0, longB = [], longP = [];
     st.forEach(function (d) {
-      if (d.open) {
+      if (d.open && !d.running) {
         items.push(["sig", dLong(d.date), "Letzte Buchung ohne Gehen-Zeit – Ist-Zeit unvollständig."]);
       }
       if (d.noStart) {
@@ -1129,7 +1134,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
           '<td><strong>' + esc(WD[wdOf(d.date)]) + '</strong> ' + esc(dShort(d.date)) + '</td>' +
           '<td class="num">' + (d.books.length ? esc(d.first || "–") + " – " + esc(d.open ? "offen" : (d.last || "–"))
             : '<span class="hint" style="margin:0">' + esc(d.typeLabel || "–") + "</span>") + '</td>' +
-          '<td class="num">' + esc(hm(d.work)) +
+          '<td class="num">' + (d.running ? '<span class="hint" style="margin:0">läuft ' + esc(hm(d.workSoFar)) + "</span>" : esc(hm(d.work))) +
           '<span class="track"><span class="fill" style="width:' + barW + '%"></span>' +
           (markW ? '<span class="mark" style="left:' + markW + '%"></span>' : "") + "</span></td>" +
           '<td class="num">' + esc(hm(d.pause)) + '</td>' +
