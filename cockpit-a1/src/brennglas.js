@@ -18,10 +18,10 @@
       libP = new Promise((resolve, reject) => {
         const sc = document.createElement('script');
         sc.src = SRC;
+        sc.async = true;
         sc.integrity = SRI;
         sc.crossOrigin = 'anonymous';
         sc.referrerPolicy = 'no-referrer';
-        sc.async = true;
         sc.onload = () => (window.jspdf && window.jspdf.jsPDF ? resolve(window.jspdf) : reject(new Error('PDF-Bibliothek nicht ladbar')));
         sc.onerror = () => { libP = null; sc.remove(); reject(new Error('PDF-Bibliothek nicht ladbar')); };
         (document.head || document.body).append(sc);
@@ -88,7 +88,8 @@
         else doc.text(l, x, by);
       });
     }
-    function textField(x, yy, w, hh, name) {
+    // value: vorbelegter Text (PDF-Rücklauf: Zuständig, Termin); der Ausgangswert steht zusätzlich in der Stand-Kennung.
+    function textField(x, yy, w, hh, name, value) {
       doc.setDrawColor(C.line); doc.setFillColor(C.white); doc.setLineWidth(0.8);
       doc.rect(x, yy, w, hh, 'FD');
       const f = new AcroFormTextField();
@@ -96,17 +97,18 @@
       f.Rect = [x, yy, w, hh];
       f.fontSize = FS;
       f.multiline = hh > 24;
-      f.value = '';
+      f.value = value ? txt(value) : '';
       doc.addField(f);
     }
-    function checkBox(x, yy, name) {
+    function checkBox(x, yy, name, checked) {
       const s = 11;
       doc.setDrawColor(C.anth); doc.setFillColor(C.white); doc.setLineWidth(0.8);
       doc.rect(x, yy, s, s, 'FD');
       const c = new AcroFormCheckBox();
       c.fieldName = uniq(name);
       c.Rect = [x, yy, s, s];
-      c.appearanceState = 'Off';
+      c.appearanceState = checked ? 'On' : 'Off';
+      c.value = checked ? 'On' : 'Off';
       doc.addField(c);
     }
     function label(text, optional, x, yy) {
@@ -179,6 +181,7 @@
     /* Tabelle: Kopf Anthrazit mit weißer fetter Schrift, Zebra, Linien; Zellen Text, Kästchen oder Feld */
     function measure(cell, w) {
       if (cell && typeof cell === 'object' && cell.check) return { kind: 'check', h: 11, cell };
+      if (cell && typeof cell === 'object' && cell.field && cell.value) return { kind: 'field', h: cell.h || 18, cell };
       if (cell && typeof cell === 'object' && cell.field) return { kind: 'field', h: cell.h || 18, cell };
       const c = cell && typeof cell === 'object' ? cell : { t: cell };
       const style = c.bold || c.color === 'signal' ? 'bold' : 'normal';
@@ -217,8 +220,8 @@
         let x = ML;
         r.m.forEach((m, i) => {
           const cw = ws[i] - 2 * P, al = cols[i].align, top = y + (r.h - m.h) / 2;
-          if (m.kind === 'check') checkBox(al === 'left' ? x + P : x + (ws[i] - 11) / 2, top, m.cell.check);
-          else if (m.kind === 'field') textField(x + P, top, cw, m.h, m.cell.field);
+          if (m.kind === 'check') checkBox(al === 'left' ? x + P : x + (ws[i] - 11) / 2, top, m.cell.check, m.cell.on);
+          else if (m.kind === 'field') textField(x + P, top, cw, m.h, m.cell.field, m.cell.value);
           else {
             font(r.total ? 'bold' : m.style, FS, r.total ? C.anth : m.color);
             put(m.ls, x + P, top, LD, FS, al, cw);
@@ -263,10 +266,11 @@
       doc.text(txt(title + ' · ' + day + ' · intern'), ML, PH - 9 * PT);
       doc.text('Seite ' + i, PW - ML, PH - 9 * PT, { align: 'right' });
     }
-    doc.setProperties({ title: txt(title), subject: txt(spec.subject || spec.subtitle || title), author: 'Marketing, Fräsdienst-Service E. Feind GmbH', creator: 'Feind Cockpit' });
+    doc.setProperties({ title: txt(title), subject: txt(spec.subject || spec.subtitle || title), author: 'Marketing, Fräsdienst-Service E. Feind GmbH', creator: 'Feind Cockpit', keywords: spec.keywords ? String(spec.keywords) : '' });
     if (spec.autoPrint) doc.autoPrint();
     return { bytes: doc.output('arraybuffer'), pages: n, fields: names.size };
   }
 
   FC.brennglas = { build, loadLib, scrub, win, txt };
 })();
+

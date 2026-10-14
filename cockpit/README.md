@@ -3,7 +3,7 @@
 > **Archiv (Stand 30.09.2026):** Dieser Ordner ist der ältere A4-Stand. A4 ist gelöscht; live und führend ist
 > A1 (https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd), Quelle unter `cockpit-a1/`.
 >
-> **Entscheidung 08.10.2026:** Künftig führend ist das Cockpit v3 (GRG81, `messe/rotterdam-2027/feind-cockpit-v3.html`). Seit 08.10.2026 sind die A1-Funktionen in v3 übernommen und `/cockpit-sync` schreibt nach GRG81; A1 ist eingefroren.
+> **Entscheidung 14.10.2026:** Führend ist wieder A1 (TfuzbG, Quelle `cockpit-a1/Feind-Cockpit-A1.html`); `/cockpit-sync` schreibt dorthin. GRG81 (v3, Entscheidung vom 08.10.) ist Altstand.
 
 Ein Artefakt für Marketing, InfraTech 2027 und Administration. Die Seite
 `Feind-Cockpit.html` ersetzt vier bisher getrennte Artefakte und führt deren Daten in
@@ -139,11 +139,12 @@ zu höchstens 50 Schreibvorgängen für `ArtifactData batch`. Eingaben: Cockpit-
 
 ## Live-Artefakt
 
-- Adresse: https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i (Cockpit v3 „Feind Cockpit (Copy)“, seit 08.10.2026 live und führend;
-  Quelle `messe/rotterdam-2027/feind-cockpit-v3.html`). Diese Adresse nutzt auch der Skill `cockpit-sync`.
+- Adresse: https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd (Feind Cockpit A1, seit 14.10.2026 wieder führend;
+  Quelle `cockpit-a1/Feind-Cockpit-A1.html`). Diese Adresse nutzt auch der Skill `cockpit-sync`.
+- GRG81 (https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i, v3 „Feind Cockpit (Copy)“) war vom 08.10. bis 14.10.2026
+  führend und ist jetzt Altstand: nicht mehr beschreiben. Die folgenden zwei Punkte sind historisch.
 - Veröffentlicht am 08.10.2026 (Version 10, Laufzeitvertrag 0.2.54) mit den A1-Funktionen; Datenrest aus A1
   übertragen (1 Protokoll, 2 Aktivitätstage), 0 Löschungen.
-- A1 (https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd) ist eingefroren: nur noch lesen, nicht mehr beschreiben.
 - Historisch: A4 (https://claude.ai/artifact/4zX58mseXB9vbspN8xAzJ2) ist gelöscht; die folgenden
   Angaben beziehen sich auf A4.
 - Veröffentlicht am: 28.09.2026 (Version 13, Laufzeitvertrag 0.2.61)

@@ -25,7 +25,12 @@
       "ink-muted": "#6b7575",
       "ink-inverse": "#ffffff",
       "line": "#d5dada",
-      "focus": "#424e4e"
+      "focus": "#424e4e",
+      "chart-1": "#7ca04c",
+      "chart-2": "#223131",
+      "chart-3": "#cae1b0",
+      "chart-3-edge": "#7ca04c",
+      "chart-4": "#286f77"
     },
     "dark": {
       "accent": "#84bb20",
@@ -42,7 +47,12 @@
       "ink-muted": "#b8bfbf",
       "ink-inverse": "#ffffff",
       "line": "#4d5858",
-      "focus": "#84bb20"
+      "focus": "#84bb20",
+      "chart-1": "#659016",
+      "chart-2": "#e0f3f3",
+      "chart-3": "#b1d18b",
+      "chart-3-edge": "#b1d18b",
+      "chart-4": "#74a2a7"
     }
   },
   "typography": {
@@ -55,6 +65,7 @@
     "Feind-Grün auf Weiß erreicht nur 2,3:1 – niemals als Textfarbe auf hellem Grund; dafür accent-text verwenden.",
     "Feind-Rot auf dunklem Grund erreicht nur 2,5:1 – dort signal-text verwenden, Rot nur als Fläche oder Linie.",
     "Auf Grün steht Anthrazit (on-accent), nie Weiß.",
-    "Schrift auf vollem Grün (Primär-Buttons) in on-accent-strong #1f2525 (6,9:1); on-accent #424e4e erreicht nur 3,74:1 und bleibt für Flächen, Symbole und große Schrift."
+    "Schrift auf vollem Grün (Primär-Buttons) in on-accent-strong #1f2525 (6,9:1); on-accent #424e4e erreicht nur 3,74:1 und bleibt für Flächen, Symbole und große Schrift.",
+    "Diagramme (Freigabe 09.10.2026): höchstens vier gefüllte Kategorien chart-1 bis chart-4, alles Weitere als „Rest“ ohne Füllung mit gestrichelter Kontur; chart-3 auf hellem Grund immer mit chart-3-edge; jede Farbe mit Beschriftung oder Legende und Tabellenansicht."
   ]
 }

@@ -10,8 +10,8 @@ Cockpits** (`cockpit/Feind-Cockpit.html`). Verbindliches Schema: `cockpit/docs/S
 
 ## Ziel-Artefakt
 
-- URL: **https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i** (Cockpit v3, live und führend seit 08.10.2026; ebenso in
-  `cockpit/README.md` unter „Live-Artefakt“). A1 (`TfuzbGa…`) ist eingefroren, A4 gelöscht – nie dorthin schreiben.
+- URL: **https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd** (Feind Cockpit A1, führend seit 14.10.2026; ebenso in
+  `cockpit/README.md` unter „Live-Artefakt“). GRG81 (`GRG81su…`, v3) ist Altstand, A4 gelöscht – nie dorthin schreiben.
   Weicht die Adresse in `cockpit/README.md` ab, frage David und schreibe nichts.
 - Werkzeug: `ArtifactData` (`list`/`get` zum Lesen, `batch` mit höchstens 50 Schreibvorgängen zum Schreiben).
   Jeden Schreibvorgang auf ein vorher gelesenes Dokument mit `if_version` absichern.
@@ -26,6 +26,7 @@ Cockpits** (`cockpit/Feind-Cockpit.html`). Verbindliches Schema: `cockpit/docs/S
 | Events | `events/<id>` | Die Messe hat die feste ID `events/infratech-2027` (Brücke zur InfraTech-Welt) |
 | SEO | `seo_keywords/<id>`, `seo_traffic/<JJJJ-MM>`, `seo_gaps/<id>` | unverändert |
 | Referenzen | `references/<id>` | Kundennamen nur mit `clientApproved: true` |
+| KPIs | `kpis/<id>` | `{ kpi, ziel, ist, basis, messung, checkin }`; nur `ist` und `checkin` laufend pflegen (Freitags-Review) |
 | Sync-Stand | `meta/sync` = `{ content:{at,source}, leads:{at,source}, … }` | nach jedem Lauf per `update` setzen |
 
 **Nicht schreiben:** `tasks`, `settings/*`, `budget/*`, `leads/counts`, `acquisition/*`, `planning/*`,
