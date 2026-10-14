@@ -14,6 +14,7 @@ auf der **InfraTech 2027, Rotterdam Ahoy, 12.–15. Januar 2027**.
 | `feind-cockpit.html` | Altstand v1.1 (Artefakt `4zX58…`, inzwischen gelöscht). Enthält die Erstfassung des Reiters „Checkliste 26→27“. |
 | `feind-cockpit-v3.html` | **Quelle des führenden Live-Cockpits** „Feind Cockpit (Copy)“ (v3.1, Leaflet-Karte): Kartenansicht mit Einwilligung, konfigurierbarem Kachelanbieter, Clustering, lokal eingebetteter Schrift. Doku: **`KARTE.md`**, Tests: `test/` (Unit) und `e2e/` (Playwright). |
 | `messe-hub.html` | **Messe-Hub** (LevelUp-Cluster 3): bündelt die 11 Einzel-Artefakte in den Modulen Hotels, Giveaways, Aufgaben (nur Fristen, führend bleibt Notion/A1) und Stand. Momentaufnahme vom 13.10.2026 eingebettet. Danach gilt der eigene `db` (`hotels/`, `giveaways/`, `fristen/`, `stand/info`): Er wird nur feldweise ergänzt und nie überschrieben. Tests: `test/hub-logic.test.mjs`. |
+| `grafik/rueckwand-varianten-16x9.png` | Entscheidungsgrafik mit vier Rückwand-Varianten im Maßstab und der Genehmigungsgrenze 2,75 m. Daneben liegt die HTML-Vorlage für Änderungen. |
 | `infratech-2027-liste.html` | Vorgängerstand des Cockpits (v2, Altstand – nicht mehr live). Aufgaben, Fristen, Budget, KPIs, Lessons Learned, Faktencheck, Wissensbasis. Kategorisiert, filterbar, mit Fortschritt und Terminwarnungen. |
 | `MASTER-TODO.md` | Vollständige, kategorisierte Aufgabenliste als versionierbarer Text (Grundlage des Cockpits). |
 | `KATEGORISIERUNG-MANUS.md` | Kategorisierung der MANUS-Export-Inhalte + Plan, wie sie die ToDo-Liste ergänzen. |
