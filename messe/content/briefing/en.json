@@ -1,0 +1,88 @@
+{
+ "code": "EN",
+ "file": "Briefing_Rotterdam_2027_EN.pdf",
+ "title": "Contractor Briefing Booth Construction Rotterdam 2027",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Booth 5.209 · Tue 12 – Fri 15 January 2027",
+ "chip": "Briefing",
+ "src": "Fillable contractor briefing · Source: project hub · as of 29.09.2026",
+ "intern": "For handover to contractors · terms confidential.",
+ "basis": "Basis: project hub (dates, booth construction) + Feind corporate design",
+ "howto": "How to use this briefing",
+ "howto_lines": [
+  "1)  Tick the box = delivered/agreed.   2)  Status dropdown on the right: Open / Requested / Quoted / Agreed / Not needed.",
+  "3)  Note field per item – quote, price, date, contact, link (max. 250 characters).",
+  "Quotes due by 16.10.2026 (per project hub). Confirm booth size/height/floor load against the Ahoy portal.",
+  "CI specs binding (colors/logo/font). Fill in & print in any PDF viewer."
+ ],
+ "legend_label": "Legend:",
+ "legend": [["ok", "agreed"], ["warn", "quote / to clarify"], ["none", "open"], ["no", "not needed"], ["add", "requirement / mandatory"]],
+ "blocker_title": "Key data (binding)",
+ "blockers": [
+  ["Exhibitor", "Fräsdienst-Service E. Feind GmbH"],
+  ["Fair/venue", "InfraTech 2027 · Rotterdam Ahoy · Booth 5.209"],
+  ["Dates", "Tue 12 – Fri 15.01.2027 · build-up from 07.01.2027"],
+  ["Quote deadline", "by 16.10.2026 (per project hub)"],
+  ["CI specs", "colors/logo per Feind corporate design"]
+ ],
+ "blocker_note": "Confirm booth size, build height and floor load finally against the Ahoy exhibitor portal. Quotes due by 16.10.2026 (project hub).",
+ "status": ["Open", "Requested", "Quoted", "Agreed", "Not needed"],
+ "status_def": "Open",
+ "tt_status": "Status: Open / Requested / Quoted / Agreed / Not needed",
+ "tt_note": "Quote, price, date, contact, link – max. 250 characters",
+ "tt_done": "Tick when delivered/agreed",
+ "blind_banner": "Notes & records",
+ "blind_sub": "Additional requirements for the contractor. Legal items are marked.",
+ "dp_title": "Data protection & law",
+ "dp": [
+  "• This briefing contains no personal data of third parties; add contacts only if needed in the note field.",
+  "• Photo/video/reference use of the booth only after prior approval.",
+  "• For contract, liability, cancellation, insurance or VAT/reverse charge (NL): please have the legal department review."
+ ],
+ "src_title": "Sources & workspaces",
+ "links": ["Master · Fair Rotterdam 2027 (Notion)", "ToDo list Rotterdam 2027 (Notion)", "Task tracker (ClickUp)", "InfraTech handbook 2027 V1.3 (PDF)"],
+ "link_urls": ["https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db", "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a", "https://app.clickup.com/90122021025/v/l/li/901222034862", "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Booth 5.209  ·  as of 29.09.2026",
+ "page": "Page",
+ "cont": "continued",
+ "brand": "BRIEFING · Rotterdam 2027",
+ "slim": "Briefing Rotterdam 2027",
+ "sections": [
+  ["Project & booth frame", [
+   ["warn", "Confirm booth size/dimensions booth 5.209 (Ahoy exhibitor list)"],
+   ["warn", "Clarify build height & floor load per Ahoy guidelines"],
+   ["none", "State booth type (row/corner/head) & open sides"]
+  ]],
+  ["Scope of booth construction", [
+   ["none", "Flooring incl. installation"],
+   ["none", "Walls/fascia + back wall"],
+   ["add", "Graphics/branding per Feind CI (green #84bb20, anthracite #424e4e, logo, font)"],
+   ["none", "Lighting (spots/LED)"],
+   ["none", "Lockable storage/cabin"],
+   ["none", "Furnishing (counter, bar tables, stools, brochure holders)"]
+  ]],
+  ["Technology & connections", [
+   ["warn", "State power connection/capacity (grinding-tech exhibits)"],
+   ["none", "Internet/LAN at the booth"],
+   ["none", "Rigging/suspension (if truss/banner)"],
+   ["warn", "Check water/compressed air for exhibits"]
+  ]],
+  ["Build-up/teardown & logistics", [
+   ["none", "Build-up from 07.01.2027 – coordinate date/slot"],
+   ["none", "Delivery/access Ahoy (time window, entrance)"],
+   ["none", "Teardown after Fri 15.01. – dismantling & disposal"]
+  ]],
+  ["Quote & terms", [
+   ["warn", "Detailed scope of services + itemized prices"],
+   ["warn", "Show options/alternatives"],
+   ["add", "State insurance/liability & cancellation terms – legal department to review"],
+   ["add", "Clarify VAT/reverse charge (NL service) – tax advisor/legal department"]
+  ]]
+ ],
+ "blind": [
+  ["Notes & records", [
+   ["add", "CI manual/logo files will be provided – ensure color accuracy #84bb20"],
+   ["add", "Records: trade register/KvK & references to be attached"],
+   ["add", "Enter contact & availability in the note field"]
+  ]]
+ ]
+}

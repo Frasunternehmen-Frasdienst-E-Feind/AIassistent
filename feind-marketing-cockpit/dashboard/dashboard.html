@@ -17,7 +17,8 @@
   --accent: #84bb20;
   --accent-text: #5e8a14;
   --accent-ink: #4d7311;
-  --on-accent: #263030; /* Text auf --accent: AA 4,5:1 (#424e4e erreichte nur 3,7:1) */
+  --on-accent: #424e4e; /* Flächen, Symbole, große Schrift auf --accent (3,74:1) */
+  --on-accent-strong: #1f2525; /* Text auf --accent: 6,9:1 */
   --signal: #e3000b;
   --signal-text: #b8000a;
   --warn: #b5730a;
@@ -45,7 +46,7 @@
   --shadow: #1f252533;
   --scrim: #1f2525b3;
   --bar-messe: #84bb20;
-  --bar-messe-t: #263030;
+  --bar-messe-t: #1f2525;
   --bar-web: #424e4e;
   --bar-web-t: #ffffff;
   --bar-marke: #999999;
@@ -53,7 +54,7 @@
   --bar-rec: #3c5457;
   --bar-rec-t: #ffffff;
   --bar-content: #c9d3d3;
-  --bar-content-t: #263030;
+  --bar-content-t: #1f2525;
   --print-ink: #1f2626;
   --print-muted: #4a5555;
   --print-paper: #ffffff;
@@ -244,7 +245,7 @@ img, svg { max-width: 100%; }
 .tab[aria-selected="true"] { background: var(--accent-soft); border-bottom-color: var(--accent); color: var(--ink-strong); font-weight: 700; }
 .tab .cnt { font-size: 12px; background: var(--surface-inverse); color: var(--ink-inverse); border: 0; border-radius: 2px; padding: 1px 7px; font-variant-numeric: tabular-nums; font-weight: 700; }
 /* Zähler ohne Haarlinie (Wunsch David 06.10.2026): Anthrazit-Fläche, im gewählten Reiter Feind-Grün mit on-accent. */
-.tab[aria-selected="true"] .cnt { background: var(--accent); color: var(--on-accent); }
+.tab[aria-selected="true"] .cnt { background: var(--accent); color: var(--on-accent-strong); }
 @media (max-width: 640px) {
   .tab { padding: 8px 12px; font-size: 13.5px; }
   .topnav { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
@@ -815,12 +816,12 @@ label.check input { margin-top: 3px; }
 .seg button { background: transparent; border: 0; color: var(--ink-inverse); min-height: 36px; padding: 0 10px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; transition: background .12s ease; }
 .seg button + button { border-left: 1px solid var(--ink-inverse-muted); }
 .seg button:hover { background: color-mix(in srgb, var(--ink-inverse) 12%, transparent); }
-.seg button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); font-weight: 700; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent-strong); font-weight: 700; }
 .seg button svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; }
 .seg button .sl { display: none; }
 @media (min-width: 900px) { .seg button .sl { display: inline; } }
 .kbd { font-family: var(--font-mono); font-size: 11px; border: 1px solid currentColor; border-radius: 3px; padding: 0 5px; line-height: 16px; opacity: .8; white-space: nowrap; }
-.btn-top[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 700; }
+.btn-top[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent-strong); font-weight: 700; }
 @media (max-width: 760px) { .btn-top .kbd, .btn-top .lbl { display: none; } }
 .btn, .tab, .fchip, .tile, .folder, .iconbtn { transition: border-color .12s ease, background-color .12s ease, color .12s ease; }
 .tab:focus-visible, .worldtab:focus-visible { outline-offset: -3px; }
@@ -1791,7 +1792,7 @@ main.enter .ov-arc .fg { animation: fc-draw 1s cubic-bezier(.2, .7, .2, 1) both;
 .ov-hero .row { display: flex; flex-wrap: wrap; gap: var(--s2); }
 .btn.ghost-inv { background: transparent; border-color: var(--ink-inverse-muted); color: var(--ink-inverse); }
 .btn.ghost-inv:hover { background: color-mix(in srgb, var(--ink-inverse) 12%, transparent); border-color: var(--ink-inverse); }
-.ov-hero .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); border-bottom-color: var(--ink-inverse); }
+.ov-hero .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent-strong); border-bottom-color: var(--ink-inverse); }
 .ov-hero :focus-visible { outline-color: var(--accent); }
 .ov-quick { display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s3); }
 

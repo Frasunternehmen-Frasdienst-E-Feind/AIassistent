@@ -1,0 +1,84 @@
+{
+ "code": "PL",
+ "file": "Followup_Rotterdam_2027_PL.pdf",
+ "title": "Formularz kontaktu z leadami i podsumowania Rotterdam 2027",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Stoisko 5.209 · wt. 12 – pt. 15 stycznia 2027",
+ "chip": "Follow-up",
+ "src": "Formularz do wypełnienia · Źródło: Hub projektu + lista zadań · stan 28.09.2026",
+ "intern": "WEWNĘTRZNE / poufne – zawiera nazwiska zespołu, nie publikować.",
+ "basis": "Podstawa: Hub projektu (działania po targach) + proces leadów (EPIC-06)",
+ "howto": "Jak korzystać z formularza kontaktu",
+ "howto_lines": [
+  "1)  Zaznacz pole = zrobione.   2)  Lista statusów po prawej: Otwarte / W toku / Zrobione / Oczekuje / Nie dotyczy.",
+  "3)  Pole notatki przy pozycji – lead/firma, odpowiedzialny, data, link (maks. 250 znaków).",
+  "Terminy to wartości orientacyjne (48 h / 1 tydzień); runda kontaktu od 29.01.2027 wg Hubu projektu.",
+  "Domyślnie „Otwarte”. Uwaga RODO: leady do CRM tylko za zgodą. Druk w każdej przeglądarce PDF."
+ ],
+ "legend_label": "Legenda:",
+ "legend": [["ok", "zrobione / potwierdzone"], ["warn", "pilne / pilnować terminu"], ["none", "otwarte / do zrobienia"], ["no", "pomijane"], ["add", "uwaga"]],
+ "blocker_title": "Terminy kontaktu (orientacyjne)",
+ "blockers": [
+  ["Koniec targów", "pt. 15.01.2027 – potem zacząć kontakt"],
+  ["Podziękowanie/pierwszy kontakt", "w ciągu 48 h (zalecane)"],
+  ["Oferty/szczegóły", "w ciągu 1 tygodnia (zalecane)"],
+  ["Runda kontaktu", "od 29.01.2027 (wg Hubu projektu)"],
+  ["Ocena ROI/sukcesu", "jako wnioski 2027"]
+ ],
+ "blocker_note": "48 h i 1 tydzień to zalecenia/wartości orientacyjne. Wiążące z Hubu projektu: runda kontaktu od 29.01.2027. Terminy potwierdzić przed wysyłką.",
+ "status": ["Otwarte", "W toku", "Zrobione", "Oczekuje", "Nie dotyczy"],
+ "status_def": "Otwarte",
+ "tt_status": "Status: Otwarte / W toku / Zrobione / Oczekuje / Nie dotyczy",
+ "tt_note": "Lead/firma, odpowiedzialny, data, link – maks. 250 znaków",
+ "tt_done": "Zaznacz po wykonaniu",
+ "blind_banner": "Wskazówki & RODO",
+ "blind_sub": "Dodatkowe wskazówki do działań po targach. Kwestie prawne oznaczono.",
+ "dp_title": "Ochrona danych i kwestie prawne",
+ "dp": [
+  "• Wewnętrzny dokument roboczy z nazwiskami – traktować poufnie, nie udostępniać na zewnątrz/wystawcom.",
+  "• Pozyskiwanie leadów, foto/wideo na stoisku i import do CRM tylko za zgodą/z informacją RODO.",
+  "• W sprawach umownych, podatkowych lub prawa pracy: proszę o kontrolę działu prawnego."
+ ],
+ "src_title": "Źródła i przestrzenie robocze",
+ "links": ["Master · Targi Rotterdam 2027 (Notion)", "Lista zadań Rotterdam 2027 (Notion)", "Tracker zadań (ClickUp)", "Podręcznik InfraTech 2027 V1.3 (PDF)"],
+ "link_urls": ["https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db", "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a", "https://app.clickup.com/90122021025/v/l/li/901222034862", "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stoisko 5.209  ·  Stan 28.09.2026",
+ "page": "Strona",
+ "cont": "c.d.",
+ "brand": "FOLLOW-UP · Rotterdam 2027",
+ "slim": "Follow-up Rotterdam 2027",
+ "sections": [
+  ["Pozyskiwanie i kwalifikacja leadów", [
+   ["none", "Zebrać wszystkie leady z cyfrowego formularza notatek"],
+   ["none", "Zdigitalizować wizytówki/kontakty i usunąć duplikaty"],
+   ["none", "Priorytetyzować leady (A/B/C wg potencjału)"],
+   ["none", "Przypisać odpowiedzialnego do każdego leada (w polu notatki)"]
+  ]],
+  ["Natychmiastowy kontakt (w ciągu 48 h)", [
+   ["warn", "E-mail z podziękowaniem/pierwszym kontaktem do wszystkich istotnych leadów"],
+   ["none", "Zrealizować indywidualne obietnice ze stoiska (dokumenty, próbki)"],
+   ["none", "Umówić spotkania handlowe"]
+  ]],
+  ["Oferta i sprzedaż (w ciągu 1 tygodnia)", [
+   ["none", "Wysłać oferty/szczegółowe informacje"],
+   ["none", "Ustawić przypomnienia/terminy kontaktu"],
+   ["none", "Zadzwonić do gorących leadów"]
+  ]],
+  ["CRM i higiena danych (RODO)", [
+   ["warn", "Zaimportować leady do CRM zgodnie z RODO (zgoda sprawdzona) – kontrola prawna"],
+   ["none", "Udokumentować źródło/zgodę i okres przechowywania"],
+   ["none", "Zapewnić opt-out/wypisanie"]
+  ]],
+  ["Ocena i wnioski", [
+   ["none", "Przeanalizować liczbę i jakość leadów (KPI)"],
+   ["none", "Określić koszty vs. przychód / ROI"],
+   ["none", "Udokumentować wnioski 2027 (na kolejne targi)"]
+  ]]
+ ],
+ "blind": [
+  ["Wskazówki & RODO", [
+   ["add", "Treści foto/wideo wykorzystywać tylko za zgodą (RODO) – kontrola prawna"],
+   ["add", "Przygotować teksty kontaktowe wielojęzycznie (NL/DE/EN/PL)"],
+   ["add", "Zebrać opinię zespołu stoiska (krótki debrief)"]
+  ]]
+ ]
+}

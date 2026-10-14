@@ -15,11 +15,14 @@ der Lohnabrechnung stehen.
 
 ## Corporate Design (verbindlich für Artefakte, Dashboards, Präsentationen)
 Farben, Schriften, Radien und Abstände stehen in `branding/feind-ci.tokens.json`
-und sind die einzige Quelle – keine eigenen Paletten erfinden, keine Farbwerte
+und sind die einzige Quelle (Skill `feind-brand` erzeugt daraus den
+Theme-Block; `brand-guidelines` ist Anthropic-CI und gilt hier nicht) – keine eigenen Paletten erfinden, keine Farbwerte
 im Markup hart setzen.
 
-* Grün `#84bb20` ist Akzent- und Flächenfarbe. Auf Grün steht dunkles
-  Anthrazit `on-accent` `#263030` (5,9:1), nie Weiß; `#424e4e` erreicht auf Grün nur 3,7:1.
+* Grün `#84bb20` ist Akzent- und Flächenfarbe. Auf Grün steht Anthrazit
+  `#424e4e`, nie Weiß.
+  Schrift auf vollem Grün (Buttons) in `on-accent-strong` `#1f2525` (6,9:1),
+  weil `#424e4e` auf Grün nur 3,74:1 erreicht.
 * Grün nie als Textfarbe auf hellem Grund (2,3:1) – dort `accent-text` `#5e8a14`.
 * Rot `#e3000b` ausschließlich als Signal (Fehler, Fehlbuchung, Minus), nie als
   Schmuckfarbe und auf dunklem Grund nur als Fläche.
@@ -59,11 +62,20 @@ Datenhaltung im Artefakt-Speicher (`db`), nicht im HTML:
     Tages-Soll, 0,5 Tage), `sonderurlaub`, `krank`, `feiertag` (je Soll 0),
     `gleittag` (volles Soll, Ist 0). Mit Tagesart dürfen `books` leer sein.
 * `settings/general` = `{ weekHours, workdays: [1..5], seeded: true,
-  vacation: { "2026": 30, "2027": 30 }, gleittag: false }`
+  vacation: { "2026": 30, "2027": 30 }, gleittag: false,
+  autoIn: { on: false, from: "05:00", to: "10:00" } }`
   * `vacation` = Urlaubsanspruch je Jahr, von Hand gepflegt (2026 vorläufig,
     Personalabteilung klärt). `gleittag` blendet die Tagesart ein.
+  * `autoIn` = automatisches Einstempeln beim Öffnen der Seite, nur im
+    Zeitfenster `from`–`to`, standardmäßig aus.
   * Das Dokument wird immer vollständig geschrieben – neue Felder in
     `settingsDoc()` ergänzen, sonst gehen sie beim Speichern verloren.
+
+Stempeluhr „Jetzt stempeln“: Standard ist die Erinnerung. An einem Arbeitstag
+ohne Feiertag, Tagesart und Buchung fragt die Seite nach, und erst der Klick
+bucht Kommen. Selbst bucht sie nur, wenn `autoIn.on` eingeschaltet ist.
+Gestempelt wird ins Artefakt, nicht in OptiTime; für die Abrechnung maßgeblich
+bleibt OptiTime. Die Seite wirkt nur, solange sie geöffnet ist.
 
 Feiertage Brandenburg werden im Artefakt berechnet (Ostern nach Gauß) und nur
 nach Klick auf „übernehmen“ als `type: "feiertag"` gespeichert.
@@ -85,8 +97,8 @@ sollte:
   Artefakt-Speicher (`db`) berührt.
 * `to-tickets` – wenn die Spec in mehrere Arbeitsschritte zerfällt.
 
-Nur vorschlagen, nicht ungefragt ausführen. Ist das Plugin in der Sitzung
-nicht aktiv, darauf hinweisen und die Installation anbieten. Bei
+Nur vorschlagen, nicht ungefragt ausführen. Die Skills liegen unter
+`.claude/skills/` (siehe dortige README). Bei
 Kleinständerungen (Tippfehler, Farbwert, Einzeiler) entfällt der Vorschlag.
 
 ## Arbeitsweise bei Entscheidungen
@@ -99,3 +111,29 @@ Bestätigung ausführen.
 Auswahlmöglichkeiten (Optionen, Varianten, Rückfragen) immer **zum Anklicken**
 ausgeben (Multiple-Choice-Abfrage), nicht nur als Text – die empfohlene Option
 steht zuerst und ist als „(Empfohlen)“ markiert.
+
+## Sparsamer Umgang mit Nutzungsguthaben
+Verbindlich gilt `docs/arbeitsanweisung-sparsamkeit.md` (Rangfolge: Sicherheit
+und Datenschutz, diese Anweisung, aufgabenbezogene Anweisungen). Sorgfalt bleibt
+unangetastet: Die Regeln dieser Datei zu Rückfragen vor schwer umkehrbaren
+Aktionen, Multiple-Choice-Abfragen und Rechtsabteilungs-Hinweisen gelten
+weiter.
+
+Ausnahme zur Längengrenze (David, 2026-10-07): Das Standardformat mit fünf
+Abschnitten (Zusammenfassung, Empfehlung, Vorlage, Risiken, KPIs) hat Vorrang
+vor der 150-Wörter-Grenze. Innerhalb des Formats gilt weiter: keine
+Wiederholungen, keine Alternativen ohne Anfrage.
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues dieses Repos; in Cloud-Sessions ohne `gh` über die GitHub-MCP-Tools. Achtung: Solange das Repo öffentlich ist, sind auch Issues öffentlich – keine Personendaten. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Standard-Vokabular (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context (`GLOSSARY.md` + `docs/adr/` im Repo-Root, werden bei Bedarf angelegt). See `docs/agents/domain.md`.

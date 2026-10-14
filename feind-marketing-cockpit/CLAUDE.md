@@ -63,8 +63,9 @@ Nutzer: David, Marketing & Eventmanager, Fräsdienst-Service E. Feind GmbH.
 Einzige Quelle ist `branding/feind-ci.tokens.json` im Repository AIassistent; keine
 eigenen Paletten, keine hart gesetzten Farbwerte im Markup. Kurzfassung:
 
-* Feind-Grün `#84bb20` ist Akzent- und Flächenfarbe; auf Grün steht dunkles
-  Anthrazit `on-accent` `#263030` (5,9:1), nie Weiß; `#424e4e` erreicht auf Grün nur 3,7:1.
+* Feind-Grün `#84bb20` ist Akzent- und Flächenfarbe; auf Grün steht Anthrazit
+  `on-accent` `#424e4e`, nie Weiß. Schrift auf vollem Grün in `on-accent-strong`
+  `#1f2525` (6,9:1), weil `#424e4e` dort nur 3,74:1 erreicht.
 * Grün nie als Textfarbe auf hellem Grund (2,3:1) – dort `accent-text` `#5e8a14`.
 * Rot `#e3000b` nur als Signal (Fehler, Frist überschritten, Minus), nie als Schmuck;
   auf dunklem Grund nur als Fläche, Text dort `signal-text`.

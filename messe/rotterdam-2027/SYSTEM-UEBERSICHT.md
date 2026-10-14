@@ -1,6 +1,6 @@
 # Messeplanung InfraTech 2027 — Systemübersicht & Rund-um-Check
 
-Stand 29.09.2026. Diese Seite dokumentiert **alle Bausteine, Verknüpfungen und Prozesse**
+Stand 02.10.2026. Diese Seite dokumentiert **alle Bausteine, Verknüpfungen und Prozesse**
 der Messeplanung, benennt **blinde Flecken** und hält fest, was zuletzt verbessert wurde.
 Ziel: ein rundes, überschaubares Gesamtbild – eine Quelle pro Zweck, keine Doppelpflege.
 
@@ -9,7 +9,7 @@ Ziel: ein rundes, überschaubares Gesamtbild – eine Quelle pro Zweck, keine Do
 | Baustein | Zweck | Kopplung / Quelle |
 |---|---|---|
 | **Google Sheet** „Aufgabenliste_Team_Marketing_FEIND" | **Führende Quelle für Team-Aufgaben & Status** (Automatik: Wochenmail, Log, Backup, Archiv) | Neuer Tab „Messe-Aufgaben" = Live-Sicht (Apps Script) auf Thema Events/InfraTech |
-| **Cockpit-Artefakt** `4zX58…` (db) – „Feind Cockpit“ v1.1 | Marketing · InfraTech 2027 · Admin: Dashboard, Aufgaben, **Checkliste 26→27**, Fristen, Budget, KPIs, Lessons, Faktencheck | Eigene Artefakt-DB; Aufgaben ↔ Sheet über den Import + Agent-Report (kein Echtzeit-Sync). Quelle: `feind-cockpit.html` |
+| **Cockpit-Artefakt** `GRG81…` (db) – „Feind Cockpit (Copy)“ v3.1, führend seit 02.10.2026 | Marketing · InfraTech 2027 · Admin: Dashboard, Aufgaben, **Checkliste 26→27**, Fristen, Budget, KPIs, Lessons, Faktencheck | Eigene Artefakt-DB; Aufgaben ↔ Sheet über den Import + Agent-Report (kein Echtzeit-Sync). Quelle: `feind-cockpit-v3.html` |
 | **Checkliste-Artefakt** `2FT2wp…` | Ursprüngliche ToDo-Liste (64 Punkte, 12 Kategorien) | **Ins Cockpit übernommen** (Reiter „Checkliste 26→27“, db `checkliste/<Kategorie-Punkt>`); Original bleibt unverändert als Archiv |
 | **ClickUp-Liste** | Ticket-/Epic-Sicht (7 Epics/~15) | Bisher **lose**, kein automatischer Abgleich |
 | **Notion-Projektseite** | Projekt-/Doku-Ebene | Bisher **lose** |
@@ -30,12 +30,12 @@ Ziel: ein rundes, überschaubares Gesamtbild – eine Quelle pro Zweck, keine Do
 | **B1** | Innovationspreis-Frist (25.09.2026). | ✅ erledigt | Fristgerecht eingereicht; Status: warten auf Rückmeldung. |
 | **B2/B3** | **Mehrere Aufgaben-Systeme** (Sheet, Cockpit, ClickUp, Notion, Checkliste). | ✅ entschieden | Rollen fixiert (siehe Abschnitt 6): **ClickUp wird stillgelegt**, Notion **bleibt als Wissens-Hub**. |
 | **B4** | **Verbindliche 2027-Ahoy-Fristen** – jetzt aus Handbuch V1.3 belegt (Notion-Hub). | ✅ teils geklärt | In Abschnitt 7 übernommen; verbleibend: Bauhöhe/Bodenlast/Maschinenregeln aus Ahoy-Portal. |
-| **B9** | **Stand 5.209** – Feind steht auf der Ausstellerliste; Portal zeigt nur Essen 2028. | 🔴 kritisch | Intern klären, ob Rotterdam 2027 bereits (unter anderem Login) angemeldet ist, bevor neu angemeldet wird. |
+| **B9** | **Stand 5.209** | ✅ erledigt | Buchung für Rotterdam 2027 bestätigt (vermerkt 02.10.2026). Offen bleibt nur: 2027-Handbuch und Portalzugang (Aufgabe s1). |
 | **B10** | **Owner/Projektleitung 2027** | ✅ erledigt | **David Halko (Marketing Manager)**, bestätigt 29.09.2026. |
-| **B5** | PR #13 gemergt; **PR #22** (Konsolidierung + Checkliste) offen. | 🟡 mittel | PR #22 prüfen und mergen. |
+| **B5** | PR #13 und PR #22 gemergt. | ✅ erledigt | – |
 | **B6** | **Team-Zugriff aufs Cockpit** – Artefakt ist privat (nur David). | 🟡 mittel | Bei Bedarf über „Teilen" freigeben (Team-Tab existiert im Cockpit). |
 | **B7** | **Agent-Automatik ohne Connector** – die Wochen-Routine konnte Sheet/db nicht selbst lesen. | 🟡 mittel | Charter + Routine ergänzt (liest jetzt das Sheet read-only, meldet Deltas). |
-| **B8** | **Standnummer 2027** noch „tbd". | 🟡 mittel | Mit Handbuch/Portalzugang klären (Aufgabe vorhanden). |
+| **B8** | **Standnummer 2027** | ✅ erledigt | Stand 5.209 (Buchung bestätigt, siehe B9). |
 
 ## 4. Zuletzt verbessert (dieser Durchlauf)
 - Apps-Script **erkennt Tab/Kopfzeile/Spalten automatisch** (Tab-Name muss nicht bekannt sein) + Menüpunkt „Erkannten Aufgaben-Tab anzeigen".
@@ -71,6 +71,6 @@ Nach Prüfung der tatsächlichen Inhalte gilt „eine Quelle pro Zweck":
 | Kontakt | info@infratech.nl · Logistik DSV-VRS: fairs.rotterdam@dsv.com |
 
 ## 7. Nächste Entscheidungen/Aktionen für David
-1. **B9 – Stand 5.209:** intern klären, ob Rotterdam 2027 schon angemeldet ist (Login/Konto).
+1. ~~B9 – Stand 5.209 klären~~ → erledigt: Buchung bestätigt. Nächster Schritt: 2027-Handbuch und Portalzugang anfordern (Aufgabe s1).
 2. ~~B10 – Owner benennen~~ → erledigt: David Halko (Marketing Manager).
 3. **ClickUp stilllegen:** Liste „Messe Rotterdam 2027 – InfraTech" umbenennen in „ZZ ARCHIV …" (wie beim Doppel) oder schließen, sobald der Sheet-Import erfolgt ist.
