@@ -5,8 +5,10 @@ import { fileURLToPath } from 'node:url';
 
 export const PAGE = fileURLToPath(new URL('../feind-cockpit-v3.html', import.meta.url));
 
-export function loadModule(name) {
-  const html = readFileSync(PAGE, 'utf8');
+export const HUB = fileURLToPath(new URL('../messe-hub.html', import.meta.url));
+
+export function loadModule(name, page = PAGE) {
+  const html = readFileSync(page, 'utf8');
   const marker = `/* ---- ${name} ---- */`;
   const start = html.indexOf(marker);
   if (start < 0) throw new Error(`Modul ${name} nicht gefunden`);
