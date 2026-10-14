@@ -104,10 +104,11 @@
     return { notion, local, owned };
   }
 
-  function toProps(fields) {
+  function toProps(fields, roles) {
     const p = {};
     for (const [k, v] of Object.entries(fields || {})) {
-      if (k === 'status') p.Status = STATUS[v] || 'offen';
+      if (k === 'owner') { const r = (roles || []).find(x => x.key === v); if (r) p['Zuständig (Rolle)'] = r.label; }
+      else if (k === 'status') p.Status = STATUS[v] || 'offen';
       else if (k === 'prio') p['Priorität'] = /^P[012]$/.test(str(v)) ? v : 'P2';
       else if (k === 'note') p.Notiz = str(v).slice(0, 1900);
       else if (k === 'beschluss') p.Beschluss = str(v).slice(0, 1900);
@@ -150,3 +151,4 @@
 
   return { STATUS, FLAG, WRITABLE, NOTION_OWNED, LABEL, pageId, rowToTask, rowsToTasks, splitPatch, toProps, newTaskProps, conflicts, norm };
 });
+

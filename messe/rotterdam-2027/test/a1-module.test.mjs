@@ -2,15 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-// Aus A1 übernommene Module müssen unverändert in v3 stecken (Quelle: cockpit-a1/src).
+// Seit 14.10.2026 ist A1 (cockpit-a1/Feind-Cockpit-A1.html) wieder führend und v3 eingefrorenes Archiv.
+// Die Richtung hat sich umgekehrt: die aus A1 nach v3 übernommenen Module müssen im führenden A1 erhalten bleiben.
 const html = readFileSync(new URL('../feind-cockpit-v3.html', import.meta.url), 'utf8');
-
-for (const f of ['notion-tasks.js', 'app-notion-tasks.js', 'brennglas.js']) {
-  test('v3 enthält ' + f + ' im Stand von cockpit-a1/src', () => {
-    const src = readFileSync(new URL('../../../cockpit-a1/src/' + f, import.meta.url), 'utf8').trimEnd();
-    assert.ok(html.includes(src), f + ' weicht vom A1-Quellstand ab');
-  });
-}
 
 const a1 = readFileSync(new URL('../../../cockpit-a1/Feind-Cockpit-A1.html', import.meta.url), 'utf8');
 // Abschnitt „/* ---- name ---- */“ bis zum nächsten Marker bzw. Block-Ende
@@ -24,13 +18,12 @@ function section(s, name) {
 }
 
 for (const f of ['app-actions.js', 'app-tooltip.js', 'actionbar.css', 'tooltip.css']) {
-  test('v3 enthält ' + f + ' im Stand von A1', () => {
-    const v = section(html, f);
-    assert.ok(v, f + ' fehlt in v3');
-    assert.equal(v, section(a1, f), f + ' weicht zwischen A1 und v3 ab');
+  test('führendes A1 enthält ' + f + ' (aus v3 übernommen)', () => {
+    assert.ok(section(html, f), f + ' fehlt im Archivstand v3');
+    assert.ok(section(a1, f), f + ' fehlt im führenden A1');
   });
 }
 
-test('v3 hat Aktionsleiste und Notion-Stand im Markup', () => {
-  for (const id of ['actionBar', 'dataStand']) assert.ok(html.includes('id="' + id + '"'), id + ' fehlt');
+test('A1 und v3 haben Aktionsleiste und Notion-Stand im Markup', () => {
+  for (const s of [html, a1]) for (const id of ['actionBar', 'dataStand']) assert.ok(s.includes('id="' + id + '"'), id + ' fehlt');
 });
