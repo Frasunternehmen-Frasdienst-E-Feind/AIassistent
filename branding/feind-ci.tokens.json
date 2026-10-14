@@ -1,6 +1,6 @@
 {
   "name": "Fräsdienst-Service E. Feind GmbH – Corporate Design",
-  "source": "Design-System-Artefakt (project/tokens.json), Stand 2026-09; on-accent und Warnfarben ergänzt 04.10.2026 (Entscheidung David, Barrierefreiheit), freigegeben von David als CI-Verantwortlichem am 04.10.2026; on-accent beim Merge mit main am 14.10.2026 auf #424e4e + on-accent-strong #1f2525 vereinheitlicht (Entscheidung David)",
+  "source": "Design-System-Artefakt (project/tokens.json), Stand 2026-09; on-accent und Warnfarben ergänzt 04.10.2026 (Entscheidung David, Barrierefreiheit), freigegeben von David als CI-Verantwortlichem am 04.10.2026; on-accent beim Merge mit main am 14.10.2026 auf #424e4e + on-accent-strong #1f2525 vereinheitlicht und Warnung auf Signal-Gelbgrün #d6e000 umgestellt (Entscheidung David)",
   "palette": {
     "feind-gruen": "#84bb20",
     "anthrazit": "#424e4e",
@@ -27,8 +27,9 @@
       "line": "#d5dada",
       "focus": "#424e4e",
       "accent-ink": "#4d7311",
-      "warn": "#b5730a",
-      "warn-text": "#8a5500",
+      "warn": "#d6e000",
+      "warn-text": "#424e4e",
+      "on-warn": "#424e4e",
       "print-ink": "#1f2626"
     },
     "dark": {
@@ -48,8 +49,9 @@
       "line": "#4d5858",
       "focus": "#84bb20",
       "accent-ink": "#a6d65a",
-      "warn": "#f0b440",
-      "warn-text": "#f0b440"
+      "warn": "#d6e000",
+      "warn-text": "#d6e000",
+      "on-warn": "#424e4e"
     }
   },
   "typography": {
@@ -74,6 +76,6 @@
     "Feind-Rot auf dunklem Grund erreicht nur 2,5:1 – dort signal-text verwenden, Rot nur als Fläche oder Linie.",
     "Auf Grün steht Anthrazit (on-accent), nie Weiß.",
     "Schrift auf vollem Grün (Primär-Buttons) in on-accent-strong #1f2525 (6,9:1); on-accent #424e4e erreicht nur 3,74:1 und bleibt für Flächen, Symbole und große Schrift.",
-    "accent-ink (#4d7311) und warn-text (#8a5500) sind Textfarben auf hellem Grund (5,6:1 bzw. 6,2:1); warn nur als Fläche oder Linie."
+    "accent-ink (#4d7311) ist Textfarbe für Grün auf hellem Grund (5,6:1). Warnung: warn #d6e000 nur als Fläche, Schrift und Symbol darauf in on-warn #424e4e (5,97:1); nie als Text oder Linie auf hellem Grund (1,45:1)."
   ]
 }

@@ -11,8 +11,9 @@
 /* ---- tokens.css ---- */
 /* Tokens: ein Satz für alle drei Welten (Quelle: branding/feind-ci.tokens.json, Spec Anhang B).
    Pflicht: --accent #84bb20, --signal #e3000b, --surface-inverse #424e4e.
-   Kontrast (WCAG AA): Grün und Bernstein tragen Flächen, Linien und Symbole; kleiner Text
-   auf hellem Grund nutzt --accent-ink, --warn-text, --signal-text. */
+   Kontrast (WCAG AA): Grün trägt Flächen, Linien und Symbole; Warnung ist Signal-Gelbgrün
+   #d6e000 nur als Fläche, darauf --on-warn (Anthrazit, 5,97:1). Kleiner Text auf hellem
+   Grund nutzt --accent-ink, --warn-text, --signal-text (farbsystem.md 1.2). */
 :root {
   --accent: #84bb20;
   --accent-text: #5e8a14;
@@ -21,8 +22,9 @@
   --on-accent-strong: #1f2525; /* Text auf --accent: 6,9:1 */
   --signal: #e3000b;
   --signal-text: #b8000a;
-  --warn: #b5730a;
-  --warn-text: #8a5500;
+  --warn: #d6e000;
+  --warn-text: #424e4e;
+  --on-warn: #424e4e;
   --ok: #5e8a14;
   --crit: #b8000a;
   --surface: #ffffff;
@@ -42,7 +44,7 @@
   --accent-soft: #eef5e1;
   --signal-soft: #fde8e8;
   --signal-tint: #f9ccce; /* 20 % Feind-Rot auf Fläche: Prüfmeldungen (Wunsch David 06.10.2026), Text 5,6:1 */
-  --warn-soft: #fbf0dc;
+  --warn-soft: #f2f4f4;
   --shadow: #1f252533;
   --scrim: #1f2525b3;
   --bar-messe: #84bb20;
@@ -78,8 +80,8 @@
     --accent-text: #84bb20;
     --accent-ink: #a6d65a;
     --signal-text: #ff9a9f;
-    --warn: #f0b440;
-    --warn-text: #f0b440;
+    --warn: #d6e000;
+    --warn-text: #d6e000;
     --ok: #a6d65a;
     --crit: #ff9a9f;
     --surface: #2e3737;
@@ -98,7 +100,7 @@
     --accent-soft: #2f3d1e;
     --signal-soft: #3d1b1c;
     --signal-tint: #522c2e;
-    --warn-soft: #352710;
+    --warn-soft: #384242;
     --shadow: #00000066;
     --scrim: #000000b3;
     --bar-messe-t: #1c2222;
@@ -118,8 +120,8 @@
   --accent-text: #84bb20;
   --accent-ink: #a6d65a;
   --signal-text: #ff9a9f;
-  --warn: #f0b440;
-  --warn-text: #f0b440;
+  --warn: #d6e000;
+  --warn-text: #d6e000;
   --ok: #a6d65a;
   --crit: #ff9a9f;
   --surface: #2e3737;
@@ -138,7 +140,7 @@
   --accent-soft: #2f3d1e;
   --signal-soft: #3d1b1c;
     --signal-tint: #522c2e;
-  --warn-soft: #352710;
+  --warn-soft: #384242;
   --shadow: #00000066;
   --scrim: #000000b3;
   --bar-messe-t: #1c2222;
@@ -208,7 +210,7 @@ img, svg { max-width: 100%; }
 .store-state::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ink-inverse-muted); }
 .store-state.is-shared::before { background: var(--accent); }
 .store-state.is-readonly::before { background: var(--signal); }
-/* Datenstand des Notion-Tagesstands (snapshot/aktuell): grün aktuell, bernstein veraltet */
+/* Datenstand des Notion-Tagesstands (snapshot/aktuell): grün aktuell, Gelbgrün veraltet */
 .data-stand { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; border: 1px solid var(--ink-inverse-muted); padding: 3px 9px; color: var(--ink-inverse); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .data-stand::before { content: ""; width: 8px; height: 8px; flex: none; background: var(--ink-inverse-muted); }
 .data-stand.is-fresh::before { background: var(--accent); }
@@ -347,8 +349,8 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--accent-ink); }
 .chip svg { width: 10px; height: 10px; flex: none; }
 .chip.red { background: var(--signal); border-color: var(--signal); color: var(--ink-inverse); font-weight: 700; }
 .chip.red svg { fill: var(--ink-inverse); }
-.chip.yellow { background: var(--warn-soft); border: 1px dashed var(--warn); color: var(--warn-text); font-weight: 700; }
-.chip.yellow svg { fill: var(--warn); }
+.chip.yellow { background: var(--warn); border: 1px dashed var(--on-warn); color: var(--on-warn); font-weight: 700; }
+.chip.yellow svg { fill: var(--on-warn); }
 .chip.green { background: var(--accent-soft); border-color: var(--accent); color: var(--ink-strong); font-weight: 700; }
 .chip.green svg { fill: none; stroke: var(--accent-ink); }
 .chip.gone { color: var(--ink-muted); }
@@ -357,7 +359,7 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--accent-ink); }
 .chips { display: flex; flex-wrap: wrap; gap: 4px; }
 .pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; font-weight: 700; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; border: 1px solid transparent; line-height: 16px; }
 .pill.p0, .pill.block, .pill.recht, .pill.over { background: var(--signal-soft); color: var(--signal-text); }
-.pill.p1, .pill.wait, .pill.flag, .pill.soon { background: var(--warn-soft); color: var(--warn-text); }
+.pill.p1, .pill.wait, .pill.flag, .pill.soon { background: var(--warn); color: var(--on-warn); }
 .pill.p2, .pill.open, .pill.own, .pill.due { border-color: var(--line); color: var(--ink); background: var(--panel); }
 .pill.ready, .pill.done, .pill.custom { background: var(--accent-soft); color: var(--accent-ink); }
 .pill.is-top { background: var(--accent-soft); color: var(--ink-strong); box-shadow: inset 3px 0 0 var(--accent); }
@@ -5022,7 +5024,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     if (ds && app.planStand) {
       const p = app.planStand();
       ds.textContent = p.label;
-      ds.setAttribute('data-tip', p.title + (p.stale ? '' : ' Grün: aktuell; Bernstein-Raute: veraltet.'));
+      ds.setAttribute('data-tip', p.title + (p.stale ? '' : ' Grün: aktuell; gelbgrüne Raute: veraltet.'));
       ds.className = 'data-stand' + (p.stale ? ' is-stale' : p.fresh ? ' is-fresh' : '');
     }
     const cfg = app.cfg();
@@ -5761,7 +5763,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   // Kennzahlen-Leiste (aus dem Floot-Entwurf übernommen, nur echte Daten): Kachel öffnet das Modul.
   function kpiStrip() {
     const t = today();
-    const TIP = { tenders: 'Offene Ausschreibungen mit Frist ab heute. Rot, wenn die nächste Frist in der roten Ampelzone liegt. Klick öffnet den Monitor.', leads: 'Neue Leads der letzten 30 Tage; qualifiziert = über „Neu“ hinaus, ohne „Verloren“. Klick öffnet die Pipeline.', events: 'Events ab heute; Prozent = erledigte Punkte der Checkliste des nächsten Events (InfraTech 2027: erledigte Notion-Aufgaben).', content: 'Beiträge in Entwurf, Review oder freigegeben; Bernstein, wenn etwas im Review wartet.' };
+    const TIP = { tenders: 'Offene Ausschreibungen mit Frist ab heute. Rot, wenn die nächste Frist in der roten Ampelzone liegt. Klick öffnet den Monitor.', leads: 'Neue Leads der letzten 30 Tage; qualifiziert = über „Neu“ hinaus, ohne „Verloren“. Klick öffnet die Pipeline.', events: 'Events ab heute; Prozent = erledigte Punkte der Checkliste des nächsten Events (InfraTech 2027: erledigte Notion-Aufgaben).', content: 'Beiträge in Entwurf, Review oder freigegeben; Gelbgrün, wenn etwas im Review wartet.' };
     const tile = (cls, v, k, sub, go, ic) => h('button', { class: 'kpi' + (cls ? ' ' + cls : ''), type: 'button', 'data-tip': TIP[go] || null, onclick: () => app.go('marketing', go), 'aria-label': k + ': ' + v + '. ' + sub + '. Modul öffnen' },
       app.ico(ic), h('div', { class: 'v', text: String(v) }), h('div', { class: 'k', text: k }), h('div', { class: 'sub', text: sub }));
     const ready = c => S.loaded[c];
@@ -7177,7 +7179,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       const more = h('button', { class: 'btn ghost', type: 'button', id: 'it-arch', 'aria-pressed': String(ui.archived), onclick: () => { ui.archived = !ui.archived; rerender(); } },
         ui.archived ? 'Aktive Aufgaben zeigen' : 'Archiv zeigen' + (nArch ? ' (' + nArch + ')' : ''));
       const actions = h('div', { class: 'it-actions' },
-        app.tipBtn('Legende: P0 kritisch, P1 wichtig, P2 normal. Rote Pille: überfällig; Bernstein: in 14 Tagen fällig. „Fakt prüfen“ und „Recht prüfen“ markieren offene Klärungen. „Details“ zeigt die Notiz der Aufgabe. Exporte und PDF über die Aktionsleiste oben.', 'Legende Aufgaben'),
+        app.tipBtn('Legende: P0 kritisch, P1 wichtig, P2 normal. Rote Pille: überfällig; Gelbgrün: in 14 Tagen fällig. „Fakt prüfen“ und „Recht prüfen“ markieren offene Klärungen. „Details“ zeigt die Notiz der Aufgabe. Exporte und PDF über die Aktionsleiste oben.', 'Legende Aufgaben'),
         h('button', { class: 'btn primary', type: 'button', disabled: ro(), onclick: () => openTaskModal(null) }, icon('plus'), 'Neue Aufgabe'),
         app.startMeeting ? h('button', { class: 'btn', type: 'button', id: 'it-meeting', disabled: ro(), onclick: () => app.startMeeting() }, icon('cal'), ((S.data.meetings || []).some(m => m.status === 'offen') ? 'Meeting fortsetzen' : 'Meeting starten')) : null,
         more);
