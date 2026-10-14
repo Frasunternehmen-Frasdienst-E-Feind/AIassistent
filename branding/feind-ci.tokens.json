@@ -1,6 +1,6 @@
 {
   "name": "Fräsdienst-Service E. Feind GmbH – Corporate Design",
-  "source": "Design-System-Artefakt (project/tokens.json), Stand 2026-09",
+  "source": "Design-System-Artefakt (project/tokens.json), Stand 2026-09; on-accent und Warnfarben ergänzt 04.10.2026 (Entscheidung David, Barrierefreiheit), freigegeben von David als CI-Verantwortlichem am 04.10.2026; on-accent beim Merge mit main am 14.10.2026 auf #424e4e + on-accent-strong #1f2525 vereinheitlicht und Warnung auf Signal-Gelbgrün #d6e000 umgestellt (Entscheidung David)",
   "palette": {
     "feind-gruen": "#84bb20",
     "anthrazit": "#424e4e",
@@ -25,7 +25,12 @@
       "ink-muted": "#6b7575",
       "ink-inverse": "#ffffff",
       "line": "#d5dada",
-      "focus": "#424e4e"
+      "focus": "#424e4e",
+      "accent-ink": "#4d7311",
+      "warn": "#d6e000",
+      "warn-text": "#424e4e",
+      "on-warn": "#424e4e",
+      "print-ink": "#1f2626"
     },
     "dark": {
       "accent": "#84bb20",
@@ -42,19 +47,35 @@
       "ink-muted": "#b8bfbf",
       "ink-inverse": "#ffffff",
       "line": "#4d5858",
-      "focus": "#84bb20"
+      "focus": "#84bb20",
+      "accent-ink": "#a6d65a",
+      "warn": "#d6e000",
+      "warn-text": "#d6e000",
+      "on-warn": "#424e4e"
     }
   },
   "typography": {
     "display": "Exo, \"Arial Black\", Arial, sans-serif",
     "sans": "\"Helvetica Neue\", Helvetica, Arial, sans-serif"
   },
-  "radius": { "default": "0px", "input": "2px", "button": "4px" },
-  "spacing": ["4px", "8px", "16px", "24px", "40px", "64px"],
+  "radius": {
+    "default": "0px",
+    "input": "2px",
+    "button": "4px"
+  },
+  "spacing": [
+    "4px",
+    "8px",
+    "16px",
+    "24px",
+    "40px",
+    "64px"
+  ],
   "kontrastregeln": [
     "Feind-Grün auf Weiß erreicht nur 2,3:1 – niemals als Textfarbe auf hellem Grund; dafür accent-text verwenden.",
     "Feind-Rot auf dunklem Grund erreicht nur 2,5:1 – dort signal-text verwenden, Rot nur als Fläche oder Linie.",
     "Auf Grün steht Anthrazit (on-accent), nie Weiß.",
-    "Schrift auf vollem Grün (Primär-Buttons) in on-accent-strong #1f2525 (6,9:1); on-accent #424e4e erreicht nur 3,74:1 und bleibt für Flächen, Symbole und große Schrift."
+    "Schrift auf vollem Grün (Primär-Buttons) in on-accent-strong #1f2525 (6,9:1); on-accent #424e4e erreicht nur 3,74:1 und bleibt für Flächen, Symbole und große Schrift.",
+    "accent-ink (#4d7311) ist Textfarbe für Grün auf hellem Grund (5,6:1). Warnung: warn #d6e000 nur als Fläche, Schrift und Symbol darauf in on-warn #424e4e (5,97:1); nie als Text oder Linie auf hellem Grund (1,45:1)."
   ]
 }
