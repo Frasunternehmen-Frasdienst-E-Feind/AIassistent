@@ -192,9 +192,20 @@
     finally { nt.busy--; }
   }
 
+  // Schreibvorgänge je Aufgabe strikt nacheinander: Eine zweite Änderung startet erst, wenn die erste
+  // (Neu-Lesen, Konfliktprüfung, Update) fertig ist – sonst könnte der ältere Wert zuletzt ankommen.
+  const queues = new Map();
+  function serial(id, fn) {
+    const run = (queues.get(id) || Promise.resolve()).catch(() => {}).then(fn);
+    queues.set(id, run);
+    run.finally(() => { if (queues.get(id) === run) queues.delete(id); }).catch(() => {});
+    return run;
+  }
+
   // Alle Aufgaben-Schreibvorgänge (Liste, Dialog, Meeting-Modus) laufen hier durch.
   const origPatch = app.cmd.tasks.patch;
-  app.cmd.tasks.patch = async function (id, patch) {
+  app.cmd.tasks.patch = function (id, patch) { return serial(id, () => patchTask(id, patch)); };
+  async function patchTask(id, patch) {
     const cur = findTask(id);
     const linked = app.notionLinked(cur);
     if (linked) {
@@ -221,7 +232,7 @@
       else app.toast('Aufgabe im Cockpit gespeichert, aber noch nicht in Notion. Über „Nach Notion übertragen“ nachholen.', true);
     }
     return ok;
-  };
+  }
 
   // Mehrere Aufgaben in einem Durchgang (PDF-Rücklauf): einmal frisch lesen, in Notion inzwischen geänderte Felder
   // mit Rückfrage, dann je Aufgabe update_properties. items: [{ cur, fields }]; cur ist der angezeigte Stand.
@@ -264,11 +275,19 @@
     if (nt.state !== 'live') return [];
     return FC.model.allTasks([], S.data.tasks || []).filter(t => t.custom && !nt.byId.has(t.id));
   }
+  let pushing = false;
   async function pushPending() {
-    const list = pending();
-    let n = 0;
-    for (const t of list) { if (await createNotion(t.id, t)) { n++; await origPatch(t.id, { notionPending: false }); } else break; }
-    app.toast(n + ' von ' + list.length + ' Aufgaben nach Notion übertragen.', n < list.length);
+    if (pushing) return;
+    pushing = true;
+    app.refresh();
+    try {
+      const list = pending();
+      let n = 0;
+      for (const t of list) { if (await createNotion(t.id, t)) { n++; await origPatch(t.id, { notionPending: false }); } else break; }
+      app.toast(n + ' von ' + list.length + ' Aufgaben nach Notion übertragen.', n < list.length);
+      // Erst nach dem Neuladen kennt nt.byId die neuen Zeilen; vorher würde pending() sie erneut anbieten.
+      if (n) await load(true).catch(() => {});
+    } finally { pushing = false; app.refresh(); }
   }
 
   /* ---------- Statuszeile im Aufgaben-Modul ---------- */
@@ -284,7 +303,7 @@
       h('span', { class: 'num', id: 'it-src-meta', text: when + ' · ' + src.count + ' Aufgaben' }),
       detail ? h('span', { class: 'muted', text: detail }) : null,
       nt.dupes.length ? h('span', { class: 'pill flag', text: 'Doppelte Cockpit-ID in Notion: ' + Array.from(new Set(nt.dupes)).join(', ') }) : null,
-      pend.length && !app.ro() ? h('button', { class: 'btn small', type: 'button', onclick: pushPending }, pend.length + ' nach Notion übertragen') : null,
+      pend.length && !app.ro() ? h('button', { class: 'btn small', type: 'button', disabled: pushing, 'aria-busy': String(pushing), onclick: pushPending }, pushing ? 'Wird übertragen …' : pend.length + ' nach Notion übertragen') : null,
       inViewer() ? h('button', { class: 'linkbtn', type: 'button', 'data-tip': 'Lädt die Aufgaben sofort neu aus Notion.', onclick: () => load(true) }, 'Neu laden') : null,
       h('a', { href: CFG.db, target: '_blank', rel: 'noopener', class: 'small' }, 'In Notion öffnen'));
   };
