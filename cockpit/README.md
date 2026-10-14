@@ -142,7 +142,11 @@ zu höchstens 50 Schreibvorgängen für `ArtifactData batch`. Eingaben: Cockpit-
 - Adresse: https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd (Feind Cockpit A1, seit 14.10.2026 wieder führend;
   Quelle `cockpit-a1/Feind-Cockpit-A1.html`). Diese Adresse nutzt auch der Skill `cockpit-sync`.
 - GRG81 (https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i, v3 „Feind Cockpit (Copy)“) war vom 08.10. bis 14.10.2026
-  führend und ist jetzt Altstand: nicht mehr beschreiben. Die folgenden zwei Punkte sind historisch.
+  führend und ist jetzt Altstand: nicht mehr beschreiben.
+- 14.10.2026: TfuzbG als Version 69 veröffentlicht (KPI-Modul, Diagrammfarben, Notion-Warteschlange). Daten nur ergänzt,
+  0 überschrieben: 3 `kpis`, 4 Textbausteine (`knowledge`, Kategorie `templates`), aus GRG81 14 `kb_items` mit
+  12 kopierten Fotos, 1 `kb_text`, `activity/2026-10-06`. Archiv markiert: GRG81 (Titel „Feind Cockpit (Archiv)“ und Banner),
+  KOMPASS KPI-Tracker und E.F. Cockpit (Titel und Notiz). Gelöscht wurde nichts. Die folgenden zwei Punkte sind historisch.
 - Veröffentlicht am 08.10.2026 (Version 10, Laufzeitvertrag 0.2.54) mit den A1-Funktionen; Datenrest aus A1
   übertragen (1 Protokoll, 2 Aktivitätstage), 0 Löschungen.
 - Historisch: A4 (https://claude.ai/artifact/4zX58mseXB9vbspN8xAzJ2) ist gelöscht; die folgenden
