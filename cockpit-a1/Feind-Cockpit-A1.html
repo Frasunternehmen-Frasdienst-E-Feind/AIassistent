@@ -2591,6 +2591,46 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
   /* Lange Texte: Beschriftung über dem Wert statt daneben */
   table.rt-stack tbody td.d2-long { grid-template-columns: minmax(0, 1fr); gap: 2px; }
 }
+
+/* ---- Responsive-Korrekturen 14.10.2026 ---- */
+/* Gantt und breite Tabellen bleiben am Bildschirm seitlich wischbar; die gerundeten Ecken (Design 2.0) hatten sie abgeschnitten. */
+@media screen { .gantt-scroll, .tbl-wrap { overflow-x: auto; overflow-y: hidden; } }
+/* Prüfliste und Projektliste: lange Dateinamen und Hinweise brechen um, statt die Seite zu verbreitern. */
+.kb-review > li > .stack { min-width: 0; }
+.kb-review .linkbtn, .kb-review b, .kb-t, .kb-s { overflow-wrap: anywhere; }
+.kb-review .chip { white-space: normal; text-align: left; border-radius: 10px; padding: 3px 9px; line-height: 1.35; }
+@media (max-width: 640px) {
+  /* Knöpfe in eine eigene Zeile, damit der Text die Breite neben dem Vorschaubild behält. */
+  .kb-review > li > .row { flex: 1 0 100%; flex-wrap: wrap; }
+  /* Die Mobil-Regel weiter oben wurde von späteren Kartenregeln überschrieben; hier gilt sie wieder. */
+  .kb-t, .kb-s { display: block; -webkit-line-clamp: unset; overflow: visible; }
+  .kb-track .tk .lbl { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+}
+/* Touch: Tippflächen mindestens 44 px, Eingaben 16 px (sonst zoomt iOS beim Tippen). */
+@media (pointer: coarse) {
+  select, input[type="search"], input[type="text"], input[type="date"], input[type="number"], input[type="url"], input[type="email"], input[type="tel"], .task .stsel,
+  .btn.small, .ab-btn, .fchip, .lc-btn { min-height: 44px; }
+  select, input[type="search"], input[type="text"], input[type="date"], input[type="number"], input[type="url"], input[type="email"], input[type="tel"], textarea { font-size: 16px; }
+  .iconbtn, .lc-btn { min-width: 44px; }
+  summary { padding-block: 12px; }
+  .check input, input[type="checkbox"], input[type="radio"] { width: 24px; height: 24px; }
+  /* Kleine Kästchen und Plaketten: sichtbar gleich groß, aber größere unsichtbare Tippfläche. */
+  .cb, .tip-i, .tip-note, a.chip { position: relative; }
+  .cb::after, .tip-i::after, .tip-note::after, a.chip::after { content: ''; position: absolute; inset: -10px; }
+}
+
+
+/* ---- Responsive-Ergänzung (Okt. 2026): Restbefunde aus dem Prüflauf über alle Module ---- */
+.pill { max-width: 100%; }
+.pill.block, .pill.blocked { white-space: normal; overflow-wrap: anywhere; }
+/* Titel der Wissenskarten auch auf Tablets vollständig statt nach zwei Zeilen abgeschnitten. */
+.kb-t { display: block; -webkit-line-clamp: unset; overflow: visible; }
+@media (pointer: coarse) {
+  .fc-hrow.fc-hit { min-height: 36px; }
+  .linkbtn, a.small { display: inline-flex; align-items: center; min-height: 36px; }
+  .panel h4 > a, .ms-row .t > a { display: inline-block; padding-block: 6px; }
+  input[type="checkbox"][id^="mv-"] { width: 32px; height: 32px; min-width: 32px; }
+}
 </style>
 <a class="skip" href="#main">Zum Inhalt springen</a>
 <header class="top">
@@ -16096,9 +16136,19 @@ let shown = false, hideT = null;
         if (map.dragging) { if (atMin) map.dragging.disable(); else map.dragging.enable(); }
         box.classList.toggle('gm-atmin', atMin);
         if (!atMin) return;
-        const c = fitCenter();
-        if (map.latLngToContainerPoint(c).distanceTo(map.getSize().divideBy(2)) > 1) map.panTo(c, { animate: animate !== false, duration: 0.25 });
+        // Ziel ist die Mitte, soweit maxBounds sie zulässt (hohe, schmale Karten auf dem Handy).
+        const c0 = fitCenter(), mb = map.options.maxBounds;
+        const c = mb && map._limitCenter ? map._limitCenter(c0, map.getZoom(), mb) : c0;
+        if (map.latLngToContainerPoint(c).distanceTo(map.getSize().divideBy(2)) <= 1) { lastPan = ''; tries = 0; return; }
+        // Höchstens drei Versuche je Ziel: klemmt maxBounds das Ziel (schmale Bildschirme), entstünde sonst eine Endlosschleife.
+        const key = map.getZoom().toFixed(3) + ':' + c.lat.toFixed(5) + ',' + c.lng.toFixed(5);
+        if (panning) return;
+        if (key !== lastPan) { lastPan = key; tries = 0; }
+        if (++tries > 3) return;
+        panning = true;
+        try { map.panTo(c, { animate: animate !== false, duration: 0.25 }); } finally { panning = false; }
       }
+      let panning = false, lastPan = '', tries = 0;
       map.on('zoomend moveend', () => recenter(true));
       calibrate();
       if (views[id]) { map.setView(views[id].c, views[id].z, { animate: false }); map._fcMoved = true; }
