@@ -1,5 +1,5 @@
 {
-  "stand": "2026-10-08T12:16:51.791Z",
+  "stand": "2026-10-12T21:29:23.404Z",
   "module": [
     {
       "welt": "marketing",
@@ -7,7 +7,7 @@
       "name": "Auf einen Blick",
       "theme": "light",
       "fehler": [],
-      "kontrastGeprueft": 158,
+      "kontrastGeprueft": 159,
       "kontrastFehler": [],
       "animationenTrotzReduziert": 0,
       "querUeberlauf390": 0
@@ -18,7 +18,7 @@
       "name": "Copilot",
       "theme": "light",
       "fehler": [],
-      "kontrastGeprueft": 94,
+      "kontrastGeprueft": 95,
       "kontrastFehler": [],
       "animationenTrotzReduziert": 0,
       "querUeberlauf390": 0
@@ -128,7 +128,7 @@
       "name": "Dashboard",
       "theme": "light",
       "fehler": [],
-      "kontrastGeprueft": 149,
+      "kontrastGeprueft": 150,
       "kontrastFehler": [],
       "animationenTrotzReduziert": 0,
       "querUeberlauf390": 0
@@ -139,7 +139,7 @@
       "name": "Aufgaben",
       "theme": "light",
       "fehler": [],
-      "kontrastGeprueft": 665,
+      "kontrastGeprueft": 666,
       "kontrastFehler": [],
       "animationenTrotzReduziert": 0,
       "querUeberlauf390": 0
@@ -268,7 +268,7 @@
     {
       "welt": "wissen",
       "modul": "eingang",
-      "name": "Eingang",
+      "name": "Wissens-Upload",
       "theme": "light",
       "fehler": [],
       "kontrastGeprueft": 56,
@@ -392,7 +392,7 @@
       "name": "Auf einen Blick",
       "theme": "dark",
       "fehler": [],
-      "kontrastGeprueft": 158,
+      "kontrastGeprueft": 159,
       "kontrastFehler": [],
       "animationenTrotzReduziert": 0
     },
@@ -402,7 +402,7 @@
       "name": "Copilot",
       "theme": "dark",
       "fehler": [],
-      "kontrastGeprueft": 94,
+      "kontrastGeprueft": 95,
       "kontrastFehler": [],
       "animationenTrotzReduziert": 0
     },
@@ -502,7 +502,7 @@
       "name": "Dashboard",
       "theme": "dark",
       "fehler": [],
-      "kontrastGeprueft": 149,
+      "kontrastGeprueft": 150,
       "kontrastFehler": [],
       "animationenTrotzReduziert": 0
     },
@@ -512,7 +512,7 @@
       "name": "Aufgaben",
       "theme": "dark",
       "fehler": [],
-      "kontrastGeprueft": 665,
+      "kontrastGeprueft": 666,
       "kontrastFehler": [],
       "animationenTrotzReduziert": 0
     },
@@ -629,7 +629,7 @@
     {
       "welt": "wissen",
       "modul": "eingang",
-      "name": "Eingang",
+      "name": "Wissens-Upload",
       "theme": "dark",
       "fehler": [],
       "kontrastGeprueft": 56,
@@ -1023,7 +1023,7 @@
     "module": 35,
     "seitenMitSkriptfehler": 0,
     "kontrastFehler": 0,
-    "textstellenGeprueft": 9044,
+    "textstellenGeprueft": 9052,
     "animationenTrotzReduziert": 0,
     "querUeberlauf390": 0,
     "druckBannerSichtbar": 0,

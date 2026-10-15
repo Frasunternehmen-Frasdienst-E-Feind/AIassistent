@@ -2323,10 +2323,27 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
 .kb-s { font-size: 12.5px; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .kb-thumb { flex: none; width: 52px; height: 52px; background: var(--raised); border: 1px solid var(--line-soft); display: grid; place-items: center; overflow: hidden; }
 .kb-thumb img { width: 100%; height: 100%; object-fit: cover; }
-.kb-thumb.icon { grid-template-rows: 1fr auto; padding: 4px 0 2px; }
-.kb-thumb.icon svg { width: 22px; height: 22px; fill: none; stroke: var(--ink-strong); stroke-width: 1.8; }
-.kb-thumb.icon span { font-size: 9px; font-weight: 700; letter-spacing: .06em; color: var(--ink-muted); }
+/* Themen-Kachel (Wunsch David 11.10.2026): Tönung je Kategorie, großes Detail-Symbol, Dateityp als Plakette unten rechts. */
+.kb-thumb.icon { position: relative; display: grid; place-items: center; padding: 0; --tt: var(--ink-muted);
+  background: radial-gradient(120% 90% at 20% 10%, color-mix(in srgb, var(--tt) 30%, var(--surface)) 0%, color-mix(in srgb, var(--tt) 12%, var(--surface)) 75%);
+  border-color: color-mix(in srgb, var(--tt) 30%, var(--line-soft)); box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 55%, transparent); }
+.kb-thumb.icon .kb-ti { width: 30px; height: 30px; fill: none; stroke: color-mix(in srgb, var(--tt) 60%, var(--ink-strong)); stroke-width: 1.8; --ic-d: inline; --ic-accent: var(--accent); --ic-tone-c: color-mix(in srgb, var(--tt) 25%, var(--surface)); }
+.kb-thumb.icon .kb-tb { position: absolute; right: 2px; bottom: 2px; font-size: 8px; line-height: 1; font-weight: 700; letter-spacing: .05em; padding: 2px 3px; border-radius: 2px; color: #fff; background: #5d6868; }
+.kb-thumb .kb-tb.tb-pdf { background: #b3261e; } .kb-thumb .kb-tb.tb-doc { background: #2b5797; } .kb-thumb .kb-tb.tb-xls { background: #1e7145; }
+.kb-thumb .kb-tb.tb-ppt { background: #c4501b; } .kb-thumb .kb-tb.tb-vid { background: #6b3fa0; } .kb-thumb .kb-tb.tb-web { background: #2c5a7a; } .kb-thumb .kb-tb.tb-txt { background: #424e4e; }
+.kb-thumb.tt-green { --tt: var(--accent); } .kb-thumb.tt-blue { --tt: #2c5a7a; } .kb-thumb.tt-violet { --tt: #6b4fa0; } .kb-thumb.tt-teal { --tt: #2a8c86; }
+.kb-thumb.tt-amber { --tt: #c98a12; } .kb-thumb.tt-slate { --tt: #5d6868; }
+.kb-thumb .kb-prev { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; background: #fff; opacity: 0; transition: opacity .25s ease; }
+.kb-thumb.has-prev .kb-prev { opacity: 1; } .kb-thumb.has-prev .kb-ti { visibility: hidden; } .kb-thumb.has-prev .kb-tb { z-index: 1; }
+@media (prefers-reduced-motion: reduce) { .kb-thumb .kb-prev { transition: none; } }
+.kb-thumb.big.icon .kb-ti { width: 56px; height: 56px; } .kb-thumb.big .kb-tb { font-size: 10px; padding: 3px 4px; }
+.kb-thumb.mid.icon .kb-ti { width: 34px; height: 34px; }
 .kb-thumb.big { width: 112px; height: 112px; }
+.kb-thumb.mid { width: 64px; height: 64px; }
+.kb-thumb.mid.icon svg { width: 28px; height: 28px; stroke-width: 1.6; }
+.kb-theme-head { display: flex; gap: var(--s2); align-items: center; margin-bottom: var(--s2); }
+.kb-theme-head h4 { margin: 0 0 2px; }
+.kb-theme-head p { margin: 0; }
 .kb-thumb.big.icon svg { width: 40px; height: 40px; }
 @keyframes kb-pulse { 50% { opacity: .25; } }
 
@@ -5442,7 +5459,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     moon: ['UI', 'Dunkel', 'Farbschema dunkel', '<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>'],
     auto: ['UI', 'System', 'Farbschema System', '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" style="fill:currentColor;stroke:none"/>'],
     search: ['UI', 'Suchen', 'Befehlspalette, Suche', '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>'],
-    ablegen: ['UI', 'Ablegen / Eingang', 'Wissensarchiv: Dateien, Texte, Links ablegen', T('M5 13 7 5h10l2 8v6H5z') + L('M3 13h5l1 3h6l1-3h5') + L('M5 13 7 5h10l2 8v6H5z') + L('M12 3v7M9 7l3 3 3-3')],
+    ablegen: ['UI', 'Ablegen / Wissens-Upload', 'Wissensarchiv: Dateien, Texte, Links ablegen', T('M5 13 7 5h10l2 8v6H5z') + L('M3 13h5l1 3h6l1-3h5') + L('M5 13 7 5h10l2 8v6H5z') + L('M12 3v7M9 7l3 3 3-3')],
     karte: ['UI', 'Karte', 'Projektkarte, Standorte', T('M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z') + L('M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z') + L('M9 4v14M15 6v14')],
     refresh: ['UI', 'Aktualisieren', 'Live-Daten neu laden', '<path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/>'],
     go: ['UI', 'Öffnen', 'Zu einem Modul springen', '<path d="M5 12h14m-6-6 6 6-6 6"/>'],
@@ -5622,7 +5639,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   const MODULES = app.MODULES = {
     marketing: [['heute', 'Auf einen Blick'], ['copilot', 'Copilot'], ['content', 'Content'], ['leads', 'Leads'], ['tenders', 'Ausschreibungen'], ['events', 'Events'], ['seo', 'SEO'], ['references', 'Referenzen'], ['bibliothek', 'Wissensbibliothek'], ['plan90', '90-Tage-Plan'], ['ablage', 'Ablage']],
     infratech: [['dashboard', 'Dashboard'], ['aufgaben', 'Aufgaben'], ['checkliste', 'Checkliste 26→27'], ['fristen', 'Fristen'], ['budget', 'Budget'], ['kpi', 'Ziele & KPIs'], ['leadzaehler', 'Lead-Zähler'], ['lessons', 'Lessons Learned'], ['fakten', 'Faktencheck'], ['team', 'Team'], ['meetings', 'Protokolle'], ['protokoll', 'Aktivität'], ['wissen', 'Wissensbasis']],
-    wissen: [['eingang', 'Eingang'], ['archiv', 'Archiv'], ['pruefung', 'Prüfung'], ['karte', 'Projektkarte']],
+    wissen: [['eingang', 'Wissens-Upload'], ['archiv', 'Archiv'], ['pruefung', 'Prüfung'], ['karte', 'Projektkarte']],
     admin: [['status', 'Status'], ['konfiguration', 'Konfiguration'], ['zugaenge', 'Zugänge'], ['datenschutz', 'Datenschutz'], ['links', 'Link-Protokoll'], ['daten', 'Daten'], ['icons', 'Icons']]
   };
   const registry = {};
@@ -13008,7 +13025,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       { id: 'ov-copy', label: 'Lage als Text kopieren', short: 'Kopieren', icon: 'copy', tip: 'Kopiert Fortschritt, Überfälliges und die nächsten Fristen als Text, etwa für Teams oder eine Mail.', run: () => copy(heuteText(), 'Lage als Text kopiert.') },
       print('ov', 'Auf-einen-Blick', specHeute)],
     'infratech:checkliste': () => [pdf('cl', 'Checkliste (PDF)', 'Checkliste-InfraTech-2026-27', specCheckliste), csv('cl-csv', 'Checkliste als CSV', IT + 'Checkliste.csv', checklisteCsv), print('cl', 'Checkliste-InfraTech-2026-27', specCheckliste)],
-    'wissen:eingang': () => [{ id: 'kbi-text', label: 'Text oder Notiz erfassen', short: 'Erfassen', icon: 'stift', main: true, tip: 'Springt in das Textfeld des Eingangs; Dateien per Ablegen-Feld oder Ziehen.', disabled: S.readOnly, run: () => app.kbQuickCapture && app.kbQuickCapture() },
+    'wissen:eingang': () => [{ id: 'kbi-text', label: 'Text oder Notiz erfassen', short: 'Erfassen', icon: 'stift', main: true, tip: 'Springt in das Textfeld des Wissens-Uploads; Dateien per Ablegen-Feld oder Ziehen.', disabled: S.readOnly, run: () => app.kbQuickCapture && app.kbQuickCapture() },
       { id: 'kbi-archiv', label: 'Archiv öffnen', short: 'Archiv', icon: 'buch', run: () => app.go('wissen', 'archiv') },
       { id: 'kbi-pruef', label: 'Prüfliste öffnen', short: 'Prüfen', icon: 'lupe', run: () => app.go('wissen', 'pruefung') }],
     'wissen:archiv': () => [pdf('ka', 'Bestandsliste (PDF)', 'Wissensarchiv', specArchiv), csv('ka-csv', 'Bestand als CSV', 'Feind-Wissensarchiv.csv', archivCsv), print('ka', 'Wissensarchiv', specArchiv)],
@@ -13546,7 +13563,38 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     return hit ? hit.id : null;
   }
 
+  /* ---------- Wissens-Upload M1 (konzepte/wissens-upload.md): Fassungen, Sperre, sauberes Löschen, OCR ---------- */
+  const MAX_VERSIONS = 10, LOCK_MS = 10 * 60000, OCR_MAX_PAGES = 20;
+  // Neue Fassung: der bisherige Stand wandert nach vorn in versions (höchstens 10). dropped = Assets, die
+  // dabei herausfallen und gelöscht werden dürfen.
+  function versionPush(it, at, by) {
+    const cur = { at: at || Date.now(), by: by || null, name: str(it.name), sha256: str(it.sha256), size: typeof it.size === 'number' ? it.size : null };
+    if (it.assetId) cur.assetId = it.assetId;
+    const all = [cur].concat(arr(it.versions));
+    return { versions: all.slice(0, MAX_VERSIONS), dropped: all.slice(MAX_VERSIONS).map(v => v && v.assetId).filter(Boolean), rev: (Number(it.rev) || 0) + 1 };
+  }
+  // Darf diese Sitzung den Eintrag bearbeiten? Fremde frische Sperre weist ab, abgelaufene darf übernommen werden.
+  function lockFree(it, session, now) {
+    const l = it && it.lock;
+    return !l || l.by === session || (now || Date.now()) - (Number(l.at) || 0) >= LOCK_MS;
+  }
+  // Ergebnis noch gültig? Eintrag gibt es noch und die Fassungsnummer ist dieselbe wie beim Start.
+  const resultFresh = (cur, rev) => !!cur && (Number(cur.rev) || 0) === (Number(rev) || 0);
+  // Nach einem abgebrochenen Lauf (Seite zu, Sperre abgelaufen) zählt der Versuch nicht: attempts zählt nur
+  // echte Fehler. Ein Eintrag „in_arbeit“ mit abgelaufener Sperre wartet wieder.
+  const stale = (it, now) => !!it && it.status === 'in_arbeit' && !!it.lock && (now || Date.now()) - (Number(it.lock.at) || 0) >= LOCK_MS;
+  // Rückverweise auf einen gelöschten Eintrag: Patches für alle Einträge, die ihn in related führen.
+  function unlinkRelated(items, id) {
+    return arr(items).filter(o => o && o.id !== id && arr(o.related).some(r => r && r.id === id))
+      .map(o => ({ id: o.id, related: arr(o.related).filter(r => r && r.id !== id) }));
+  }
+  // OCR: welche Seiten gelesen werden (höchstens 20) und ob ein Rest bleibt.
+  const ocrPlan = pages => { const n = Math.max(0, Math.floor(Number(pages) || 0)); return { pages: Math.min(n, OCR_MAX_PAGES), rest: Math.max(0, n - OCR_MAX_PAGES) }; };
+  // Hat ein PDF eine Textebene? Unter 20 lesbaren Zeichen je Seite gilt es als Scan.
+  const needsOcr = (text, pages) => str(text).replace(/\s+/g, '').length < 20 * Math.max(1, Number(pages) || 1);
+
   return { CATS, CAT_KEYS, catOf, DOCTYPES, SERVICES, STATUS, statusLabel, fold, tokens, topicSuggestions, matchTheme, ruleClassify, piiScan, normUrl, related, cockpitLinks, score,
+    MAX_VERSIONS, LOCK_MS, OCR_MAX_PAGES, versionPush, lockFree, resultFresh, stale, unlinkRelated, ocrPlan, needsOcr,
     ADMIN1, loadGazetteer, gazReady, geocode, findPlaceInText, stateCentroid, project, unproject };
 });
 
@@ -14027,6 +14075,50 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     for (const [i, n] of slides.entries()) out += '--- Folie ' + (i + 1) + ' ---\n' + xmlText(await zip.file(n).async('string')) + '\n';
     return out;
   }
+  /* ---------- Texterkennung (OCR) im Browser: Tesseract.js, Deutsch und Englisch ----------
+     Nur geladen, wenn ein PDF ohne Textebene oder ein Bild vorliegt. Bilder gehen an keinen externen Dienst:
+     geladen werden nur Programm und Sprachdaten von jsDelivr. Höchstens 20 Seiten je Datei. */
+  const OCR = {
+    lib: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',
+    worker: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',
+    core: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1'
+  };
+  let ocrWorker = null;
+  function ocrReady() {
+    if (!ocrWorker) ocrWorker = loadScript(OCR.lib)
+      .then(() => window.Tesseract.createWorker(['deu', 'eng'], 1, { workerPath: OCR.worker, corePath: OCR.core }))
+      .catch(e => { ocrWorker = null; throw e; });
+    return ocrWorker;
+  }
+  const withTimeout = (p, ms, msg) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(msg)), ms))]);
+  // minConf: Fotos ohne echten Text liefern sonst Zeichensalat; unter dieser Sicherheit (0–100) gilt: kein Text.
+  async function ocrImage(src, minConf) {
+    const w = await withTimeout(ocrReady(), 90000, 'Texterkennung nicht geladen');
+    const r = await withTimeout(w.recognize(src), 120000, 'Texterkennung zu langsam');
+    const d = (r && r.data) || {};
+    return minConf && (Number(d.confidence) || 0) < minConf ? '' : str(d.text);
+  }
+  // PDF-Seiten rendern (pdf.js) und lesen; step meldet „Texterkennung Seite x/y“ auf der Karte.
+  async function ocrPdf(blob, step) {
+    await loadScript(CDN.pdf);
+    const lib = window.pdfjsLib;
+    lib.GlobalWorkerOptions.workerSrc = CDN.pdfWorker;
+    const doc = await lib.getDocument({ data: new Uint8Array(await blob.arrayBuffer()), isEvalSupported: false }).promise;
+    const plan = K.ocrPlan(doc.numPages);
+    let out = '';
+    for (let p = 1; p <= plan.pages && out.length < MAX_TEXT; p++) {
+      if (step) step('Texterkennung Seite ' + p + '/' + plan.pages);
+      const page = await doc.getPage(p);
+      const base = page.getViewport({ scale: 1 });
+      const vp = page.getViewport({ scale: Math.min(2.5, 2000 / Math.max(base.width, base.height)) });
+      const cv = document.createElement('canvas');
+      cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+      await page.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+      out += '--- Seite ' + p + ' ---\n' + await ocrImage(cv) + '\n\n';
+      cv.width = cv.height = 0;
+    }
+    return { text: out, pages: plan.pages, rest: plan.rest };
+  }
   async function sheetText(blob) {
     await loadScript(CDN.xlsx);
     const wb = window.XLSX.read(new Uint8Array(await blob.arrayBuffer()), { type: 'array' });
@@ -14049,7 +14141,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     return { text: txt, title };
   }
   // → { text, how: voll|teil|bild|keiner, note, title, images: [Blob] }
-  async function extract(it) {
+  async function extract(it, step) {
     if (it.kind === 'text') {
       let t = W.texts.get(it.id);
       if (t == null) { try { const snap = await S.store.db.doc('kb_text/' + it.id).get(); t = snap.exists ? str(snap.data().text) : ''; } catch (e) { t = ''; } }
@@ -14064,10 +14156,23 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     const ext = it.ext || extOf(it.name), mime = str(it.mime);
     try {
       if (TEXT_TYPES[ext] || /^text\//.test(mime)) return { text: await blob.text(), how: 'voll' };
-      if (ext === 'pdf' || mime === 'application/pdf') { const r = await pdfText(blob); return { text: r.text, how: r.pages > 60 ? 'teil' : 'voll', note: r.text.trim() ? '' : 'PDF ohne Textebene (Scan): Inhalt nicht gelesen' }; }
+      if (ext === 'pdf' || mime === 'application/pdf') {
+        const r = await pdfText(blob);
+        if (!K.needsOcr(r.text, r.pages)) return { text: r.text, how: r.pages > 60 ? 'teil' : 'voll' };
+        try {
+          const o = await ocrPdf(blob, step);
+          if (str(o.text).replace(/---[^\n]*---|\s/g, '').length >= 20) return { text: o.text, how: 'ocr', ocrPages: o.pages, ocrRest: o.rest };
+          return { text: r.text, how: r.text.trim() ? 'teil' : 'keiner', note: 'Scan ohne lesbaren Text (auch per Texterkennung nicht)' };
+        } catch (e) { return { text: r.text, how: r.text.trim() ? 'teil' : 'keiner', note: 'PDF ohne Textebene (Scan); Texterkennung hier nicht möglich (' + str(e && e.message).slice(0, 60) + ')' }; }
+      }
       if (ext === 'docx' || ext === 'pptx') return { text: await zipText(blob, ext), how: 'voll' };
       if (/^(xlsx|xls|ods)$/.test(ext)) return { text: await sheetText(blob), how: 'teil' };
-      if (/^image\//.test(mime) && !/svg|heic/.test(mime)) return { text: '', how: 'bild', images: [blob] };
+      if (/^image\//.test(mime) && !/svg|heic/.test(mime)) {
+        // Bild: Texterkennung für Fotos von Schildern, Plänen, Scans; die KI bekommt das Bild trotzdem.
+        let t = '';
+        try { if (step) step('Texterkennung Bild'); t = await ocrImage(blob, 60); } catch (e) { /* ohne Text weiter */ }
+        return str(t).replace(/\s/g, '').length >= 20 ? { text: t, how: 'ocr', ocrPages: 1, images: [blob] } : { text: '', how: 'bild', images: [blob] };
+      }
     } catch (e) { return { text: '', how: 'keiner', note: 'Inhalt nicht lesbar (' + str(e && e.message).slice(0, 60) + ')' }; }
     return { text: '', how: 'keiner', note: 'Dateityp wird nicht gelesen; eingeordnet nach Dateiname' };
   }
@@ -14193,18 +14298,23 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   /* ---------- Verarbeitung im Hintergrund ---------- */
   function nextItem() {
     const now = Date.now();
-    const free = i => i.status === 'neu' && (i.attempts || 0) < 3 && !W.skip.has(i.id) && !(i.lock && i.lock.by !== SESSION && now - (i.lock.at || 0) < 10 * 60000);
+    // Wartend ist „neu“ oder ein abgebrochener Lauf (in Arbeit, Sperre abgelaufen); fremde frische Sperre weist ab.
+    const free = i => (i.status === 'neu' || K.stale(i, now)) && (i.attempts || 0) < 3 && !W.skip.has(i.id) && K.lockFree(i, SESSION, now);
     while (W.queue.length) { const id = W.queue.shift(); const it = byId(id); if (it && free(it)) return it; }
     return items().filter(free).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0))[0] || null;
   }
   async function processItem(it) {
-    const id = it.id;
-    if (!await app.write('kb_items/' + id, 'update', { status: 'in_arbeit', lock: { by: SESSION, at: Date.now() }, attempts: (it.attempts || 0) + 1 })) { W.skip.add(id); return; }
+    const id = it.id, rev = Number(it.rev) || 0;
+    // Versuche zählen nur echte Fehler (Prototyp 06.10.2026): Abbruch und KI-Grenze erhöhen attempts nicht.
+    if (!await app.write('kb_items/' + id, 'update', { status: 'in_arbeit', lock: { by: SESSION, at: Date.now(), rev } })) { W.skip.add(id); return; }
+    // Gilt das Ergebnis noch? Gelöscht oder inzwischen neue Fassung: nichts zurückschreiben.
+    const fresh = () => K.resultFresh(byId(id), rev);
     try {
       setStep(id, 'Inhalt lesen');
-      const ex = await extract(it);
+      const ex = await extract(it, s => setStep(id, s));
       const text = str(ex.text).slice(0, MAX_TEXT);
-      if (text && it.kind !== 'text') await app.write('kb_text/' + id, 'set', { text, chars: str(ex.text).length, at: Date.now() });
+      if (!fresh()) return;
+      if (text && it.kind !== 'text') await app.write('kb_text/' + id, 'set', { text, chars: str(ex.text).length, at: Date.now(), rev });
       if (text) W.fullText.set(id, text);
       setStep(id, sampleOk ? 'Mit KI einordnen' : 'Einordnen');
       const c = await classify(it, ex);
@@ -14226,13 +14336,14 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       if (cur.uploadError) review.push('Original nicht gespeichert (' + cur.uploadError + ')');
       if (it.original === 'nur Text') review.push('Original (' + (it.ext || 'Datei').toUpperCase() + ') bitte in SharePoint ablegen; das Archiv hält den gelesenen Text');
       if (proj && proj.lat == null) review.push('Projektort nicht gefunden: Position auf der Karte setzen');
+      if (ex.ocrRest) review.push('Texterkennung: ' + ex.ocrRest + (ex.ocrRest === 1 ? ' Seite' : ' Seiten') + ' nicht gelesen (höchstens ' + K.OCR_MAX_PAGES + ')');
       const patch = {
         title: G.mask(c.title), summary: G.mask(c.summary), category: c.category, docType: c.docType, services: c.services, tags: c.tags, entities: c.entities, year: c.year, language: c.language, fileTopic: G.mask(str(c.fileTopic)),
         confidence: Math.round(c.confidence * 100) / 100, via: c.via, pii: { found: piiFound, kinds }, vertraulich: !!(it.vertraulich || G.confidential(text, kinds)), projectId, related: rel, links,
-        sharepoint: shareSuggestion(it, c, proj), extract: ex.how, textChars: str(ex.text).length, review,
+        sharepoint: shareSuggestion(it, c, proj), extract: ex.how, ocrPages: ex.ocrPages || null, textChars: str(ex.text).length, review,
         status: review.length ? 'pruefen' : 'fertig', lock: null, error: null, processedAt: Date.now(), processedBy: c.via
       };
-      if (!byId(id)) return; // inzwischen gelöscht: nichts zurückschreiben
+      if (!fresh()) return; // inzwischen gelöscht oder neue Fassung: Ergebnis verwerfen
       await app.write('kb_items/' + id, 'update', patch);
       // Rückverknüpfung: die drei engsten Verwandten kennen den neuen Eintrag (nur Kennung).
       for (const r of rel.slice(0, 3)) {
@@ -14240,10 +14351,12 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         if (o && !arr(o.related).some(x => x.id === id)) await app.write('kb_items/' + r.id, 'update', { related: arr(o.related).concat([{ id, score: r.score, why: r.why }]).sort((a, b) => b.score - a.score).slice(0, 8) });
       }
     } catch (e) {
+      // Neue Fassung oder gelöscht: der Fehler gehört zur alten Fassung, nichts sperren oder zählen.
+      if (!fresh()) return;
       W.skip.add(id);
       const rl = e && (e.code === 'rate_limited' || e.code === 'queue_overflow');
-      if (!byId(id)) return;
-      await app.write('kb_items/' + id, 'update', { status: rl || (it.attempts || 0) + 1 < 3 ? 'neu' : 'fehler', attempts: rl ? (it.attempts || 0) : (it.attempts || 0) + 1, lock: null, error: rl ? 'KI-Nutzungsgrenze erreicht, später erneut' : str(e && (e.message || e.code)).slice(0, 200) || 'unbekannt' });
+      const tries = (it.attempts || 0) + (rl ? 0 : 1);
+      await app.write('kb_items/' + id, 'update', { status: rl || tries < 3 ? 'neu' : 'fehler', attempts: tries, lock: null, error: rl ? 'KI-Nutzungsgrenze erreicht, später erneut' : str(e && (e.message || e.code)).slice(0, 200) || 'unbekannt' });
       if (rl) { W.pauseUntil = Date.now() + 10 * 60000; W.skip.delete(id); app.toast('KI-Nutzungsgrenze erreicht. Die Einordnung macht in 10 Minuten weiter.', true); }
     } finally { setStep(id, null); }
   }
@@ -14336,9 +14449,112 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   const STATUS_CHIP = { neu: 'soft', in_arbeit: 'yellow', fertig: 'green', pruefen: 'yellow', fehler: 'red', archiviert: 'gone' };
   const statusChip = it => chip(W.steps.has(it.id) ? 'yellow' : STATUS_CHIP[it.status] || 'soft', W.steps.get(it.id) || K.statusLabel(it.status));
   const kindIcon = it => (it.kind === 'link' ? 'ext' : it.kind === 'text' ? 'stift' : /^image\//.test(str(it.mime)) ? 'kamera' : /^video\//.test(str(it.mime)) ? 'display' : K.catOf(it.category)[3] || 'dokument');
+  // Vorschau je Eintrag (Wunsch David 11.10.2026): Bild direkt, PDF erste Seite, Video ein Standbild. Ohne Vorschau ein
+  // Themen-Symbol: erst Stichworte im Titel (Messe, Grinding, Vertrag …), dann Dokumenttyp, dann Kategorie. Vertrauliches
+  // und Einträge mit Personendaten zeigen Nicht-Admins nur das Symbol. Vorschauen entstehen im Browser, erst wenn die
+  // Karte sichtbar wird, und bleiben je Datei zwischengespeichert (kein Upload, keine Anfrage an Dritte außer pdf.js).
+  const TOPIC_RULES = [
+    [/infratech|messe|ausstell|standbau|messestand|hausmesse/, 'messestand'], [/grinding|schleif|diamant/, 'schleifwelle'], [/grooving|rillen/, 'grooving'],
+    [/fräswalze|meißel/, 'fraeswalze'], [/fräs|maschine|wirtgen|kaltfräse/, 'fraese'], [/asphalt|deckschicht|straßenbau|autobahn|\bbab\b|\ba ?\d{1,3}\b/, 'asphalt'],
+    [/pflaster/, 'pflaster'], [/baustelle|verkehrssicherung|leitkegel/, 'leitkegel'], [/referenz/, 'stern'], [/ausschreibung|vergabe|submission|lv\b|leistungsverzeichnis/, 'ausschreibung'],
+    [/vertrag|vereinbarung|agb|angebot|auftrag/, 'dokument'], [/rechnung|budget|kosten|kalkulation|preis/, 'budget'], [/datenschutz|dsgvo|einwilligung|vertraulich/, 'schloss'],
+    [/recht|gesetz|norm|vorschrift/, 'recht'], [/hotel|übernachtung|unterkunft/, 'hotel'], [/anreise|parken|parkausweis|zufahrt/, 'anreise'], [/lkw|transport|logistik|spedition|tieflader/, 'lkw'],
+    [/catering|kaffee|bewirtung/, 'kaffee'], [/giveaway|werbemittel|merch/, 'giveaway'], [/flyer|broschüre|prospekt|folder/, 'flyer'], [/presse|pressemitteilung|artikel/, 'presse'],
+    [/social|linkedin|instagram|post\b|kampagne|newsletter/, 'megafon'], [/lead|visitenkarte|kontaktliste/, 'lead'], [/wettbewerb|konkurrenz/, 'fernglas'], [/\bteam|personal|schichtplan|recruiting|bewerbung/, 'team'],
+    [/termin|frist|kalender|zeitplan|deadline/, 'kalender'], [/protokoll|beschluss|sitzung/, 'hammer'], [/meeting|besprechung|workshop/, 'meeting'], [/wettbewerb|konkurrenz|markt/, 'fernglas'],
+    [/preis|award|auszeichnung|innovation/, 'pokal'], [/foto|bild|aufnahme/, 'kamera'], [/video|film|clip/, 'display'], [/präsentation|folien|pitch/, 'display'],
+    [/bericht|report|auswertung|analyse|kpi|seo/, 'chart'], [/leitfaden|handbuch|anleitung|wissen/, 'buch'], [/checkliste|todo|aufgabe/, 'liste'], [/logo|ci\b|corporate|design|grafik/, 'raster'],
+    [/mail|e-mail|anschreiben/, 'mail'], [/standort|lübben|wittenburg/, 'standort-ef'], [/rotterdam|niederlande|ahoy/, 'pin']
+  ];
+  const DOCTYPE_ICON = { 'Foto': 'kamera', 'Grafik/Design': 'raster', 'Video': 'display', 'Bericht': 'chart', 'Präsentation': 'display', 'Tabelle': 'chart', 'Angebot': 'dokument',
+    'Vertrag': 'dokument', 'Rechnung': 'budget', 'Leitfaden': 'buch', 'Protokoll': 'hammer', 'Pressetext': 'presse', 'Social-Post': 'megafon', 'Webseite': 'ext', 'Notiz': 'stift',
+    'E-Mail': 'mail', 'Datenblatt': 'fraese' };
+  const CAT_TONE = { projekt: 'green', content: 'violet', event: 'blue', ci: 'violet', technik: 'slate', report: 'teal', ausschreibung: 'amber', angebot: 'slate', recht: 'slate',
+    personal: 'teal', markt: 'blue', organisation: 'slate', sonstiges: 'slate' };
+  function topicIcon(it) {
+    const hay = (str(it.title) + ' ' + str(it.name) + ' ' + arr(it.tags).join(' ')).toLowerCase();
+    for (const [re, id] of TOPIC_RULES) if (re.test(hay)) return id;
+    if (DOCTYPE_ICON[it.docType]) return DOCTYPE_ICON[it.docType];
+    if (it.category) return K.catOf(it.category)[3] || kindIcon(it);
+    const more = str(it.summary).toLowerCase();
+    for (const [re, id] of TOPIC_RULES) if (re.test(more)) return id;
+    return kindIcon(it);
+  }
+  const typeLabel = it => (it.kind === 'datei' ? str(it.ext) || 'datei' : it.kind === 'link' ? 'web' : 'text').toUpperCase().slice(0, 4);
+  const TYPE_TONE = { PDF: 'pdf', DOC: 'doc', DOCX: 'doc', XLS: 'xls', XLSX: 'xls', CSV: 'xls', PPT: 'ppt', PPTX: 'ppt', MP4: 'vid', MOV: 'vid', WEB: 'web', TEXT: 'txt' };
+  const PREV = new Map(); // assetId -> data-URL (oder '' = nicht möglich)
+  const PREV_KEY = 'feind-cockpit:kb-prev';
+  try { const raw = JSON.parse(window.localStorage.getItem(PREV_KEY) || '{}'); for (const k of Object.keys(raw)) PREV.set(k, raw[k]); } catch (e) { /* ohne Speicher */ }
+  function savePrev() {
+    try { const ent = [...PREV].filter(([, v]) => v).slice(-40); window.localStorage.setItem(PREV_KEY, JSON.stringify(Object.fromEntries(ent))); } catch (e) { /* Speicher voll oder gesperrt */ }
+  }
+  const isPdf = it => it.assetId && (/pdf/.test(str(it.mime)) || /^pdf$/i.test(str(it.ext)));
+  const isVideo = it => it.assetId && /^video\//.test(str(it.mime));
+  const mayPreview = it => app.isAdmin() || !(G.isConf(it) || (it.pii && it.pii.found));
+  async function pdfThumb(id) {
+    await loadScript(CDN.pdf);
+    const lib = window.pdfjsLib;
+    lib.GlobalWorkerOptions.workerSrc = CDN.pdfWorker;
+    const res = await fetch(blobUrl(id));
+    if (!res.ok) throw new Error('Datei nicht ladbar');
+    const doc = await lib.getDocument({ data: new Uint8Array(await res.arrayBuffer()), isEvalSupported: false }).promise;
+    const page = await doc.getPage(1);
+    const v0 = page.getViewport({ scale: 1 }), scale = 240 / Math.max(v0.width, v0.height), vp = page.getViewport({ scale });
+    const cv = document.createElement('canvas'); cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+    const ctx = cv.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height);
+    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+    try { doc.destroy(); } catch (e) { /* egal */ }
+    return cv.toDataURL('image/jpeg', 0.72);
+  }
+  function videoThumb(id) {
+    return new Promise((res, rej) => {
+      const v = document.createElement('video');
+      v.muted = true; v.preload = 'metadata'; v.playsInline = true; v.src = blobUrl(id);
+      const t = setTimeout(() => rej(new Error('Zeitüberschreitung')), 15000);
+      v.addEventListener('error', () => { clearTimeout(t); rej(new Error('Video nicht ladbar')); });
+      v.addEventListener('loadedmetadata', () => { v.currentTime = Math.min(1, (v.duration || 2) / 3); });
+      v.addEventListener('seeked', () => {
+        clearTimeout(t);
+        try {
+          const k = 240 / Math.max(v.videoWidth || 240, v.videoHeight || 240), cv = document.createElement('canvas');
+          cv.width = Math.round((v.videoWidth || 240) * k); cv.height = Math.round((v.videoHeight || 135) * k);
+          cv.getContext('2d').drawImage(v, 0, 0, cv.width, cv.height);
+          res(cv.toDataURL('image/jpeg', 0.72));
+        } catch (e) { rej(e); }
+      }, { once: true });
+    });
+  }
+  let prevQueue = Promise.resolve();
+  function fillPreview(box, it) {
+    const id = it.assetId, cached = PREV.get(id);
+    const show = url => {
+      if (!url) return;
+      const img = h('img', { src: url, alt: '', class: 'kb-prev', decoding: 'async' });
+      img.addEventListener('load', () => box.classList.add('has-prev'), { once: true });
+      box.prepend(img);
+    };
+    if (cached != null) { show(cached); return; }
+    prevQueue = prevQueue.then(async () => {
+      if (!box.isConnected) return;
+      let url = '';
+      try { url = await (isPdf(it) ? pdfThumb(id) : videoThumb(id)); } catch (e) { url = ''; }
+      PREV.set(id, url); savePrev(); show(url);
+    });
+  }
+  const prevIO = window.IntersectionObserver ? new IntersectionObserver(es => {
+    for (const e of es) if (e.isIntersecting) { prevIO.unobserve(e.target); const it = e.target._kbIt; if (it) fillPreview(e.target, it); }
+  }, { rootMargin: '120px' }) : null;
   function thumb(it, big) {
-    if (isImage(it) && (app.isAdmin() || !(G.isConf(it) || (it.pii && it.pii.found)))) return h('div', { class: 'kb-thumb' + (big ? ' big' : '') }, h('img', { src: blobUrl(it.assetId), alt: '', loading: 'lazy' }));
-    return h('div', { class: 'kb-thumb icon' + (big ? ' big' : '') }, app.ico(kindIcon(it)), h('span', { text: (it.kind === 'datei' ? it.ext : it.kind === 'link' ? 'web' : 'text').toUpperCase().slice(0, 5) }));
+    if (isImage(it) && mayPreview(it)) return h('div', { class: 'kb-thumb' + (big ? ' big' : '') }, h('img', { src: blobUrl(it.assetId), alt: '', loading: 'lazy' }));
+    const lbl = typeLabel(it), tone = CAT_TONE[it.category] || (it.kind === 'link' ? 'blue' : 'slate');
+    const box = h('div', { class: 'kb-thumb icon tt-' + tone + (big ? ' big' : ''), 'data-topic': topicIcon(it) },
+      app.ico(topicIcon(it), 'kb-ti', 40), h('span', { class: 'kb-tb tb-' + (TYPE_TONE[lbl] || 'gen'), text: lbl }));
+    if ((isPdf(it) || isVideo(it)) && mayPreview(it)) {
+      box._kbIt = it;
+      if (PREV.get(it.assetId) != null) fillPreview(box, it);
+      else if (prevIO) prevIO.observe(box);
+    }
+    return box;
   }
   /* ---------- Priorität, Filter und Sortierung für „Zuletzt abgelegt“ ---------- */
   // Priorität setzt man im Eintrag (Hoch, Normal, Niedrig). Bei gleicher Priorität geht Handlungsbedarf vor:
@@ -14434,7 +14650,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
         h('div', {}, h('b', { text: blocked ? 'Ablegen gerade nicht möglich' : touch ? 'Dateien oder Fotos hinzufügen' : 'Dateien oder Ordner hierher ziehen' }),
           h('p', { id: 'kb-drop-hint', class: 'small', text: blocked || (touch
             ? 'Hier tippen: Dateien, Fotos oder Kamera. PDF, Word, Excel, PowerPoint, Bilder, Videos, Text; höchstens 20 MB je Datei. Öffnet sich in der Claude-App nichts, das Cockpit im Browser (Safari oder Chrome) öffnen.'
-            : 'Oder klicken. Klappt überall im Cockpit: auf die Seite ziehen oder außerhalb von Eingabefeldern Strg+V. PDF, Word, Excel, PowerPoint, Bilder, Videos, Text, CSV; höchstens 20 MB je Datei, 200 je Vorgang.') }))),
+            : 'Oder klicken. Klappt überall im Cockpit: auf die Seite ziehen oder außerhalb von Eingabefeldern Strg+V. PDF, Word, Excel, PowerPoint, Bilder, Videos, Text, CSV; höchstens 20 MB je Datei, 200 je Vorgang. Scans und Fotos mit Text liest die Texterkennung (bis 20 Seiten).') }))),
       h('div', { class: 'row' },
         fileButton('zone-files', false, 'btn primary', icon('plus'), 'Dateien wählen', blocked),
         touch ? null : fileButton('zone-dir', true, 'btn', app.ico('ordner'), 'Ordner wählen', blocked)));
@@ -14501,6 +14717,18 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     app.toast('Projekt „' + doc.name + '“ angelegt, ' + sg.itemIds.length + ' Einträge zugeordnet.');
     rerender();
   }
+  // Bild oder Symbol je Themenvorschlag (Wunsch David 11.10.2026): erstes freigegebenes Bild aus den Einträgen als Vorschau,
+  // sonst das Symbol der häufigsten Kategorie, sonst ein Ordner. Vertrauliche Einträge und solche mit Personendaten liefern nie ein Bild.
+  function themeThumb(sg) {
+    const its = sg.itemIds.map(byId).filter(Boolean);
+    const withImg = its.find(it => isImage(it) && (app.isAdmin() || !(G.isConf(it) || (it.pii && it.pii.found))));
+    if (withImg) { const t = thumb(withImg, false); t.classList.add('mid'); return t; }
+    const cnt = {};
+    for (const it of its) if (it.category) cnt[it.category] = (cnt[it.category] || 0) + 1;
+    const top = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
+    const ic = /messe|infratech|expo|stand/i.test(sg.name) ? 'messestand' : (top && K.catOf(top[0])[3]) || 'ordner';
+    return h('div', { class: 'kb-thumb icon mid tt-' + ((top && CAT_TONE[top[0]]) || 'slate'), 'aria-hidden': 'true', 'data-topic': ic }, app.ico(ic, 'kb-ti', 40), h('span', { class: 'kb-tb tb-gen', text: 'THEMA' }));
+  }
   function themeCard() {
     if (!S.loaded.kb_items) return null;
     const list = K.topicSuggestions(items(), projects(), { dismissed: dismissedTopics() });
@@ -14509,8 +14737,8 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     return h('div', { class: 'section kb-themes' }, h('h3', {}, app.ico('ordner'), ' Themenvorschläge'),
       h('p', { class: 'muted small', text: 'Diese Themen tauchen in mehreren Einträgen ohne Projekt auf. Als Projekt angelegt, ordnet das Cockpit künftige Einträge zum Thema automatisch zu.' }),
       h('div', { class: 'grid2' }, list.slice(0, 6).map(sg => h('article', { class: 'card accentbar kb-theme', 'data-key': sg.key },
-        h('h4', { text: sg.name }),
-        h('p', { class: 'small' }, h('b', { text: sg.itemIds.length + ' Einträge' }), ' ohne Projekt'),
+        h('div', { class: 'kb-theme-head' }, themeThumb(sg), h('div', { class: 'kb-body' }, h('h4', { text: sg.name }),
+          h('p', { class: 'small' }, h('b', { text: sg.itemIds.length + ' Einträge' }), ' ohne Projekt'))),
         h('ul', { class: 'small' }, sg.itemIds.slice(0, 3).map(iid => h('li', {}, h('button', { class: 'linkbtn', type: 'button', onclick: () => openDetail(iid) }, str((byId(iid) || {}).title).slice(0, 70))))),
         h('div', { class: 'row' },
           h('button', { class: 'btn small primary', type: 'button', disabled: ro, title: ro ? 'Braucht Schreibrecht' : null, onclick: () => createTheme(sg) }, app.ico('plus'), 'Als Projekt anlegen'),
@@ -14523,7 +14751,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       const sorted = recentList(all.slice());
       const recent = sorted.slice(0, RQ.n);
       return [
-        panelHead('Eingang · Wissensarchiv', items().length + ' Einträge', h('button', { class: 'btn', type: 'button', onclick: () => app.go('wissen', 'archiv') }, app.ico('buch'), 'Zum Archiv')),
+        panelHead('Wissens-Upload · Wissensarchiv', items().length + ' Einträge', h('button', { class: 'btn', type: 'button', onclick: () => app.go('wissen', 'archiv') }, app.ico('buch'), 'Zum Archiv')),
         h('div', { class: 'grid2' }, dropZone(), textBox()),
         pipeline(),
         themeCard(),
@@ -14765,12 +14993,15 @@ let shown = false, hideT = null;
       : it.url ? h('a', { class: 'btn', href: H.safeUrl(it.url), target: '_blank', rel: 'noopener noreferrer' }, icon('ext'), 'Webseite öffnen') : null;
     let closeM = null;
     const go = (w, k) => () => { if (closeM) closeM(); app.go(w, k); };
+    const repl = replaceButton(it, ro, () => { if (closeM) closeM(); });
     const body = [
       h('div', { class: 'kb-detail-head' }, thumb(it, true), h('div', { class: 'stack', style: 'min-width:0' },
         h('div', { class: 'chips' }, statusChip(it), G.isConf(it) ? chip('red', 'Vertraulich') : null, it.via ? h('span', { class: 'chip soft', text: it.via === 'ki' ? 'KI-Einordnung' + (it.confidence != null ? ' · ' + Math.round(it.confidence * 100) + ' %' : '') : 'Regel-Einordnung' }) : null,
-          it.pii && it.pii.found ? chip('red', 'Personendaten: ' + (arr(it.pii.kinds).join(', ') || 'Verdacht')) : null),
+          it.pii && it.pii.found ? chip('red', 'Personendaten: ' + (arr(it.pii.kinds).join(', ') || 'Verdacht')) : null,
+          it.extract === 'ocr' ? h('span', { class: 'chip soft', text: 'Texterkennung' + (it.ocrPages ? ' · ' + it.ocrPages + (it.ocrPages === 1 ? ' Seite' : ' Seiten') : '') }) : null,
+          it.rev ? h('span', { class: 'chip soft', text: 'Fassung ' + (it.rev + 1) }) : null),
         h('p', { class: 'muted small', text: [str(it.name), it.size && it.kind === 'datei' ? fmtSize(it.size) : '', 'abgelegt ' + fmtTs(new Date(it.createdAt || 0)), it.original ? 'Original: ' + it.original : ''].filter(Boolean).join(' · ') }),
-        original ? h('div', { class: 'row' }, original) : null)),
+        original || repl ? h('div', { class: 'row' }, original, repl) : null)),
       arr(it.review).length && it.status === 'pruefen' ? h('div', { class: 'banner warn' }, h('div', { class: 'txt' }, h('strong', { text: 'Zu prüfen: ' }), arr(it.review).join(' · '))) : null,
       it.error ? h('div', { class: 'banner crit' }, h('div', { class: 'txt' }, h('strong', { text: 'Fehler: ' }), str(it.error))) : null,
       app.field('Titel', title),
@@ -14788,6 +15019,7 @@ let shown = false, hideT = null;
         arr(lk.references).map(x => h('button', { class: 'chip', type: 'button', onclick: go('marketing', 'references') }, app.ico('stern'), titleIn('references', x))),
         arr(lk.events).map(x => h('button', { class: 'chip', type: 'button', onclick: go('marketing', 'events') }, app.ico('messestand'), titleIn('events', x))),
         arr(lk.tenders).map(x => h('button', { class: 'chip', type: 'button', onclick: go('marketing', 'tenders') }, app.ico('ausschreibung'), titleIn('tenders', x))))) : null,
+      versionsBox(it),
       h('details', {}, h('summary', { class: 'small', text: 'Gelesener Text' + (it.textChars ? ' (' + Number(it.textChars).toLocaleString('de-DE') + ' Zeichen, vertrauliche Angaben geschwärzt)' : '') }), h('div', { class: 'row' }, textBtn), textBox)
     ];
     const save = async (extra, msg) => {
@@ -14814,10 +15046,72 @@ let shown = false, hideT = null;
     const ok = skipConfirm || await app.confirm({ title: 'Endgültig löschen?', confirmLabel: 'Endgültig löschen', danger: true,
       text: '„' + str(it.title) + '“ wird mit gelesenem Text' + (it.assetId ? ' und Originaldatei' : '') + ' gelöscht. Das lässt sich nicht rückgängig machen. Zum Aufräumen genügt meist „Archivieren“.' });
     if (!ok) return;
-    if (it.assetId) { const assets = await use('assets'); if (assets) { try { await assets.delete(it.assetId); } catch (e) { /* bleibt im Speicher */ } } }
+    // Sauber löschen (M1): Original und alle früheren Fassungen, gelesener Text, Projekt- und Rückverweise.
+    const assetIds = Array.from(new Set([it.assetId].concat(arr(it.versions).map(v => v && v.assetId)).filter(Boolean)));
+    let kept = 0;
+    if (assetIds.length) {
+      const assets = await use('assets');
+      for (const a of assetIds) { try { if (!assets) throw new Error('assets'); await assets.delete(a); } catch (e) { kept++; } }
+    }
     await app.write('kb_text/' + it.id, 'delete');
     if (it.projectId) { const p = projById(it.projectId); if (p) await app.write('kb_projects/' + p.id, 'update', { items: arr(p.items).filter(x => x !== it.id), updatedAt: Date.now() }); }
-    if (await app.write('kb_items/' + it.id, 'delete')) { app.log('Wissensarchiv', 'Eintrag gelöscht: ' + str(it.title)); app.toast('Gelöscht.'); }
+    for (const u of K.unlinkRelated(items(), it.id)) await app.write('kb_items/' + u.id, 'update', { related: u.related });
+    W.files.delete(it.id); W.texts.delete(it.id); W.fullText.delete(it.id);
+    if (await app.write('kb_items/' + it.id, 'delete')) {
+      app.log('Wissensarchiv', 'Eintrag gelöscht: ' + str(it.title) + (assetIds.length ? ' (' + assetIds.length + (assetIds.length === 1 ? ' Datei' : ' Dateien') + (kept ? ', ' + kept + ' nicht entfernt' : '') + ')' : ''));
+      app.toast(kept ? 'Gelöscht. ' + kept + (kept === 1 ? ' Datei blieb' : ' Dateien blieben') + ' im Dateispeicher (nicht erreichbar).' : 'Gelöscht.', !!kept);
+    }
+  }
+  // Neue Fassung (M1): der bisherige Stand wandert nach versions, die Datei wird neu gelesen und eingeordnet.
+  // rev steigt; ein laufendes Ergebnis zur alten Fassung wird beim Zurückschreiben verworfen.
+  async function replaceFile(it, f) {
+    const why = intakeBlocked();
+    if (why) { app.toast(why, true); return false; }
+    const buf = await f.arrayBuffer().catch(() => null);
+    const hash = buf ? await sha256(buf) : '';
+    if (hash && hash === it.sha256) { app.toast('Diese Datei ist schon die aktuelle Fassung.', true); return false; }
+    const other = hash && items().find(i => i.id !== it.id && i.sha256 === hash && i.status !== 'archiviert');
+    if (other) { app.toast('Diese Datei liegt schon als eigener Eintrag im Archiv („' + str(other.title).slice(0, 40) + '“).', true, { label: 'Ansehen', run: () => openDetail(other.id) }); return false; }
+    const name = str(f.name).slice(0, 200) || 'Datei';
+    const tooBig = f.size > MAX_FILE, type = storeType(f);
+    const v = K.versionPush(it, Date.now(), me());
+    const patch = { name, mime: str(f.type) || type || '', ext: extOf(name), size: f.size, sha256: hash, original: tooBig ? 'zu groß' : type ? 'gespeichert' : 'nur Text',
+      assetId: null, assetType: null, storedBytes: null, uploadError: null, versions: v.versions, rev: v.rev,
+      status: 'neu', attempts: 0, lock: null, error: null, review: [], replacedAt: Date.now(), replacedBy: me() };
+    setStep(it.id, 'Neue Fassung speichern');
+    try {
+      if (type && !tooBig) {
+        const assets = await use('assets');
+        if (assets) { try { const r = await assets.upload(f, { type }); Object.assign(patch, { assetId: r.id, assetType: r.contentType, storedBytes: r.sizeBytes }); } catch (e) { Object.assign(patch, { original: 'nicht gespeichert', uploadError: str(e && e.code) || 'upload_failed' }); } }
+        else Object.assign(patch, { original: 'nicht gespeichert', uploadError: inViewer() ? 'not_granted' : 'local' });
+      }
+      if (!await app.write('kb_items/' + it.id, 'update', patch)) return false;
+      // Gelesener Text gehörte zur alten Fassung; Suche und „Frag das Archiv“ sollen ihn nicht mehr finden.
+      await app.write('kb_text/' + it.id, 'delete');
+    } finally { setStep(it.id, null); }
+    if (!tooBig) W.files.set(it.id, f); else W.files.delete(it.id);
+    W.fullText.delete(it.id); W.skip.delete(it.id);
+    if (v.dropped.length) { const assets = await use('assets'); if (assets) for (const a of v.dropped) { try { await assets.delete(a); } catch (e) { /* bleibt */ } } }
+    app.log('Wissensarchiv', 'Neue Fassung ' + v.rev + ': ' + str(it.title));
+    app.toast('Neue Fassung gespeichert, wird neu eingeordnet. Frühere Fassungen: ' + v.versions.length + '.');
+    W.queue.unshift(it.id); kick(true);
+    return true;
+  }
+  function versionsBox(it) {
+    const vs = arr(it.versions);
+    if (!vs.length) return null;
+    const conf = G.isConf(it) && !app.isAdmin();
+    return h('details', { class: 'kb-versions' }, h('summary', { class: 'small', text: 'Frühere Fassungen (' + vs.length + ')' }),
+      h('ul', { class: 'sev-list' }, vs.map((x, i) => h('li', {}, h('span', { class: 'hint-num', text: String(vs.length - i) }),
+        h('span', { class: 'txt' }, str(x.name) || 'Datei', h('span', { class: 'muted small', text: ' · bis ' + fmtTs(new Date(x.at || 0)) + (x.size ? ' · ' + fmtSize(x.size) : '') }),
+          x.assetId && !conf ? h('a', { class: 'linkbtn', href: blobUrl(x.assetId), target: '_blank', rel: 'noopener noreferrer', style: 'margin-left:8px' }, 'öffnen') : null)))));
+  }
+  function replaceButton(it, ro, onDone) {
+    if (ro || it.kind !== 'datei') return null;
+    const inp = h('input', { type: 'file', class: 'file-native', id: 'kd-replace', tabindex: '-1', 'aria-hidden': 'true' });
+    inp.addEventListener('change', async () => { const f = (inp.files || [])[0]; inp.value = ''; if (f && await replaceFile(byId(it.id) || it, f)) onDone(); });
+    return h('label', { class: 'btn', role: 'button', tabindex: '0', title: 'Datei durch eine neuere Fassung ersetzen; die bisherige bleibt unter „Frühere Fassungen“.',
+      onkeydown: e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } } }, icon('up'), 'Neue Fassung hochladen', inp);
   }
   app.kbOpen = openDetail;
 
