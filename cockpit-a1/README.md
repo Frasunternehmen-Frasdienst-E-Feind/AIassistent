@@ -40,6 +40,17 @@ Regeln:
   aus dem Artefakt-Speicher (`notion/tasks`), nur lesend.
 - Nichts wird gelöscht; „Archiviert“ statt Löschen.
 
+## Icons 2.0 „Fräskante“
+
+Quelle: `src/icons.js` (im Artefakt eingebettet, Test prüft Gleichstand). 108 Icons, eigene Zeichnungen:
+- Raster 24×24, Strich 2 px, eckige Enden; Ecken wie eine gefräste Kante um 45° abgeschrägt.
+- Ein Akzent in CI-Grün je Icon über `--ic-accent` (Standard: Token `--accent`); ohne Akzent trägt die Kontur die Bedeutung.
+  Im Druck wird der Akzent zur Linienfarbe. Keine festen Farbwerte im Markup (Test).
+- 18 Icons (alle 15 aus „Branche“, Messestand, Pokal, leerer Zustand) haben zusätzlich eine Detailfassung 48×48
+  (`<symbol id="ih-…">`); `app.ico(name, cls, size)` nimmt sie ab 40 px (Meeting-Modus, Icon-Übersicht).
+- Status-Icons unterscheiden sich weiter in der Form, nicht nur in der Farbe.
+- Tests: `test/icons.test.mjs`, Browser: `node cockpit-a1/e2e/icons-smoke.mjs [datei] [ordner-für-screenshots]`.
+
 ## Aktionsleiste, Erläuterungen und Brennglas-PDF
 
 Seit Version 16 (andere Sitzung, 01.10.2026) hat jeder Reiter aller drei Welten eine Aktionsleiste
