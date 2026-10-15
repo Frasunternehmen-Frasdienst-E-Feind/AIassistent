@@ -25,6 +25,7 @@
   --warn: #d6e000;
   --warn-text: #424e4e;
   --on-warn: #424e4e;
+  --warn-edge: #424e4e; /* Anthrazit-Kontur um gelbgrüne Punkte und Linien (#d6e000 auf Weiß nur 1,45:1) */
   --ok: #5e8a14;
   --crit: #b8000a;
   --surface: #ffffff;
@@ -81,6 +82,7 @@
     --accent-ink: #a6d65a;
     --signal-text: #ff9a9f;
     --warn: #d6e000;
+    --warn-edge: #1f2525;
     --warn-text: #d6e000;
     --ok: #a6d65a;
     --crit: #ff9a9f;
@@ -121,6 +123,7 @@
   --accent-ink: #a6d65a;
   --signal-text: #ff9a9f;
   --warn: #d6e000;
+  --warn-edge: #1f2525;
   --warn-text: #d6e000;
   --ok: #a6d65a;
   --crit: #ff9a9f;
@@ -2110,6 +2113,20 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
 .task.cl-drop .tt { color: var(--ink-muted); }
 .cathead.cl-head { flex-wrap: wrap; } .cathead.cl-head h3 { min-width: 12ch; }
 
+
+/* Warnung auf hellem Grund: Signal-Gelbgrün allein erreicht auf Weiß nur 1,45:1 (farbsystem.md 1.2).
+   Punkte, Rauten und Balken bekommen eine Anthrazit-Kontur, farbige Randlinien eine
+   innen anliegende Anthrazit-Linie. Im Dunkelmodus ist --warn-edge fast unsichtbar. */
+.data-stand.is-stale::before, .st.y::before, .lc-grade.lc-b::before, .sync-line.warn .dot,
+.conn.warn .dot, .cl-dot.warn, .kb-card.busy .kb-t::after { box-shadow: 0 0 0 1px var(--warn-edge); }
+.ov-bar .trk i { box-shadow: inset 0 0 0 1px var(--warn-edge); }
+.map-legend i.tender, .gm-legend i.gm-l-pin { border-color: var(--warn-edge); }
+.pill.cl-typ.warn { border-color: var(--warn-edge); }
+.kpi.warn, .ov-stat.warn { box-shadow: inset 0 1px 0 var(--warn-edge); }
+.kpi.warn:hover, .ov-stat.warn:hover { box-shadow: inset 0 1px 0 var(--warn-edge), 0 6px 14px -8px var(--shadow); }
+.alert.warn, .ov-verdict.warn, .cal .ev.task, .pdfin-task.has-conflict,
+.kb-card.busy, .kb-card[data-status="pruefen"] { box-shadow: inset 1px 0 0 var(--warn-edge); }
+.kb-card.busy:hover, .kb-card[data-status="pruefen"]:hover { box-shadow: inset 1px 0 0 var(--warn-edge), 0 2px 8px var(--shadow); }
 </style>
 <a class="skip" href="#main">Zum Inhalt springen</a>
 <header class="top">
