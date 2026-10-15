@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#424e4e">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1f2525">
+<title>Messe-Hub InfraTech 2027</title>
+<style>
+/* tokens:start – erzeugt mit .claude/skills/feind-brand/scripts/tokens-to-css.mjs, nicht von Hand ändern */
+:root {
+  color-scheme: light;
+  --accent: #84bb20;
+  --accent-text: #5e8a14;
+  --on-accent: #424e4e;
+  --on-accent-strong: #1f2525;
+  --signal: #e3000b;
+  --signal-text: #b8000a;
+  --surface: #ffffff;
+  --surface-muted: #f2f4f4;
+  --surface-inverse: #424e4e;
+  --ink: #3c5457;
+  --ink-strong: #424e4e;
+  --ink-muted: #6b7575;
+  --ink-inverse: #ffffff;
+  --line: #d5dada;
+  --focus: #424e4e;
+  --font-display: Exo, "Arial Black", Arial, sans-serif;
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --radius: 0px;
+  --radius-input: 2px;
+  --radius-button: 4px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 40px;
+  --space-6: 64px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --accent: #84bb20;
+    --accent-text: #84bb20;
+    --on-accent: #424e4e;
+    --on-accent-strong: #1f2525;
+    --signal: #e3000b;
+    --signal-text: #ff9a9f;
+    --surface: #2e3737;
+    --surface-muted: #384242;
+    --surface-inverse: #1f2525;
+    --ink: #e7ecec;
+    --ink-strong: #ffffff;
+    --ink-muted: #b8bfbf;
+    --ink-inverse: #ffffff;
+    --line: #4d5858;
+    --focus: #84bb20;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --accent: #84bb20;
+  --accent-text: #84bb20;
+  --on-accent: #424e4e;
+  --on-accent-strong: #1f2525;
+  --signal: #e3000b;
+  --signal-text: #ff9a9f;
+  --surface: #2e3737;
+  --surface-muted: #384242;
+  --surface-inverse: #1f2525;
+  --ink: #e7ecec;
+  --ink-strong: #ffffff;
+  --ink-muted: #b8bfbf;
+  --ink-inverse: #ffffff;
+  --line: #4d5858;
+  --focus: #84bb20;
+}
+
+body { background: var(--surface); color: var(--ink); font-family: var(--font-sans); }
+/* tokens:end */
+
+* { box-sizing: border-box; }
+html { -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; overscroll-behavior: none; }
+body { margin: 0; line-height: 1.45; min-height: 100dvh; }
+h1, h2, h3 { font-family: var(--font-display); color: var(--ink-strong); margin: 0; line-height: 1.2; }
+h1 { font-size: 20px; }
+h2 { font-size: 18px; margin-bottom: var(--space-3); }
+h3 { font-size: 16px; }
+a { color: var(--accent-text); }
+button, a, select, [role="tab"] { touch-action: manipulation; }
+button, [role="tab"] { user-select: none; -webkit-user-select: none; }
+input, select, textarea { font-size: 16px; font-family: var(--font-sans); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-input); padding: var(--space-1) var(--space-2); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+select { max-width: 100%; }
+.muted { color: var(--ink-muted); }
+.small { font-size: 14px; }
+
+header { position: sticky; top: 0; z-index: 2; background: var(--surface-inverse); color: var(--ink-inverse); border-bottom: 4px solid var(--accent); padding: calc(var(--space-2) + env(safe-area-inset-top, 0px)) var(--space-3) 0; }
+header h1 { color: var(--ink-inverse); }
+.kopf { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); flex-wrap: wrap; }
+.kopf .small { color: var(--ink-inverse); opacity: .85; }
+nav { display: flex; gap: var(--space-1); overflow-x: auto; margin-top: var(--space-2); scrollbar-width: none; }
+nav [role="tab"] { flex: none; font: 600 15px var(--font-sans); color: var(--ink-inverse); background: none; border: 0; padding: var(--space-2) var(--space-3); border-bottom: 4px solid transparent; margin-bottom: -4px; cursor: pointer; min-height: 44px; }
+nav [role="tab"][aria-selected="true"] { border-bottom-color: var(--accent); }
+
+main { max-width: 1040px; margin: 0 auto; padding: var(--space-4) var(--space-3) calc(var(--space-5) + env(safe-area-inset-bottom, 0px)); }
+section[hidden] { display: none; }
+.raster { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.karte { background: var(--surface-muted); border-radius: var(--radius); padding: var(--space-3); border-top: 4px solid var(--line); }
+.karte.top { border-top-color: var(--accent); }
+.karte.aus { opacity: .6; }
+.karte dl { display: grid; grid-template-columns: auto 1fr; gap: var(--space-1) var(--space-2); margin: var(--space-2) 0; font-size: 14px; }
+.karte dt { color: var(--ink-muted); }
+.karte dd { margin: 0; }
+.zeile { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; margin-top: var(--space-2); }
+.zeile input { flex: 1 1 160px; }
+.chip { display: inline-block; font-size: 13px; font-weight: 600; padding: 2px var(--space-2); border-radius: var(--radius-button); background: var(--surface); border: 1px solid var(--line); color: var(--ink-strong); }
+.chip.gruen { background: var(--accent); border-color: var(--accent); color: var(--on-accent-strong); }
+.hinweis { border-left: 4px solid var(--accent); background: var(--surface-muted); padding: var(--space-2) var(--space-3); margin: 0 0 var(--space-3); font-size: 14px; }
+.hinweis.signal { border-left-color: var(--signal); }
+
+.kpis { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-bottom: var(--space-4); }
+.kpi { background: var(--surface-muted); padding: var(--space-3); border-radius: var(--radius); }
+.kpi b { display: block; font: 700 32px/1.1 var(--font-display); color: var(--ink-strong); font-variant-numeric: tabular-nums; }
+.kpi span { font-size: 14px; color: var(--ink-muted); }
+
+.balken { display: grid; grid-template-columns: 7em 1fr 2.5em; gap: var(--space-2) var(--space-2); align-items: center; font-size: 14px; }
+.balken .spur { height: 16px; background: var(--surface); border-radius: var(--radius); }
+.balken .wert { height: 16px; background: var(--accent); border-radius: 0 4px 4px 0; min-width: 2px; }
+.balken output { font-variant-numeric: tabular-nums; text-align: right; color: var(--ink-strong); }
+
+.fristen { list-style: none; margin: 0; padding: 0; }
+.fristen li { display: grid; grid-template-columns: 6.5em 1fr auto; gap: var(--space-2); padding: var(--space-2) 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.fristen time { font-variant-numeric: tabular-nums; color: var(--ink-muted); }
+.ampel { font-size: 13px; white-space: nowrap; color: var(--ink-muted); }
+.ampel.dringend { color: var(--ink-strong); font-weight: 700; }
+.ampel.dringend::before { content: ""; display: inline-block; width: 8px; height: 8px; background: var(--accent); margin-right: 6px; }
+.ampel.ueberfaellig { color: var(--signal-text); font-weight: 700; }
+.ampel.ueberfaellig::before { content: "! "; }
+
+.filter { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-bottom: var(--space-3); }
+.filter button { font: 600 14px var(--font-sans); padding: var(--space-2) var(--space-3); min-height: 40px; border-radius: var(--radius-button); border: 1px solid var(--line); background: var(--surface); color: var(--ink-strong); cursor: pointer; }
+.filter button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent-strong); }
+button:active { transform: scale(.97); }
+
+.wand svg { width: 100%; height: auto; display: block; }
+.wand text { font: 22px var(--font-sans); fill: var(--ink); }
+.wand .grenze { stroke: var(--signal); stroke-width: 2; stroke-dasharray: 6 4; }
+.wand .flaeche { fill: var(--accent); }
+.wand .offen { fill: none; stroke: var(--ink-muted); stroke-width: 2; stroke-dasharray: 4 4; }
+.wand .boden { stroke: var(--ink-strong); stroke-width: 2; }
+footer { font-size: 13px; color: var(--ink-muted); margin-top: var(--space-5); }
+@media (hover: hover) and (pointer: fine) {
+  nav [role="tab"]:hover { border-bottom-color: var(--line); }
+  .filter button:hover { border-color: var(--ink-muted); }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="kopf">
+    <h1>Messe-Hub InfraTech 2027</h1>
+    <span class="small" id="countdown">Rotterdam Ahoy · Stand 5.209 · 12.–15.01.2027</span>
+  </div>
+  <nav role="tablist" aria-label="Module">
+    <button role="tab" aria-selected="true" data-tab="uebersicht">Übersicht</button>
+    <button role="tab" aria-selected="false" data-tab="hotels">Hotels</button>
+    <button role="tab" aria-selected="false" data-tab="giveaways">Giveaways</button>
+    <button role="tab" aria-selected="false" data-tab="aufgaben">Aufgaben</button>
+    <button role="tab" aria-selected="false" data-tab="stand">Stand</button>
+  </nav>
+</header>
+<main>
+  <section id="uebersicht" role="tabpanel">
+    <div class="kpis" id="kpis"></div>
+    <div class="raster">
+      <div class="karte"><h3>Nächste Fristen</h3><ul class="fristen" id="naechste"></ul></div>
+      <div class="karte"><h3>Giveaways je Stufe (aktiv)</h3><div class="balken" id="stufen" role="img" aria-label="Aktive Giveaway-Ideen je Stufe"></div><p class="small muted">Verworfene Ideen zählen nicht.</p></div>
+      <div class="karte"><h3>Offene Entscheidungen</h3><dl id="offen"></dl></div>
+    </div>
+  </section>
+  <section id="hotels" role="tabpanel" hidden>
+    <h2>Hotels</h2>
+    <p class="hinweis" id="hotelEmpfehlung"></p>
+    <div class="raster" id="hotelListe"></div>
+  </section>
+  <section id="giveaways" role="tabpanel" hidden>
+    <h2>Giveaways</h2>
+    <div class="filter" id="gwFilter"></div>
+    <div class="raster" id="gwListe"></div>
+  </section>
+  <section id="aufgaben" role="tabpanel" hidden>
+    <h2>Fristen &amp; Aufgaben</h2>
+    <p class="hinweis">Aufgaben werden hier nicht gepflegt. Führend ist die <a href="https://app.notion.com/p/5718273f9a2c4ba085d5da4e62c0c878" target="_blank" rel="noopener">Notion-Datenbank „Aufgaben InfraTech 2027“</a>, bearbeitet über <a href="https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd" target="_blank" rel="noopener">Cockpit A1</a>. Hier stehen nur Fristen.</p>
+    <ul class="fristen" id="alleFristen"></ul>
+  </section>
+  <section id="stand" role="tabpanel" hidden>
+    <h2>Stand 5.209</h2>
+    <div class="raster">
+      <div class="karte"><h3>Eckdaten</h3><dl id="standDaten"></dl></div>
+      <div class="karte"><h3>Entscheidungen</h3>
+        <label class="small muted" for="flaeche">Standfläche</label>
+        <div class="zeile"><select id="flaeche"></select></div>
+        <label class="small muted" for="rueckwand">Rückwand</label>
+        <div class="zeile"><select id="rueckwand"></select></div>
+        <p class="small muted" id="speicherStand"></p>
+      </div>
+    </div>
+    <div class="karte wand" style="margin-top: var(--space-3)">
+      <h3>Rückwand-Varianten im Maßstab</h3>
+      <svg viewBox="0 0 1100 300" role="img" aria-labelledby="wandTitel" id="wandSvg"><title id="wandTitel">Rückwand-Varianten: Breite und Höhe im Vergleich zur Genehmigungsgrenze 2,75 m</title></svg>
+      <p class="small muted">Rote Linie: über 2,75 m Höhe braucht das Standdesign eine Genehmigung (Frist 20.11.2026). Gestrichelt: Höhe in der Quelle nicht angegeben.</p>
+    </div>
+    <ul class="small" id="standHinweise"></ul>
+    <p class="small">Quellen: <a href="https://claude.ai/artifact/RqPfoHdN58a1BetDZyLe9A" target="_blank" rel="noopener">Standkonzept BAS</a> · <a href="https://claude.ai/artifact/FXTWdz7zwR6Vkz8QetXmV7" target="_blank" rel="noopener">Messewand 7 m</a> · <a href="https://claude.ai/artifact/SLjE2AewaXUq14xoHt3Tjy" target="_blank" rel="noopener">Giveaway-Mockups (Standwand, Grundriss)</a> · <a href="https://claude.ai/artifact/JaKrmUBN67NCxmST7V7Cvd" target="_blank" rel="noopener">Motive Stand 5.209</a> · <a href="https://claude.ai/artifact/ASGLKPQ2SUT7BinYKJjrKB" target="_blank" rel="noopener">Poster Innovatieprijs</a></p>
+  </section>
+  <footer id="datenstand"></footer>
+</main>
+
+<script type="application/json" id="seed">{"stand_vom":"2026-10-13","quellen":{"hotels":"https://claude.ai/artifact/UvpMEjstrhcc1J92Pd9uVy","giveaways":"https://claude.ai/artifact/2WNjsVpYq5oiN7yoUctvm1"},"empfehlungHotel":"Alleinreise → ibis Styles (günstig, direkt am Ahoy, Giacobbe gegenüber). Business + Abendessen → Hotel New York (bestes Ambiente, dichte Restaurantmeile, 4★). Gruppe → nhow Rotterdam (Design + Parkhaus + eigenes Restaurant).","hotels":[{"id":"ibis-styles-rotterdam-ahoy","name":"ibis Styles Rotterdam Ahoy","sterne":"★★★","lage":"Accor · Charlois","fahrzeit":"2 Min zu Fuß · 150 m vom Haupteingang","adresse":"Jacob Kleiboerweg 80, 3084 BG Rotterdam","oepnv":"Metro E Zuidplein (700 m)","booking":"8.2","ez":"~65 €","dz":"~85 €","messeEz":"85–110 €","messeDz":"110–145 €","link":"https://www.booking.com/hotel/nl/ibis-styles-rotterdam-ahoy.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=ibis%20Styles%20Rotterdam%20Ahoy%2C%20Jacob%20Kleiboerweg%2080%2C%203084%20BG%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"bastion-hotel-rotterdam-zuid","name":"Bastion Hotel Rotterdam Zuid","sterne":"★★★","lage":"Bastion Hotels · Zuid","fahrzeit":"ca. 5 Min Auto","adresse":"Driemanssteeweg 5, Rotterdam (lt. OpenStreetMap)","oepnv":"Bus 75 Pernis","booking":"7.9","ez":"~59 €","dz":"~79 €","messeEz":"79–99 €","messeDz":"99–125 €","link":"https://www.booking.com/hotel/nl/bastion-deluxe-rotterdam-south.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Bastion%20Hotel%20Rotterdam%20Zuid%2C%20Driemanssteeweg%205%2C%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"nhow-rotterdam","name":"nhow Rotterdam","sterne":"★★★★","lage":"NH Hotels · Kop van Zuid","fahrzeit":"ca. 8 Min Auto / 10 Min Metro","adresse":"Wilhelminakade 137, 3072 AP Rotterdam","oepnv":"Metro D Wilhelminaplein","booking":"8.4","ez":"~100 €","dz":"~130 €","messeEz":"130–175 €","messeDz":"160–220 €","link":"https://www.booking.com/hotel/nl/nhow-rotterdam.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=nhow%20Rotterdam%2C%20Wilhelminakade%20137%2C%203072%20AP%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"hotel-new-york-by-westcord","name":"Hotel New York by WestCord","sterne":"★★★★","lage":"WestCord · Wilhelminapier","fahrzeit":"ca. 8 Min Auto","adresse":"Koninginnenhoofd 1, 3072 AD Rotterdam","oepnv":"Metro D Wilhelminaplein","booking":"8.6","ez":"~110 €","dz":"~145 €","messeEz":"145–190 €","messeDz":"185–240 €","link":"https://www.booking.com/hotel/nl/hotel-new-york-rotterdam.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Hotel%20New%20York%20by%20WestCord%2C%20Koninginnenhoofd%201%2C%203072%20AD%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"eurostars-rijnhaven","name":"Eurostars Rijnhaven","sterne":"★★★★","lage":"Eurostars Hotels · Rijnhaven","fahrzeit":"ca. 7 Min Metro","adresse":"Rijnhaven 30, 3071 HH Rotterdam","oepnv":"Metro E Rijnhaven","booking":"8.1","ez":"~90 €","dz":"~120 €","messeEz":"115–155 €","messeDz":"150–195 €","link":"https://www.booking.com/hotel/nl/eurostars-rijnhaven-rotterdam.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Eurostars%20Rijnhaven%2C%20Rijnhaven%2030%2C%203071%20HH%20Rotterdam&travelmode=driving","ungefaehr":true,"status":"offen"},{"id":"ss-rotterdam-by-westcord","name":"ss Rotterdam by WestCord","sterne":"★★★★","lage":"WestCord · Kreuzfahrtschiff","fahrzeit":"ca. 8 Min Auto","adresse":"3e Katendrechtse Hoofd 25, 3072 AM Rotterdam","oepnv":"Metro D Katendrecht (8 Min)","booking":"8.0","ez":"~95 €","dz":"~125 €","messeEz":"120–160 €","messeDz":"155–200 €","link":"https://www.booking.com/hotel/nl/ss-rotterdam.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=ss%20Rotterdam%20by%20WestCord%2C%203e%20Katendrechtse%20Hoofd%2025%2C%203072%20AM%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"art-hotel-rotterdam","name":"ART Hotel Rotterdam","sterne":"★★★","lage":"Unabhängig · Maashaven","fahrzeit":"ca. 10–12 Min Metro","adresse":"Mijnsherenlaan 9, 3081 GA Rotterdam","oepnv":"Metro D/E Maashaven (100 m)","booking":"7.6","ez":"~70 €","dz":"~90 €","messeEz":"90–120 €","messeDz":"115–150 €","link":"https://www.booking.com/hotel/nl/arthotelrotterdam.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=ART%20Hotel%20Rotterdam%2C%20Mijnsherenlaan%209%2C%203081%20GA%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"flex-inn-rotterdam","name":"Flex-Inn Rotterdam","sterne":"★★","lage":"Budget · Feijenoord","fahrzeit":"ca. 12 Min","adresse":"Rosestraat 49, 3071 JS Rotterdam","oepnv":"Metro E Zuidplein (1,2 km)","booking":"7.2","ez":"~45 €","dz":"~60 €","messeEz":"60–85 €","messeDz":"80–110 €","link":"https://www.booking.com/searchresults.de.html?ss=Flex-Inn%20Rotterdam%20Rotterdam&selected_currency=EUR&group_adults=1&no_rooms=1","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Flex-Inn%20Rotterdam%2C%20Rosestraat%2049%2C%203071%20JS%20Rotterdam&travelmode=driving","ungefaehr":true,"status":"offen"},{"id":"the-usual-rotterdam","name":"The Usual Rotterdam","sterne":"★★★★","lage":"Boutique · Centrum","fahrzeit":"12–15 Min (Rushhour länger)","adresse":"Westblaak 10–14, 3012 KL Rotterdam","oepnv":"Metro Beurs / Tram Westblaak","booking":"8.5","ez":"~120 €","dz":"~155 €","messeEz":"150–200 €","messeDz":"190–250 €","link":"https://www.booking.com/searchresults.de.html?ss=The%20Usual%20Rotterdam%20Rotterdam&selected_currency=EUR&group_adults=1&no_rooms=1","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=The%20Usual%20Rotterdam%2C%20Westblaak%2010%E2%80%9314%2C%203012%20KL%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"hilton-rotterdam","name":"Hilton Rotterdam","sterne":"★★★★","lage":"Hilton · Centrum","fahrzeit":"12–15 Min (Rushhour länger)","adresse":"Weena 10, 3012 CM Rotterdam","oepnv":"Rotterdam Centraal","booking":"8.2","ez":"~130 €","dz":"~170 €","messeEz":"165–220 €","messeDz":"210–275 €","link":"https://www.booking.com/searchresults.de.html?ss=Hilton%20Rotterdam%20Rotterdam&selected_currency=EUR&group_adults=1&no_rooms=1","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Hilton%20Rotterdam%2C%20Weena%2010%2C%203012%20CM%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"rotterdam-marriott-hotel","name":"Rotterdam Marriott Hotel","sterne":"★★★★★","lage":"Marriott · Centrum","fahrzeit":"12–15 Min (Rushhour länger)","adresse":"Weena 686, 3012 CN Rotterdam","oepnv":"Rotterdam Centraal","booking":"8.4","ez":"~155 €","dz":"~195 €","messeEz":"195–260 €","messeDz":"245–320 €","link":"https://www.booking.com/searchresults.de.html?ss=Rotterdam%20Marriott%20Hotel%20Rotterdam&selected_currency=EUR&group_adults=1&no_rooms=1","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Rotterdam%20Marriott%20Hotel%2C%20Weena%20686%2C%203012%20CN%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"}],"giveaways":[{"id":"thermobecher","title":"Thermobecher","tier":"B","top":true,"qty":"200–300","supplier":"Loopper / GIFFITS","audience":"Bauleiter, Poliere, Büro","slogan":"Kalt fräsen. Heiß trinken.","flags":[],"status":"offen"},{"id":"pflasterstein","title":"Pflasterstein mit Rückseiten-Aufkleber","tier":"A","top":true,"qty":"offen","supplier":"Werkstatt (Stein) + WIRmachenDRUCK (Aufkleber)","audience":"Fachbesucher, Kommunen, Straßenbau","slogan":"Einmal anfassen. Dann erklärt sich Grinding von selbst.","flags":["2026 bewährt: kommen gut an (Checkliste Rotterdam/Essen)","Gewicht und Transport in der Goodie-Bag prüfen"],"status":"offen"},{"id":"lakritz","title":"Lakritz-Tütchen","tier":"A","top":true,"qty":"1.000","supplier":"GIFFITS / Brandible","audience":"Laufpublikum (Streuartikel)","slogan":"Das einzige Asphalt-Schwarz, das man naschen darf.","flags":["Lebensmittel-Kennzeichnung klären"],"status":"offen"},{"id":"eiskratzer","title":"Eiskratzer","tier":"A","top":true,"qty":"500","supplier":"GIFFITS","audience":"Besucher mit Auto","slogan":"Wir kratzen nicht nur an der Oberfläche.","flags":[],"status":"offen"},{"id":"zollstock","title":"Zollstock, beidseitig","tier":"B","top":true,"qty":"300","supplier":"HACH / WIRmachenDRUCK / Werbemittel24","audience":"Bauleiter, Poliere, Vermesser","slogan":"Auf den Millimeter. Seit über 30 Jahren.","flags":["Vorderseite: Logo, Website, QR-Code","2026 bewährt – beibehalten (Checkliste Rotterdam/Essen)"],"status":"offen"},{"id":"schluesselband","title":"Schlüsselband (Lanyard)","tier":"A","top":true,"qty":"offen","supplier":"GIFFITS / Loopper","audience":"Alle Messebesucher","slogan":"Hängt an uns.","flags":["2026 bewährt – beibehalten (Checkliste Rotterdam/Essen)"],"status":"offen"},{"id":"einkaufswagenloeser","title":"Einkaufswagenlöser","tier":"A","top":true,"qty":"offen","supplier":"GIFFITS / Werbemittel24","audience":"Laufpublikum, Fachbesucher","slogan":"Löst kleine Probleme. Große lösen wir mit der Fräse.","flags":["2026 bewährt – beibehalten (Checkliste Rotterdam/Essen)"],"status":"offen"},{"id":"kugelschreiber","title":"Kugelschreiber","tier":"A","top":false,"qty":"offen","supplier":"GIFFITS / WIRmachenDRUCK","audience":"Alle Messebesucher","slogan":"Schreibt so sauber, wie wir fräsen.","flags":["2026 bewährt – beibehalten (Checkliste Rotterdam/Essen)"],"status":"offen"},{"id":"feuerzeug","title":"Feuerzeug","tier":"A","top":false,"qty":"offen","supplier":"GIFFITS","audience":"Laufpublikum","slogan":"Wir arbeiten kalt. Sie zünden warm.","flags":["2026 bewährt – beibehalten (Checkliste Rotterdam/Essen)","Versand und Gefahrgut-Vorgaben prüfen"],"status":"offen"},{"id":"beanie","title":"Mütze (Beanie) mit Stick","tier":"C","top":false,"qty":"offen","supplier":"Loopper","audience":"Standteam, Bestandskunden","slogan":"Wir fräsen kalt. Sie bleiben warm.","flags":[],"status":"offen"},{"id":"humorkarte","title":"Humor-Karte zum Namen","tier":"A","top":false,"qty":"offen","supplier":"WIRmachenDRUCK","audience":"Beileger für alle Artikel","slogan":"Feindliche Übernahme? Nur beim alten Asphalt.","flags":["GL-Freigabe nötig","Rechtsabteilung prüfen"],"status":"offen"},{"id":"gurkendose","title":"Gurke in der Dose","tier":"A","top":false,"qty":"offen","supplier":"offen","audience":"Laufpublikum, NL-Humor","slogan":"Die einzige Gurke auf unserer Baustelle.","flags":["Idee aus dem Board-Kommentar – in der Checkliste nicht belegt, bitte bestätigen","Lebensmittel-Kennzeichnung klären"],"status":"offen"},{"id":"fraesmeissel","title":"Fräsmeißel mit Gravur","tier":"C","top":false,"qty":"20–30","supplier":"Brandible (Sonderanfertigung)","audience":"Entscheider, Bestandskunden","slogan":"Im Ruhestand nach [X] km Autobahn.","flags":["Machbarkeit ungeprüft","km-Wert von der Technik bestätigen"],"status":"offen"},{"id":"powerbank","title":"Powerbank / Stirnlampe","tier":"P","top":false,"qty":"offen","supplier":"Loopper / GIFFITS","audience":"Nachtbaustellen-Teams","slogan":"Energie für die Nachtschicht.","flags":[],"status":"offen"},{"id":"flaschenoeffner","title":"Flaschenöffner (Metall)","tier":"P","top":false,"qty":"offen","supplier":"offen","audience":"offen","slogan":"Wir öffnen Straßen. Und den Feierabend.","flags":[],"status":"offen"},{"id":"massband","title":"Maßband 5 m","tier":"P","top":false,"qty":"offen","supplier":"Brandible / HACH","audience":"Bauleiter, Poliere","slogan":"Wo andere aufhören, fängt unser Maßband an.","flags":[],"status":"offen"},{"id":"notizblock","title":"Notizblock","tier":"P","top":false,"qty":"offen","supplier":"WIRmachenDRUCK","audience":"Alle","slogan":"Erst messen. Dann notieren. Dann fräsen.","flags":[],"status":"offen"},{"id":"toolstift","title":"Tool-Stift","tier":"P","top":false,"qty":"offen","supplier":"Brandible","audience":"Bauleiter, Einkauf","slogan":"Präzision – auch auf Papier.","flags":[],"status":"offen"},{"id":"stressball","title":"Stressball „Fräswalze“","tier":"P","top":false,"qty":"offen","supplier":"offen","audience":"Laufpublikum","slogan":"Für Tage, an denen der Asphalt nicht nachgibt.","flags":[],"status":"offen"},{"id":"warnweste","title":"Warnweste EN ISO 20471","tier":"P","top":false,"qty":"offen","supplier":"WIRmachenDRUCK / Brandible","audience":"Baustellenbesucher","slogan":"Vorsicht, feiner Fräser!","flags":["Norm-Konformität nach Druck prüfen"],"status":"offen"},{"id":"samentuetchen","title":"Samentütchen","tier":"P","top":false,"qty":"offen","supplier":"offen","audience":"Alle Messebesucher","slogan":"Wir fräsen Straßen – die Bienen bekommen Blumen.","flags":[],"status":"offen"},{"id":"multitool","title":"Multitool","tier":"P","top":false,"qty":"offen","supplier":"Brandible","audience":"Entscheider, Einkauf","slogan":"Die scharfe Lösung für Ihre Straße.","flags":[],"status":"offen"},{"id":"minzspender","title":"Minz-Spender","tier":"P","top":false,"qty":"–","supplier":"GIFFITS","audience":"Laufpublikum","slogan":"Frischer Atem, aber kein Gesprächsanlass.","flags":["2026 getestet: nicht attraktiv – streichen (Checkliste Rotterdam/Essen)"],"status":"verworfen"},{"id":"kalenderbuch","title":"Kalenderbuch","tier":"P","top":false,"qty":"–","supplier":"offen","audience":"Bestandskunden","slogan":"Wertig – und genau deshalb zu schwer für die Goodie-Bag.","flags":["2026: zu wertig und im Transport unpraktisch – streichen (Checkliste Rotterdam/Essen)"],"status":"verworfen"}],"fristen":[{"id":"f01","datum":"2026-10-15","titel":"Hotel buchen – ibis Styles (einziges fußläufig)","bereich":"Hotel","quelle":"MASTER-TODO"},{"id":"f02","datum":"2026-10-16","titel":"Flächenentscheidung 25 m² vs. größer","bereich":"Stand","quelle":"MASTER-TODO"},{"id":"f03","datum":"2026-10-30","titel":"Layout: Besucherweg, Gesprächszone, Lager","bereich":"Stand","quelle":"MASTER-TODO"},{"id":"f04","datum":"2026-11-06","titel":"Standbau-Partner bestätigen","bereich":"Stand","quelle":"MASTER-TODO"},{"id":"f05","datum":"2026-11-13","titel":"Zimmerliste finalisieren","bereich":"Hotel","quelle":"MASTER-TODO"},{"id":"f06","datum":"2026-11-13","titel":"Giveaway-Strategie finalisieren","bereich":"Giveaway","quelle":"MASTER-TODO"},{"id":"f07","datum":"2026-11-15","titel":"Standentwurf (Individualstand) an Ahoy","bereich":"Stand","quelle":"Ahoy-Handbuch V1.3"},{"id":"f08","datum":"2026-11-20","titel":"Standdesign > 2,75 m genehmigen lassen","bereich":"Stand","quelle":"MASTER-TODO"},{"id":"f09","datum":"2026-11-27","titel":"Grafik-Druck freigeben","bereich":"Stand","quelle":"MASTER-TODO"},{"id":"f10","datum":"2026-12-01","titel":"Standbau-Bestellungen · Strom bestätigen","bereich":"Stand","quelle":"Ahoy-Handbuch V1.3"},{"id":"f11","datum":"2026-12-02","titel":"Hestex/Stabilo bestellen","bereich":"Stand","quelle":"Ahoy-Handbuch V1.3"},{"id":"f12","datum":"2026-12-04","titel":"QR-Code + Landingpage DE/EN/NL, Sprüche freigeben","bereich":"Giveaway","quelle":"MASTER-TODO"},{"id":"f13","datum":"2026-12-15","titel":"Eigenes Catering anmelden","bereich":"Logistik","quelle":"Ahoy-Handbuch V1.3"},{"id":"f14","datum":"2026-12-18","titel":"Anreisezeiten Team koordinieren","bereich":"Hotel","quelle":"MASTER-TODO"},{"id":"f15","datum":"2027-01-04","titel":"Internet · Parken bestellen","bereich":"Logistik","quelle":"Ahoy-Handbuch V1.3"},{"id":"f16","datum":"2027-01-06","titel":"Strom/Wasser · Möbel (ab 29.12. +10 %)","bereich":"Stand","quelle":"Ahoy-Handbuch V1.3"},{"id":"f17","datum":"2027-01-07","titel":"Aufbau beginnt (schwere Güter 07:30–14:00)","bereich":"Logistik","quelle":"Ahoy-Handbuch V1.3"},{"id":"f18","datum":"2027-01-12","titel":"Messebeginn InfraTech 2027","bereich":"Messe","quelle":"Ahoy"}],"stand":[{"id":"info","nummer":"5.209","ort":"Rotterdam Ahoy, Ahoyweg 10","messe":"12.–15.01.2027","aufbau":"07.–11.01.2027","abbau":"15.01. ab 16:00 – 18.01.2027","flaeche":"offen","flaecheOptionen":["ca. 18 m² (Mockups, Annahme)","25 m² (wie 2026, zu eng)","≥ 36 m² Eckstand (Vorlage C, Voraussetzung Zipper-Wand)"],"rueckwand":"offen","rueckwandOptionen":["LED-Backwall (BAS Innovation, Maße offen)","Zipper-Wand 7,5 m (BAS, nur bei ≥ 36 m²)","Rückwand 6 × 3 m (Giveaway-Mockups)","Fotowand 7 m mit Wirtgen W 210 XF 1:1 (≥ 4,0 m Höhe)"],"hinweise":["LED-Backwall (BAS): Maße nicht angegeben, deshalb nicht im Maßstabsbild","Standdesign über 2,75 m braucht Genehmigung (Frist 20.11.2026)","Messewand 7 m braucht mind. ca. 4,0 m Wandhöhe → Genehmigung zwingend","Kosten: 250 €/m² + Paket 95–230 €/m² + Marketingpaket 295 €","Wirtgen-Marken- und Bildrechte: bitte Rechtsabteilung prüfen"],"waende":[{"name":"Rückwand Mockups","breite":6,"hoehe":3},{"name":"Fotowand W 210 XF","breite":7,"hoehe":4},{"name":"Zipper-Wand BAS","breite":7.5,"hoehe":null}]}]}</script>
+<script>
+/* ---- hub-logic.js ---- */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else root.HubLogic = factory();
+}(typeof self !== 'undefined' ? self : this, function () {
+  const TAG = 86400000;
+
+  // Nur Dokumente, die im Speicher fehlen – vorhandene Daten werden nie überschrieben.
+  function seedPlan(vorhanden, seed) {
+    const plan = [];
+    for (const [coll, liste] of Object.entries(seed)) {
+      if (!Array.isArray(liste)) continue;
+      for (const { id, ...data } of liste) {
+        const path = coll + '/' + id;
+        if (!vorhanden.has(path)) plan.push({ path, data });
+      }
+    }
+    return plan;
+  }
+
+  // Speicher gewinnt je Feld, Momentaufnahme füllt Lücken; neue Speicher-Dokumente hinten anhängen.
+  function mergeById(seedListe, dbDocs) {
+    const out = seedListe.map(s => Object.assign({}, s, dbDocs[s.id] || {}));
+    const bekannt = new Set(seedListe.map(s => s.id));
+    for (const [id, d] of Object.entries(dbDocs)) if (!bekannt.has(id)) out.push(Object.assign({ id }, d));
+    return out;
+  }
+
+  function ampel(datum, heute) {
+    const tage = Math.round((Date.parse(datum) - Date.parse(heute)) / TAG);
+    const stufe = tage < 0 ? 'ueberfaellig' : tage <= 14 ? 'dringend' : 'geplant';
+    const text = tage < 0 ? 'überfällig seit ' + (-tage) + ' T' : tage === 0 ? 'heute' : 'in ' + tage + ' T';
+    return { tage, stufe, text };
+  }
+
+  function stufen(ideen) {
+    const n = { A: 0, B: 0, C: 0, P: 0 };
+    for (const i of ideen) if (i.status !== 'verworfen' && i.tier in n) n[i.tier]++;
+    return n;
+  }
+
+  return { seedPlan, mergeById, ampel, stufen };
+}));
+/* ---- hub-app.js ---- */
+(function () {
+  const L = window.HubLogic;
+  const SEED = JSON.parse(document.getElementById('seed').textContent);
+  const COLLS = ['hotels', 'giveaways', 'fristen', 'stand'];
+  const dbDocs = { hotels: {}, giveaways: {}, fristen: {}, stand: {} };
+  let db = null, schreibbar = false, quelle = 'Momentaufnahme vom ' + datumDe(SEED.stand_vom);
+  let gwStufe = 'alle';
+  const $ = id => document.getElementById(id);
+  const heute = () => new Date().toISOString().slice(0, 10);
+
+  function datumDe(iso) { const [j, m, t] = iso.split('-'); return t + '.' + m + '.' + j; }
+  function el(tag, attrs, ...kinder) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else if (v != null) e.setAttribute(k, v);
+    }
+    for (const k of kinder.flat()) if (k != null && k !== '') e.append(k.nodeType ? k : String(k));
+    return e;
+  }
+  const daten = coll => L.mergeById(SEED[coll], dbDocs[coll]);
+  const link = (href, text) => href ? el('a', { href, target: '_blank', rel: 'noopener' }, text) : null;
+
+  // Änderung speichern: vorhandenes Dokument nur feldweise ergänzen, fehlendes aus der Momentaufnahme anlegen.
+  async function speichern(coll, id, feld) {
+    if (!db || !schreibbar) return;
+    const ref = db.collection(coll).doc(id);
+    try {
+      if (dbDocs[coll][id]) await ref.update(feld);
+      else { const { id: _, ...basis } = SEED[coll].find(s => s.id === id) || {}; await ref.set(Object.assign(basis, feld)); }
+    } catch (e) { $('datenstand').textContent = 'Speichern fehlgeschlagen (' + (e && e.code || 'Fehler') + '). Änderung nicht übernommen.'; }
+  }
+
+  function auswahl(werte, aktuell, onwahl, label) {
+    const s = el('select', { 'aria-label': label, onchange: e => onwahl(e.target.value) }, werte.map(w => el('option', { value: w }, w)));
+    s.value = aktuell; s.disabled = !schreibbar; return s;
+  }
+  function notiz(wert, onsave, label) {
+    const i = el('input', { type: 'text', value: wert || '', placeholder: 'Notiz', 'aria-label': label, enterkeyhint: 'done' });
+    i.disabled = !schreibbar;
+    i.addEventListener('change', () => onsave(i.value.trim()));
+    return i;
+  }
+
+  function fristZeile(f) {
+    const a = L.ampel(f.datum, heute());
+    return el('li', null, el('time', { datetime: f.datum }, datumDe(f.datum)),
+      el('span', null, f.titel, ' ', el('span', { class: 'small muted' }, '· ' + f.bereich)),
+      el('span', { class: 'ampel ' + a.stufe }, a.text));
+  }
+
+  function renderUebersicht() {
+    const fristen = daten('fristen').sort((x, y) => x.datum.localeCompare(y.datum));
+    const offen = fristen.filter(f => L.ampel(f.datum, heute()).tage >= 0);
+    const bisMesse = L.ampel('2027-01-12', heute()).tage;
+    const hotels = daten('hotels'), gw = daten('giveaways'), st = daten('stand')[0];
+    const gebucht = hotels.filter(h => h.status === 'gebucht').length;
+    const aktiv = gw.filter(g => g.status !== 'verworfen').length;
+    $('countdown').textContent = 'Rotterdam Ahoy · Stand ' + st.nummer + ' · noch ' + bisMesse + ' Tage';
+    $('kpis').replaceChildren(
+      el('div', { class: 'kpi' }, el('b', null, bisMesse), el('span', null, 'Tage bis Messebeginn')),
+      el('div', { class: 'kpi' }, el('b', null, offen.filter(f => L.ampel(f.datum, heute()).stufe === 'dringend').length), el('span', null, 'Fristen in den nächsten 14 Tagen')),
+      el('div', { class: 'kpi' }, el('b', null, gebucht), el('span', null, 'Hotel(s) als gebucht markiert')),
+      el('div', { class: 'kpi' }, el('b', null, aktiv + ' / ' + gw.length), el('span', null, 'Giveaway-Ideen aktiv')));
+    $('naechste').replaceChildren(...offen.slice(0, 5).map(fristZeile));
+    const n = L.stufen(gw), max = Math.max(1, ...Object.values(n));
+    const namen = { A: 'Stufe A', B: 'Stufe B', C: 'Stufe C', P: 'Premium (P)' };
+    $('stufen').replaceChildren(...Object.entries(n).flatMap(([k, v]) => [
+      el('span', null, namen[k]),
+      el('div', { class: 'spur', title: namen[k] + ': ' + v }, el('div', { class: 'wert', style: 'width:' + (v / max * 100) + '%' })),
+      el('output', null, v)]));
+    $('offen').replaceChildren(
+      el('dt', null, 'Fläche'), el('dd', null, st.flaeche),
+      el('dt', null, 'Rückwand'), el('dd', null, st.rueckwand),
+      el('dt', null, 'Hotel'), el('dd', null, gebucht ? gebucht + ' gebucht' : 'noch nichts gebucht'));
+  }
+
+  function renderHotels() {
+    $('hotelEmpfehlung').replaceChildren('Empfehlung aus dem Hotel-Cockpit: ' + SEED.empfehlungHotel + ' Messepreise sind Schätzungen. ', link(SEED.quellen.hotels, 'Original mit Karte öffnen'));
+    $('hotelListe').replaceChildren(...daten('hotels').map(h => el('article', { class: 'karte' + (h.status === 'gebucht' || h.status === 'favorit' ? ' top' : '') + (h.status === 'verworfen' ? ' aus' : '') },
+      el('h3', null, h.name, ' ', el('span', { class: 'small muted' }, h.sterne)),
+      el('dl', null,
+        el('dt', null, 'Weg'), el('dd', null, h.fahrzeit),
+        el('dt', null, 'Adresse'), el('dd', null, h.adresse, h.ungefaehr ? ' (Lage ungefähr)' : ''),
+        el('dt', null, 'ÖPNV'), el('dd', null, h.oepnv),
+        el('dt', null, 'Booking'), el('dd', null, h.booking || '–'),
+        el('dt', null, 'Preis ab'), el('dd', null, 'EZ ' + (h.ez || '–') + ' · DZ ' + (h.dz || '–')),
+        el('dt', null, 'Messe (Schätzung)'), el('dd', null, 'EZ ' + (h.messeEz || '–') + ' · DZ ' + (h.messeDz || '–'))),
+      el('div', { class: 'zeile' }, link(h.link, 'Booking'), link(h.route, 'Route')),
+      el('div', { class: 'zeile' },
+        auswahl(['offen', 'favorit', 'gebucht', 'verworfen'], h.status || 'offen', v => speichern('hotels', h.id, { status: v }), 'Status ' + h.name),
+        notiz(h.notiz, v => speichern('hotels', h.id, { notiz: v }), 'Notiz ' + h.name)))));
+  }
+
+  function renderGiveaways() {
+    const stufenListe = ['alle', 'A', 'B', 'C', 'P'];
+    $('gwFilter').replaceChildren(...stufenListe.map(s => el('button', { 'aria-pressed': String(gwStufe === s), onclick: () => { gwStufe = s; renderGiveaways(); } }, s === 'alle' ? 'Alle' : 'Stufe ' + s)));
+    const liste = daten('giveaways').filter(g => gwStufe === 'alle' || g.tier === gwStufe);
+    $('gwListe').replaceChildren(...liste.map(g => el('article', { class: 'karte' + (g.top ? ' top' : '') + (g.status === 'verworfen' ? ' aus' : '') },
+      el('h3', null, g.title, ' ', el('span', { class: 'chip' + (g.top ? ' gruen' : '') }, 'Stufe ' + g.tier + (g.top ? ' · Top' : ''))),
+      g.slogan ? el('p', { class: 'small' }, '„' + g.slogan + '“') : null,
+      el('dl', null,
+        el('dt', null, 'Menge'), el('dd', null, g.qty || '–'),
+        el('dt', null, 'Anbieter'), el('dd', null, g.supplier || '–'),
+        el('dt', null, 'Zielgruppe'), el('dd', null, g.audience || '–')),
+      (g.flags || []).length ? el('ul', { class: 'small muted' }, g.flags.map(f => el('li', null, f))) : null,
+      el('div', { class: 'zeile' },
+        auswahl(['offen', 'favorit', 'verworfen'], g.status || 'offen', v => speichern('giveaways', g.id, { status: v }), 'Status ' + g.title),
+        notiz(g.notiz, v => speichern('giveaways', g.id, { notiz: v }), 'Notiz ' + g.title)))));
+  }
+
+  function renderAufgaben() {
+    $('alleFristen').replaceChildren(...daten('fristen').sort((x, y) => x.datum.localeCompare(y.datum)).map(fristZeile));
+  }
+
+  function renderStand() {
+    const st = daten('stand')[0];
+    $('standDaten').replaceChildren(...[['Stand', st.nummer], ['Ort', st.ort], ['Messe', st.messe], ['Aufbau', st.aufbau], ['Abbau', st.abbau]].flatMap(([k, v]) => [el('dt', null, k), el('dd', null, v)]));
+    const opt = (sel, werte, wert, feld) => {
+      sel.replaceChildren(...['offen', ...werte].map(w => el('option', { value: w }, w)));
+      sel.value = wert; sel.disabled = !schreibbar;
+      sel.onchange = () => speichern('stand', 'info', { [feld]: sel.value });
+    };
+    opt($('flaeche'), st.flaecheOptionen, st.flaeche, 'flaeche');
+    opt($('rueckwand'), st.rueckwandOptionen, st.rueckwand, 'rueckwand');
+    $('speicherStand').textContent = schreibbar ? 'Auswahl wird im Hub-Speicher gesichert.' : 'Nur Ansicht – Speichern nicht verfügbar.';
+    $('standHinweise').replaceChildren(...st.hinweise.map(h => el('li', null, h)));
+    zeichneWand(st.waende || []);
+  }
+
+  // Maßstab: 1 m = 50 px, Boden bei y = 230; Schrift groß, weil das Bild mobil auf ~340 px schrumpft.
+  function zeichneWand(waende) {
+    const NS = 'http://www.w3.org/2000/svg', M = 50, Y = 230;
+    const s = (tag, a, txt) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); if (txt) e.textContent = txt; return e; };
+    const svg = $('wandSvg'); const titel = svg.querySelector('title');
+    svg.replaceChildren(titel);
+    let x = 20;
+    // Maße aus den Quell-Artefakten; Wand ohne Höhenangabe wird gestrichelt mit 2,5 m gezeichnet.
+    for (const w of waende) {
+      const h = w.hoehe || 2.5, b = w.breite * M;
+      svg.append(s('rect', { x, y: Y - h * M, width: b, height: h * M, class: w.hoehe ? 'flaeche' : 'offen' }));
+      svg.append(s('text', { x, y: Y + 30 }, w.name));
+      svg.append(s('text', { x, y: Y + 58 }, w.breite.toLocaleString('de-DE') + ' m × ' + (w.hoehe ? w.hoehe.toLocaleString('de-DE') + ' m' : 'Höhe offen')));
+      x += b + 40;
+    }
+    svg.setAttribute('viewBox', '0 0 ' + Math.max(760, x) + ' 300');
+    svg.append(s('line', { x1: 0, x2: Math.max(760, x), y1: Y, y2: Y, class: 'boden' }));
+    svg.append(s('line', { x1: 0, x2: Math.max(760, x), y1: Y - 2.75 * M, y2: Y - 2.75 * M, class: 'grenze' }));
+    svg.append(s('text', { x: 4, y: Y - 2.75 * M - 8 }, 'Grenze 2,75 m'));
+  }
+
+  function renderAlles() {
+    renderUebersicht(); renderHotels(); renderGiveaways(); renderAufgaben(); renderStand();
+    $('datenstand').textContent = 'Datenquelle: ' + quelle + '. Originale bleiben unverändert und sind verlinkt.';
+  }
+
+  document.querySelectorAll('[role="tab"]').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('[role="tab"]').forEach(x => x.setAttribute('aria-selected', String(x === t)));
+    document.querySelectorAll('[role="tabpanel"]').forEach(p => { p.hidden = p.id !== t.dataset.tab; });
+    try { localStorage.setItem('hub-tab', t.dataset.tab); } catch (e) { /* ohne Speicher kein gemerkter Reiter */ }
+  }));
+  try { const t = localStorage.getItem('hub-tab'); if (t) document.querySelector('[data-tab="' + t + '"]')?.click(); } catch (e) { /* s. o. */ }
+
+  renderAlles();
+
+  if (window.claude && window.claude.use) {
+    window.claude.use('db').then(async d => {
+      if (!d) return;
+      db = d;
+      const user = await window.claude.use('user');
+      schreibbar = user ? (user.can('data.write') !== false) : false;
+      for (const c of COLLS) {
+        db.collection(c).onSnapshot(snap => {
+          dbDocs[c] = Object.fromEntries(snap.docs.filter(x => x.exists).map(x => [x.id, x.data()]));
+          quelle = 'Hub-Speicher (live), ergänzt um die Momentaufnahme vom ' + datumDe(SEED.stand_vom);
+          renderAlles();
+        }, e => { $('datenstand').textContent = 'Speicher nicht erreichbar (' + e.code + ') – Anzeige aus der Momentaufnahme.'; });
+      }
+      renderAlles();
+    });
+  }
+}());
+</script>
+</body>
+</html>
