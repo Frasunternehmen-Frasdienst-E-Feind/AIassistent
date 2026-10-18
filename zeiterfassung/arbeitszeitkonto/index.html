@@ -1194,9 +1194,11 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         (draft.date && holidayName(draft.date) ? " <strong>" + esc(dLong(draft.date)) + " ist Feiertag in Brandenburg (" + esc(holidayName(draft.date)) + ").</strong>" : "") +
         "</p>" +
         '<fieldset><legend>' + (isNew ? "Datum" : "Datum") + "</legend>" +
-        '<div class="formgrid"><div class="field"><label for="f-date">Datum</label>' +
+        '<div class="formgrid"><div class="field"><label for="f-date">' + (isNew ? "Datum (von)" : "Datum") + "</label>" +
         '<input id="f-date" type="date" data-f="date" value="' + esc(draft.date) + '"' +
         (isNew ? "" : " readonly") + "></div>" +
+        (isNew ? '<div class="field"><label for="f-to">bis (optional)</label>' +
+          '<input id="f-to" type="date" data-f="dateTo" value="' + esc(draft.dateTo || "") + '" min="' + esc(draft.date) + '"></div>' : "") +
         '<div class="field"><label for="f-type">Tagesart</label><select id="f-type" data-f="type">' +
         '<option value="">Arbeitstag</option>' +
         TYPE_ORDER.filter(function (t) { return t !== "gleittag" || settings.gleittag || draft.type === "gleittag"; }).map(function (t) {
@@ -1210,7 +1212,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         (st ? '<span class="hint" id="calc-hint" style="margin:0">Ergibt: Ist ' + esc(hm(st.work)) + ", Pause " +
           esc(hm(st.pause)) + ", Soll " + esc(st.soll ? hm(st.soll) : "0:00") + ", Saldo " +
           esc(signed(st.saldo)) + "</span>" : "") +
-        "</div></fieldset>" + noteHTML() +
+        "</div></fieldset>" + (isNew ? rangeHint() : "") + noteHTML() +
         '<div class="btnrow"><button type="button" class="primary" data-act="save">Speichern</button>' +
         '<button type="button" class="ghost" data-act="close">Abbrechen</button>' +
         (isNew ? "" : '<button type="button" class="danger" data-act="del">Tag löschen</button>') +
@@ -1656,6 +1658,58 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         });
   }
 
+  /* Zeitraum von–bis: nur Arbeitstage ohne Feiertag ab Eintritt; schon
+     erfasste Tage bleiben unverändert und werden gemeldet. */
+  var RANGE_MAX = 62;
+  function rangePlan(from, to) {
+    var r = { take: [], existing: [], free: 0, early: 0, span: 0 };
+    if (!from || !to || to <= from) return r;
+    for (var d = dateOf(from), end = dateOf(to); d <= end; d.setUTCDate(d.getUTCDate() + 1)) {
+      var iso = isoOf(d);
+      r.span++;
+      if (iso < ENTRY_DATE) r.early++;
+      else if (!isWorkday(iso) || holidayName(iso)) r.free++;
+      else if (days[iso]) r.existing.push(iso);
+      else r.take.push(iso);
+    }
+    return r;
+  }
+  function rangeHint() {
+    if (!draft.dateTo || draft.dateTo <= draft.date) return "";
+    var r = rangePlan(draft.date, draft.dateTo);
+    if (r.span > RANGE_MAX) return '<p class="hint">Zeitraum zu lang (höchstens ' + RANGE_MAX + " Kalendertage).</p>";
+    return '<p class="hint" id="range-hint">Zeitraum ' + esc(dLong(draft.date)) + " – " + esc(dLong(draft.dateTo)) + ": " +
+      r.take.length + " Arbeitstag" + (r.take.length === 1 ? "" : "e") + " werden eingetragen" +
+      (r.existing.length ? ", " + r.existing.length + " schon erfasst (bleiben unverändert)" : "") +
+      (r.free ? ", " + r.free + " Wochenend-/Feiertage ausgelassen" : "") +
+      (r.early ? ", " + r.early + " vor Eintritt ausgelassen" : "") + ".</p>";
+  }
+  function saveRange(proto) {
+    var r = rangePlan(draft.date, draft.dateTo);
+    if (r.span > RANGE_MAX) { note = { type: "err", text: "Zeitraum zu lang (höchstens " + RANGE_MAX + " Kalendertage)." }; return renderPanel(); }
+    if (proto.books.some(function (b) { return !b.end; })) {
+      note = { type: "err", text: "Für einen Zeitraum braucht jede Buchung eine Bis-Zeit." }; return renderPanel();
+    }
+    var skipped = r.existing.length ? " Übersprungen (schon erfasst): " + r.existing.map(dShort).join(", ") : "";
+    if (!r.take.length) { note = { type: "err", text: "Kein freier Arbeitstag im Zeitraum – nichts eingetragen." + skipped }; return renderPanel(); }
+    var docs = r.take.map(function (iso) {
+      var d = { date: iso, note: proto.note, origin: "manuell", books: proto.books.map(function (b) { return { start: b.start, end: b.end, kind: b.kind }; }) };
+      if (proto.type) d.type = proto.type;
+      return d;
+    });
+    var err = validate(docs[0]);
+    if (err) { note = { type: "err", text: err }; return renderPanel(); }
+    var msg = r.take.length + " Arbeitstag" + (r.take.length === 1 ? "" : "e") + " eingetragen (" +
+      dShort(r.take[0]) + "–" + dShort(r.take[r.take.length - 1]) + ")." + skipped;
+    docs.forEach(function (d) { days[d.date] = d; });
+    if (!db) { panel = null; note = { type: "ok", text: msg + " (nur in dieser Ansicht)" }; render(); renderPanel(); return; }
+    Promise.all(docs.map(function (d) { return db.doc("days/" + d.date).set(d); })).then(function () {
+      panel = null; note = { type: "ok", text: msg }; render(); renderPanel();
+    }, function (e) {
+      note = { type: "err", text: "Speichern fehlgeschlagen (" + ((e && e.code) || "Fehler") + ") – bitte Wochenliste prüfen." }; render(); renderPanel();
+    });
+  }
+
   /* Tagesart für einzelne Tage setzen; vorhandene Buchungen bleiben. */
   function setTypes(list, msg) {
     var docs = list.map(function (x) {
@@ -1830,7 +1884,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     }
     if (panel && panel.kind === "report") { reportFieldChanged(f); return; }
     if (panel && panel.kind === "export") { note = null; renderPanel(); return; }
-    if (f === "type" || (f === "date" && ev.type === "change")) { renderPanel(); return; }
+    if (f === "type" || ((f === "date" || f === "dateTo") && ev.type === "change")) { renderPanel(); return; }
     updateHints();
   }
 
@@ -1940,6 +1994,11 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         books: draft.books.filter(function (b) { return b.start || b.end; })
       };
       if (TYPES[draft.type]) doc.type = draft.type;
+      if (panel.kind === "add" && draft.dateTo && draft.dateTo !== draft.date) {
+        if (draft.dateTo < draft.date) { note = { type: "err", text: "„bis“ liegt vor dem Startdatum." }; return renderPanel(); }
+        note = null;
+        return saveRange(doc);
+      }
       if (panel.kind === "add" && days[doc.date]) {
         note = { type: "err", text: dLong(doc.date) + " ist schon erfasst – bitte in der Wochenliste „bearbeiten“ nutzen." };
         return renderPanel();
