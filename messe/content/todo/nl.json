@@ -1,0 +1,489 @@
+{
+ "code": "NL",
+ "file": "Brennglas_ToDo_Rotterdam_2027_NL.pdf",
+ "title": "Focusdocument – Taken Rotterdam 2027",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Stand 5.209 · di 12 – vr 15 januari 2027",
+ "chip": "AP0 · hoogste prioriteit",
+ "src": "Invulbaar formulier · Bron: takenlijst Rotterdam 2027 (Notion) + Projecthub · verdicht 22-09-2026",
+ "intern": "INTERN / vertrouwelijk – bevat teamnamen, niet publiceren.",
+ "basis": "Basis: InfraTech 2026 + lessons learned, aangevuld",
+ "howto": "Zo werkt het formulier",
+ "howto_lines": [
+  "1)  Vakje aanvinken = klaar.   2)  Statuslijst rechts: Open / In uitvoering / Klaar / N.v.t. / Uitzoeken.",
+  "3)  Vast notitieveld onder elk punt – vrije tekst + link, max. 250 tekens.",
+  "Standaard: elk punt staat op „Open” en wordt zo afgedrukt tot het wordt bewerkt.",
+  "Opslaan/delen: „Ingevuld formulier opslaan”. Invullen en afdrukken werken in elke pdf-viewer."
+ ],
+ "legend_label": "Legenda:",
+ "legend": [
+  [
+   "ok",
+   "bewezen (behouden)"
+  ],
+  [
+   "no",
+   "ongebruikt 2026 / schrappen"
+  ],
+  [
+   "warn",
+   "open – uitzoeken voor Rotterdam"
+  ],
+  [
+   "none",
+   "nieuw te doen"
+  ],
+  [
+   "add",
+   "aangevuld (blinde vlek)"
+  ]
+ ],
+ "blocker_title": "Eerst beslissen – kritieke blokkades (per 22-09-2026)",
+ "blockers": [
+  [
+   "Eigenaar/projectleider benoemen (directie)",
+   "was due 14-09 – blokkeert team & budget"
+  ],
+  [
+   "Stand 5.209 contractueel bevestigen",
+   "afstemmen met info@infratech.nl"
+  ],
+  [
+   "ILB-subsidie „Markt International” checken",
+   "vóór heraanmelding – aanmelding = projectstart"
+  ],
+  [
+   "Hoteloptie ibis Styles Ahoy bevestigen",
+   "10 kamers, 11–16 jan, gratis annuleren"
+  ],
+  [
+   "Budgetplafond & beursdoel vastleggen",
+   "zichtbaarheid vs. leadkwaliteit"
+  ]
+ ],
+ "blocker_note": "Deze punten lopen als aparte ClickUp-tickets met weekdeadline – hier gespiegeld voor sturing, niet dubbel doen.",
+ "status": [
+  "Open",
+  "In uitvoering",
+  "Klaar",
+  "N.v.t.",
+  "Uitzoeken"
+ ],
+ "status_def": "Open",
+ "tt_status": "Status: Open / In uitvoering / Klaar / N.v.t. / Uitzoeken",
+ "tt_note": "Vrije tekst + link, max. 250 tekens",
+ "tt_done": "Aanvinken indien klaar",
+ "blind_banner": "Blinde vlekken – zinvol aangevuld",
+ "blind_sub": "Niet op de originele checklist, maar relevant voor InfraTech 2027 op basis van ervaring. Juridische punten zijn gemarkeerd.",
+ "dp_title": "Gegevensbescherming & juridisch",
+ "dp": [
+  "• Intern werkdocument met teamnamen – vertrouwelijk behandelen, niet delen met externen/exposanten.",
+  "• Leadregistratie, foto/video op de stand en CRM-import alleen met toestemming/AVG-melding.",
+  "• Bij contractuele, fiscale of arbeidsrechtelijke vragen: laat de juridische afdeling toetsen."
+ ],
+ "src_title": "Bronnen & werkruimtes",
+ "links": [
+  "Master · Beurs Rotterdam 2027 (Notion)",
+  "Takenlijst Rotterdam 2027 (Notion)",
+  "Takentracker (ClickUp)",
+  "InfraTech-handboek 2027 V1.3 (pdf)"
+ ],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stand 5.209  ·  Per 22-09-2026",
+ "page": "Pagina",
+ "cont": "vervolg",
+ "brand": "FOCUS · Rotterdam 2027",
+ "slim": "Taken Rotterdam 2027",
+ "sections": [
+  [
+   "Logistiek & reis",
+   [
+    [
+     "none",
+     "Voertuig bepalen: V-klasse met aanhanger of vrachtwagen met aanhanger (open in 2026)"
+    ],
+    [
+     "none",
+     "Behoefte aan compacte lader / palletwagen voor Rotterdam uitzoeken (2026: „?”)"
+    ],
+    [
+     "none",
+     "Aanlevering/parkeerproces bij Rotterdam Ahoy uitzoeken (2026 Essen: € 200 borg, terugbetaald)"
+    ],
+    [
+     "none",
+     "Vaste passen / parkeervergunningen regelen"
+    ]
+   ]
+  ],
+  [
+   "Standbouw & exponaten",
+   [
+    [
+     "ok",
+     "Grote slijpas + bestrating – kernexponaat; eenvoudiger opbouw checken (steenmat i.p.v. bestrating, lessons 2026)"
+    ],
+    [
+     "ok",
+     "Kleine slijpas met tafel (indien ruimte)"
+    ],
+    [
+     "ok",
+     "Exponaat „ongeslepen”/„geslepen”"
+    ],
+    [
+     "ok",
+     "Exponaat horizontaal slijpen met vlammen"
+    ],
+    [
+     "ok",
+     "Display met flyerhouders (klantstopper) – met verlichting"
+    ],
+    [
+     "ok",
+     "Verlicht grinding-bord – blikvanger"
+    ],
+    [
+     "none",
+     "2x slijpschijf – optioneel, alleen als kleine schijf toch meegaat"
+    ],
+    [
+     "no",
+     "2x kleine exponaten + asbak – ongebruikt in 2026, niet meenemen"
+    ],
+    [
+     "warn",
+     "Standoppervlak realistisch plannen – 2026: van 2 statafels paste er maar 1"
+    ]
+   ]
+  ],
+  [
+   "Uitrusting & verbruiksmateriaal",
+   [
+    [
+     "warn",
+     "Koffiemachine, capsules – aantal soorten verminderen (lessons learned)"
+    ],
+    [
+     "none",
+     "Koffiemelk / suiker / koekjes"
+    ],
+    [
+     "ok",
+     "Servetten klein – nodig"
+    ],
+    [
+     "no",
+     "Servetten groot – 2026: te groot, niet gebruikt"
+    ],
+    [
+     "warn",
+     "Schoonmaakset + vuilniszakken – meer vochtige doekjes meenemen"
+    ],
+    [
+     "none",
+     "Moltondoek – passend voor tafel snijden, met klittenband"
+    ],
+    [
+     "none",
+     "Hoezen (als tafel meegaat)"
+    ],
+    [
+     "none",
+     "Stofzuiger"
+    ],
+    [
+     "none",
+     "Voegmateriaal (voor herstel)"
+    ],
+    [
+     "none",
+     "Tafelprullenbak, vuilniszakken 120 l"
+    ],
+    [
+     "none",
+     "Decoratie optioneel (verse bloemen/plant, indien ruimte)"
+    ],
+    [
+     "no",
+     "Wijn – 2026: nauwelijks gedronken, schrappen"
+    ]
+   ]
+  ],
+  [
+   "Techniek",
+   [
+    [
+     "warn",
+     "Tv uitzoeken – in 2026 open gebleven („tv?”), behoefte opnieuw bepalen"
+    ],
+    [
+     "warn",
+     "Mobiele data / wifi-box uitzoeken"
+    ],
+    [
+     "none",
+     "Laptop, usb-stick met presentatie"
+    ],
+    [
+     "none",
+     "Verlengkabels/stekkerdozen, opladers (telefoon, camera)"
+    ],
+    [
+     "warn",
+     "Presentatie bijwerken – koptelefoon-optie aanbieden, korter maken (lessons)"
+    ],
+    [
+     "none",
+     "Podiummolton, ledstrip"
+    ]
+   ]
+  ],
+  [
+   "Marketing & relatiegeschenken",
+   [
+    [
+     "warn",
+     "Flyer herzien – formaat heroverwegen (lessons learned)"
+    ],
+    [
+     "ok",
+     "Stenen met sticker op achterzijde – vallen goed in de smaak"
+    ],
+    [
+     "ok",
+     "Duimstokken, aanstekers, pennen, keycords, winkelwagenmuntjes – behouden"
+    ],
+    [
+     "no",
+     "Pepermuntdispensers – 2026: niet aantrekkelijk, schrappen"
+    ],
+    [
+     "warn",
+     "Goodiebags kleiner/handzamer inpakken – kalenderboeken te kostbaar & onpraktisch te vervoeren"
+    ],
+    [
+     "warn",
+     "Vooraankondiging van deelname plannen – ontbrak in 2026: social media, beurslogo in e-mailhandtekening, pre-mailing naar bestaande contacten, vermelding op website"
+    ],
+    [
+     "none",
+     "Infobrochures, display + infoblad, folderstandaard, magnetische flyerbox"
+    ]
+   ]
+  ],
+  [
+   "Personeel & uitstraling",
+   [
+    [
+     "warn",
+     "Naambadges consequent gebruiken – 2026 maar één dag gebruikt, positie noteren"
+    ],
+    [
+     "warn",
+     "Visitekaartjes-verdeling optimaliseren – 2026: 100 stuks, aan flyers geniet"
+    ],
+    [
+     "warn",
+     "Kleding: andere kleur dan wit overwegen – onderscheid van andere exposanten"
+    ],
+    [
+     "warn",
+     "Uniform, schoon schoeisel vastleggen"
+    ]
+   ]
+  ],
+  [
+   "Acquisitie & leadregistratie",
+   [
+    [
+     "none",
+     "Aanspreken uitbreiden naar de beursvloer – niet alleen bij de stand wachten"
+    ],
+    [
+     "ok",
+     "Digitaal gespreksnotitie-formulier gebruiken – als ClickUp-ticket in EPIC-06 aangemaakt"
+    ],
+    [
+     "none",
+     "Gericht visitekaartjes van gemeenten/steden verzamelen – 2026 nauwelijks aanwezig"
+    ]
+   ]
+  ],
+  [
+   "Open „te boeken/uit te zoeken”-punten 2026",
+   [
+    [
+     "none",
+     "Catering – proces zoals 2026 (Aramark) of nieuwe aanbieder in Rotterdam?"
+    ],
+    [
+     "none",
+     "Aanlevering/parkeren definitief uitzoeken (zie logistiek boven)"
+    ],
+    [
+     "warn",
+     "2026-placeholders (TRUE/FALSE zonder tekst) – geen gegevens, niet over te nemen"
+    ]
+   ]
+  ],
+  [
+   "Team (referentie 2026)",
+   [
+    [
+     "none",
+     "Deelnemerslijst definitief bevestigen – 2026: {{TEAM_2026}}"
+    ],
+    [
+     "none",
+     "Overnachters afstemmen met hotelcontingent-ticket"
+    ]
+   ]
+  ]
+ ],
+ "blind": [
+  [
+   "Sturing & kader (voorwaarde voor de rest)",
+   [
+    [
+     "add",
+     "Projectleider/eigenaar officiîel benoemen (directie) – nog „open”, blokkeert personeel & budget"
+    ],
+    [
+     "add",
+     "Budgetplafond & beursdoel definiëren (zichtbaarheid vs. leadkwaliteit) – akkoord: directie"
+    ],
+    [
+     "add",
+     "Stand 5.209 contractueel bevestigen (grootte, contract) – afstemmen info@infratech.nl"
+    ],
+    [
+     "add",
+     "ILB-subsidie „Markt International” checken VÓÓR heraanmelding (aanmelding = projectstart)"
+    ]
+   ]
+  ],
+  [
+   "Recht, verzekering & belasting  –  laat de juridische afdeling toetsen",
+   [
+    [
+     "add",
+     "Exposanten-aansprakelijkheid + transport-/exponaatverzekering uitzoeken – juridisch toetsen"
+    ],
+    [
+     "add",
+     "A1-verklaringen voor gedetacheerde medewerkers (inzet NL) checken – HR/juridisch toetsen"
+    ],
+    [
+     "add",
+     "Verleggingsregeling/btw bij NL-dienstverleners (Global Expo, LOCO) – juridisch/belastingadviseur"
+    ],
+    [
+     "add",
+     "Contracten standbouw/opbouwhulp toetsen (omvang, aansprakelijkheid, annulering) – juridisch"
+    ]
+   ]
+  ],
+  [
+   "Standservices in het Ahoy-portaal (let op deadlines!)",
+   [
+    [
+     "add",
+     "Stroomaansluiting/vermogen op de stand bestellen (Ahoy-bestelportaal)"
+    ],
+    [
+     "add",
+     "Internet/LAN op de stand bestellen (i.p.v. alleen een wifi-box)"
+    ],
+    [
+     "add",
+     "Rigging/ophanging, vloerbelasting & bouwhoogte-goedkeuring (standbouwrichtlijnen opvragen)"
+    ],
+    [
+     "add",
+     "Standreiniging & afvalverwerking via de beurs bestellen"
+    ],
+    [
+     "add",
+     "Water-/persluchtbehoefte voor slijp-exponaten checken"
+    ]
+   ]
+  ],
+  [
+   "Marketingzichtbaarheid (snel over het hoofd gezien)",
+   [
+    [
+     "add",
+     "Exposantenlijst/catalogusvermelding + bedrijfsprofiel + logo op tijd indienen"
+    ],
+    [
+     "add",
+     "Innovatieprijs 2027 indienen: ja/nee (deadline 25-09-2026)"
+    ],
+    [
+     "add",
+     "Afspraken met bestaande klanten vooraf plannen (vaste slots op de stand)"
+    ],
+    [
+     "add",
+     "Doorloop-/nabesteltermijnen voor drukwerk & relatiegeschenken plannen"
+    ],
+    [
+     "add",
+     "Beurstaal (NL/DE/EN/PL) & vertaling kernmateriaal vastleggen"
+    ]
+   ]
+  ],
+  [
+   "AVG & leadproces  –  laat de juridische afdeling toetsen",
+   [
+    [
+     "add",
+     "Toestemming/AVG-melding in het digitale leadformulier borgen – juridisch toetsen"
+    ],
+    [
+     "add",
+     "Foto-/videocontent op de stand: toestemming van afgebeelde personen – juridisch toetsen"
+    ],
+    [
+     "add",
+     "Leadverwerking, bewaartermijn & CRM-import AVG-conform definiëren"
+    ]
+   ]
+  ],
+  [
+   "Personeelsorganisatie ter plaatse",
+   [
+    [
+     "add",
+     "Standdienst-/ploegenrooster incl. pauzes (arbeidstijd) opstellen – bij twijfel juridisch toetsen"
+    ],
+    [
+     "add",
+     "Eten/drinken voor het standteam plannen (niet alleen klantcatering)"
+    ],
+    [
+     "add",
+     "EHBO-/noodcontacten & contactpersoon Ahoy vastleggen"
+    ]
+   ]
+  ],
+  [
+   "Nazorg",
+   [
+    [
+     "add",
+     "Lead-opvolgtijdlijn + bedank-/opvolgmail voorbereiden (vanaf 29-01-2027)"
+    ],
+    [
+     "add",
+     "ROI-/succesevaluatie (kosten vs. leads/kwaliteit) als lessons learned 2027"
+    ]
+   ]
+  ]
+ ],
+ "link_urls": [
+  "https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db",
+  "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a",
+  "https://app.clickup.com/90122021025/v/l/li/901222034862",
+  "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"
+ ]
+}

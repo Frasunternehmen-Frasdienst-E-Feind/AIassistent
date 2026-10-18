@@ -1,6 +1,6 @@
 {
   "name": "Fräsdienst-Service E. Feind GmbH – Corporate Design",
-  "source": "Design-System-Artefakt (project/tokens.json), Stand 2026-09; Farbsystem 1.1 (branding/farbsystem.md) vom 2026-10-07",
+  "source": "Design-System-Artefakt (project/tokens.json), Stand 2026-09; Farbsystem 1.1 (branding/farbsystem.md) vom 2026-10-07; on-accent-strong #1f2525 und Warnung Signal-Gelbgrün (on-warn) aus main übernommen (Entscheidungen David 04.10. und 14.10.2026)",
   "palette": {
     "feind-gruen": "#84bb20",
     "anthrazit": "#424e4e",
@@ -14,6 +14,7 @@
       "accent": "#84bb20",
       "accent-text": "#4d7311",
       "on-accent": "#424e4e",
+      "on-accent-strong": "#1f2525",
       "signal": "#e3000b",
       "signal-text": "#b8000a",
       "surface": "#ffffff",
@@ -24,12 +25,18 @@
       "ink-muted": "#5f6969",
       "ink-inverse": "#ffffff",
       "line": "#d5dada",
-      "focus": "#424e4e"
+      "focus": "#424e4e",
+      "accent-ink": "#4d7311",
+      "warn": "#d6e000",
+      "warn-text": "#424e4e",
+      "on-warn": "#424e4e",
+      "print-ink": "#1f2626"
     },
     "dark": {
       "accent": "#84bb20",
       "accent-text": "#a6d65a",
       "on-accent": "#424e4e",
+      "on-accent-strong": "#1f2525",
       "signal": "#e3000b",
       "signal-text": "#ff9a9f",
       "surface": "#2e3737",
@@ -40,7 +47,11 @@
       "ink-muted": "#b8bfbf",
       "ink-inverse": "#ffffff",
       "line": "#4d5858",
-      "focus": "#84bb20"
+      "focus": "#84bb20",
+      "accent-ink": "#a6d65a",
+      "warn": "#d6e000",
+      "warn-text": "#d6e000",
+      "on-warn": "#424e4e"
     }
   },
   "typography": {
@@ -65,6 +76,7 @@
     "#5e8a14 ist keine Textfarbe (4,10:1 auf Weiß), nur Fläche und Symbol.",
     "Feind-Rot auf dunklem Grund erreicht nur 2,49:1 – dort signal-text verwenden, Rot nur als Fläche oder Linie.",
     "Auf Grün steht Anthrazit (on-accent), nie Weiß.",
+    "Schrift auf vollem Grün (Primär-Buttons) in on-accent-strong #1f2525 (6,9:1); on-accent #424e4e erreicht nur 3,74:1 und bleibt für Flächen, Symbole und große Schrift.",
     "Signal-Gelbgrün #d6e000 nur als Fläche mit Anthrazit-Schrift (5,97:1), nie als Text auf hellem Grund (1,45:1)."
   ],
   "status": {

@@ -5,6 +5,14 @@ Antworten und Commit-Messages auf Deutsch. Fachbegriffe der Zeitwirtschaft
 (Ist, Soll, Saldo, Kommen/Gehen, Pause) so verwenden, wie sie in OptiTime und in
 der Lohnabrechnung stehen.
 
+## Entscheidungen und Optionen (Wunsch von David, 30.09.2026)
+* Optionen und Entscheidungen immer als **klickbare Auswahl** anzeigen (Werkzeug
+  `AskUserQuestion`), nicht als Fließtext-Frage – das spart Zeit.
+* Die aus Expertensicht beste Option steht immer **an erster Stelle** und trägt
+  den Zusatz **„(Empfohlen)“**; die Beschreibung nennt kurz den Grund.
+* Höchstens 4 Optionen je Frage, höchstens 4 Fragen auf einmal; „Sonstiges“ ergänzt
+  das System selbst.
+
 ## Corporate Design (verbindlich für Artefakte, Dashboards, Präsentationen)
 Farben, Schriften, Radien und Abstände stehen in `branding/feind-ci.tokens.json`
 und sind die einzige Quelle – keine eigenen Paletten erfinden, keine Farbwerte
@@ -14,6 +22,8 @@ CI-Leitfaden, dann Farbsystem, dann sonstige Vorgaben.
 
 * Grün `#84bb20` ist Akzent- und Flächenfarbe. Auf Grün steht Anthrazit
   `#424e4e`, nie Weiß.
+  Schrift auf vollem Grün (Buttons) in `on-accent-strong` `#1f2525` (6,9:1),
+  weil `#424e4e` auf Grün nur 3,74:1 erreicht.
 * Grün nie als Textfarbe auf hellem Grund (2,31:1) – dort `accent-text` `#4d7311`.
   `#5e8a14` ist keine Textfarbe (4,10:1).
 * Rot `#e3000b` ausschließlich als Signal (Fehler, Fehlbuchung, Minus), nie als
@@ -94,8 +104,8 @@ sollte:
   Artefakt-Speicher (`db`) berührt.
 * `to-tickets` – wenn die Spec in mehrere Arbeitsschritte zerfällt.
 
-Nur vorschlagen, nicht ungefragt ausführen. Ist das Plugin in der Sitzung
-nicht aktiv, darauf hinweisen und die Installation anbieten. Bei
+Nur vorschlagen, nicht ungefragt ausführen. Die Skills liegen unter
+`.claude/skills/` (siehe dortige README). Bei
 Kleinständerungen (Tippfehler, Farbwert, Einzeiler) entfällt der Vorschlag.
 
 ## Arbeitsweise bei Entscheidungen
@@ -120,3 +130,17 @@ Ausnahme zur Längengrenze (David, 2026-10-07): Das Standardformat mit fünf
 Abschnitten (Zusammenfassung, Empfehlung, Vorlage, Risiken, KPIs) hat Vorrang
 vor der 150-Wörter-Grenze. Innerhalb des Formats gilt weiter: keine
 Wiederholungen, keine Alternativen ohne Anfrage.
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues dieses Repos; in Cloud-Sessions ohne `gh` über die GitHub-MCP-Tools. Achtung: Solange das Repo öffentlich ist, sind auch Issues öffentlich – keine Personendaten. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Standard-Vokabular (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context (`GLOSSARY.md` + `docs/adr/` im Repo-Root, werden bei Bedarf angelegt). See `docs/agents/domain.md`.

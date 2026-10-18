@@ -12,6 +12,9 @@ credentials/
 *.json
 !config.schema.json
 !.mcp.json
+# Plugin-Manifest und Connector-Datei des Marketing Cockpits (keine Geheimnisse)
+!feind-marketing-cockpit/.claude-plugin/plugin.json
+!feind-marketing-cockpit/.mcp.json
 # Hook-Registrierung für Claude Code; enthält nur einen Dateipfad,
 # keine Zugangsdaten.
 !.claude/settings.json
@@ -26,12 +29,31 @@ data/crm/*
 output/*
 !output/.gitkeep
 
+# Deep-Research-Deliverables (liegen im Arbeitsverzeichnis, damit die App sie
+# öffnen kann; sind Session-Ergebnisse, keine Repo-Quellen)
+research_notes/
+reports/
+
 # Build-Artefakte
 build/
 dist/
+
+# Plugin-Paket (wird mit build-zip.sh erzeugt)
+*.zip
 
 # Node-Abhängigkeiten (npm install)
 node_modules/
 
 # Messwerte des visuellen Umbaus (Cockpit) – versioniert
 !messe/rotterdam-2027/umbau/*.json
+test-results/
+playwright-report/
+
+# Messe-Generator: versionierte Inhalte & Vorlagen wieder einschließen
+# (das globale *.json oben würde sie sonst ausschließen)
+!messe/content/**/*.json
+!messe/data/team.example.json
+# Personenbezogene Daten & generierte Dokumente NIE committen (DSGVO):
+messe/data/*.local.json
+messe/output/*
+!messe/output/.gitkeep

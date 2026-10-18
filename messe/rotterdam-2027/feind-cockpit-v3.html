@@ -3372,8 +3372,9 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     return p;
   }
 
-  // Neue Aufgabe aus dem Cockpit als Notion-Zeile (Titel, Bereich, Rolle nur beim Anlegen).
-  function newTaskProps(id, t, cats, roleLabel, source) {
+  // Neue Aufgabe aus dem Cockpit als Notion-Zeile (Titel, Bereich, Rolle, Abhängigkeiten nur beim Anlegen).
+  // depUrls: Notion-URLs der Aufgaben unter „Blockiert durch“ (vom Aufrufer aus den Cockpit-IDs aufgelöst).
+  function newTaskProps(id, t, cats, roleLabel, source, depUrls) {
     const cat = (cats || []).find(c => c.id === t.cat);
     const p = Object.assign({
       Aufgabe: str(t.title).slice(0, 200) || '(ohne Titel)',
@@ -3389,6 +3390,8 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     const fl = list(t.flags).map(f => FLAG[f]).filter(Boolean);
     p.Hinweis = JSON.stringify(Array.from(new Set(fl.concat(['neu']))));
     if (str(t.budget)) p.Budget = str(t.budget).slice(0, 200);
+    const deps = list(depUrls).map(str).filter(u => pageId(u));
+    if (deps.length) p['Blockiert durch'] = JSON.stringify(Array.from(new Set(deps)));
     return p;
   }
 
@@ -8222,7 +8225,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
   function dbSnap() {
     const d = S.docs.planSnapshot;
     if (!d || typeof d !== 'object' || !H.parseTs(d.stand)) return null;
-    return KEYS.every(k => Array.isArray(d[k]) && d[k].length) ? d : null;
+    return KEYS.every(k => Array.isArray(d[k])) && (d.ap.length || d.ms.length) ? d : null;
   }
   const base = () => dbSnap() || SNAP;
   const STATE = { ap: SNAP.ap, ms: SNAP.ms, dec: SNAP.dec, kpi: SNAP.kpi };
@@ -9820,6 +9823,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
 
   const FEEDS = [['ap', 'Arbeitspakete'], ['ms', 'Meilensteine'], ['dec', 'GL-Entscheidungen'], ['kpi', 'Messgrößen']];
   const FEATS = [['aiBriefing', 'KI-Briefing anbieten (Copilot und InfraTech-Dashboard)'], ['notionLive', 'Notion-Live-Abfrage im 90-Tage-Plan (sonst Tagesstand aus der Datenbank bzw. eingebetteter Stand)'],
+    ['notionTasks', 'InfraTech-Aufgaben live aus Notion lesen und zurückschreiben (sonst letzter gespeicherter Stand, nur lesen)'],
     ['hintsExtra', 'Zusatzhinweise im Copilot (abgelaufene Fristen, Referenzen ohne Freigabe)']];
   function secFunktionen(e, dis) {
     const feats = FEATS.map(([k, label]) => h('label', { class: 'check', for: 'ft-' + k },
@@ -11670,7 +11674,8 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     const mcp = await useMcp();
     if (!mcp) return false;
     const source = H.str(t.note).startsWith(MEETING_NOTE) ? 'Meeting' : 'Cockpit';
-    const props = N.newTaskProps(id, t, D.CATS, roleLabel(t.owner), source);
+    const depUrls = (Array.isArray(t.deps) ? t.deps : []).map(d => nt.byId.get(d)).filter(x => x && x._nurl).map(x => x._nurl);
+    const props = N.newTaskProps(id, t, D.CATS, roleLabel(t.owner), source, depUrls);
     nt.busy++;
     try {
       await mcp.callTool(CFG.server, CFG.create, { parent: { type: 'data_source_id', data_source_id: CFG.ds }, pages: [{ properties: props }], allow_async: false }, { cache: false });
@@ -11683,7 +11688,18 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
 
   // Alle Aufgaben-Schreibvorgänge (Liste, Dialog, Meeting-Modus) laufen hier durch.
   const origPatch = app.cmd.tasks.patch;
-  app.cmd.tasks.patch = async function (id, patch) {
+  // Schreibvorgänge je Aufgabe strikt nacheinander: Eine zweite Änderung startet erst, wenn die erste
+  // (Neu-Lesen, Konfliktprüfung, Update) fertig ist – sonst könnte der ältere Wert zuletzt ankommen.
+  const queues = new Map();
+  function serial(id, fn) {
+    const run = (queues.get(id) || Promise.resolve()).catch(() => {}).then(fn);
+    queues.set(id, run);
+    run.finally(() => { if (queues.get(id) === run) queues.delete(id); }).catch(() => {});
+    return run;
+  }
+
+  app.cmd.tasks.patch = function (id, patch) { return serial(id, () => patchTask(id, patch)); };
+  async function patchTask(id, patch) {
     const cur = findTask(id);
     const linked = app.notionLinked(cur);
     if (linked) {
@@ -11710,7 +11726,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       else app.toast('Aufgabe im Cockpit gespeichert, aber noch nicht in Notion. Über „Nach Notion übertragen“ nachholen.', true);
     }
     return ok;
-  };
+  }
 
   // Mehrere Aufgaben in einem Durchgang (PDF-Rücklauf): einmal frisch lesen, in Notion inzwischen geänderte Felder
   // mit Rückfrage, dann je Aufgabe update_properties. items: [{ cur, fields }]; cur ist der angezeigte Stand.
@@ -11753,11 +11769,19 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     if (nt.state !== 'live') return [];
     return FC.model.allTasks([], S.data.tasks || []).filter(t => t.custom && !nt.byId.has(t.id));
   }
+  let pushing = false;
   async function pushPending() {
-    const list = pending();
-    let n = 0;
-    for (const t of list) { if (await createNotion(t.id, t)) { n++; await origPatch(t.id, { notionPending: false }); } else break; }
-    app.toast(n + ' von ' + list.length + ' Aufgaben nach Notion übertragen.', n < list.length);
+    if (pushing) return;
+    pushing = true;
+    app.refresh();
+    try {
+      const list = pending();
+      let n = 0;
+      for (const t of list) { if (await createNotion(t.id, t)) { n++; await origPatch(t.id, { notionPending: false }); } else break; }
+      app.toast(n + ' von ' + list.length + ' Aufgaben nach Notion übertragen.', n < list.length);
+      // Erst nach dem Neuladen kennt nt.byId die neuen Zeilen; vorher würde pending() sie erneut anbieten.
+      if (n) await load(true).catch(() => {});
+    } finally { pushing = false; app.refresh(); }
   }
 
   /* ---------- Statuszeile im Aufgaben-Modul ---------- */
@@ -11773,7 +11797,7 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
       h('span', { class: 'num', id: 'it-src-meta', text: when + ' · ' + src.count + ' Aufgaben' }),
       detail ? h('span', { class: 'muted', text: detail }) : null,
       nt.dupes.length ? h('span', { class: 'pill flag', text: 'Doppelte Cockpit-ID in Notion: ' + Array.from(new Set(nt.dupes)).join(', ') }) : null,
-      pend.length && !app.ro() ? h('button', { class: 'btn small', type: 'button', onclick: pushPending }, pend.length + ' nach Notion übertragen') : null,
+      pend.length && !app.ro() ? h('button', { class: 'btn small', type: 'button', disabled: pushing, 'aria-busy': String(pushing), onclick: pushPending }, pushing ? 'Wird übertragen …' : pend.length + ' nach Notion übertragen') : null,
       inViewer() ? h('button', { class: 'linkbtn', type: 'button', 'data-tip': 'Lädt die Aufgaben sofort neu aus Notion.', onclick: () => load(true) }, 'Neu laden') : null,
       h('a', { href: CFG.db, target: '_blank', rel: 'noopener', class: 'small' }, 'In Notion öffnen'));
   };
@@ -11893,7 +11917,12 @@ label.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; 
     if (t && interactive(t)) { hide(); return; }
     if (cur && !(bubble && bubble.contains(e.target))) hide();
   });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && cur) { e.preventDefault(); e.stopPropagation(); hide(); } }, true);
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape' || !cur) return;
+    const own = e.target === cur || (bubble && bubble.contains(e.target));
+    hide();
+    if (own) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
   window.addEventListener('scroll', () => { if (cur) { if (pinned) place(cur, bubble); else hide(); } }, true);
   window.addEventListener('resize', () => { if (cur) place(cur, bubble); });
 
