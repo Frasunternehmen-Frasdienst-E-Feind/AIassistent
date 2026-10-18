@@ -1,7 +1,7 @@
 /* ---- notion-tasks.js ---- */
 /* Feind Cockpit · Notion-Datenbank „Aufgaben InfraTech 2027“ ↔ Cockpit-Aufgaben. Reine Funktionen:
    Zeilen der Notion-Ansicht in Aufgaben übersetzen, Änderungen in Notion-Eigenschaften, Konflikte finden.
-   Notion ist führend. Das Cockpit schreibt nur Status, Notiz, Fällig, Priorität, Beschluss und Archiviert;
+   Führend ist Jira (Projekt MAR); Notion ist Spiegel. Das Cockpit schreibt nur Status, Notiz, Fällig, Priorität, Beschluss und Archiviert;
    Titel, Bereich, Rolle, Budget und Abhängigkeiten werden in Notion gepflegt. „Person (intern)“ wird nie gelesen. */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
@@ -151,4 +151,3 @@
 
   return { STATUS, FLAG, WRITABLE, NOTION_OWNED, LABEL, pageId, rowToTask, rowsToTasks, splitPatch, toProps, newTaskProps, conflicts, norm };
 });
-

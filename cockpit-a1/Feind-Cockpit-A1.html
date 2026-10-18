@@ -28,7 +28,7 @@
   --on-warn: #424e4e;
   --info: #2c5a7a;
   --info-text: #1f455c;
-  --chart-1: #7ca04c;
+  --chart-1: #84bb20;
   --chart-2: #223131;
   --chart-3: #cae1b0;
   --chart-3-edge: #7ca04c;
@@ -631,6 +631,7 @@ button.kpi:hover { border-color: var(--ink-muted); }
 
 /* ---------- Referenzen ---------- */
 .refs { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); grid-auto-rows: 1fr; gap: var(--s2); }
+.refs.refs-after-map { margin-top: 32px !important; padding-top: 24px; border-top: 1px solid var(--line); }
 /* Alle Projektkarten gleich hoch, „Bearbeiten“ immer unten rechts auf gleicher Höhe (Wunsch David 08.10.2026). */
 .refs > .card { height: 100%; }
 .refs .ref-actions { margin-top: auto; padding-top: var(--s2); justify-content: flex-end; }
@@ -703,6 +704,16 @@ button.kpi:hover { border-color: var(--ink-muted); }
    auf 44 px (Mindestmaß für Finger), das Zeichen bleibt gleich groß. */
 @media (pointer: coarse) { .refpin { width: 44px; height: 44px; margin: -22px 0 0 -22px; } }
 .refmap-legend { display: flex; flex-wrap: wrap; gap: var(--s3); font-size: 12px; color: var(--ink-muted); margin-top: var(--s2); }
+.refmap-legend { width: fit-content; max-width: 100%; padding: 4px 8px; border: 1px solid var(--line); border-radius: var(--r-btn); background: var(--surface); cursor: pointer; gap: var(--s2); transition: gap .15s ease, padding .15s ease; }
+.refmap-legend .lt { font-weight: 400; }
+.refmap-legend:not(.open) { font-size: 0; }
+.refmap-legend:not(.open) .lt { display: none; }
+.refmap-legend:not(.open) span { display: inline-flex; align-items: center; }
+.refmap-legend:not(.open) i, .refmap-legend:not(.open) .ef-mark { transform: scale(.8); margin-right: 0; }
+.refmap-legend:not(.open)::after { content: 'Legende'; font-size: 11px; color: var(--ink-muted); align-self: center; }
+.refmap-legend.open { padding: 8px 12px; gap: var(--s3); font-size: 13px; box-shadow: var(--e1); }
+.refmap-legend:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+@media print { .refmap-legend { font-size: 12px !important; border: 0; padding: 0; } .refmap-legend .lt { display: inline !important; } .refmap-legend::after { content: none !important; } }
 .refmap-legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; background: var(--accent); border: 1px solid var(--ink-strong); }
 .refmap-legend i.pin { width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--surface-inverse); color: var(--ink-inverse); border: 1.5px solid var(--accent); vertical-align: -5px; }
 .refmap-legend i.pin .ic { width: 12px; height: 12px; --ic-d: inline; --ic-accent: var(--accent); }
@@ -1344,7 +1355,7 @@ circle.fc-track { fill: none; stroke: var(--chart-track); }
     --warn: #d6e000;
     --warn-text: #424e4e;
     --warn-soft: var(--print-paper);
-    --chart-1: #7ca04c;
+    --chart-1: #84bb20;
     --chart-2: #223131;
     --chart-3: #cae1b0;
     --chart-3-edge: #7ca04c;
@@ -2631,6 +2642,94 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
   .panel h4 > a, .ms-row .t > a { display: inline-block; padding-block: 6px; }
   input[type="checkbox"][id^="mv-"] { width: 32px; height: 32px; min-width: 32px; }
 }
+@media (pointer: coarse) { .refmap-legend { min-height: 44px; align-items: center; } }
+
+/* ---- Abstände & Filter-Raster (15.10.2026): Filterleisten wie im Wissensarchiv in ein ruhiges Raster ---- */
+.tools > .field > select { min-width: 150px; }
+@media (max-width: 760px) {
+  .tools:has(> .field) { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--s2) var(--s3); align-items: end; }
+  .tools:has(> .field) > .field > select, .tools:has(> .field) > .field > input { width: 100%; min-width: 0; }
+  .tools:has(> .field) > .field:has(> input[type="search"], > input[type="text"]), .tools:has(> .field) > :not(.field) { grid-column: 1 / -1; }
+  .tools:has(> .field) > :not(.field) { justify-self: start; }
+  /* Regionen-Auswahl trägt lange Werte („Alle Regionen (12)“): volle Breite statt abgeschnitten. */
+  .tools > .field:has(> #mk-region) { grid-column: 1 / -1; }
+}
+
+/* ---- Prüfung 15.10.2026: Touch-Ziele mind. 44 px ohne Layoutverschiebung, Skip-Link und Bereichstabs ---- */
+.skip, .worldtab { min-height: 44px; }
+@media (pointer: coarse) {
+  .cb, .chip, .tip-note { position: relative; }
+  .cb::after, .chip::after, .tip-note::after { content: ""; position: absolute; inset: -10px -4px; }
+  #themeSeg button { min-width: 44px; min-height: 44px; }
+}
+main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2px; }
+
+/* ---- Hero-Slider „Aktuelle Entwicklungen“ (15.10.2026) ---- */
+.hs { position: relative; margin-bottom: var(--s3); border-radius: var(--r-card, 12px); outline: none; }
+.hs:focus-visible { box-shadow: 0 0 0 2px var(--focus); }
+.hs-track { display: grid; touch-action: pan-y; }
+.hs-track > .hs-slide { grid-area: 1 / 1; margin-bottom: 0; min-height: 228px; padding-bottom: calc(var(--s4) + 22px); opacity: 0; visibility: hidden; transform: translateX(16px); transition: opacity .45s var(--ease-out, ease), transform .45s var(--ease-out, ease), visibility 0s linear .45s; }
+.hs-track > .hs-slide.on { opacity: 1; visibility: visible; transform: none; transition: opacity .45s var(--ease-out, ease), transform .45s var(--ease-out, ease), visibility 0s; }
+.hs-slide .hs-media { position: relative; z-index: 1; flex: 0 1 38%; min-width: 220px; align-self: stretch; min-height: 150px; border-radius: calc(var(--r-card, 12px) - 4px); overflow: hidden; }
+.hs-slide .hs-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hs-slide .hs-photo::after { content: ''; position: absolute; inset: 0; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink-inverse) 18%, transparent); border-radius: inherit; }
+.hs-motif { display: grid; place-items: center; background: radial-gradient(120% 90% at 70% 20%, color-mix(in srgb, var(--accent) 38%, transparent), transparent 65%), repeating-linear-gradient(135deg, color-mix(in srgb, var(--ink-inverse) 7%, transparent) 0 2px, transparent 2px 14px); border: 1px solid color-mix(in srgb, var(--ink-inverse) 14%, transparent); }
+.hs-mi { display: grid; place-items: center; width: 96px; height: 96px; border-radius: 50%; background: color-mix(in srgb, var(--surface-inverse) 70%, transparent); border: 2px solid var(--accent); color: var(--ink-inverse); box-shadow: 0 0 32px color-mix(in srgb, var(--accent) 45%, transparent); }
+.hs-mi .ic { width: 52px; height: 52px; --ic-d: inline; --ic-accent: var(--accent); }
+.hs-slide h2 { overflow-wrap: anywhere; }
+.hs-nav { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); z-index: 3; display: flex; gap: 4px; padding: 2px 6px; border-radius: 999px; background: color-mix(in srgb, var(--surface-inverse) 55%, transparent); }
+.hs-dot { position: relative; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; }
+.hs-dot i { display: block; width: 8px; height: 8px; border-radius: 999px; background: color-mix(in srgb, var(--ink-inverse) 45%, transparent); overflow: hidden; position: relative; transition: width .3s var(--ease-out, ease), background-color .2s ease; }
+.hs-dot[aria-selected="true"] i { width: 22px; background: color-mix(in srgb, var(--ink-inverse) 35%, transparent); }
+.hs-dot[aria-selected="true"] i::after { content: ''; position: absolute; inset: 0; background: var(--accent); transform-origin: left; transform: scaleX(1); }
+.hs.run .hs-dot[aria-selected="true"] i::after { animation: hs-fill 8s linear forwards; }
+.hs.paused .hs-dot[aria-selected="true"] i::after { animation: none; transform: scaleX(1); }
+.hs-dot:hover i { background: var(--ink-inverse); }
+.hs-dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
+@keyframes hs-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@media (max-width: 640px) {
+  .hs-track > .hs-slide { min-height: 0; }
+  .hs-slide .hs-media { flex: 1 1 100%; min-width: 0; min-height: 132px; order: -1; }
+  .hs-mi { width: 72px; height: 72px; } .hs-mi .ic { width: 38px; height: 38px; }
+}
+@media (pointer: coarse) { .hs-dot { width: 36px; height: 36px; } }
+@media (prefers-reduced-motion: reduce) { .hs-track > .hs-slide, .hs-track > .hs-slide.on, .hs-dot i { transition: none; transform: none; } .hs.run .hs-dot[aria-selected="true"] i::after { animation: none; } }
+@media print { .hs-nav { display: none; } .hs-track > .hs-slide { opacity: 1; visibility: visible; transform: none; position: static; } .hs-track { display: block; } .hs-track > .hs-slide + .hs-slide { margin-top: 12px; } }
+
+/* Mobil-Kopf kompakt (16.10.2026): Farbschema und Dichte liegen in der Suche (Strg+K / Lupe). */
+@media (max-width: 640px) {
+  .top .top-row { padding-block: 8px 6px; gap: 6px 10px; }
+  .top .brand h1 { font-size: 19px; }
+  .top #themeSeg, .top #densityBtn { display: none; }
+  .top .top-meta { display: contents; }
+  .top .top-row { justify-content: flex-start; }
+  .top .brand { flex: 1 1 auto; }
+  .top .countdown span { display: none; } /* steht ausführlich in „Auf einen Blick“ */
+  .top .countdown b { font-size: 24px; }
+  .top .data-stand, .top .store-state { font-size: 11px; line-height: 1.3; padding: 2px 8px; }
+  .topnav .worldtab { padding-block: 8px; }
+}
+
+/* ---- Layout auf Linie (16.10.2026) ---- */
+.gm-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); margin: 0 0 var(--s2); }
+.gm-head h3 { margin: 0; }
+.seg { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; background: var(--raised, var(--surface)); }
+.seg > button { min-height: 32px; padding: 4px 14px; border: 0; border-radius: 999px; background: transparent; color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; transition: background-color .15s ease, color .15s ease, transform .12s var(--ease-out, ease-out); }
+@media (hover: hover) and (pointer: fine) { .seg > button:hover:not([aria-pressed="true"]) { background: color-mix(in srgb, var(--ink) 7%, transparent); } }
+.seg > button:active { transform: scale(.97); }
+.seg > button[aria-pressed="true"] { background: var(--surface-inverse); color: var(--ink-inverse); font-weight: 700; }
+.seg > button:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+@media (pointer: coarse) { .seg > button { min-height: 40px; } }
+@media (prefers-reduced-motion: reduce) { .seg > button { transition: none; } .seg > button:active { transform: none; } }
+@media print { .seg { display: none; } }
+/* Schritte im Wissens-Upload (Aufgenommen · Verarbeitet · Zugewiesen) auf allen Breiten vollständig. */
+.kb-track .tk .lbl { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+/* Drei Kacheln nie als 2 + 1: ab 300 px Breite in einer Reihe. */
+.strip:has(> :nth-child(3):last-child) { grid-template-columns: repeat(auto-fit, minmax(max(88px, min(100%, calc((300px - 100%) * 999))), 1fr)); }
+/* Überschrift mit Auswahlfeld (z. B. SEO „Kennzahl“): Feld direkt neben die Überschrift statt an den rechten Rand. */
+.tools:has(> h3:first-child):has(> .field) { justify-content: flex-start !important; align-items: flex-end; column-gap: var(--s4); }
+/* Vier Kacheln nie als 3 + 1: passen vier nebeneinander, stehen sie in einer Reihe, sonst als 2 × 2. */
+.strip:has(> :nth-child(4):last-child) { grid-template-columns: repeat(auto-fit, minmax(max(150px, min(calc(50% - var(--s2) / 2), calc((624px - 100%) * 999))), 1fr)); }
 </style>
 <a class="skip" href="#main">Zum Inhalt springen</a>
 <header class="top">
@@ -2947,11 +3046,11 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     {"id":"ablauf","label":"Durchführung & Review","tone":"accent"},
     {"id":"dokumente","label":"Dokumente & Ablage","tone":"muted"}
   ];
-  // Eingebaute Aufgabenliste: nur Notfallstand (Erstbefüllung 28.09.2026). Führend ist Notion „Aufgaben InfraTech 2027“;
+  // Eingebaute Aufgabenliste: nur Notfallstand (Erstbefüllung 28.09.2026). Führend ist Jira (Projekt MAR), Notion „Aufgaben InfraTech 2027“ ist Spiegel;
   // das Cockpit zeigt diese Liste nur, wenn weder Notion live noch ein Notion-Stand (notion/tasks) vorliegt, und mischt sie nie mit Notion-Daten.
   const TASKS_STAND = '2026-09-28';
   const TASKS = [
-    {"id":"s1","cat":"steuerung","prio":"P0","due":"2026-10-02","owner":"mkt","title":"2027-Handbuch, Standnummer & Portalzugänge bei Rotterdam Ahoy anfordern/bestätigen","note":"Voraussetzung für alle weiteren Fristen.","flags":[]},
+    {"id":"s1","cat":"steuerung","prio":"P0","due":"2026-10-02","owner":"mkt","title":"2027-Handbuch & Portalzugänge anfordern (Stand 5.209, Halle 5 bestätigt)","note":"Voraussetzung für alle weiteren Fristen.","flags":[]},
     {"id":"s2","cat":"steuerung","prio":"P0","due":"2026-10-09","owner":"mkt","title":"Verbindliche 2027-Fristenmatrix mit Ahoy verifizieren","note":"Standentwurf (Individualstand) 15.11.2026 laut Handbuch 2027 V1.3 belegt. Anmeldeschluss, VRS/Slot, Auf-/Abbauzeiten noch verifizieren.","flags":["fakt"]},
     {"id":"s3","cat":"steuerung","prio":"P1","due":"2026-10-02","owner":"mkt","title":"Offizielle 2027-Sales-Kontaktperson bei infratech.nl erfragen","note":"Genannte Kontaktadresse laut Faktencheck unbestätigt; offizielle Ahoy-Adressen enden auf @ahoy.nl.","flags":["fakt"]},
     {"id":"s4","cat":"steuerung","prio":"P2","due":"2026-10-16","owner":"mkt","title":"Rechtsform des Vertragspartners (Rotterdam Ahoy N.V.?) prüfen","note":"Gegen die tatsächliche 2027-Teilnahmevereinbarung abgleichen.","flags":["recht"]},
@@ -2980,7 +3079,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     {"id":"l3","cat":"logistik","prio":"P1","due":"2026-12-04","owner":"team","title":"Packliste mit Menge, Gewicht, Maß, Verantwortlichem & Rücktransport","note":"","flags":[]},
     {"id":"l4","cat":"logistik","prio":"P1","due":null,"owner":"team","title":"Lieferetikett: Aussteller, Halle/Stand, Messezeitraum, Mobilnummer","note":"","flags":[]},
     {"id":"l5","cat":"logistik","prio":"P1","due":"2026-12-18","owner":"mkt","title":"Empfangsperson + Ausweichperson je Lieferfenster benennen","note":"Offene Entscheidung: Wer nimmt vor Ort an und übernimmt Rückgabe?","flags":[]},
-    {"id":"l6","cat":"logistik","prio":"P1","due":null,"owner":"team","title":"Einfahrt Tor 1, Kaution 200 €, Zufahrtsdauer ins Fahrerbriefing","note":"","flags":[]},
+    {"id":"l6","cat":"logistik","prio":"P1","due":null,"owner":"team","title":"Einfahrt Tor 1, Kaution, Zufahrtsdauer ins Fahrerbriefing","note":"","flags":[]},
     {"id":"l7","cat":"logistik","prio":"P1","due":null,"owner":"team","title":"Transportplan (V-Klasse, LKW, Anhänger) erstellen","note":"","flags":[]},
     {"id":"l8","cat":"logistik","prio":"P1","due":null,"owner":"team","title":"Maschinen anmelden (Kompaktlader, Ameise, Schleifwelle)","note":"","flags":[]},
     {"id":"l9","cat":"logistik","prio":"P1","due":null,"owner":"mkt","title":"Rücktransport, Abfall, Sperrmüll & Abbauhelfer bestätigen","note":"","flags":[]},
@@ -2994,7 +3093,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     {"id":"m3","cat":"material","prio":"P2","due":null,"owner":"team","title":"Infobroschüren / Prospektständer (DIN lang, beleuchtet)","note":"","flags":[]},
     {"id":"m4","cat":"material","prio":"P1","due":null,"owner":"mkt","title":"Präsentation auf Stick + Cloud sichern","note":"","flags":[]},
     {"id":"m5","cat":"material","prio":"P2","due":null,"owner":"team","title":"LED-Band, Aufsteller, Infoblatt, Flyerspender mit Magnet","note":"","flags":[]},
-    {"id":"m6","cat":"material","prio":"P2","due":null,"owner":"team","title":"Zaubertasche, Kabel/Verteiler, Kamera+Ladekabel, Tablet, Trittleiter, Bargeld (3×25 €)","note":"","flags":[]},
+    {"id":"m6","cat":"material","prio":"P2","due":null,"owner":"team","title":"Zaubertasche, Kabel/Verteiler, Kamera+Ladekabel, Tablet, Trittleiter, Bargeld (Wechselgeld)","note":"","flags":[]},
     {"id":"m7","cat":"material","prio":"P2","due":null,"owner":"team","title":"Reinigungsset, Müllsäcke, mehr Feuchttücher, Staubsauger, Fugenmaterial","note":"","flags":[]},
     {"id":"m8","cat":"material","prio":"P2","due":null,"owner":"team","title":"NICHT mitnehmen (Ballast reduzieren)","note":"Redundante Kleinexponate, große Servietten, 5-tlg. Kalender, Minz-Spender, Wein (2026 kaum getrunken) – E7.","flags":[]},
     {"id":"c1","cat":"catering","prio":"P2","due":null,"owner":"team","title":"Kaffeemaschine + Kapseln (weniger, Sorten reduzieren)","note":"Kaffee-Bar auf dem Tresen wirkte einladend – beibehalten.","flags":[]},
@@ -3034,7 +3133,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     {"id":"x5","cat":"leads","prio":"P0","due":"2026-11-20","owner":"vertrieb","title":"Vorab-Termine mit Zielkunden am Stand vereinbaren","note":"Ziel z. B. 15–20 feste Termine; Einladung mit Terminlink. Basis: Zielkundenliste (cr3).","flags":["neu"]},
     {"id":"x6","cat":"marketing","prio":"P1","due":"2026-10-30","owner":"mkt","title":"Kunden-Einladungen mit kostenlosem Besucherticket/Einladungscode versenden","note":"Besucherregistrierung ist seit 01.09.2026 offen; Einladungscode beim Veranstalter anfordern.","flags":["neu","fakt"]},
     {"id":"x7","cat":"marketing","prio":"P1","due":"2026-11-21","owner":"mkt","title":"Online-Ausstellerprofil & Katalogeintrag DE/EN/NL befüllen","note":"Frist Katalog-Firmendaten Referenz 2026: 21.11. – für 2027 verifizieren.","flags":["neu","fakt"]},
-    {"id":"x8","cat":"marketing","prio":"P1","due":"2026-11-06","owner":"mkt","title":"PR-Plan: Pressemitteilung NL/DE, Fachmedien, Pressemappe am Stand","note":"","flags":["neu"]},
+    {"id":"x8","cat":"marketing","prio":"P1","due":"2026-11-06","owner":"mkt","title":"PR-Plan: Pressemitteilung DE/EN/NL, Fachmedien, Pressemappe am Stand","note":"","flags":["neu"]},
     {"id":"x9","cat":"innovation","prio":"P1","due":"2026-12-11","owner":"mkt","title":"Kommunikationsplan Innovationspreis: nominiert / gewonnen / nicht gewonnen","note":"Verleihung 13.01.2027: Texte, Posts, Fotograf vorbereiten; Teilnahme einplanen.","flags":["neu"]},
     {"id":"x10","cat":"marketing","prio":"P2","due":"2026-10-23","owner":"mkt","title":"Wissensprogramm prüfen: eigener Praxisvortrag (Thema Replacement & Renovation)","note":"Programm ab 09/2026 online; Thema passt zu Fräsen/Grinding.","flags":["neu"]},
     {"id":"x11","cat":"rotterdam","prio":"P0","due":"2026-11-13","owner":"gl","title":"Entsendung prüfen: A1-Bescheinigungen + ggf. WagwEU-Meldung NL","note":"Arbeit im EU-Ausland; Aufbau/Standdienst ggf. meldepflichtig. Bitte Rechtsabteilung/HR prüfen.","flags":["neu","recht"]},
@@ -3050,6 +3149,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     {"d":"2026-11-15","t":"Entwurf Individualstand bei Ahoy einreichen","s":"Aussteller-Handbuch 2027 V1.3 – belegt","st":"r"},
     {"d":"2026-11-21","t":"Katalog-Firmendaten + Produkte/Dienstleistungen","s":"Referenz 2026 – 2027 verifizieren","st":"y"},
     {"d":"2026-12-01","t":"Bestellungen im Webshop vor Zuschlagsfrist","s":"Referenz 2026 – 2027 verifizieren","st":"y"},
+    {"d":"2026-12-11","t":"Innovationspreis – Pitch (nur bei Nominierung)","s":"Ausschreibung Innovation Award","st":"y"},
     {"d":"2026-12-12","t":"Namensblende, Teppichfarbe & Grafikdatei an Standbauer","s":"Referenz 2026 – 2027 verifizieren","st":"y"},
     {"d":"2027-01-06","t":"Bestellung Teppich & Möbel (Ahoy InfraTech Webshop)","s":"Referenz 2026 – 2027 verifizieren","st":"y"},
     {"d":"2027-01-12","t":"InfraTech 2027 – Messebeginn (Di), Rotterdam Ahoy","s":"12.–15.01.2027 (Faktencheck)","st":"g"},
@@ -3089,7 +3189,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
   ];
   const FACTS = [
     ["Messedatum","12.–15. Januar 2027 (Di–Fr), Rotterdam Ahoy","Bestätigt","ToDo nannte 12.–14.01. → Aufbau/Abbau-Plan an 4 Messetage anpassen."],
-    ["Innovationspreis","Einsendung vóór 25.09.2026","Bestätigt (2027)","ToDo nannte 31.10.2026 – DRINGEND verifizieren, Frist ggf. in Tagen!"],
+    ["Innovationspreis","Eingereicht am 25.09.2026","Bestätigt (2027)","Eingereicht 25.09.2026. Pitch bei Nominierung 11.12.2026, Sieger 13.01.2027."],
     ["Hotels","Nur ibis Styles Rotterdam Ahoy fußläufig (~2 min)","Korrektur","Hilton/Postillion WTC/DoubleTree ~5 km Zentrum; „The Manhattan\" = Rotterdam Marriott."],
     ["Kennzahlen","500 Aussteller / >23.000 Besucher","Fortschreibung","2025-Werte (23.344), keine testierte 2027-Prognose."],
     ["Dienstleister","Global Expo Stand B.V. & LOCO verifiziert","Prüfen","Whimsical Exhibits & LIVE Event Staffing schwach belegt; „ExproGloble\" nicht auffindbar – streichen."],
@@ -3097,7 +3197,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
   ];
   const SOURCES = [
     ["Ausstellerhandbuch InfraTech 2026","PDF","Aufbau/Abbau, Lieferungen, Ansprechpartner – Checklistenbasis"],
-    ["Standbauhandbuch InfraTech 2026","PDF","Technische Standbauregeln, Tor 1, Kaution 200 €"],
+    ["Standbauhandbuch InfraTech 2026","PDF","Technische Standbauregeln, Tor 1, Kaution"],
     ["Overview Deadlines 2026","PDF","Fristen-Referenz (Standentwurf, Katalog, Teppich/Möbel)"],
     ["Werben im Messekatalog 2026","PDF","Anzeigen-/Logo-/PR-Optionen (Preise 2027 neu)"],
     ["Auswertung InfraTech 2026","XLSX","Lessons Learned + Kostenbaseline 21.023 €"],
@@ -3174,7 +3274,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     msPill: {"jetzt":"is-top","Messe":"is-top","wartet":"wait","offen":"open","in Arbeit":"ready","erledigt":"ready"},
     decPill: {"zuerst":"is-top","offen":"open","beschlossen":"ready","vertagt":"wait","abgelehnt":"block"},
     pinTarget: {"09.10.":"ap-AP1","06.11.":"ms-6","11.12.":"sec-arbeitspakete","12.01.":"ms-10"},
-    snapshot: {"stand":"2026-09-28T06:38:08+02:00","ap":[{"Status":"Top-Priorität","Verantwortlich":"David · GL, Vertrieb, Werkstatt","Statushinweis":"Top-Priorität","Bereich":"Messe","Top":"__YES__","AP":"AP0","Voraussetzung":"Buchungsstand, Messebudget (Scan: nur 500 €), Kreditkarte (B), AP3 für QR-Code, AP5 für Referenzmappe","Sortierung":0,"Rechtsprüfung":"__YES__","Ergebnis":"Stand 12–20 m² gebucht und gebaut; Exponat, Rückwand, Leistungsübersicht NL/EN/DE; Gesprächstermine vorab gebucht; 2 Ansprechpartner je Messetag, Lead-Erfassung","date:Zeitraum:start":"2026-09-14","date:Zeitraum:end":"2027-01-15","date:Zeitraum:is_datetime":0,"Balken":"1-3 Buchung · Ziele · Budget\\|4-8 Messebau · Druckdaten\\|9-13 Einladungen · Termine · Team\\|14-14 MESSE","Zeitraum Text":"KW38 – 15.01.2027","Name":"InfraTech 2027 Rotterdam","url":"https://app.notion.com/p/3d840f8bbabb8198b695fa05214e0035"},{"Status":"blockiert","Verantwortlich":"David · IT / Webbetreuung","Statushinweis":"blockiert: Admin","Bereich":"Website & Messung","Top":"__NO__","AP":"AP1","Voraussetzung":"Admin-Rechte (A), WordPress- & GSC-Zugang, Tool-Entscheidung","Sortierung":1,"Rechtsprüfung":"__YES__","Ergebnis":"Search Console verifiziert; Tracking (GA4 + GTM oder Matomo) mit Consent; Ziele: Formular, Telefon-, E-Mail-Klick; Baseline-Report am 09.10.","date:Zeitraum:start":"2026-09-14","date:Zeitraum:end":"2026-12-11","date:Zeitraum:is_datetime":0,"Balken":"1-4 Setup\\|5-13 Messung\\~","Zeitraum Text":"KW38–41, Messung laufend","Name":"Messbarkeit & Baseline","url":"https://app.notion.com/p/3d840f8bbabb81f5a91fd3e443b1b51c"},{"Status":"wartet","Verantwortlich":"David · GL, Personal","Statushinweis":"wartet auf GL","Bereich":"Marke & Firmendaten","Top":"__NO__","AP":"AP2","Voraussetzung":"Entscheidung Rechtsträger","Sortierung":2,"Rechtsprüfung":"__YES__","Ergebnis":"Verbindlicher Firmenname als Textbaustein (auch Messekatalog); Google-Profile Lübben & Wittenburg; 1 Facebook-Hauptprofil statt 3; 8+ Verzeichnisse, Jobportale korrigiert","date:Zeitraum:start":"2026-09-14","date:Zeitraum:end":"2026-10-23","date:Zeitraum:is_datetime":0,"Balken":"1-6 Name · Profile · Verzeichnisse","Zeitraum Text":"KW38–43","Name":"Einheitlicher Firmenauftritt","url":"https://app.notion.com/p/3d840f8bbabb8164aeaec9fdf8ce28da"},{"Status":"wartet","Verantwortlich":"David · Webbetreuung, Vertrieb","Statushinweis":"wartet auf AP1","Bereich":"Website & Messung","Top":"__NO__","AP":"AP3","Voraussetzung":"AP1, WordPress-Zugang, Datenschutzprüfung Formular","Sortierung":3,"Rechtsprüfung":"__YES__","Ergebnis":"Einheitlicher CTA „Projekt prüfen lassen“; Titles/H1 Kaltfräsen, Grinding, Grooving; /anfrage/ mit Upload – Ziel des Messe-QR-Codes; Ein zentraler Anfrageweg","date:Zeitraum:start":"2026-09-21","date:Zeitraum:end":"2026-10-30","date:Zeitraum:is_datetime":0,"Balken":"2-7 CTA · Titles · /anfrage/","Zeitraum Text":"KW39–44 · spätestens KW45 für Messe-Druck","Name":"Website-Sofortpaket","url":"https://app.notion.com/p/3d840f8bbabb8190a90df1ecf54aadc5"},{"Status":"blockiert","Verantwortlich":"David · Personal, GL","Statushinweis":"blockiert: Budget","Bereich":"Recruiting","Top":"__NO__","AP":"AP4","Voraussetzung":"Budget & Kreditkarte (B), Rechtsprüfung Formular/Pixel","Sortierung":4,"Rechtsprüfung":"__YES__","Ergebnis":"Kurzbewerbung mobil, DSGVO-geprüft; Stellenanzeige neu, Empfehlungsprämie; Ab KW42 Ads im Umkreis Lübben & Wittenburg","date:Zeitraum:start":"2026-09-14","date:Zeitraum:end":"2026-12-11","date:Zeitraum:is_datetime":0,"Balken":"1-4 Formular · Anzeige\\|5-13 Ads Meta + Google","Zeitraum Text":"KW38–41, ab KW42 Kampagne","Name":"Recruiting Maschinenführer","url":"https://app.notion.com/p/3d840f8bbabb816f9de0d06cde96bdb6"},{"Status":"startklar","Verantwortlich":"David · Bauleitung","Statushinweis":"startklar","Bereich":"Content & Events","Top":"__NO__","AP":"AP5","Voraussetzung":"Kundenfreigaben, Bildrechte, Ablagesystem (C)","Sortierung":5,"Rechtsprüfung":"__NO__","Ergebnis":"3–5 Fallstudien: Ort, Fläche m², Maschine, Ergebnis; Vorher-Nachher-Fotos – auch für Messewand und Referenzmappe","date:Zeitraum:start":"2026-09-21","date:Zeitraum:end":"2026-11-06","date:Zeitraum:is_datetime":0,"Balken":"2-8 3–5 Fallstudien","Zeitraum Text":"KW39–45","Name":"Referenzen als Fallstudien","url":"https://app.notion.com/p/3d840f8bbabb815181fdc3d417c98eb0"},{"Status":"wartet","Verantwortlich":"David · Technik, Webbetreuung","Statushinweis":"ab KW43","Bereich":"Website & Messung","Top":"__NO__","AP":"AP6","Voraussetzung":"URL-Entscheidung, geprüfte Kennwerte (liefert GL), AP5","Sortierung":6,"Rechtsprüfung":"__YES__","Ergebnis":"Eigene Seiten Kaltfräsen, Precision Grinding, Grooving; Schema: Organization, LocalBusiness, Service","date:Zeitraum:start":"2026-10-19","date:Zeitraum:end":"2026-12-11","date:Zeitraum:is_datetime":0,"Balken":"6-13 Kaltfräsen · Grinding · Grooving","Zeitraum Text":"KW43–50","Name":"Leistungsseiten & Schema","url":"https://app.notion.com/p/3d840f8bbabb81c2bd03e159ce983662"},{"Status":"startklar","Verantwortlich":"David · Mitarbeitende","Statushinweis":"startklar","Bereich":"Content & Events","Top":"__NO__","AP":"AP7","Voraussetzung":"Einwilligungen, Zuwendungsbescheid prüfen","Sortierung":7,"Rechtsprüfung":"__YES__","Ergebnis":"LinkedIn 2×/Woche, Instagram/Facebook 1–2×/Woche; Ab KW47 Serie „Feind auf der InfraTech“; EU-Förderleiste nach Zuwendungsbescheid geklärt","date:Zeitraum:start":"2026-09-14","date:Zeitraum:end":"2026-12-11","date:Zeitraum:is_datetime":0,"Balken":"1-13 LinkedIn 2×/Wo · Insta/FB · Messe-Countdown ab KW47","Zeitraum Text":"KW38–50 laufend","Name":"Redaktionsrhythmus Social","url":"https://app.notion.com/p/3d840f8bbabb81ba8b33f8ceb7b47aa9"},{"Status":"wartet","Verantwortlich":"David · GL","Statushinweis":"ab KW47","Bereich":"Content & Events","Top":"__NO__","AP":"AP8","Voraussetzung":"Budgetrahmen","Sortierung":8,"Rechtsprüfung":"__NO__","Ergebnis":"Konzept „Fräsen live erleben“ (Q2 2027, 2.000–4.000 €); Termin, Partner, Budgetantrag – Messekontakte einladen","date:Zeitraum:start":"2026-11-16","date:Zeitraum:end":"2026-12-11","date:Zeitraum:is_datetime":0,"Balken":"10-13 „Fräsen live erleben“","Zeitraum Text":"KW47–50","Name":"Event-Konzept 2027","url":"https://app.notion.com/p/3d840f8bbabb81cb90d0d4a094a27b47"}],"ms":[{"Status":"jetzt","Statushinweis":"jetzt","date:Datum:start":"2026-09-18","date:Datum:is_datetime":0,"Verantwortlich":"GL · David","KW":"KW38","Messetag":"__NO__","Sortierung":1,"Datum Text":"18.09.","Details":"Standvertrag, Fläche, Halle, Kosten – Messe-Hub und Ordner U:185.12 sichten (Ausstellerliste nennt Stand 5.209); Hotel-Option ibis Styles Ahoy · Entwürfe ① + ② → Notion „Anfragen InfraTech 2027“, Versand 15.09.","Meilenstein":"Buchungsstand klären","url":"https://app.notion.com/p/3d840f8bbabb814d8927e5c0ba772ef3"},{"Status":"in Arbeit","Statushinweis":"Fristen belegt","date:Datum:start":"2026-09-18","date:Datum:is_datetime":0,"Verantwortlich":"David","KW":"KW38","Messetag":"__NO__","Sortierung":2,"Datum Text":"18.09.","Details":"Fristen & Preise lt. Handbuch 2027 belegt (Standentwurf 15.11.); Entwurf ① Buchungsabgleich Stand 5.209 an [info@infratech.nl](mailto:info@infratech.nl), Versand 15.09.","Meilenstein":"Ahoy-Sales-Kontakt & Fristen","url":"https://app.notion.com/p/3d840f8bbabb818991a2d0a777e091b4"},{"Status":"wartet","Statushinweis":"GL","date:Datum:start":"2026-10-02","date:Datum:is_datetime":0,"Verantwortlich":"GL","KW":"KW40","Messetag":"__NO__","Sortierung":3,"Datum Text":"02.10.","Details":"Messebudget beziffern, NL/BE-Aufträge ja oder nein, Teamgröße","Meilenstein":"Ziele, Budget, Zielmarkt freigeben","url":"https://app.notion.com/p/3d840f8bbabb81e1921bc575f03be5f9"},{"Status":"offen","Statushinweis":"offen","date:Datum:start":"2026-10-16","date:Datum:is_datetime":0,"Verantwortlich":"David · Werkstatt","KW":"KW42","Messetag":"__NO__","Sortierung":4,"Datum Text":"16.10.","Details":"Entwürfe ③ Global Expo Stand B.V. + ④ LOCO (verifiziert), Versand ab 28.09., Angebote bis 16.10.; Referenz Stabilo; 12–20 m², Exponat Fräswalze","Meilenstein":"Messebau-Angebote","url":"https://app.notion.com/p/3d840f8bbabb8161be27d4754422fcb8"},{"Status":"offen","Statushinweis":"offen","date:Datum:start":"2026-10-23","date:Datum:is_datetime":0,"Verantwortlich":"David","KW":"KW43","Messetag":"__NO__","Sortierung":5,"Datum Text":"23.10.","Details":"Registerauszug vor Beauftragung; Reiseart Pkw/Bahn/Flug festlegen","Meilenstein":"Messebauer beauftragen, Reise buchen","url":"https://app.notion.com/p/3d840f8bbabb81359ee0f34856ef8c4c"},{"Status":"wartet","Statushinweis":"braucht AP3","date:Datum:start":"2026-11-06","date:Datum:is_datetime":0,"Verantwortlich":"David · Webbetreuung","KW":"KW45","Messetag":"__NO__","Sortierung":6,"Datum Text":"06.11.","Details":"Rückwand, Leistungsübersicht, Flyer NL/EN/DE, QR-Code auf /anfrage/","Meilenstein":"Druckdaten fertig","url":"https://app.notion.com/p/3d840f8bbabb8132984ee7482b29d260"},{"Status":"offen","Statushinweis":"offen","date:Datum:start":"2026-11-20","date:Datum:is_datetime":0,"Verantwortlich":"David · Vertrieb","KW":"KW47","Messetag":"__NO__","Sortierung":7,"Datum Text":"20.11.","Details":"Mailing an Kunden und Partner, LinkedIn-Serie startet","Meilenstein":"Einladen & Termine buchen","url":"https://app.notion.com/p/3d840f8bbabb81b18213d69dbf4d52af"},{"Status":"offen","Statushinweis":"offen","date:Datum:start":"2026-12-04","date:Datum:is_datetime":0,"Verantwortlich":"GL · Vertrieb","KW":"KW49","Messetag":"__NO__","Sortierung":8,"Datum Text":"04.12.","Details":"2 Ansprechpartner je Tag, Gesprächsleitfaden, DSGVO-konformes digitales Formular","Meilenstein":"Standteam & Lead-Erfassung","url":"https://app.notion.com/p/3d840f8bbabb8159bf8ad66fa0f7911c"},{"Status":"offen","Statushinweis":"offen","date:Datum:start":"2026-12-18","date:Datum:is_datetime":0,"Verantwortlich":"David · Werkstatt","KW":"KW51","Messetag":"__NO__","Sortierung":9,"Datum Text":"18.12.","Details":"Exponat-Transport, Briefing Standteam","Meilenstein":"Produktion & Logistik abgeschlossen","url":"https://app.notion.com/p/3d840f8bbabb8174ae9cf0117e81b8f9"},{"Status":"Messe","Statushinweis":"Messe","date:Datum:start":"2027-01-12","date:Datum:end":"2027-01-15","date:Datum:is_datetime":0,"Verantwortlich":"Standteam","KW":"KW2","Messetag":"__YES__","Sortierung":10,"Datum Text":"12.–15.01.","Details":"Standdienst Di 10–18, Mi 10–21, Do 10–18, Fr 10–16; tägliche Lead-Auswertung","Meilenstein":"InfraTech 2027 · Rotterdam Ahoy","url":"https://app.notion.com/p/3d840f8bbabb81deaefad50bfccd77eb"},{"Status":"offen","Statushinweis":"offen","date:Datum:start":"2027-01-15","date:Datum:end":"2027-02-05","date:Datum:is_datetime":0,"Verantwortlich":"Vertrieb · David","KW":"KW3–6","Messetag":"__NO__","Sortierung":11,"Datum Text":"bis 05.02.","Details":"48 h, 7 und 21 Tage nach Kontakt; Messebericht an GL am 29.01.","Meilenstein":"Nachfassen & Messebericht","url":"https://app.notion.com/p/3d840f8bbabb817a8313d4cfb2a73ee9"}],"dec":[{"Beschreibung":"Ist der Stand gebucht? Messebudget beziffern – der Marketing-Scan sieht für Messen nur 500 € (15-T€-Szenario) vor. Projektleitung und zwei Ansprechpartner je Messetag benennen.","Beschluss":"","Nr":1,"Status":"zuerst","date:Datum:is_datetime":0,"Entscheidung":"InfraTech 2027: Buchung, Budget, Standteam","url":"https://app.notion.com/p/3d840f8bbabb81e09ab2d82e7dd51c8b"},{"Beschreibung":"Recruiting-Budget, Website/SEO, Grinding & Grooving, Landingpages, Kurzbewerbung. Vorschlag: alle freigeben, Landingpages nach den Referenzen (Monat 4–6).","Beschluss":"","Nr":2,"Status":"offen","date:Datum:is_datetime":0,"Entscheidung":"Freigabe der fünf Maßnahmen","url":"https://app.notion.com/p/3d840f8bbabb810c9f5fc67e3eec76ac"},{"Beschreibung":"5.000 / 15.000 / 30.000 €. Marketing-Scan empfiehlt 15.000 € – ohne Messe Rotterdam gerechnet. Recruiting separat beziffern.","Beschluss":"","Nr":3,"Status":"offen","date:Datum:is_datetime":0,"Entscheidung":"Jahresbudget","url":"https://app.notion.com/p/3d840f8bbabb8122b2ffe1875b357a92"},{"Beschreibung":"Admin-Rechte, Kreditkarte, Ablage, Microsoft 365, CI-Leitfaden. A und B blockieren Welle 1 und die Messebuchung.","Beschluss":"","Nr":4,"Status":"offen","date:Datum:is_datetime":0,"Entscheidung":"Blockaden A–E lösen","url":"https://app.notion.com/p/3d840f8bbabb81c69edcdf8d2959580c"},{"Beschreibung":"Drei Firmierungen im Umlauf – nötig für Impressum, Messekatalog, Google-Profile. Rechtsabteilung prüfen.","Beschluss":"","Nr":5,"Status":"offen","date:Datum:is_datetime":0,"Entscheidung":"Verbindlicher Rechtsträger","url":"https://app.notion.com/p/3d840f8bbabb81cfa709da305303006c"},{"Beschreibung":"Laut CI-Leitfaden nicht freigegeben, in der Präsentation genutzt. Entscheidung vor Druck der Messewand (06.11.).","Beschluss":"","Nr":6,"Status":"offen","date:Datum:is_datetime":0,"Entscheidung":"Claim „Präzision bewegt Zukunft.“","url":"https://app.notion.com/p/3d840f8bbabb816e895dfbd27ab6b828"},{"Beschreibung":"GA4 + Tag Manager oder Matomo – bestimmt Consent-Aufwand und Datenschutzprüfung.","Beschluss":"","Nr":7,"Status":"offen","date:Datum:is_datetime":0,"Entscheidung":"Tracking-Werkzeug","url":"https://app.notion.com/p/3d840f8bbabb8170b0b5f1911e048497"},{"Beschreibung":"Je Arbeitspaket eine verantwortliche Person; Wochenstatus freitags.","Beschluss":"","Nr":8,"Status":"offen","date:Datum:is_datetime":0,"Entscheidung":"Verantwortliche & Check-ins","url":"https://app.notion.com/p/3d840f8bbabb81b9a3efd322212deca7"}],"kpi":[{"Ziel":"20 · 10 · 3–5","Sortierung":1,"Messe":"__YES__","Ausgangswert":"–","Quelle":"Leaderfassung InfraTech","Ist":"","Messgröße":"Qualifizierte Messegespräche · Nachfasskontakte · Projekttermine","url":"https://app.notion.com/p/3d840f8bbabb81c6b7b5efb70bf8b3d1"},{"Ziel":"festlegen bis 30.10.","Sortierung":2,"Messe":"__YES__","Ausgangswert":"–","Quelle":"Einladungsmailing, LinkedIn","Ist":"","Messgröße":"Vorab gebuchte Gesprächstermine","url":"https://app.notion.com/p/3d840f8bbabb8161bb69f692fb7e050a"},{"Ziel":"festlegen am 09.10.","Sortierung":3,"Messe":"__NO__","Ausgangswert":"nicht verfügbar","Quelle":"Anfrageformular, CRM-Liste","Ist":"","Messgröße":"Qualifizierte Projektanfragen pro Monat","url":"https://app.notion.com/p/3d840f8bbabb8168a61ffe159e62ee73"},{"Ziel":"festlegen am 09.10.","Sortierung":4,"Messe":"__NO__","Ausgangswert":"nicht verfügbar","Quelle":"Tracking (AP1)","Ist":"","Messgröße":"Telefon- und E-Mail-Klicks","url":"https://app.notion.com/p/3d840f8bbabb811980cac9cf5ed9c1d1"},{"Ziel":"festlegen am 09.10.","Sortierung":5,"Messe":"__NO__","Ausgangswert":"nicht verfügbar","Quelle":"Search Console","Ist":"","Messgröße":"Organische Klicks auf Leistungsseiten","url":"https://app.notion.com/p/3d840f8bbabb81a39c5ddc64291c5ad7"},{"Ziel":"festlegen am 06.11.","Sortierung":6,"Messe":"__NO__","Ausgangswert":"nicht verfügbar","Quelle":"Ads-Konten, Kurzbewerbung","Ist":"","Messgröße":"Kosten pro Bewerbung Maschinenführer","url":"https://app.notion.com/p/3d840f8bbabb815aa1d5e4f5d47c651b"},{"Ziel":"≤ 24 h","Sortierung":7,"Messe":"__NO__","Ausgangswert":"nicht verfügbar","Quelle":"Recruiting-Unterlagen","Ist":"","Messgröße":"Reaktionszeit auf Bewerbungen","url":"https://app.notion.com/p/3d840f8bbabb81d6aa45c0770883cd83"},{"Ziel":"0 (Vorschlag)","Sortierung":8,"Messe":"__NO__","Ausgangswert":"8+","Quelle":"Infobel, [wlw.de](http://wlw.de), Kununu u. a.","Ist":"","Messgröße":"Verzeichnisse mit veralteten Firmendaten","url":"https://app.notion.com/p/3d840f8bbabb815caaddef72ebfffd4d"},{"Ziel":"festlegen am 09.10.","Sortierung":9,"Messe":"__NO__","Ausgangswert":"117","Quelle":"LinkedIn-Seite","Ist":"","Messgröße":"LinkedIn-Follower","url":"https://app.notion.com/p/3d840f8bbabb81d58cdafb6599b80a63"},{"Ziel":"LCP \\< 2,5 s · INP \\< 200 ms · CLS \\< 0,1","Sortierung":10,"Messe":"__NO__","Ausgangswert":"nicht gemessen","Quelle":"PageSpeed Insights","Ist":"","Messgröße":"Core Web Vitals","url":"https://app.notion.com/p/3d840f8bbabb814a8fa7f310528fba02"}]}
+    snapshot: {"stand":"2026-09-28T06:38:08+02:00","ap":[{"Status":"Top-Priorität","Verantwortlich":"Marketing · GL, Vertrieb, Werkstatt","Statushinweis":"Top-Priorität","Bereich":"Messe","Top":"__YES__","AP":"AP0","Voraussetzung":"Budgetrahmen 24.200–26.500 € brutto, Kreditkarte (B), AP3 für QR-Code, AP5 für Referenzmappe","Sortierung":0,"Rechtsprüfung":"__YES__","Ergebnis":"Stand 12–20 m² gebucht und gebaut; Exponat, Rückwand, Leistungsübersicht DE/EN/NL; Gesprächstermine vorab gebucht; 2 Ansprechpartner je Messetag, Lead-Erfassung","date:Zeitraum:start":"2026-09-14","date:Zeitraum:end":"2027-01-15","date:Zeitraum:is_datetime":0,"Balken":"1-3 Buchung · Ziele · Budget\\|4-8 Messebau · Druckdaten\\|9-13 Einladungen · Termine · Team\\|14-14 MESSE","Zeitraum Text":"KW38 – 15.01.2027","Name":"InfraTech 2027 Rotterdam","url":"https://app.notion.com/p/3d840f8bbabb8198b695fa05214e0035"},{"Status":"blockiert","Verantwortlich":"Marketing · IT / Webbetreuung","Statushinweis":"blockiert: Admin","Bereich":"Website & Messung","Top":"__NO__","AP":"AP1","Voraussetzung":"Admin-Rechte (A), WordPress- & GSC-Zugang, Tool-Entscheidung","Sortierung":1,"Rechtsprüfung":"__YES__","Ergebnis":"Search Console verifiziert; Tracking (GA4 + GTM oder Matomo) mit Consent; Ziele: Formular, Telefon-, E-Mail-Klick; Baseline-Report am 09.10.","date:Zeitraum:start":"2026-09-14","date:Zeitraum:end":"2026-12-11","date:Zeitraum:is_datetime":0,"Balken":"1-4 Setup\\|5-13 Messung\\~","Zeitraum Text":"KW38–41, Messung laufend","Name":"Messbarkeit & Baseline","url":"https://app.notion.com/p/3d840f8bbabb81f5a91fd3e443b1b51c"},{"Status":"wartet","Verantwortlich":"Marketing · GL, Personal","Statushinweis":"wartet auf GL","Bereich":"Marke & Firmendaten","Top":"__NO__","AP":"AP2","Voraussetzung":"Entscheidung Rechtsträger","Sortierung":2,"Rechtsprüfung":"__YES__","Ergebnis":"Verbindlicher Firmenname als Textbaustein (auch Messekatalog); Google-Profile Lübben & Wittenburg; 1 Facebook-Hauptprofil statt 3; 8+ Verzeichnisse, Jobportale korrigiert","date:Zeitraum:start":"2026-09-14","date:Zeitraum:end":"2026-10-23","date:Zeitraum:is_datetime":0,"Balken":"1-6 Name · Profile · Verzeichnisse","Zeitraum Text":"KW38–43","Name":"Einheitlicher Firmenauftritt","url":"https://app.notion.com/p/3d840f8bbabb8164aeaec9fdf8ce28da"},{"Status":"wartet","Verantwortlich":"Marketing · Webbetreuung, Vertrieb","Statushinweis":"wartet auf AP1","Bereich":"Website & Messung","Top":"__NO__","AP":"AP3","Voraussetzung":"AP1, WordPress-Zugang, Datenschutzprüfung Formular","Sortierung":3,"Rechtsprüfung":"__YES__","Ergebnis":"Einheitlicher CTA „Projekt prüfen lassen“; Titles/H1 Kaltfräsen, Grinding, Grooving; /anfrage/ mit Upload; Messe-QR-Code führt auf www.fraesdienst-feind.de/pflasterschleifen/; Ein zentraler Anfrageweg","date:Zeitraum:start":"2026-09-21","date:Zeitraum:end":"2026-10-30","date:Zeitraum:is_datetime":0,"Balken":"2-7 CTA · Titles · /anfrage/","Zeitraum Text":"KW39–44 · spätestens KW45 für Messe-Druck","Name":"Website-Sofortpaket","url":"https://app.notion.com/p/3d840f8bbabb8190a90df1ecf54aadc5"},{"Status":"blockiert","Verantwortlich":"Marketing · Personal, GL","Statushinweis":"blockiert: Budget","Bereich":"Recruiting","Top":"__NO__","AP":"AP4","Voraussetzung":"Budget & Kreditkarte (B), Rechtsprüfung Formular/Pixel","Sortierung":4,"Rechtsprüfung":"__YES__","Ergebnis":"Kurzbewerbung mobil, DSGVO-geprüft; Stellenanzeige neu, Empfehlungsprämie; Ab KW42 Ads im Umkreis Lübben & Wittenburg","date:Zeitraum:start":"2026-09-14","date:Zeitraum:end":"2026-12-11","date:Zeitraum:is_datetime":0,"Balken":"1-4 Formular · Anzeige\\|5-13 Ads Meta + Google","Zeitraum Text":"KW38–41, ab KW42 Kampagne","Name":"Recruiting Maschinenführer","url":"https://app.notion.com/p/3d840f8bbabb816f9de0d06cde96bdb6"},{"Status":"startklar","Verantwortlich":"Marketing · Bauleitung","Statushinweis":"startklar","Bereich":"Content & Events","Top":"__NO__","AP":"AP5","Voraussetzung":"Kundenfreigaben, Bildrechte, Ablagesystem (C)","Sortierung":5,"Rechtsprüfung":"__NO__","Ergebnis":"3–5 Fallstudien: Ort, Fläche m², Maschine, Ergebnis; Vorher-Nachher-Fotos – auch für Messewand und Referenzmappe","date:Zeitraum:start":"2026-09-21","date:Zeitraum:end":"2026-11-06","date:Zeitraum:is_datetime":0,"Balken":"2-8 3–5 Fallstudien","Zeitraum Text":"KW39–45","Name":"Referenzen als Fallstudien","url":"https://app.notion.com/p/3d840f8bbabb815181fdc3d417c98eb0"},{"Status":"wartet","Verantwortlich":"Marketing · Technik, Webbetreuung","Statushinweis":"ab KW43","Bereich":"Website & Messung","Top":"__NO__","AP":"AP6","Voraussetzung":"URL-Entscheidung, geprüfte Kennwerte (liefert GL), AP5","Sortierung":6,"Rechtsprüfung":"__YES__","Ergebnis":"Eigene Seiten Kaltfräsen, Precision Grinding, Grooving; Schema: Organization, LocalBusiness, Service","date:Zeitraum:start":"2026-10-19","date:Zeitraum:end":"2026-12-11","date:Zeitraum:is_datetime":0,"Balken":"6-13 Kaltfräsen · Grinding · Grooving","Zeitraum Text":"KW43–50","Name":"Leistungsseiten & Schema","url":"https://app.notion.com/p/3d840f8bbabb81c2bd03e159ce983662"},{"Status":"startklar","Verantwortlich":"Marketing · Mitarbeitende","Statushinweis":"startklar","Bereich":"Content & Events","Top":"__NO__","AP":"AP7","Voraussetzung":"Einwilligungen, Zuwendungsbescheid prüfen","Sortierung":7,"Rechtsprüfung":"__YES__","Ergebnis":"LinkedIn 2×/Woche, Instagram/Facebook 1–2×/Woche; Ab KW47 Serie „Feind auf der InfraTech“; EU-Förderleiste nach Zuwendungsbescheid geklärt","date:Zeitraum:start":"2026-09-14","date:Zeitraum:end":"2026-12-11","date:Zeitraum:is_datetime":0,"Balken":"1-13 LinkedIn 2×/Wo · Insta/FB · Messe-Countdown ab KW47","Zeitraum Text":"KW38–50 laufend","Name":"Redaktionsrhythmus Social","url":"https://app.notion.com/p/3d840f8bbabb81ba8b33f8ceb7b47aa9"},{"Status":"wartet","Verantwortlich":"Marketing · GL","Statushinweis":"ab KW47","Bereich":"Content & Events","Top":"__NO__","AP":"AP8","Voraussetzung":"Budgetrahmen","Sortierung":8,"Rechtsprüfung":"__NO__","Ergebnis":"Konzept „Fräsen live erleben“ (Q2 2027, Budget per Antrag); Termin, Partner, Budgetantrag – Messekontakte einladen","date:Zeitraum:start":"2026-11-16","date:Zeitraum:end":"2026-12-11","date:Zeitraum:is_datetime":0,"Balken":"10-13 „Fräsen live erleben“","Zeitraum Text":"KW47–50","Name":"Event-Konzept 2027","url":"https://app.notion.com/p/3d840f8bbabb81cb90d0d4a094a27b47"}],"ms":[{"Status":"jetzt","Statushinweis":"jetzt","date:Datum:start":"2026-09-18","date:Datum:is_datetime":0,"Verantwortlich":"GL · David","KW":"KW38","Messetag":"__NO__","Sortierung":1,"Datum Text":"18.09.","Details":"Standvertrag, Fläche, Halle, Kosten – Messe-Hub und Ordner U:185.12 sichten (Stand 5.209, Halle 5 – bestätigt); Hotel-Option ibis Styles Ahoy · Entwürfe ① + ② → Notion „Anfragen InfraTech 2027“, Versand 15.09.","Meilenstein":"Buchungsstand klären","url":"https://app.notion.com/p/3d840f8bbabb814d8927e5c0ba772ef3"},{"Status":"in Arbeit","Statushinweis":"Fristen belegt","date:Datum:start":"2026-09-18","date:Datum:is_datetime":0,"Verantwortlich":"Marketing","KW":"KW38","Messetag":"__NO__","Sortierung":2,"Datum Text":"18.09.","Details":"Fristen & Preise lt. Handbuch 2027 belegt (Standentwurf 15.11.); Entwurf ① Buchungsabgleich Stand 5.209 an [info@infratech.nl](mailto:info@infratech.nl), Versand 15.09.","Meilenstein":"Ahoy-Sales-Kontakt & Fristen","url":"https://app.notion.com/p/3d840f8bbabb818991a2d0a777e091b4"},{"Status":"wartet","Statushinweis":"GL","date:Datum:start":"2026-10-02","date:Datum:is_datetime":0,"Verantwortlich":"GL","KW":"KW40","Messetag":"__NO__","Sortierung":3,"Datum Text":"02.10.","Details":"Messebudget beziffern, NL/BE-Aufträge ja oder nein, Teamgröße","Meilenstein":"Ziele, Budget, Zielmarkt freigeben","url":"https://app.notion.com/p/3d840f8bbabb81e1921bc575f03be5f9"},{"Status":"offen","Statushinweis":"offen","date:Datum:start":"2026-10-16","date:Datum:is_datetime":0,"Verantwortlich":"Marketing · Werkstatt","KW":"KW42","Messetag":"__NO__","Sortierung":4,"Datum Text":"16.10.","Details":"Entwürfe ③ Global Expo Stand B.V. + ④ LOCO (verifiziert), Versand ab 28.09., Angebote bis 16.10.; Referenz Stabilo; 12–20 m², Exponat Fräswalze","Meilenstein":"Messebau-Angebote","url":"https://app.notion.com/p/3d840f8bbabb8161be27d4754422fcb8"},{"Status":"offen","Statushinweis":"offen","date:Datum:start":"2026-10-23","date:Datum:is_datetime":0,"Verantwortlich":"Marketing","KW":"KW43","Messetag":"__NO__","Sortierung":5,"Datum Text":"23.10.","Details":"Registerauszug vor Beauftragung; Reiseart Pkw/Bahn/Flug festlegen","Meilenstein":"Messebauer beauftragen, Reise buchen","url":"https://app.notion.com/p/3d840f8bbabb81359ee0f34856ef8c4c"},{"Status":"wartet","Statushinweis":"braucht AP3","date:Datum:start":"2026-11-06","date:Datum:is_datetime":0,"Verantwortlich":"Marketing · Webbetreuung","KW":"KW45","Messetag":"__NO__","Sortierung":6,"Datum Text":"06.11.","Details":"Rückwand, Leistungsübersicht, Flyer DE/EN/NL, QR-Code auf www.fraesdienst-feind.de/pflasterschleifen/","Meilenstein":"Druckdaten fertig","url":"https://app.notion.com/p/3d840f8bbabb8132984ee7482b29d260"},{"Status":"offen","Statushinweis":"offen","date:Datum:start":"2026-11-20","date:Datum:is_datetime":0,"Verantwortlich":"Marketing · Vertrieb","KW":"KW47","Messetag":"__NO__","Sortierung":7,"Datum Text":"20.11.","Details":"Mailing an Kunden und Partner, LinkedIn-Serie startet","Meilenstein":"Einladen & Termine buchen","url":"https://app.notion.com/p/3d840f8bbabb81b18213d69dbf4d52af"},{"Status":"offen","Statushinweis":"offen","date:Datum:start":"2026-12-04","date:Datum:is_datetime":0,"Verantwortlich":"GL · Vertrieb","KW":"KW49","Messetag":"__NO__","Sortierung":8,"Datum Text":"04.12.","Details":"2 Ansprechpartner je Tag, Gesprächsleitfaden, DSGVO-konformes digitales Formular","Meilenstein":"Standteam & Lead-Erfassung","url":"https://app.notion.com/p/3d840f8bbabb8159bf8ad66fa0f7911c"},{"Status":"offen","Statushinweis":"offen","date:Datum:start":"2026-12-18","date:Datum:is_datetime":0,"Verantwortlich":"Marketing · Werkstatt","KW":"KW51","Messetag":"__NO__","Sortierung":9,"Datum Text":"18.12.","Details":"Exponat-Transport, Briefing Standteam","Meilenstein":"Produktion & Logistik abgeschlossen","url":"https://app.notion.com/p/3d840f8bbabb8174ae9cf0117e81b8f9"},{"Status":"Messe","Statushinweis":"Messe","date:Datum:start":"2027-01-12","date:Datum:end":"2027-01-15","date:Datum:is_datetime":0,"Verantwortlich":"Standteam","KW":"KW2","Messetag":"__YES__","Sortierung":10,"Datum Text":"12.–15.01.","Details":"Standdienst Di 10–18, Mi 10–21, Do 10–18, Fr 10–16; tägliche Lead-Auswertung","Meilenstein":"InfraTech 2027 · Rotterdam Ahoy","url":"https://app.notion.com/p/3d840f8bbabb81deaefad50bfccd77eb"},{"Status":"offen","Statushinweis":"offen","date:Datum:start":"2027-01-15","date:Datum:end":"2027-02-05","date:Datum:is_datetime":0,"Verantwortlich":"Vertrieb · David","KW":"KW3–6","Messetag":"__NO__","Sortierung":11,"Datum Text":"bis 05.02.","Details":"48 h, 7 und 21 Tage nach Kontakt; Messebericht an GL am 29.01.","Meilenstein":"Nachfassen & Messebericht","url":"https://app.notion.com/p/3d840f8bbabb817a8313d4cfb2a73ee9"}],"dec":[{"Beschreibung":"Stand 5.209 (Halle 5) bestätigt. Budgetrahmen 24.200–26.500 € brutto. Projektleitung und zwei Ansprechpartner je Messetag benennen.","Beschluss":"","Nr":1,"Status":"zuerst","date:Datum:is_datetime":0,"Entscheidung":"InfraTech 2027: Buchung, Budget, Standteam","url":"https://app.notion.com/p/3d840f8bbabb81e09ab2d82e7dd51c8b"},{"Beschreibung":"Recruiting-Budget, Website/SEO, Grinding & Grooving, Landingpages, Kurzbewerbung. Vorschlag: alle freigeben, Landingpages nach den Referenzen (Monat 4–6).","Beschluss":"","Nr":2,"Status":"offen","date:Datum:is_datetime":0,"Entscheidung":"Freigabe der fünf Maßnahmen","url":"https://app.notion.com/p/3d840f8bbabb810c9f5fc67e3eec76ac"},{"Beschreibung":"drei Budgetszenarien laut Marketing-Scan – ohne Messe Rotterdam gerechnet. Recruiting separat beziffern.","Beschluss":"","Nr":3,"Status":"offen","date:Datum:is_datetime":0,"Entscheidung":"Jahresbudget","url":"https://app.notion.com/p/3d840f8bbabb8122b2ffe1875b357a92"},{"Beschreibung":"Admin-Rechte, Kreditkarte, Ablage, Microsoft 365, CI-Leitfaden. A und B blockieren Welle 1 und die Messebuchung.","Beschluss":"","Nr":4,"Status":"offen","date:Datum:is_datetime":0,"Entscheidung":"Blockaden A–E lösen","url":"https://app.notion.com/p/3d840f8bbabb81c69edcdf8d2959580c"},{"Beschreibung":"Drei Firmierungen im Umlauf – nötig für Impressum, Messekatalog, Google-Profile. Rechtsabteilung prüfen.","Beschluss":"","Nr":5,"Status":"offen","date:Datum:is_datetime":0,"Entscheidung":"Verbindlicher Rechtsträger","url":"https://app.notion.com/p/3d840f8bbabb81cfa709da305303006c"},{"Beschreibung":"Claim „Präzision bewegt Zukunft.“ von der GL freigegeben.","Beschluss":"Freigegeben (GL, 29.09.2026)","Nr":6,"Status":"entschieden","date:Datum:is_datetime":0,"Entscheidung":"Claim „Präzision bewegt Zukunft.“","url":"https://app.notion.com/p/3d840f8bbabb816e895dfbd27ab6b828"},{"Beschreibung":"GA4 + Tag Manager oder Matomo – bestimmt Consent-Aufwand und Datenschutzprüfung.","Beschluss":"","Nr":7,"Status":"offen","date:Datum:is_datetime":0,"Entscheidung":"Tracking-Werkzeug","url":"https://app.notion.com/p/3d840f8bbabb8170b0b5f1911e048497"},{"Beschreibung":"Je Arbeitspaket eine verantwortliche Person; Wochenstatus freitags.","Beschluss":"","Nr":8,"Status":"offen","date:Datum:is_datetime":0,"Entscheidung":"Verantwortliche & Check-ins","url":"https://app.notion.com/p/3d840f8bbabb81b9a3efd322212deca7"}],"kpi":[{"Ziel":"20 · 10 · 3–5","Sortierung":1,"Messe":"__YES__","Ausgangswert":"–","Quelle":"Leaderfassung InfraTech","Ist":"","Messgröße":"Qualifizierte Messegespräche · Nachfasskontakte · Projekttermine","url":"https://app.notion.com/p/3d840f8bbabb81c6b7b5efb70bf8b3d1"},{"Ziel":"festlegen bis 30.10.","Sortierung":2,"Messe":"__YES__","Ausgangswert":"–","Quelle":"Einladungsmailing, LinkedIn","Ist":"","Messgröße":"Vorab gebuchte Gesprächstermine","url":"https://app.notion.com/p/3d840f8bbabb8161bb69f692fb7e050a"},{"Ziel":"festlegen am 09.10.","Sortierung":3,"Messe":"__NO__","Ausgangswert":"nicht verfügbar","Quelle":"Anfrageformular, CRM-Liste","Ist":"","Messgröße":"Qualifizierte Projektanfragen pro Monat","url":"https://app.notion.com/p/3d840f8bbabb8168a61ffe159e62ee73"},{"Ziel":"festlegen am 09.10.","Sortierung":4,"Messe":"__NO__","Ausgangswert":"nicht verfügbar","Quelle":"Tracking (AP1)","Ist":"","Messgröße":"Telefon- und E-Mail-Klicks","url":"https://app.notion.com/p/3d840f8bbabb811980cac9cf5ed9c1d1"},{"Ziel":"festlegen am 09.10.","Sortierung":5,"Messe":"__NO__","Ausgangswert":"nicht verfügbar","Quelle":"Search Console","Ist":"","Messgröße":"Organische Klicks auf Leistungsseiten","url":"https://app.notion.com/p/3d840f8bbabb81a39c5ddc64291c5ad7"},{"Ziel":"festlegen am 06.11.","Sortierung":6,"Messe":"__NO__","Ausgangswert":"nicht verfügbar","Quelle":"Ads-Konten, Kurzbewerbung","Ist":"","Messgröße":"Kosten pro Bewerbung Maschinenführer","url":"https://app.notion.com/p/3d840f8bbabb815aa1d5e4f5d47c651b"},{"Ziel":"≤ 24 h","Sortierung":7,"Messe":"__NO__","Ausgangswert":"nicht verfügbar","Quelle":"Recruiting-Unterlagen","Ist":"","Messgröße":"Reaktionszeit auf Bewerbungen","url":"https://app.notion.com/p/3d840f8bbabb81d6aa45c0770883cd83"},{"Ziel":"0 (Vorschlag)","Sortierung":8,"Messe":"__NO__","Ausgangswert":"8+","Quelle":"Infobel, [wlw.de](http://wlw.de), Kununu u. a.","Ist":"","Messgröße":"Verzeichnisse mit veralteten Firmendaten","url":"https://app.notion.com/p/3d840f8bbabb815caaddef72ebfffd4d"},{"Ziel":"festlegen am 09.10.","Sortierung":9,"Messe":"__NO__","Ausgangswert":"117","Quelle":"LinkedIn-Seite","Ist":"","Messgröße":"LinkedIn-Follower","url":"https://app.notion.com/p/3d840f8bbabb81d58cdafb6599b80a63"},{"Ziel":"LCP \\< 2,5 s · INP \\< 200 ms · CLS \\< 0,1","Sortierung":10,"Messe":"__NO__","Ausgangswert":"nicht gemessen","Quelle":"PageSpeed Insights","Ist":"","Messgröße":"Core Web Vitals","url":"https://app.notion.com/p/3d840f8bbabb814a8fa7f310528fba02"}]}
   };
 
   return {
@@ -3459,7 +3559,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
 /* ---- notion-tasks.js ---- */
 /* Feind Cockpit · Notion-Datenbank „Aufgaben InfraTech 2027“ ↔ Cockpit-Aufgaben. Reine Funktionen:
    Zeilen der Notion-Ansicht in Aufgaben übersetzen, Änderungen in Notion-Eigenschaften, Konflikte finden.
-   Notion ist führend. Das Cockpit schreibt nur Status, Notiz, Fällig, Priorität, Beschluss und Archiviert;
+   Führend ist Jira (Projekt MAR); Notion ist Spiegel. Das Cockpit schreibt nur Status, Notiz, Fällig, Priorität, Beschluss und Archiviert;
    Titel, Bereich, Rolle, Budget und Abhängigkeiten werden in Notion gepflegt. „Person (intern)“ wird nie gelesen. */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
@@ -3978,7 +4078,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     _save() {
       if (!this.storage) return;
       try { this.storage.setItem(this.key, JSON.stringify(Object.fromEntries(this.docs))); }
-      catch (e) { this.persistent = false; }
+      catch (e) { this.persistent = false; this.onError({ code: 'quota_exceeded', message: 'Lokaler Speicher voll oder gesperrt – Änderungen gehen beim Neuladen verloren' }); }
     }
     _changed() { for (const l of Array.from(this.listeners)) later(l); }
     // Änderungen aus anderen Tabs desselben Browsers übernehmen.
@@ -4426,10 +4526,10 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     ["Technik", "standbau", ["TV klären — 2026 als offene Frage stehengeblieben, für Rotterdam Bedarf neu entscheiden", "Mobile Daten / WLAN-Box klären", "Laptop, Stick mit Präsentation", "Verlängerungskabel/Verteiler, Ladekabel (Handy, Kamera)", "Präsentation aktualisieren — Option Kopfhörer anbieten, etwas kürzer fassen", "Bühnenmolton, LED Band"]],
     ["Marketing & Werbemittel", "marketing", ["Flyer überarbeiten — Format überdenken", "Steine mit rückseitigem Aufkleber — kommen gut an", "Zollstöcke, Feuerzeuge, Kugelschreiber, Schlüsselbänder, Einkaufswagenlöser — alle beibehalten", "Minz-Spender — 2026: nicht attraktiv, streichen", "Goodie-Bags kleiner/handlicher packen — Kalenderbücher zu wertig & Transport unpraktisch", "Vorab-Bewerbung der Teilnahme planen — 2026 komplett gefehlt: Social Media, Mail-Signatur, Prä-Mail, Website", "Infobroschüren, Aufsteller+Infoblatt, Prospektständer, magn. Flyerbox"]],
     ["Personal & Auftritt", "material", ["Namensschilder konsequent einsetzen — 2026 nur an einem Tag genutzt, Position vermerken", "Visitenkarten-Verteilung optimieren — 2026: 100 VK, an Flyer geheftet", "Kleidung: andere Farbe als Weiß prüfen — 2026 keine Differenzierung zu anderen Ausstellern", "Einheitliches, sauberes Schuhwerk festlegen"]],
-    ["Akquise & Lead-Erfassung", "leads", ["Ansprache auf die Messefläche ausweiten — nicht nur am Stand warten", "Digitales Gesprächsnotiz-Formular nutzen — bereits als ClickUp-Ticket angelegt (2026: kaum systematisch erfasst)", "Gezielt Visitenkarten von Kommunen/Städten sammeln — 2026 kaum vorhanden"]],
+    ["Akquise & Lead-Erfassung", "leads", ["Ansprache auf die Messefläche ausweiten — nicht nur am Stand warten", "Digitales Gesprächsnotiz-Formular nutzen — als Jira-Aufgabe (MAR) anzulegen (2026: kaum systematisch erfasst)", "Gezielt Visitenkarten von Kommunen/Städten sammeln — 2026 kaum vorhanden"]],
     ["Offene „zu Buchen/zu klären“-Punkte aus 2026", "steuerung", ["Catering — Prozess wie 2026 (Aramark-Bestellung) oder neuer Anbieter in Rotterdam?", "Anlieferung/Parkplätze final klären (s. Logistik oben)"]],
     ["Team (Referenz 2026)", "steuerung", ["Teilnehmerliste final bestätigen (Referenz 2026)", "Übernachtende final abgleichen mit Hotelkontingent-Ticket"]],
-    ["Veranstalter, Verträge & Fristen — ergänzt aus Manus-Analyse", "steuerung", ["2027-Handbuch, Standnummer und Portalzugänge bei Rotterdam Ahoy anfordern", "Standdesign-Abweichungen (>2,75 m) genehmigen lassen", "Katalogdaten/Produkte fristgerecht einreichen", "Verträge/Bestellungen mit Belegnummer, Betrag, Frist archivieren", "Eskalationsregel festlegen: nach 72 Stunden ohne Antwort dokumentieren und nachfassen — 2026 neu erkannt"]],
+    ["Veranstalter, Verträge & Fristen — ergänzt aus Manus-Analyse", "steuerung", ["2027-Handbuch und Portalzugänge bei Rotterdam Ahoy anfordern (Stand 5.209 bestätigt)", "Standdesign-Abweichungen (>2,75 m) genehmigen lassen", "Katalogdaten/Produkte fristgerecht einreichen", "Verträge/Bestellungen mit Belegnummer, Betrag, Frist archivieren", "Eskalationsregel festlegen: nach 72 Stunden ohne Antwort dokumentieren und nachfassen — 2026 neu erkannt"]],
     ["Lead-Erfassung & Nachfassprozess — neu, aus Manus-Analyse", "leads", ["Leadformular mit Pflichtfeldern einführen: Firma, Name, Funktion, Segment, Bedarf, Priorität, Einwilligung, nächster Schritt, Owner, Fälligkeit", "Zielkundenliste (Kommunen, Straßenbau, Infrastruktur, Partner) vorab erstellen", "Zwei aktive Akquise-Slots pro Messetag außerhalb des eigenen Standes einplanen", "Tagesziel für qualifizierte Leads festlegen", "Follow-up-SLA einhalten: A-Leads binnen 48 Std., B-Leads binnen 5 Arbeitstagen kontaktieren — 2026: erste Nachfassmail erst am 26.01."]],
     ["Durchführung & Nachbereitung — neu, aus Manus-Analyse", "ablauf", ["Morgenbriefing mit Rollen, Zielen und Eskalationsweg pro Messetag", "Besucherzahl stündlich erfassen, Auslastung je Messetag auswerten", "Standabbau nicht vor dem zulässigen Zeitpunkt beginnen", "Fotodokumentation von Stand/Team/Besucherinteraktion — nur mit Einwilligung der Abgebildeten", "Abschlussbericht (KPI, Kosten, Leads, Risiken, Lessons Learned) innerhalb 14 Tagen nach der Messe erstellen"]]
 
@@ -4980,7 +5080,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     const data = { marketing: i.marketing || {}, infratech: i.infratech || {} };
     if (i.plan90) data.plan90 = i.plan90;
     return [
-      'Du bist der Feind Copilot für Marketing und Messe der Fräsdienst-Service E. Feind GmbH (Straßenfräsen, Baudienstleistung).',
+      'Du bist der Feind Copilot für Marketing und Messe der Fräsdienst-Service E. Feind GmbH (Kaltfräsen, Precision Grinding, Grooving, Pflasterschleifen).',
       'Erstelle den Tagesbrief für ' + today + ' ausschließlich aus den Daten unten.',
       RULES,
       'InfraTech 2027: Überfällige Aufgaben, den Stand des Innovationspreises und Fristen der nächsten 14 Tage zuerst nennen, wenn die Daten welche enthalten.',
@@ -6185,6 +6285,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     if (S.readOnly) return 'Nur Lesezugriff';
     if (S.mode === 'shared') return 'Geteilt gespeichert';
     if (S.viewerLocal) return 'Nur auf diesem Gerät';
+    if (!S.store) return 'Nicht verbunden – Seite neu laden';
     return S.store && S.store.db && S.store.db.persistent === false ? 'Lokal, nur diese Sitzung' : 'Lokal gespeichert';
   }
   app.storeText = storeText;
@@ -6754,6 +6855,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     const f = ui.region;
     if (!f) return true;
     const g = M.geoOf(it);
+    if (!g.state && app.refStateOf) { const st = app.refStateOf(it); if (st) { g.state = st; g.country = 'Deutschland'; } }
     if (f === HOME_KEY) return M.HOME_STATES.includes(g.state);
     if (D.BUNDESLAENDER.includes(f)) return g.state === f;
     if (D.NEIGHBOUR_COUNTRIES.includes(f)) return g.country === f;
@@ -6779,7 +6881,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
   app.mkSpanInRange = spanInRange;
 
   function regionOptions() {
-    const rows = S.data.tenders;
+    const rows = ['content', 'mkt_leads', 'tenders', 'references'].flatMap(c => S.data[c] || []);
     const lab = (name, value) => name + ' (' + countFor(value, rows) + ')';
     const byRing = D.BUNDESLAENDER.slice().sort((a, b) => (M.STATE_RING[a] - M.STATE_RING[b]) || a.localeCompare(b, 'de'));
     const raw = new Set(arr(app.settings().regions).map(str).filter(Boolean));
@@ -6816,7 +6918,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
       h('div', { class: 'acts' }, h('button', { class: 'btn small', type: 'button', onclick: () => { ui.region = ''; ui.range = 'all'; for (const k of ['content', 'leads', 'tenders']) for (const f of Object.keys(ui[k])) if (typeof ui[k][f] === 'string') ui[k][f] = ''; rerender(); } }, 'Filter zurücksetzen')));
     const cmd = '/cockpit-sync';
     return h('div', { class: 'empty' }, app.ico('leer'),
-      h('strong', {}, 'Noch keine Daten in ', h('code', { text: coll }), '. '),
+      h('strong', { text: 'Noch keine ' + ({ content: 'Inhalte', mkt_leads: 'Leads', tenders: 'Ausschreibungen', events: 'Events', seo_keywords: 'SEO-Keywords', references: 'Referenzen' }[coll] || 'Daten') + ' erfasst. ' }),
       'So kommen sie hinein: in Claude ', h('code', { text: cmd }), ' ausführen oder den Skill ', h('code', { text: SKILL[coll] || 'cockpit-sync' }),
       ' nutzen. Die Daten erscheinen hier live, ohne Neuladen.' + (S.mode === 'local' ? ' Im lokalen Modus lassen sich Daten über Admin › Daten importieren.' : ''),
       h('div', { class: 'acts' },
@@ -7261,10 +7363,11 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     const geoMapEl = app.geoMap ? app.geoMap({ id: 'tenders', height: 440, label: 'Karte: Ausschreibungen nach Bundesland', states: stateInfo, onState: pick, points: pts,
       stateBubbles: Object.fromEntries(Object.entries(stateInfo).map(([k, v]) => [k, v.n])) }) : null;
     return h('div', { class: 'section' },
-      h('div', { class: 'tools', style: 'margin:0;justify-content:space-between' }, h('h3', { text: 'Kartenauswahl' }),
-        h('div', { class: 'row' },
-          h('button', { class: 'btn ghost small', type: 'button', id: 'geo-home', 'aria-pressed': String(cur === HOME_KEY), onclick: () => { ui.region = HOME_KEY; rerender(); } }, 'Heimatregion'),
-          h('button', { class: 'btn ghost small', type: 'button', id: 'geo-reset', disabled: !cur, onclick: () => { ui.region = ''; rerender(); } }, 'Alle Regionen'))),
+      h('div', { class: 'gm-head' }, h('h3', { text: 'Kartenauswahl' }),
+        h('div', { class: 'seg', role: 'group', 'aria-label': 'Regionen auf der Karte' },
+          h('button', { type: 'button', id: 'geo-reset', 'aria-pressed': String(!cur), onclick: () => { ui.region = ''; rerender(); } }, 'Alle Regionen'),
+          h('button', { type: 'button', id: 'geo-home', 'aria-pressed': String(cur === HOME_KEY), onclick: () => { ui.region = HOME_KEY; rerender(); } }, 'Heimatregion'),
+          cur && cur !== HOME_KEY ? h('button', { type: 'button', id: 'geo-sel', 'aria-pressed': 'true', title: 'Auswahl aufheben', onclick: () => { ui.region = ''; rerender(); } }, String(cur), h('span', { 'aria-hidden': 'true', text: ' ×' })) : null)),
       h('div', { class: 'map-wrap gm-layout' },
         h('div', { class: 'stack' }, geoMapEl || grid,
           // Mit Leaflet bringt die Karte ihre eigene Legende (Farbklassen, Pins, Cluster) mit.
@@ -7432,7 +7535,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
       const areaL = a => (D.AREAS.find(x => x[0] === a) || [0, str(a) || 'ohne Bereich'])[1];
       arch = h('details', { class: 'chk chk-arch', open: src.kind === 'notfall' && !mig },
         h('summary', {}, (mig ? 'Archiv: alte Checkliste (Übernahme bestätigt ' + (H.parseTs(mig.at) ? fmtD(H.parseTs(mig.at)) : '') + ')' : 'Alte Checkliste, nur als Rückfall und Archiv') + ' · ' + cl.filter(c => c.done).length + '/' + cl.length),
-        h('p', { class: 'muted small', text: 'Nur lesen. Diese Liste wird nicht mehr gepflegt; führend sind die Notion-Aufgaben. Zuordnung der Punkte: konzepte/aufgaben-abgleich-2026-10-01.md.' }),
+        h('p', { class: 'muted small', text: 'Nur lesen. Diese Liste wird nicht mehr gepflegt; führend ist Jira (Projekt MAR), Notion ist Spiegel. Zuordnung der Punkte: konzepte/aufgaben-abgleich-2026-10-01.md.' }),
         h('ul', { style: 'list-style:none;margin:4px 0 0;padding:0' }, cl.map(c => h('li', {}, h('span', { class: 'mk', 'aria-hidden': 'true', text: c.done ? '[x]' : '[ ]' }), h('span', { text: areaL(c.area) + ': ' + str(c.item) + (c.done ? ' (erledigt)' : '') })))),
         !mig && !S.readOnly && app.isAdmin && app.isAdmin() ? h('button', { class: 'btn small', type: 'button', 'data-tip': 'Erst bestätigen, wenn alle offenen Punkte der alten Liste in Notion übernommen sind. Danach bleibt die alte Liste eingeklappt als Archiv.', onclick: () => confirmMigration(e) }, 'Übernahme bestätigen') : null);
     }
@@ -7848,11 +7951,20 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     } else detail = h('p', { class: 'muted small', text: geo.length ? 'Punkt überfahren für Kurzinfo, anklicken oder antippen für Details und den Link zur Projektseite.' : 'Noch kein Projekt mit Koordinaten. Ort und Koordinaten (lat, lng) je Referenz ergänzen, dann erscheinen die Punkte hier.' });
     const without = noGeo.length ? h('div', { class: 'stack' }, h('span', { class: 'label', text: 'Ohne Ortsangabe, nicht auf der Karte (' + noGeo.length + ')' }),
       h('ul', { class: 'small', style: 'margin:0;padding-left:18px' }, noGeo.map(r => h('li', {}, h('button', { class: 'linkbtn', type: 'button', onclick: () => { ui.refSel = r._id; rerender(); } }, str(r.title) || '(ohne Titel)'))))) : null;
+    // Legende: kompakt (nur Symbole); Klick oder Tippen klappt die Beschriftung auf, Verlassen mit der Maus klappt sie wieder zu.
+    // Touch: Tippen außerhalb klappt eine offene Legende ebenfalls zu (einmal pro Seite registriert).
+    if (!window.__fcLegOut) { window.__fcLegOut = true; document.addEventListener('pointerdown', e => { document.querySelectorAll('.refmap-legend.open').forEach(el => { if (!el.contains(e.target)) legOpen(el, false); }); }, true); }
+    const legOpen = (el, on) => { el.classList.toggle('open', on); el.setAttribute('aria-expanded', String(on)); el.title = on ? 'Legende zuklappen' : 'Legende aufklappen'; };
     return h('div', { class: 'section' }, h('h3', { text: 'Referenzkarte' }),
       h('div', { class: 'refmap' },
-        h('div', {}, stage, h('div', { class: 'refmap-legend' }, h('span', {}, h('i', { class: 'pin' }, app.ico('schleifwelle')), 'Referenzprojekt'), h('span', {}, app.efMark(), 'Feind-Standort (Lübben, Wittenburg)'),
-          h('span', {}, h('i', { class: 'cap-on' }), 'Landeshauptstadt'), h('span', {}, h('i', { class: 'cap-off' }), 'Landeshauptstadt, Land ohne Referenz'),
-          h('span', {}, h('i', { class: 'sh n1' }), h('i', { class: 'sh n2' }), h('i', { class: 'sh n3' }), '1 · 2–3 · 4+ Referenzen im Land'))),
+        h('div', {}, stage, h('div', { class: 'refmap-legend', role: 'button', tabindex: '0', 'aria-expanded': 'false', 'aria-label': 'Legende, zum Aufklappen tippen', title: 'Legende aufklappen',
+            onclick: e => legOpen(e.currentTarget, e.currentTarget.getAttribute('aria-expanded') !== 'true'),
+            onkeydown: e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); legOpen(e.currentTarget, e.currentTarget.getAttribute('aria-expanded') !== 'true'); } else if (e.key === 'Escape') legOpen(e.currentTarget, false); },
+            onpointerleave: e => { if (e.pointerType === 'mouse') legOpen(e.currentTarget, false); }, // Touch: zu per erneutem Tippen
+            onfocusout: e => { if (!e.currentTarget.contains(e.relatedTarget)) legOpen(e.currentTarget, false); } },
+          h('span', {}, h('i', { class: 'pin' }, app.ico('schleifwelle')), h('b', { class: 'lt', text: 'Referenzprojekt' })), h('span', {}, app.efMark(), h('b', { class: 'lt', text: 'Feind-Standort (Lübben, Wittenburg)' })),
+          h('span', {}, h('i', { class: 'cap-on' }), h('b', { class: 'lt', text: 'Landeshauptstadt' })), h('span', {}, h('i', { class: 'cap-off' }), h('b', { class: 'lt', text: 'Landeshauptstadt, Land ohne Referenz' })),
+          h('span', {}, h('i', { class: 'sh n1' }), h('i', { class: 'sh n2' }), h('i', { class: 'sh n3' }), h('b', { class: 'lt', text: '1 · 2–3 · 4+ Referenzen im Land' })))),
         h('div', { class: 'stack' }, detail, stateSummary(counts), without,
           h('p', { class: 'muted small', text: 'Grenzen vereinfacht nach amtlichen Geodaten; Orte nur aus den Referenzdaten. Gemeindekoordinaten gelten als ungefähr. Bundesland über die Koordinaten bestimmt, sonst über die Region.' }))));
   }
@@ -8040,7 +8152,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
      Beim Absenden entsteht references/<ID> mit status „entwurf“ und ref_photos/<ID>. Erst die Freigabe (Prüfliste im Modul)
      macht die Referenz auf Karte, Mappe und Website-Auswahl sichtbar. Bestand ohne status gilt als freigegeben.
      Entwürfe sehen nur die erfassende Person und Admins (Anzeigeregel der Oberfläche, kein Zugriffsschutz der Datenbank). */
-  const REF_SERVICES = ['Kaltfräsen', 'Grinding (Schleifen)', 'Grooving', 'Pflasterarbeiten', 'Industrieboden'];
+  const REF_SERVICES = ['Kaltfräsen', 'Grinding (Schleifen)', 'Grooving', 'Pflasterschleifen', 'Industrieboden'];
   const statusOf = r => (r && r.status) || 'freigegeben';
   const STATUS_TXT = { entwurf: 'Entwurf zur Prüfung', zurueck: 'Zurück mit Hinweis', freigegeben: 'Freigegeben' };
   const pubRefs = () => (S.data.references || []).filter(r => statusOf(r) === 'freigegeben');
@@ -8428,7 +8540,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
       const head = panelHead('Referenz-Bibliothek', items.length + ' von ' + pubRefs().length, null, app.mkSrcNote('references') + ' · Kundennamen nur mit Freigabe (clientApproved)');
       if (!items.length) return [head, inboxCard(), tools, app.mkEmpty('references', pubRefs().length > 0)];
       const list = items.slice().sort((a, b) => (parseInt(b.year, 10) || 0) - (parseInt(a.year, 10) || 0) || str(a.title).localeCompare(str(b.title), 'de'));
-      return [head, inboxCard(), tools, refMap(list), h('div', { class: 'refs' }, list.map(r => h('article', { class: 'card' + (photoOf(r) ? ' has-photo' : '') },
+      return [head, inboxCard(), tools, refMap(list), h('div', { class: 'refs refs-after-map' }, list.map(r => h('article', { class: 'card' + (photoOf(r) ? ' has-photo' : '') },
         photoFigure(r),
         h('div', { class: 'meta', text: [refDate(r) || str(r.year), str(r.place) || str(r.region)].filter(Boolean).join(' · ') || 'Jahr und Region offen' }),
         h('div', { class: 't', text: str(r.title) || '(ohne Titel)' }),
@@ -8553,7 +8665,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     const d = dbSnap(), st = H.parseTs(base().stand), ref = expectedRun(new Date());
     const stale = !d || !st || (ref && st < ref);
     return {
-      label: d ? 'Notion-Stand ' + H.fmtTs(st) : 'Notion-Stand ' + H.fmtD(SNAP.stand) + ' (eingebaut)',
+      label: d ? 'Notion-Stand ' + H.fmtTs(st) : 'Notion-Stand ' + H.fmtD(SNAP.stand) + ' (Notfallstand, nicht aktuell)',
       title: d ? 'Täglicher Notion-Stand aus der Cockpit-Datenbank (werktags 06:30).' + (stale ? ' Veraltet: der letzte Lauf hat nicht geschrieben.' : '')
         : 'Kein Tagesstand in der Datenbank gefunden; angezeigt wird der beim Veröffentlichen eingebaute Stand.',
       fresh: !stale, stale
@@ -8610,9 +8722,9 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
   /* ---------- Statische Inhalte aus A2 (Stand 27.09.2026) ---------- */
   const GOALS = [['20', 'qualifizierte Gespräche am Stand'], ['10', 'konkrete Nachfasskontakte'], ['3–5', 'Projekttermine nach der Messe'], ['2', 'qualifizierte Ansprechpartner je Messetag']];
   const BOXES = [
-    ['Standkonzept', ['12–20 m², klein, hochwertig, immer besetzt', 'Markante Fräswalzen- oder Maschinenkomponente als Exponat', 'Vorher-Nachher-Bilder, große Leistungsübersicht', 'QR-Code zur Projektanfrage (/anfrage/ aus AP3)', 'Referenzmappe mit 3–5 Fallstudien (AP5)']],
+    ['Standkonzept', ['12–20 m², klein, hochwertig, immer besetzt', 'Markante Fräswalzen- oder Maschinenkomponente als Exponat', 'Vorher-Nachher-Bilder, große Leistungsübersicht', 'QR-Code auf www.fraesdienst-feind.de/pflasterschleifen/', 'Referenzmappe mit 3–5 Fallstudien (AP5)']],
     ['Vor Ort und danach', ['Gesprächstermine vor der Messe buchen', 'Leads digital erfassen, nach Zielgruppe markieren', 'Nachfassen innerhalb 48 h, dann nach 7 und 21 Tagen', 'Wettbewerbs- und Kundenfragen dokumentieren', 'Messebericht an die GL bis 29.01.2027']],
-    ['Offen, jetzt klären', ['Buchungsstand: Stand gebucht? Fläche, Halle, Vertrag', 'Budget: Marketing-Scan sieht nur 500 € für Messen vor, reicht nicht für Rotterdam', 'Zielmarkt: Aufträge in NL/BE gewollt oder nur Kontakte zu deutschen Partnern?', 'Sprache: Standmaterial NL/EN/DE', '§ Ausstellervertrag, Leaderfassung (DSGVO): Bitte Rechtsabteilung prüfen.']]
+    ['Offen, jetzt klären', ['Stand 5.209, Halle 5 bestätigt – Fläche und Vertrag ablegen', 'Budgetrahmen InfraTech 2027: 24.200–26.500 € brutto', 'Zielmarkt: Aufträge in NL/BE gewollt oder nur Kontakte zu deutschen Partnern?', 'Sprache: Standmaterial DE/EN/NL', '§ Ausstellervertrag, Leaderfassung (DSGVO): Bitte Rechtsabteilung prüfen.']]
   ];
   const BLOCKERS = [
     ['A', 'Geräte-Admin: ohne Adminrechte kein Tracking, keine Tools.', 'AP1 AP3'],
@@ -8631,7 +8743,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
   const FACTS = [
     ['Maschinenpark', '„über 30 Wirtgen-Fräsen“ vs. „40 Fräsmaschinen“ (Präsentation, Stand 2024)', 'Technik / GL'],
     ['Standorte', '2 (Lübben, Wittenburg) vs. „2–3“ bzw. 3 im CI-Leitfaden', 'GL'],
-    ['Claim', '„Präzision bewegt Zukunft.“ in der Präsentation, laut CI-Leitfaden kein Claim freigegeben (Entscheidung 6)', 'GL'],
+    ['Claim', '„Präzision bewegt Zukunft.“ in der Präsentation, freigegeben (GL, 29.09.2026)', 'GL'],
     ['Grinding & Grooving', 'Getrennte Seiten vs. gemeinsame Seite; Grinding-Sparte unter /grinding/ (AP6)', 'Marketing, Info an GL'],
     ['Kurzbewerbung', '2, 4 oder 6 Pflichtfelder; Ausfüllzeit 60 s bis 3 min (AP4)', 'Marketing mit Datenschutz'],
     ['Wettbewerber', 'Drexler, Hartel, Fiedler vs. Eiffage, HFW, KUTTER, STRATEX, MICSAR (unbestätigt)', 'Vertrieb']
@@ -8757,7 +8869,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
         h('div', { class: 'section' }, h('div', { class: 'band' },
           h('div', {}, h('div', { class: 'label', style: 'color:var(--ink-inverse-muted)', text: 'Oberste Priorität · AP0 · Messe' }),
             h('h2', {}, 'InfraTech 2027 ', h('em', { text: 'Rotterdam Ahoy' })),
-            h('p', { tabindex: '0', 'data-tip': 'Fachmesse für Infrastruktur, Straßen- und Tiefbau. Alles andere im Plan ordnet sich diesem Termin unter: Anfrageseite, Referenzen und Firmenauftritt müssen bis Dezember messetauglich sein. Ahoyweg 10, Rotterdam · Hallenzuteilung 2027 offen · 23.344 Besucher 2025 · Standbuchung unbestätigt', text: '12.–15.01.2027 (Di–Fr) · Rotterdam Ahoy' })),
+            h('p', { tabindex: '0', 'data-tip': 'Fachmesse für Infrastruktur, Straßen- und Tiefbau. Alles andere im Plan ordnet sich diesem Termin unter: Anfrageseite, Referenzen und Firmenauftritt müssen bis Dezember messetauglich sein. Ahoyweg 10, Rotterdam · Halle 5 · Stand 5.209 (bestätigt) · 23.344 Besucher 2025', text: '12.–15.01.2027 (Di–Fr) · Rotterdam Ahoy' })),
           h('div', { class: 'count' }, h('b', { text: String(days) }), h('span', {}, 'Tage bis', h('br'), 'Messestart')))),
         section('p90-ziele', 'Ziele für die Messe', 'Quelle: Marketing-Scan Aug. 2026', h('div', { class: 'strip' }, GOALS.map(([v, k]) => h('div', { class: 'kpi' }, h('div', { class: 'v', text: v }), h('div', { class: 'sub', text: k }))))),
         section('p90-meilensteine', 'Meilensteine bis Rotterdam', 'Rückwärtsplanung · Vorschläge, nach Klärung des Buchungsstands bestätigen', milestones()),
@@ -9061,7 +9173,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     const status = app.dropdown('f_status', D.TASK_STATUS, x.status || 'open');
     const note = h('textarea', { id: 'f_note', placeholder: 'Details, ohne personenbezogene Daten Dritter' });
     note.value = str(x.note);
-    const budget = h('input', { type: 'text', id: 'f_budget', value: str(x.budget), placeholder: 'z. B. ca. 800 € (interne Planung)' });
+    const budget = h('input', { type: 'text', id: 'f_budget', value: str(x.budget), placeholder: 'Budgetposition (intern)' });
     const beschluss = h('input', { type: 'text', id: 'f_beschluss', value: str(x.beschluss), placeholder: 'Entscheidung oder Beschluss' });
     const depSel = h('select', { id: 'f_deps', multiple: true, size: '6' });
     const depSet = new Set(arr(x.deps));
@@ -10024,7 +10136,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
         h('div', { class: 'form-grid' }, app.field('Stufe', level), app.field('Ausblenden ab', until)),
         app.field('Hinweistext', text)),
       h('div', { class: 'card' }, h('h3', { text: 'Schnellzugriff-Links' }),
-        h('p', { class: 'muted small', text: 'Erscheinen in der Fußzeile, etwa Notion-Hub, ClickUp oder die Website.' }),
+        h('p', { class: 'muted small', text: 'Erscheinen in der Fußzeile, etwa Jira (MAR), Notion-Hub oder die Website.' }),
         links.length ? links : h('p', { class: 'muted', text: 'Noch keine Links.' }),
         h('button', { class: 'btn small', type: 'button', disabled: dis || e.links.length >= 12, onclick: () => { e.links.push({ label: '', url: '' }); changed(); } }, app.icon('plus'), 'Link hinzufügen')))];
   }
@@ -10352,7 +10464,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     const keep = S.data.legacy_leads.length - copied.length;
     const ok = await app.confirm({
       title: 'Alte Marketing-Leads entfernen?', confirmLabel: 'Endgültig entfernen', danger: true,
-      text: copied.length + ' Einträge unter leads/ haben eine inhaltsgleiche Kopie unter mkt_leads/ und werden gelöscht. ' + (keep ? keep + ' abweichende oder nicht kopierte Einträge bleiben erhalten. ' : '') + 'leads/counts bleibt unberührt. Nur mit Zustimmung von David ausführen.'
+      text: copied.length + ' Einträge unter leads/ haben eine inhaltsgleiche Kopie unter mkt_leads/ und werden gelöscht. ' + (keep ? keep + ' abweichende oder nicht kopierte Einträge bleiben erhalten. ' : '') + 'leads/counts bleibt unberührt. Nur mit Zustimmung der Projektleitung Marketing ausführen.'
     });
     if (!ok) return;
     let n = 0;
@@ -10394,7 +10506,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
   async function deleteRecord() {
     const c = ui.dataCol, id = ui.dataDoc;
     if (!id) return;
-    const ok = await app.confirm({ title: 'Datensatz löschen?', text: c + '/' + id + ' wird endgültig gelöscht. Nur mit Zustimmung von David ausführen und vorher eine Sicherung herunterladen.', confirmLabel: 'Endgültig löschen', danger: true });
+    const ok = await app.confirm({ title: 'Datensatz löschen?', text: c + '/' + id + ' wird endgültig gelöscht. Nur mit Zustimmung der Projektleitung Marketing ausführen und vorher eine Sicherung herunterladen.', confirmLabel: 'Endgültig löschen', danger: true });
     if (!ok) return;
     if (await app.write(c + '/' + id, 'delete')) { app.log('Datensatz gelöscht', c + '/' + id); ui.dataDoc = null; ui.dataText = null; ui.dataMsg = 'Gelöscht: ' + c + '/' + id + '.'; }
     rerender();
@@ -10593,6 +10705,35 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     }
     return h('div', { class: 'stack' }, row(job, 'Messe-Briefing mit KI', 'Messe-Briefing entsteht …', runMesse), messeResult(job));
   };
+
+  /* ---------- Frag das Cockpit: freie Frage aus der Suche (Strg+K), Antwort aus Aufgaben, Fristen, Leads, Content ---------- */
+  app.askCockpit = function (question) {
+    const q = H.str(question).trim();
+    if (!q) return;
+    const out = h('p', { class: 'ask-out', role: 'status', style: 'white-space:pre-wrap', text: 'Denkt nach …' });
+    const ctl = new AbortController();
+    app.modal({ title: 'Frag das Cockpit', body: [h('p', { class: 'small muted', text: '„' + q + '“' }), out, h('p', { class: 'muted small', text: PRIVACY })],
+      actions: [{ label: 'Schließen' }], onClose: () => ctl.abort() });
+    Promise.resolve(inViewer() ? window.claude.use('sample') : null).catch(() => null).then(async sample => {
+      if (!sample) { out.textContent = 'Frag das Cockpit gibt es nur im geteilten Cockpit in claude.ai, und nur wenn Claude-Anfragen erlaubt sind.'; return; }
+      const c = context();
+      const marketing = AI.marketingContext({ today: c.t, content: S.data.content, leads: S.data.mkt_leads, tenders: S.data.tenders, hints: app.mkLocalHints ? app.mkLocalHints() : [] });
+      const prompt = 'Du bist der Assistent im Marketing-Cockpit der Fräsdienst-Service E. Feind GmbH (Fräs- und Schleifarbeiten im Straßenbau). '
+        + 'Beantworte die Frage auf Deutsch, knapp (höchstens 8 Sätze oder eine kurze Liste), nur aus den Daten unten. '
+        + 'Nenne bei jeder Aussage das Modul oder die Aufgabe, aus der sie stammt. Erfinde keine Zahlen, Namen oder Termine; fehlt etwas, sag das. '
+        + 'Rechtliche Fragen: „Bitte Rechtsabteilung prüfen.“\n\nFrage: ' + q
+        + '\n\nDaten (Stand ' + H.ymd(c.t) + ', JSON):\n' + JSON.stringify({ marketing, infratech: c.infratech });
+      try {
+        const res = await sample(prompt, { signal: ctl.signal, cache: false, onText: ({ text }) => { out.textContent = text; } });
+        out.textContent = (res && res.text) || 'Keine Antwort erhalten.';
+      } catch (e) {
+        const code = e && e.code;
+        if (code === 'cancelled') return;
+        out.textContent = AI.ERR_TEXT[code] || AI.ERR_TEXT.upstream_error;
+        if (DISABLE.includes(code)) st.sample = null;
+      }
+    });
+  };
 })();
 
 /* ---- app-palette.js ---- */
@@ -10670,8 +10811,12 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     const nq = fold(q).trim();
     const all = catalog();
     if (!nq) return all.filter(x => x.group === 'Module' || x.group === 'Aktionen').slice(0, 30);
-    return all.map(x => ({ x, s: score(nq, x.title) * 1 + (score(nq, x.sub) > 0 ? 1 : 0) })).filter(r => r.s > 0)
+    const found = all.map(x => ({ x, s: score(nq, x.title) * 1 + (score(nq, x.sub) > 0 ? 1 : 0) })).filter(r => r.s > 0)
       .sort((a, b) => b.s - a.s).slice(0, 40).map(r => r.x);
+    // Freie Frage an Claude als letzter Eintrag (nur im geteilten Cockpit, ab zwei Wörtern sinnvoll).
+    const qq = q.trim();
+    if (app.askCockpit && window.claude && window.claude.use && qq.length >= 4) found.push({ group: 'Claude fragen', ic: 'kompass', title: 'Frag das Cockpit: „' + qq + '“', sub: 'Antwort aus Aufgaben, Fristen, Leads und Content', run: () => app.askCockpit(qq) });
+    return found;
   }
 
   function drawList() {
@@ -10930,9 +11075,17 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
       const file = L.blocks(hits).find(p => p && /Aufgabenliste_Team_Marketing/i.test(str(p.name)));
       if (!file) { tt.state = 'nofile'; app.refresh(); return; }
       tt.file = { name: str(file.name), url: H.safeUrl(file.webUrl), at: H.parseTs(file.lastModifiedDateTime) };
+      // SharePoint enthält nur eine Verknüpfung (.url) auf das Google Sheet: direkt dorthin verlinken.
+      if (/\.url$/i.test(tt.file.name)) {
+        const m = str(file.content || file.summary).match(/URL=(https:\/\/[^\s<]+)/);
+        if (m) { tt.file.url = H.safeUrl(m[1]); tt.file.name = 'Aufgabenliste im Google Sheet öffnen'; tt.sheet = true; }
+        tt.state = 'link'; app.refresh(); return;
+      }
       let parsed = null;
       try {
-        const r = await callMapped(M365, 'read_resource', { uri: file.webUrl }, { uri: file.webUrl }, cache);
+        // read_resource kennt nur file:///-URIs, keine https-Weblinks.
+        const uri = str(file.uri) || ('file:///' + str(file.driveId) + '/' + str(file.id));
+        const r = await callMapped(M365, 'read_resource', { uri }, { uri }, cache);
         parsed = L.parseTeamTasks(L.resultText(r));
         tt.at = storedAt(r);
       } catch (e) { parsed = null; }
@@ -10952,7 +11105,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     if (tt.state === 'busy') body = app.skeleton(3, 'Lade Team-Aufgaben');
     else if (tt.state === 'err') body = h('p', { class: 'small', role: 'status', style: 'color:var(--signal-text)', text: errText('Microsoft 365', tt.code) });
     else if (tt.state === 'nofile') body = h('p', { class: 'muted small', text: 'Die Datei ' + TEAM_FILE + '.xlsx wurde in SharePoint Marketing nicht gefunden.' });
-    else if (tt.state === 'link') body = h('p', { class: 'small' }, 'Die Liste lässt sich hier nicht als Tabelle lesen. ', fileLink || '', tt.file && tt.file.at ? ' · geändert ' + H.fmtTs(tt.file.at) : '');
+    else if (tt.state === 'link') body = h('p', { class: 'small' }, tt.sheet ? 'Die Liste wird in Google Sheets geführt. ' : 'Die Liste lässt sich hier nicht als Tabelle lesen. ', fileLink || '', tt.file && tt.file.at ? ' · geändert ' + H.fmtTs(tt.file.at) : '');
     else if (tt.state === 'ok') {
       const s = L.teamTaskSummary(tt.rows, app.today());
       const item = r => h('li', {}, h('span', { class: 'dd', text: r.due ? H.fmtDs(r.due) : '–' }), h('span', { class: 'ev-t' }, (r.id ? r.id + ' · ' : '') + r.title, h('small', { text: STATUS_LABEL[r.status] || r.status })));
@@ -11198,7 +11351,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
 /* Feind Cockpit · Modul Wissensbibliothek: Dokumente aus dem Dropbox-Upload-Ordner
    „Marketing/KI-Agent/Datenbank-UPLOADs“. Eine geplante Claude-Routine analysiert neue Dateien, sortiert sie in
    die Kategorieordner und schreibt je Dokument knowledge/<id> (Titel, Kurzfassung, Tags, Pfad). Das Cockpit
-   zeigt, sucht, filtert und verlinkt nur; Inhalte bleiben in Dropbox. Keine personenbezogenen Daten. */
+   zeigt, sucht, filtert und verlinkt nur; Upload-Eingang in Dropbox (Nebenablage); führende Ablage ist SharePoint „Marketing“. Keine personenbezogenen Daten. */
 (function () {
   'use strict';
   const FC = window.FC, app = FC.app, H = FC.helpers;
@@ -11765,7 +11918,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     const kind = sourceKind();
     const at = kind === 'live' ? nt.at : kind === 'snapshot' ? nt.snap.at : D.TASKS_STAND;
     const label = kind === 'live' ? 'Notion live' : kind === 'snapshot' ? 'Notion-Stand (Snapshot)' : 'Notfallstand, nicht aktuell';
-    const tip = kind === 'live' ? 'Die Aufgaben kommen direkt aus der Notion-Datenbank „Aufgaben InfraTech 2027“ (führende Liste) und werden jede Minute neu geladen.'
+    const tip = kind === 'live' ? 'Die Aufgaben kommen direkt aus der Notion-Datenbank „Aufgaben InfraTech 2027“ (Spiegel; führend ist Jira, Projekt MAR) und werden jede Minute neu geladen.'
       : kind === 'snapshot' ? 'Notion ist in dieser Ansicht nicht erreichbar. Angezeigt wird der zuletzt gespeicherte Notion-Stand (notion/tasks), nur lesend.'
         : 'Weder Notion noch ein gespeicherter Notion-Stand ist erreichbar. Angezeigt wird die beim Veröffentlichen eingebaute Liste vom ' + H.fmtD(D.TASKS_STAND) + '. Sie ist nicht aktuell; Änderungen bitte direkt in Notion.';
     return { kind, at, label, tip, count: app.tasks().length };
@@ -12004,7 +12157,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
   // Im Cockpit angelegte Aufgaben, die (noch) nicht in Notion stehen.
   function pending() {
     if (nt.state !== 'live') return [];
-    return FC.model.allTasks([], S.data.tasks || []).filter(t => t.custom && !nt.byId.has(t.id));
+    return FC.model.allTasks([], S.data.tasks || []).filter(t => t.custom && t.notionPending !== false && !nt.byId.has(t.id));
   }
   let pushing = false;
   async function pushPending() {
@@ -12186,7 +12339,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
 /* ---- brennglas.js ---- */
 /* Feind Cockpit · Brennglas-PDF (Layout wie „Brennglas InfraTech 2027“, 01.10.2026): A4 hoch, Ränder 15 mm,
    grüner Balken oben, Titel 22 pt, Untertitel mit Datenstand, Kopffelder Datum/Teilnehmende/Protokoll,
-   Kennzahl-Kacheln, Tabellen mit Anthrazit-Kopf und Zebra, Fließtext 10 pt (nichts kleiner), ausfüllbare
+   Kennzahl-Kacheln, Tabellen mit Anthrazit-Kopf und Zebra, Fließtext 11 pt (nichts kleiner), ausfüllbare
    Felder (AcroForm) mit fest gezeichnetem Rahmen, Abschluss „Weitere Notizen (optional)“ und Freigabe.
    jsPDF wird erst beim ersten PDF von cdnjs geladen. Nur WinAnsi-Zeichen; Kontaktdaten werden entfernt.
    Farben: CI-Werte aus branding/feind-ci.tokens.json (Druck immer im hellen Schema). */
@@ -12244,7 +12397,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
   /* ---------- Layout ---------- */
   const PT = 72 / 25.4;
   const C = { green: '#84bb20', anth: '#424e4e', red: '#e3000b', sig: '#b8000a', text: '#3c5457', muted: '#6b7575', line: '#d5dada', area: '#f2f4f4', white: '#ffffff' };
-  const FS = 10, LD = 13.5, P = 5;
+  const FS = 11, LD = 14.5, P = 5;
   const COLOR = { signal: C.sig, muted: C.muted, strong: C.anth };
 
   async function build(spec) {
@@ -12716,7 +12869,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
 
   // Referenz erfassen: leeres Formular (Papier-Notlösung, gleiche Felder und Reihenfolge wie der Assistent im Cockpit)
   // und Projektblatt je Referenz. Fotos setzt das Brennglas-Layout nicht ein; sie liegen im Cockpit.
-  const REF_SVC = ['Kaltfräsen', 'Grinding (Schleifen)', 'Grooving', 'Pflasterarbeiten', 'Industrieboden'];
+  const REF_SVC = ['Kaltfräsen', 'Grinding (Schleifen)', 'Grooving', 'Pflasterschleifen', 'Industrieboden'];
   function specRefForm() {
     const fl = (label, name, hh, optional) => ({ field: { label, name, h: hh || 18, optional: !!optional } });
     const row = (items) => ({ fields: items });
@@ -12803,7 +12956,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
       name: 'Wissensbibliothek Bestand', subtitle: 'Dropbox KI-Agent/Datenbank-UPLOADs · ' + (r.at ? 'letzter Lauf ' + fmtTs(r.at) : 'noch kein Lauf') + ' · ' + stand(), meta: false,
       kpis: [{ v: n(items.length), k: 'Dokumente in der Auswahl' }, { v: n(fail), k: 'nicht verarbeitet', signal: fail > 0 }, { v: r.inbox == null ? '–' : n(r.inbox), k: 'im Eingang' }],
       blocks: [
-        { p: 'Nur Metadaten und Kurzfassungen; die Dateien liegen in Dropbox. Keine personenbezogenen Daten.', style: 'muted' },
+        { p: 'Nur Metadaten und Kurzfassungen; die Dateien liegen im Dropbox-Eingang (Nebenablage); führend ist SharePoint „Marketing“. Keine personenbezogenen Daten.', style: 'muted' },
         { h: 'Dokumente' },
         { table: { cols: [{ t: 'Datum', w: 22 }, { t: 'Dokument' }, { t: 'Kategorie', w: 32 }, { t: 'Status', w: 28 }, { t: 'geprüft', w: 17, align: 'center' }],
           rows: items.map((d, k) => [fmtD(d.processedAt), { t: str(d.title) || str(d.originalName), sub: [str(d.topic), arr(d.tags).join(', ')].filter(Boolean).join(' · ') }, app.kbCatLabel(d.category),
@@ -13920,6 +14073,117 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
           h('button', { class: 'btn ghost-inv', type: 'button', onclick: () => app.go('infratech', 'aufgaben') }, 'Alle Aufgaben'))));
   }
 
+  /* ---------- Hero-Slider: 3 Folien zu den aktuellsten Entwicklungen (Wunsch David 15.10.2026) ----------
+     Folie 1 Messe-Countdown, Folie 2 neueste Referenz mit Projektfoto, Folie 3 Neuestes aus dem Wissensarchiv
+     (sonst nächster Termin). Inhalte kommen nur aus den Cockpit-Daten; ohne Foto steht ein Motiv in Feind-CI. */
+  let hsIdx = 0;
+  const hsTs = o => { const d = H.parseTs(o && (o.updatedAt || o.createdAt)); return d ? d.getTime() : 0; };
+  const hsStr = v => (v == null ? '' : String(v));
+  function hsMotif(icon) {
+    return h('div', { class: 'hs-media hs-motif', 'aria-hidden': 'true' }, h('span', { class: 'hs-mi' }, app.ico(icon)));
+  }
+  function hsSlide(o) {
+    const media = o.img ? h('div', { class: 'hs-media hs-photo' }, h('img', { src: o.img, alt: o.alt || '', loading: 'lazy', decoding: 'async', style: o.focus ? 'object-position:' + o.focus : null, onerror: e => { const m = e.currentTarget.parentElement; if (m) m.replaceWith(hsMotif(o.icon)); } })) : hsMotif(o.icon);
+    return h('section', { class: 'ov-hero hs-slide', 'aria-label': o.label },
+      h('div', { class: 'ov-hero-txt' },
+        h('p', { class: 'eyebrow', text: o.eyebrow }),
+        h('h2', { text: o.title }),
+        o.lead ? h('p', { class: 'lead', text: o.lead }) : null,
+        h('div', { class: 'row' }, o.href ? h('a', { class: 'btn primary', href: o.href, target: '_blank', rel: 'noopener' }, app.ico(o.icon), o.cta) : h('button', { class: 'btn primary', type: 'button', onclick: o.go }, app.ico(o.icon), o.cta),
+          (o.links || []).map(l => h('a', { class: 'btn ghost-inv', href: l.href, target: '_blank', rel: 'noopener' }, l.label)))),
+      media);
+  }
+  function refSlide() {
+    const refs = (S.data.references || []).filter(r => hsStr(r.title));
+    if (!refs.length) return null;
+    const yr = r => parseInt(hsStr(r.year), 10) || 0;
+    const r = refs.slice().sort((a, b) => (hsTs(b) - hsTs(a)) || (yr(b) - yr(a)))[0];
+    const ph = (S.data.ref_photos || []).find(p => p._id === r._id);
+    const v = ph && (ph.full || ph.thumb);
+    const img = v ? (v.id ? '/_blob/' + encodeURIComponent(v.id) : hsStr(v.data)) : '';
+    const where = [hsStr(r.place) || hsStr(r.region), hsStr(r.year)].filter(Boolean).join(' · ');
+    return hsSlide({ label: 'Neueste Referenz', icon: 'schleifwelle', eyebrow: 'Neueste Referenz' + (where ? ' · ' + where : ''), title: hsStr(r.title),
+      lead: hsStr(r.summary || r.service || r.leistung).slice(0, 160) || (img ? '' : 'Noch ohne Projektfoto: In den Referenzen lässt sich eines hochladen.'),
+      img, alt: ph && hsStr(ph.alt), focus: ph && hsStr(ph.focus), cta: 'Zu den Referenzen', go: () => app.go('marketing', 'references') });
+  }
+  function kbSlide() {
+    const kb = (S.data.kb_items || []).filter(i => i.status !== 'fehler' && !AWARD_KB.includes(i.id || i._id) && hsStr(i.title || i.name));
+    if (kb.length) {
+      const i = kb.slice().sort((a, b) => hsTs(b) - hsTs(a))[0];
+      const meta = [hsStr(i.docType), hsStr(i.createdAt) && H.parseTs(i.createdAt) ? fmtD(H.parseTs(i.createdAt)) : ''].filter(Boolean).join(' · ');
+      return hsSlide({ label: 'Neu im Wissensarchiv', icon: 'buch', eyebrow: 'Neu im Wissensarchiv' + (meta ? ' · ' + meta : ''), title: hsStr(i.title || i.name),
+        lead: hsStr(i.summary).slice(0, 160), cta: 'Wissensarchiv öffnen', go: () => app.go('wissen', i.status === 'pruefen' ? 'pruefung' : 'archiv') });
+    }
+    const t0 = app.today();
+    const ev = (S.data.events || []).map(e => ({ e, d: H.parseDay(e.date) })).filter(x => x.d && H.dayDiff(t0, x.d) >= 0 && !/infratech/i.test(hsStr(x.e.title)))
+      .sort((a, b) => a.d - b.d)[0];
+    if (ev) return hsSlide({ label: 'Nächster Termin', icon: 'kalender', eyebrow: 'Nächster Termin · ' + fmtD(ev.d), title: hsStr(ev.e.title), lead: hsStr(ev.e.location).slice(0, 160), cta: 'Zu den Events', go: () => app.go('marketing', 'events') });
+    return hsSlide({ label: 'Lessons Learned', icon: 'lampe', eyebrow: 'Aus 2026 gelernt', title: 'Lessons Learned für InfraTech 2027', lead: 'Was 2026 gut lief, was besser werden muss und welche Maßnahmen daraus folgen.', cta: 'Lessons Learned', go: () => app.go('infratech', 'lessons') });
+  }
+  // Feste Folie: Deutscher Nachhaltigkeitspreis Produkte 2027 (Wunsch David 16.10.2026). Urkunde und Jurybegründung liegen im Wissensarchiv.
+  const AWARD_KB = ['kdnp2027urkunde', 'kdnp2027jury'];
+  function awardSlide() {
+    return hsSlide({ label: 'Auszeichnung', icon: 'stern', eyebrow: 'Ausgezeichnet · Deutscher Nachhaltigkeitspreis Produkte 2027',
+      title: 'Sieger: Geschliffenes Kopfsteinpflaster',
+      lead: 'Barrierefrei nutzbar, ohne Materialaustausch und ohne neue Versiegelung. Allein 2025 über 7.200 m² bearbeitet.',
+      img: '/_blob/59d486d86deee366e6ba4c4ec35ad5ef', alt: 'Geschliffenes Kopfsteinpflaster, Priesterweg', focus: 'center 60%',
+      cta: 'Urkunde', href: '/_blob/2d9b7ee635a411ecb0739ce931f3390a', links: [{ label: 'Jurybegründung', href: '/_blob/5758adadbeaf663072029466f1d0231d' }] });
+  }
+  // Dritte Folie: das Neueste aus Referenzen oder Wissensarchiv, je nachdem was zuletzt dazukam.
+  function newestSlide() {
+    const refs = (S.data.references || []).filter(r => hsStr(r.title));
+    const kb = (S.data.kb_items || []).filter(i => i.status !== 'fehler' && !AWARD_KB.includes(i.id || i._id) && hsStr(i.title || i.name));
+    const tRef = refs.reduce((m, r) => Math.max(m, hsTs(r)), 0), tKb = kb.reduce((m, i) => Math.max(m, hsTs(i)), 0);
+    return (refs.length && (tRef >= tKb || !kb.length)) ? refSlide() : kbSlide();
+  }
+  function heroSlider(first) {
+    first.classList.add('hs-slide');
+    const slides = [first, awardSlide(), newestSlide()].filter(Boolean);
+    if (slides.length < 2) return first;
+    const n = slides.length; if (hsIdx >= n) hsIdx = 0;
+    const live = h('p', { class: 'sr', 'aria-live': 'polite' });
+    const dots = slides.map((sl, i) => h('button', { class: 'hs-dot', type: 'button', role: 'tab', 'aria-label': 'Folie ' + (i + 1) + ' von ' + n + ': ' + (sl.getAttribute('aria-label') || ''), onclick: () => { show(i, true); restart(); } }, h('i')));
+    const track = h('div', { class: 'hs-track' }, slides);
+    const root = h('div', { class: 'hs', role: 'region', 'aria-roledescription': 'Karussell', 'aria-label': 'Aktuelle Entwicklungen', tabindex: '0' },
+      track, h('div', { class: 'hs-nav', role: 'tablist', 'aria-label': 'Folie wählen' }, dots), live);
+    function show(i, announce) {
+      hsIdx = (i + n) % n;
+      slides.forEach((sl, k) => { const on = k === hsIdx; sl.classList.toggle('on', on); sl.setAttribute('aria-hidden', String(!on)); sl.inert = !on; });
+      dots.forEach((d, k) => { d.setAttribute('aria-selected', String(k === hsIdx)); d.tabIndex = k === hsIdx ? 0 : -1; });
+      root.style.setProperty('--hs-i', String(hsIdx));
+      if (announce) live.textContent = 'Folie ' + (hsIdx + 1) + ' von ' + n;
+    }
+    let timer = null, paused = false;
+    const DUR = 8000;
+    function restart() {
+      clearInterval(timer); timer = null;
+      root.classList.remove('run'); void root.offsetWidth;
+      if (reduce() || paused) return;
+      root.classList.add('run');
+      timer = setInterval(() => { if (!root.isConnected) { clearInterval(timer); return; } if (!paused && !document.hidden) { show(hsIdx + 1); root.classList.remove('run'); void root.offsetWidth; root.classList.add('run'); } }, DUR);
+    }
+    const pause = on => { paused = on; root.classList.toggle('paused', on); if (!on) restart(); else { clearInterval(timer); timer = null; root.classList.remove('run'); } };
+    root.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') pause(true); });
+    root.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') pause(false); });
+    root.addEventListener('focusin', () => pause(true));
+    root.addEventListener('focusout', e => { if (!root.contains(e.relatedTarget)) pause(false); });
+    root.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); show(hsIdx + 1, true); if (root.contains(document.activeElement) && document.activeElement.classList.contains('hs-dot')) dots[hsIdx].focus(); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); show(hsIdx - 1, true); if (root.contains(document.activeElement) && document.activeElement.classList.contains('hs-dot')) dots[hsIdx].focus(); }
+    });
+    // Wischen am Handy: waagerecht mehr als 40 px wechselt die Folie, senkrechtes Scrollen bleibt frei.
+    let sx = null, sy = 0;
+    track.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') { sx = e.clientX; sy = e.clientY; } });
+    track.addEventListener('pointerup', e => {
+      if (sx == null) return; const dx = e.clientX - sx, dy = e.clientY - sy; sx = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) { show(hsIdx + (dx < 0 ? 1 : -1), true); restart(); }
+    });
+    track.addEventListener('pointercancel', () => { sx = null; });
+    show(hsIdx);
+    requestAnimationFrame(() => restart());
+    return root;
+  }
+
   /* ---------- Plausibilitätsprüfung: nur, was das Cockpit selbst nachrechnen kann ---------- */
   function checks(at) {
     const t = app.today();
@@ -14013,7 +14277,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
       const verdict = w === 'ok' ? 'Alle geprüften Punkte sind in Ordnung.' : w === 'warn' ? 'Es gibt Hinweise, die du ansehen solltest.' : 'Es gibt Punkte mit Handlungsbedarf.';
       return [
         panelHead('Auf einen Blick', null, h('span', { class: 'muted small', text: fmtD(t) })),
-        hero(pr, days),
+        heroSlider(hero(pr, days)),
         h('div', { class: 'ov-quick', role: 'group', 'aria-label': 'Schnellzugriff' },
           h('button', { class: 'btn', type: 'button', onclick: () => app.go('wissen', 'eingang') }, 'Ablegen'),
           h('button', { class: 'btn', type: 'button', onclick: () => { const b = document.getElementById('cmdBtn'); if (b) b.click(); } }, 'Suchen (Strg K)'),
@@ -14139,7 +14403,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
   const MAX_TEXT = 120000, PROMPT_TEXT = 14000, MAX_FILE = 20 * 1024 * 1024, MAX_BATCH = 200;
   const W = S.ui.kb = {
     q: '', cat: '', type: '', service: '', year: '', status: 'aktiv', project: '', sort: 'neu', view: 'grid', full: false,
-    auto: app.storeGet(AUTO_KEY) !== '0', draft: '', files: new Map(), texts: new Map(), steps: new Map(), queue: [], skip: new Set(),
+    auto: app.storeGet(AUTO_KEY) === '1', draft: '', files: new Map(), texts: new Map(), steps: new Map(), queue: [], skip: new Set(),
     busy: false, fullText: new Map(), ask: { q: '', running: false, text: '', err: '', sources: [], ctl: null }, pauseUntil: 0, bulk: {}
   };
   const rerender = () => app.refresh();
@@ -14304,9 +14568,9 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
     if (!scripts[src]) scripts[src] = new Promise((res, rej) => {
       const el = document.createElement('script');
       el.src = src; el.async = true; el.crossOrigin = 'anonymous';
-      const t = setTimeout(() => rej(new Error('Laden abgebrochen')), 20000);
+      const t = setTimeout(() => { delete scripts[src]; rej(new Error('Laden abgebrochen')); }, 20000);
       el.onload = () => { clearTimeout(t); res(); };
-      el.onerror = () => { clearTimeout(t); rej(new Error('Bibliothek nicht ladbar')); };
+      el.onerror = () => { clearTimeout(t); delete scripts[src]; el.remove(); rej(new Error('Bibliothek nicht ladbar')); };
       document.head.append(el);
     });
     return scripts[src];
@@ -14894,8 +15158,8 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
       steps.map((t, i) => h('span', { class: 'tk' + (states[i] ? ' ' + states[i] : '') }, h('span', { class: 'bar', 'aria-hidden': 'true' }), h('span', { class: 'lbl', text: t }))),
       h('small', { text: note }));
   }
-  function emptyArchive() {
-    return h('div', { class: 'empty' }, app.ico('leer'), h('strong', { text: 'Das Archiv ist noch leer. ' }), 'Dateien, Ordner, Texte oder Links einfach irgendwo auf das Cockpit ziehen oder außerhalb von Eingabefeldern mit Strg+V einfügen. Das Cockpit liest den Inhalt, ordnet ihn ein und verknüpft ihn mit Projekten, Referenzen und Events.',
+  function emptyArchive(inbox) {
+    return h('div', { class: 'empty' }, app.ico('leer'), h('strong', { text: inbox ? 'Noch nichts abgelegt. ' : 'Das Archiv ist noch leer. ' }), 'Dateien, Ordner, Texte oder Links einfach irgendwo auf das Cockpit ziehen oder außerhalb von Eingabefeldern mit Strg+V einfügen. Das Cockpit liest den Inhalt, ordnet ihn ein und verknüpft ihn mit Projekten, Referenzen und Events.',
       h('div', { class: 'acts' }, fileButton('empty-files', false, 'btn small primary', icon('plus'), 'Dateien wählen', intakeBlocked())));
   }
 
@@ -14940,7 +15204,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
   function pipeline() {
     const all = items();
     const n = k => all.filter(i => i.status === k).length;
-    const auto = h('label', { class: 'check', for: 'kb-auto' }, h('input', { type: 'checkbox', id: 'kb-auto', checked: W.auto, onchange: e => { W.auto = e.target.checked; app.storeSet(AUTO_KEY, W.auto ? '1' : '0'); if (W.auto) kick(); rerender(); } }), ' Automatisch einordnen');
+    const auto = h('label', { class: 'check', for: 'kb-auto' }, h('input', { type: 'checkbox', id: 'kb-auto', checked: W.auto, onchange: async e => { if (e.target.checked && !(await app.confirm({ title: 'Automatische Einordnung einschalten?', text: 'Beim Einordnen gehen Texte (maskiert), Bilder und Link-Adressen an KI-Dienste in claude.ai bzw. an Firecrawl. Keine personenbezogenen Daten oder vertraulichen Dokumente ablegen. Rechtliche Prüfung durch die Rechtsabteilung steht aus.', confirmLabel: 'Einschalten' }))) { e.target.checked = false; return; } W.auto = e.target.checked; app.storeSet(AUTO_KEY, W.auto ? '1' : '0'); if (W.auto) kick(); rerender(); } }), ' Automatisch einordnen');
     const ai = !inViewer() ? 'KI nur im geteilten Cockpit in claude.ai; hier ordnen Regeln ein' : !featureOn() ? 'KI-Einordnung per Administration aus' : sampleOk === false ? 'KI nicht verfügbar: Einordnung nach Regeln' : sampleOk ? 'KI bereit, nutzt dein Claude-Kontingent' : 'KI wird geprüft …';
     const prev = W.prevN || {}; W.prevN = {};
     const tile = (k, lbl, cls, go) => { const v = n(k); W.prevN[k] = v; return h('button', { class: 'kpi' + (cls ? ' ' + cls : '') + (prev[k] != null && prev[k] !== v ? ' bump' : '') + (k === 'in_arbeit' && W.busy ? ' live' : ''), type: 'button', onclick: go, 'aria-label': lbl + ': ' + n(k) + '. Anzeigen' }, h('div', { class: 'v', text: String(v) }), h('div', { class: 'k', text: lbl })); };
@@ -15022,7 +15286,7 @@ main.enter .kpi-row > *, main.enter .kpis > *, main.enter .ov-stats > *, main.en
         h('div', { class: 'section' }, h('h3', { text: 'Zuletzt abgelegt' + (RQ.filter === 'alle' ? '' : ' · ' + (RECENT_FILTERS.find(f => f[0] === RQ.filter) || ['', ''])[1]) }),
           all.length ? recentTools(all, recent.length) : null,
           !S.loaded.kb_items ? app.skeleton(4, 'Lade Archiv') : recent.length ? h('div', { class: 'kb-grid recent' }, recent.map((it, i) => itemCard(it, i, null, true)))
-            : all.length ? h('p', { class: 'muted', text: 'Keine Einträge für diesen Filter.' }) : emptyArchive(),
+            : all.length ? h('p', { class: 'muted', text: 'Keine Einträge für diesen Filter.' }) : emptyArchive(true),
           sorted.length > recent.length ? h('div', { class: 'row', style: 'margin-top:var(--s2)' }, h('button', { class: 'btn small', type: 'button', id: 'kb-rmore', onclick: () => { RQ.n += 12; rerender(); } }, 'Weitere ' + Math.min(12, sorted.length - recent.length) + ' von ' + (sorted.length - recent.length) + ' anzeigen')) : null),
         h('div', { class: 'section' }, h('h3', { text: 'So arbeitet das Archiv' }),
           h('ol', { class: 'small kb-steps' },
@@ -16214,7 +16478,7 @@ let shown = false, hideT = null;
   const rerender = () => app.refresh();
   const ro = () => app.ro();
   const SOURCE = 'https://claude.ai/artifact/2FT2wp4m4YfwJvU1Hj5vFd';
-  const SECTIONS = [["Logistik & Anreise", [["open", "Fahrzeug festlegen: V-Klasse mit Anhänger oder LKW mit Anhänger (2026 offen)"], ["open", "Bedarf Kompaktlader / „Ameise“ für Rotterdam klären (2026: „?“)"], ["open", "Anlieferung/Parkplatz-Prozess bei Rotterdam Ahoy klären (2026 Essen: 200 € Kaution, rückerstattet)"], ["open", "Dauerausweise / Parkausweise organisieren"]]], ["Standbau & Exponate", [["keep", "Schleifwelle groß + Pflasterfläche — Kernexponat; Aufbau ggf. vereinfachen (z. B. Steinmatte statt Pflasterfläche)"], ["keep", "Schleifwelle klein mit Tisch (wenn Platz vorhanden)"], ["keep", "Exponat „Ungeschliffen“/„Geschliffen“"], ["keep", "Exponat Horizontalschleifen mit Flammen"], ["keep", "Aufsteller mit Flyerspendern (Kundenstopper) — mit Beleuchtung versehen"], ["keep", "Leuchtendes Grinding-Schild — Blickfang"], ["open", "2× Schleifscheibe — optional, nur wenn kleine Schleifscheibe ohnehin dabei"], ["drop", "2× kleine Exponate + Aschenbecher — 2026 ungenutzt, nicht mitnehmen"], ["warn", "Standflächen-Bedarf realistisch planen — 2026: von 2 Stehtischen passte nur 1 auf die Fläche"]]], ["Equipment & Verbrauchsmaterial", [["warn", "Kaffeemaschine, Kaffeekapseln — Sortenanzahl reduzieren"], ["open", "Kaffeesahne / Zucker / Kekse"], ["keep", "Servietten klein — nötig"], ["drop", "Servietten groß — 2026: zu groß, kein Einsatz"], ["warn", "Reinigungsset + Mülltüten — mehr Feuchttücher einpacken"], ["open", "Molton-Tuch — passend für Tisch zuschneiden, mit Klettband"], ["open", "Hussen (wenn Tisch dabei)"], ["open", "Staubsauger"], ["open", "Fugenmaterial (zum Ausbessern)"], ["open", "Tischmülleimer, Müllsäcke 120L"], ["open", "Deko optional (frische Blumen/Pflanze, wenn Platz)"], ["drop", "Wein — 2026: kaum getrunken, streichen"]]], ["Technik", [["warn", "TV klären — 2026 als offene Frage stehengeblieben, für Rotterdam Bedarf neu entscheiden"], ["warn", "Mobile Daten / WLAN-Box klären"], ["open", "Laptop, Stick mit Präsentation"], ["open", "Verlängerungskabel/Verteiler, Ladekabel (Handy, Kamera)"], ["warn", "Präsentation aktualisieren — Option Kopfhörer anbieten, etwas kürzer fassen"], ["open", "Bühnenmolton, LED Band"]]], ["Marketing & Werbemittel", [["warn", "Flyer überarbeiten — Format überdenken"], ["keep", "Steine mit rückseitigem Aufkleber — kommen gut an"], ["keep", "Zollstöcke, Feuerzeuge, Kugelschreiber, Schlüsselbänder, Einkaufswagenlöser — alle beibehalten"], ["drop", "Minz-Spender — 2026: nicht attraktiv, streichen"], ["warn", "Goodie-Bags kleiner/handlicher packen — Kalenderbücher zu wertig & Transport unpraktisch"], ["warn", "Vorab-Bewerbung der Teilnahme planen — 2026 komplett gefehlt: Social Media, Mail-Signatur, Prä-Mail, Website"], ["open", "Infobroschüren, Aufsteller+Infoblatt, Prospektständer, magn. Flyerbox"]]], ["Personal & Auftritt", [["warn", "Namensschilder konsequent einsetzen — 2026 nur an einem Tag genutzt, Position vermerken"], ["warn", "Visitenkarten-Verteilung optimieren — 2026: 100 VK durch [Name entfernt¹], an Flyer geheftet"], ["warn", "Kleidung: andere Farbe als Weiß prüfen — 2026 keine Differenzierung zu anderen Ausstellern"], ["warn", "Einheitliches, sauberes Schuhwerk festlegen"]]], ["Akquise & Lead-Erfassung", [["open", "Ansprache auf die Messefläche ausweiten — nicht nur am Stand warten"], ["keep", "Digitales Gesprächsnotiz-Formular nutzen — bereits als ClickUp-Ticket angelegt (2026: kaum systematisch erfasst)"], ["open", "Gezielt Visitenkarten von Kommunen/Städten sammeln — 2026 kaum vorhanden"]]], ["Offene „zu Buchen/zu klären“-Punkte aus 2026", [["open", "Catering — Prozess wie 2026 (Aramark-Bestellung) oder neuer Anbieter in Rotterdam?"], ["open", "Anlieferung/Parkplätze final klären (s. Logistik oben)"]]], ["Team (Referenz 2026)", [["open", "Teilnehmerliste final bestätigen — 2026: [Namen der Standbesetzung 2026 entfernt¹ – siehe Original-ToDo-Liste]"], ["open", "Übernachtende final abgleichen mit Hotelkontingent-Ticket"]]], ["Veranstalter, Verträge & Fristen — ergänzt aus Manus-Analyse", [["open", "2027-Handbuch, Standnummer und Portalzugänge bei Rotterdam Ahoy anfordern"], ["open", "Standdesign-Abweichungen (>2,75 m) genehmigen lassen"], ["open", "Katalogdaten/Produkte fristgerecht einreichen"], ["open", "Verträge/Bestellungen mit Belegnummer, Betrag, Frist archivieren"], ["warn", "Eskalationsregel festlegen: nach 72 Stunden ohne Antwort dokumentieren und nachfassen — 2026 neu erkannt"]]], ["Lead-Erfassung & Nachfassprozess — neu, aus Manus-Analyse", [["warn", "Leadformular mit Pflichtfeldern einführen: Firma, Name, Funktion, Segment, Bedarf, Priorität, Einwilligung, nächster Schritt, Owner, Fälligkeit"], ["open", "Zielkundenliste (Kommunen, Straßenbau, Infrastruktur, Partner) vorab erstellen"], ["open", "Zwei aktive Akquise-Slots pro Messetag außerhalb des eigenen Standes einplanen"], ["open", "Tagesziel für qualifizierte Leads festlegen"], ["warn", "Follow-up-SLA einhalten: A-Leads binnen 48 Std., B-Leads binnen 5 Arbeitstagen kontaktieren — 2026: erste Nachfassmail erst am 26.01."]]], ["Durchführung & Nachbereitung — neu, aus Manus-Analyse", [["open", "Morgenbriefing mit Rollen, Zielen und Eskalationsweg pro Messetag"], ["open", "Besucherzahl stündlich erfassen, Auslastung je Messetag auswerten"], ["open", "Standabbau nicht vor dem zulässigen Zeitpunkt beginnen"], ["open", "Fotodokumentation von Stand/Team/Besucherinteraktion — nur mit Einwilligung der Abgebildeten"], ["warn", "Abschlussbericht (KPI, Kosten, Leads, Risiken, Lessons Learned) innerhalb 14 Tagen nach der Messe erstellen"]]]];
+  const SECTIONS = [["Logistik & Anreise", [["open", "Fahrzeug festlegen: V-Klasse mit Anhänger oder LKW mit Anhänger (2026 offen)"], ["open", "Bedarf Kompaktlader / „Ameise“ für Rotterdam klären (2026: „?“)"], ["open", "Anlieferung/Parkplatz-Prozess bei Rotterdam Ahoy klären (2026 Essen: 200 € Kaution, rückerstattet)"], ["open", "Dauerausweise / Parkausweise organisieren"]]], ["Standbau & Exponate", [["keep", "Schleifwelle groß + Pflasterfläche — Kernexponat; Aufbau ggf. vereinfachen (z. B. Steinmatte statt Pflasterfläche)"], ["keep", "Schleifwelle klein mit Tisch (wenn Platz vorhanden)"], ["keep", "Exponat „Ungeschliffen“/„Geschliffen“"], ["keep", "Exponat Horizontalschleifen mit Flammen"], ["keep", "Aufsteller mit Flyerspendern (Kundenstopper) — mit Beleuchtung versehen"], ["keep", "Leuchtendes Grinding-Schild — Blickfang"], ["open", "2× Schleifscheibe — optional, nur wenn kleine Schleifscheibe ohnehin dabei"], ["drop", "2× kleine Exponate + Aschenbecher — 2026 ungenutzt, nicht mitnehmen"], ["warn", "Standflächen-Bedarf realistisch planen — 2026: von 2 Stehtischen passte nur 1 auf die Fläche"]]], ["Equipment & Verbrauchsmaterial", [["warn", "Kaffeemaschine, Kaffeekapseln — Sortenanzahl reduzieren"], ["open", "Kaffeesahne / Zucker / Kekse"], ["keep", "Servietten klein — nötig"], ["drop", "Servietten groß — 2026: zu groß, kein Einsatz"], ["warn", "Reinigungsset + Mülltüten — mehr Feuchttücher einpacken"], ["open", "Molton-Tuch — passend für Tisch zuschneiden, mit Klettband"], ["open", "Hussen (wenn Tisch dabei)"], ["open", "Staubsauger"], ["open", "Fugenmaterial (zum Ausbessern)"], ["open", "Tischmülleimer, Müllsäcke 120L"], ["open", "Deko optional (frische Blumen/Pflanze, wenn Platz)"], ["drop", "Wein — 2026: kaum getrunken, streichen"]]], ["Technik", [["warn", "TV klären — 2026 als offene Frage stehengeblieben, für Rotterdam Bedarf neu entscheiden"], ["warn", "Mobile Daten / WLAN-Box klären"], ["open", "Laptop, Stick mit Präsentation"], ["open", "Verlängerungskabel/Verteiler, Ladekabel (Handy, Kamera)"], ["warn", "Präsentation aktualisieren — Option Kopfhörer anbieten, etwas kürzer fassen"], ["open", "Bühnenmolton, LED Band"]]], ["Marketing & Werbemittel", [["warn", "Flyer überarbeiten — Format überdenken"], ["keep", "Steine mit rückseitigem Aufkleber — kommen gut an"], ["keep", "Zollstöcke, Feuerzeuge, Kugelschreiber, Schlüsselbänder, Einkaufswagenlöser — alle beibehalten"], ["drop", "Minz-Spender — 2026: nicht attraktiv, streichen"], ["warn", "Goodie-Bags kleiner/handlicher packen — Kalenderbücher zu wertig & Transport unpraktisch"], ["warn", "Vorab-Bewerbung der Teilnahme planen — 2026 komplett gefehlt: Social Media, Mail-Signatur, Prä-Mail, Website"], ["open", "Infobroschüren, Aufsteller+Infoblatt, Prospektständer, magn. Flyerbox"]]], ["Personal & Auftritt", [["warn", "Namensschilder konsequent einsetzen — 2026 nur an einem Tag genutzt, Position vermerken"], ["warn", "Visitenkarten-Verteilung optimieren — 2026: 100 VK durch [Name entfernt¹], an Flyer geheftet"], ["warn", "Kleidung: andere Farbe als Weiß prüfen — 2026 keine Differenzierung zu anderen Ausstellern"], ["warn", "Einheitliches, sauberes Schuhwerk festlegen"]]], ["Akquise & Lead-Erfassung", [["open", "Ansprache auf die Messefläche ausweiten — nicht nur am Stand warten"], ["keep", "Digitales Gesprächsnotiz-Formular nutzen — als Jira-Aufgabe (MAR) anzulegen (2026: kaum systematisch erfasst)"], ["open", "Gezielt Visitenkarten von Kommunen/Städten sammeln — 2026 kaum vorhanden"]]], ["Offene „zu Buchen/zu klären“-Punkte aus 2026", [["open", "Catering — Prozess wie 2026 (Aramark-Bestellung) oder neuer Anbieter in Rotterdam?"], ["open", "Anlieferung/Parkplätze final klären (s. Logistik oben)"]]], ["Team (Referenz 2026)", [["open", "Teilnehmerliste final bestätigen — 2026: [Namen der Standbesetzung 2026 entfernt¹ – siehe Original-ToDo-Liste]"], ["open", "Übernachtende final abgleichen mit Hotelkontingent-Ticket"]]], ["Veranstalter, Verträge & Fristen — ergänzt aus Manus-Analyse", [["open", "2027-Handbuch und Portalzugänge bei Rotterdam Ahoy anfordern (Stand 5.209 bestätigt)"], ["open", "Standdesign-Abweichungen (>2,75 m) genehmigen lassen"], ["open", "Katalogdaten/Produkte fristgerecht einreichen"], ["open", "Verträge/Bestellungen mit Belegnummer, Betrag, Frist archivieren"], ["warn", "Eskalationsregel festlegen: nach 72 Stunden ohne Antwort dokumentieren und nachfassen — 2026 neu erkannt"]]], ["Lead-Erfassung & Nachfassprozess — neu, aus Manus-Analyse", [["warn", "Leadformular mit Pflichtfeldern einführen: Firma, Name, Funktion, Segment, Bedarf, Priorität, Einwilligung, nächster Schritt, Owner, Fälligkeit"], ["open", "Zielkundenliste (Kommunen, Straßenbau, Infrastruktur, Partner) vorab erstellen"], ["open", "Zwei aktive Akquise-Slots pro Messetag außerhalb des eigenen Standes einplanen"], ["open", "Tagesziel für qualifizierte Leads festlegen"], ["warn", "Follow-up-SLA einhalten: A-Leads binnen 48 Std., B-Leads binnen 5 Arbeitstagen kontaktieren — 2026: erste Nachfassmail erst am 26.01."]]], ["Durchführung & Nachbereitung — neu, aus Manus-Analyse", [["open", "Morgenbriefing mit Rollen, Zielen und Eskalationsweg pro Messetag"], ["open", "Besucherzahl stündlich erfassen, Auslastung je Messetag auswerten"], ["open", "Standabbau nicht vor dem zulässigen Zeitpunkt beginnen"], ["open", "Fotodokumentation von Stand/Team/Besucherinteraktion — nur mit Einwilligung der Abgebildeten"], ["warn", "Abschlussbericht (KPI, Kosten, Leads, Risiken, Lessons Learned) innerhalb 14 Tagen nach der Messe erstellen"]]]];
   const TYP = { keep: 'bewährt', drop: '2026 gestrichen', warn: '2026 offen — klären', open: 'Aufgabe' };
   const TYP_LEGEND = { keep: 'bewährt, beibehalten', drop: '2026 gestrichen', warn: '2026 offen — für Rotterdam klären', open: 'Aufgabe' };
   const STATUS = [['offen', 'offen'], ['inArbeit', 'in Arbeit'], ['erledigt', 'erledigt'], ['zurueckgestellt', 'zurückgestellt']];
@@ -16270,7 +16534,7 @@ let shown = false, hideT = null;
       app.field('Status', inp('status', app.dropdown('cls-' + x.id, STATUS, dr.status))),
       app.field('Verantwortlich (Rolle)', inp('rolle', app.dropdown('clr-' + x.id, [['', '– offen –']].concat(roles()), dr.rolle))),
       app.field('Frist', inp('frist', h('input', { type: 'date', id: 'clf-' + x.id, value: dr.frist }))),
-      app.field('Budget', inp('budget', h('input', { type: 'text', id: 'clb-' + x.id, value: dr.budget, placeholder: 'z. B. 1.500 €' }))),
+      app.field('Budget', inp('budget', h('input', { type: 'text', id: 'clb-' + x.id, value: dr.budget, placeholder: 'Budgetposition' }))),
       app.field('Beschluss', inp('beschluss', Object.assign(h('textarea', { id: 'cle-' + x.id, placeholder: 'Beschluss / Entscheidung der GL' }), { value: dr.beschluss })), { wide: true }),
       app.field('Notiz', inp('notiz', Object.assign(h('textarea', { id: 'cln-' + x.id, placeholder: 'Anmerkung – keine personenbezogenen Daten Dritter' }), { value: dr.notiz })), { wide: true }),
       h('div', { class: 'field wide' }, h('div', { class: 'row' },
@@ -16337,7 +16601,7 @@ let shown = false, hideT = null;
         h('div', { class: 'section' },
           h('div', { class: 'ptrack', role: 'progressbar', 'aria-label': 'Fortschritt Checkliste', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(pr.pct) }, h('span', { class: 'pfill', style: 'width:' + pr.pct + '%' })),
           h('div', { class: 'cl-legend' }, Object.keys(TYP_LEGEND).map(k => h('span', {}, h('i', { class: 'cl-dot ' + k, 'aria-hidden': 'true' }), TYP_LEGEND[k]))),
-          ui.meeting ? null : h('p', { class: 'small muted', text: 'ClickUp-Status (Snapshot, zuletzt geprüft 27.09.2026, Liste „Messe Rotterdam 2027 – InfraTech“, nicht live): „CU“ an der Kategorie = Epic, am Punkt = zugeordnetes Einzelticket. ClickUp wird stillgelegt – gepflegt wird hier und im Team-Sheet.' }),
+          ui.meeting ? null : h('p', { class: 'small muted', text: 'ClickUp-Status (Snapshot, zuletzt geprüft 27.09.2026, Liste „Messe Rotterdam 2027 – InfraTech“, nicht live): „CU“ an der Kategorie = Epic, am Punkt = zugeordnetes Einzelticket. ClickUp wird stillgelegt – gepflegt wird in Jira (Projekt MAR) und hier.' }),
           ui.meeting ? null : h('div', { class: 'cl-kpibox' }, h('strong', { text: 'Kennzahlen & Budget 2027 (Quelle: Manus-Analyse, nicht separat nachgerechnet)' }), h('ul', {}, KPI_BOX.map(k => h('li', { text: k }))),
             h('div', { class: 'small muted', text: 'Quelle: MANUS_Stapeldownload_Infratec2027.zip, Datei „Projektgrundgerüst InfraTech 2027.md“ — von uns nicht separat nachgerechnet.' })),
           h('div', { class: 'tools' },
@@ -16495,12 +16759,46 @@ let shown = false, hideT = null;
   });
 })();
 
+/* ---- align-cols.js ---- */
+/* Feind Cockpit · Spalten auf Linie (16.10.2026): Steht neben einer Karte oder einer Kachelreihe eine zweite Spalte,
+   beginnt deren erster Kasten auf derselben Höhe wie die Karte bzw. die Kacheln. Nur wenn die Spalten nebeneinander stehen. */
+(function () {
+  const RULES = [
+    ['.gm-layout', ':scope > .stack:first-child .gm-map', ':scope > :last-child'],
+    ['.mp-wrap', ':scope > .mp-stage .gm-map', ':scope > .mp-side'],
+    ['.grid2', ':scope > div:not(.card) > h3:first-child + .strip', ':scope > .card:first-child']
+  ];
+  function run() {
+    for (const [wrap, refSel, colSel] of RULES) {
+      for (const w of document.querySelectorAll(wrap)) {
+        const ref = w.querySelector(refSel), col = w.querySelector(colSel);
+        if (!ref || !col) continue;
+        col.style.marginTop = '';
+        const rr = ref.getBoundingClientRect(), cr = col.getBoundingClientRect();
+        if (!rr.width || !cr.width) continue;
+        const side = cr.left >= rr.right - 1 || cr.right <= rr.left + 1;
+        const d = Math.round(rr.top - cr.top);
+        if (side && d > 0 && d < 120) col.style.marginTop = d + 'px';
+      }
+    }
+  }
+  let q = 0;
+  const sched = () => { if (q) return; q = requestAnimationFrame(() => { q = 0; run(); }); };
+  function start() {
+    const main = document.querySelector('main') || document.body;
+    new MutationObserver(muts => { if (muts.some(m => m.type === 'childList' && [...m.addedNodes].some(n => n.nodeType === 1 && !(n.closest && n.closest('.leaflet-container'))))) sched(); }).observe(main, { childList: true, subtree: true });
+    addEventListener('resize', sched, { passive: true });
+    sched();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+
 /* ---- app-init.js ---- */
 /* Feind Cockpit · Start: läuft als letztes Skript, nachdem alle Module registriert sind. */
 (function () {
   'use strict';
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => window.FC.app.boot());
-  else window.FC.app.boot();
+  else { try { window.FC.app.boot(); } catch (e) { console.error('[Feind Cockpit] Start fehlgeschlagen', e); const t = document.getElementById('toast'); if (t) { t.textContent = 'Start fehlgeschlagen. Bitte Seite neu laden (Strg + F5).'; t.hidden = false; } } }
 })();
 </script>
 

@@ -1,7 +1,7 @@
 /* ---- brennglas.js ---- */
 /* Feind Cockpit · Brennglas-PDF (Layout wie „Brennglas InfraTech 2027“, 01.10.2026): A4 hoch, Ränder 15 mm,
    grüner Balken oben, Titel 22 pt, Untertitel mit Datenstand, Kopffelder Datum/Teilnehmende/Protokoll,
-   Kennzahl-Kacheln, Tabellen mit Anthrazit-Kopf und Zebra, Fließtext 10 pt (nichts kleiner), ausfüllbare
+   Kennzahl-Kacheln, Tabellen mit Anthrazit-Kopf und Zebra, Fließtext 11 pt (nichts kleiner), ausfüllbare
    Felder (AcroForm) mit fest gezeichnetem Rahmen, Abschluss „Weitere Notizen (optional)“ und Freigabe.
    jsPDF wird erst beim ersten PDF von cdnjs geladen. Nur WinAnsi-Zeichen; Kontaktdaten werden entfernt.
    Farben: CI-Werte aus branding/feind-ci.tokens.json (Druck immer im hellen Schema). */
@@ -59,7 +59,7 @@
   /* ---------- Layout ---------- */
   const PT = 72 / 25.4;
   const C = { green: '#84bb20', anth: '#424e4e', red: '#e3000b', sig: '#b8000a', text: '#3c5457', muted: '#6b7575', line: '#d5dada', area: '#f2f4f4', white: '#ffffff' };
-  const FS = 10, LD = 13.5, P = 5;
+  const FS = 11, LD = 14.5, P = 5;
   const COLOR = { signal: C.sig, muted: C.muted, strong: C.anth };
 
   async function build(spec) {
@@ -273,4 +273,3 @@
 
   FC.brennglas = { build, loadLib, scrub, win, txt };
 })();
-

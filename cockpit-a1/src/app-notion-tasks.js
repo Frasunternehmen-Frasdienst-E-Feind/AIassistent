@@ -34,7 +34,7 @@
     const kind = sourceKind();
     const at = kind === 'live' ? nt.at : kind === 'snapshot' ? nt.snap.at : D.TASKS_STAND;
     const label = kind === 'live' ? 'Notion live' : kind === 'snapshot' ? 'Notion-Stand (Snapshot)' : 'Notfallstand, nicht aktuell';
-    const tip = kind === 'live' ? 'Die Aufgaben kommen direkt aus der Notion-Datenbank „Aufgaben InfraTech 2027“ (führende Liste) und werden jede Minute neu geladen.'
+    const tip = kind === 'live' ? 'Die Aufgaben kommen direkt aus der Notion-Datenbank „Aufgaben InfraTech 2027“ (Spiegel; führend ist Jira, Projekt MAR) und werden jede Minute neu geladen.'
       : kind === 'snapshot' ? 'Notion ist in dieser Ansicht nicht erreichbar. Angezeigt wird der zuletzt gespeicherte Notion-Stand (notion/tasks), nur lesend.'
         : 'Weder Notion noch ein gespeicherter Notion-Stand ist erreichbar. Angezeigt wird die beim Veröffentlichen eingebaute Liste vom ' + H.fmtD(D.TASKS_STAND) + '. Sie ist nicht aktuell; Änderungen bitte direkt in Notion.';
     return { kind, at, label, tip, count: app.tasks().length };
@@ -273,7 +273,7 @@
   // Im Cockpit angelegte Aufgaben, die (noch) nicht in Notion stehen.
   function pending() {
     if (nt.state !== 'live') return [];
-    return FC.model.allTasks([], S.data.tasks || []).filter(t => t.custom && !nt.byId.has(t.id));
+    return FC.model.allTasks([], S.data.tasks || []).filter(t => t.custom && t.notionPending !== false && !nt.byId.has(t.id));
   }
   let pushing = false;
   async function pushPending() {
@@ -340,4 +340,3 @@
   const origBoot = app.boot;
   app.boot = function () { const r = origBoot.apply(this, arguments); start(); return r; };
 })();
-
