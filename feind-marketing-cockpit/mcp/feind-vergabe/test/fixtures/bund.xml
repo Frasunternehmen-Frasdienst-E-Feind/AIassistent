@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>service.bund.de - öffentliche Ausschreibungen</title>
+    <link>http://www.service.bund.de/ausschreibungen</link>
+    <description>RSS-Feed mit aktuellen Ausschreibungen der Vergabestellen der Bundes-, Landes- und Kommunalverwaltung.</description>
+    <language>de-de</language>
+    <pubDate>Wed, 30 Sep 2026 13:00:58 +0200</pubDate>
+    <lastBuildDate>Wed, 30 Sep 2026 13:00:58 +0200</lastBuildDate>
+    
+    
+    <generator>Government Site Builder (GSB7.0)</generator>
+    <image>
+      <url>http://www.service.bund.de/cae/servlet/contentblob/546/normal/66/logo_a.jpg</url>
+      <title>service.bund.de - öffentliche Ausschreibungen</title>
+      <link>http://www.service.bund.de/ausschreibungen</link>
+    </image>
+    <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+    <ttl>60</ttl>
+    <item>
+<title>Lieferung von Netzwerkkomponenten</title>
+<link>https://www.service.bund.de/IMPORTE/Ausschreibungen/editor/Landesrechnungshof-Mecklenburg-Vorpommern/2026/09/6654622.html#track=feed-callforbids</link>
+<description>
+<![CDATA[
+   Erf&uuml;llungsort: <strong>19059 Schwerin</strong>
+<br />Vergabestelle: <strong>Landesrechnungshof Mecklenburg-Vorpommern</strong><br />
+<br />Angebotsfrist:  <strong>23.10.2026 00:00</strong> <br />Veröffentlichungsende:  <strong>11.10.2026 00:00</strong>  <br />
+<br />
+]]>
+</description>
+<pubDate>Wed, 30 Sep 2026 10:00:00 +0200</pubDate>
+<guid>https://www.service.bund.de/IMPORTE/Ausschreibungen/editor/Landesrechnungshof-Mecklenburg-Vorpommern/2026/09/6654622.html</guid>
+    </item>
+<item>
+<title>DLR Braunschweig Neubau Werkschutz, Warenleit- und Poststelle - BNB-Koordinator</title>
+<link>https://www.service.bund.de/IMPORTE/Ausschreibungen/editor/Deutsches-Zentrum-fuer-Luft-und-Raumfahrt-e-V/2026/09/6654555.html#track=feed-callforbids</link>
+<description>
+<![CDATA[
+   Erf&uuml;llungsort: <strong> Braunschweig</strong>
+<br />Vergabestelle: <strong>DLR e. V. - TI ZVM</strong><br />
+<br />Angebotsfrist: <br />Veröffentlichungsende:  <strong>06.10.2026 14:00</strong>  <br />
+<br />
+]]>
+</description>
+<pubDate>Wed, 30 Sep 2026 09:30:00 +0200</pubDate>
+<guid>https://www.service.bund.de/IMPORTE/Ausschreibungen/editor/Deutsches-Zentrum-fuer-Luft-und-Raumfahrt-e-V/2026/09/6654555.html</guid>
+    </item>
+<item>
+<title>19-0739-26 Neues Rathaus Sanierung Ratssaal-K&#228;ltetechnik</title>
+<link>https://www.service.bund.de/IMPORTE/Ausschreibungen/editor/Landeshauptstadt-Hannover/2026/09/6654470.html#track=feed-callforbids</link>
+<description>
+<![CDATA[
+   Erf&uuml;llungsort: <strong> Hannover</strong>
+<br />Vergabestelle: <strong>Landeshauptstadt Hannover Fachbereich Geb&#228;udemanagement</strong><br />
+<br />Angebotsfrist:  <strong>09.11.2026 10:00</strong> <br />Veröffentlichungsende:  <strong>09.11.2026 10:00</strong>  <br />
+<br />
+]]>
+</description>
+<pubDate>Wed, 30 Sep 2026 08:15:00 +0200</pubDate>
+<guid>https://www.service.bund.de/IMPORTE/Ausschreibungen/editor/Landeshauptstadt-Hannover/2026/09/6654470.html</guid>
+    </item>
+</channel></rss>
