@@ -50,6 +50,11 @@ async function open({ db = {}, storage = {} } = {}) {
 }
 
 const tileRequests = (ext, host) => ext.filter(u => u.includes(host));
+// Das <img> einer Kachel hängt schon im DOM, bevor ihr Request die Route erreicht: unter Last kurz warten.
+async function waitTiles(ext, host) {
+  for (let i = 0; i < 50 && !tileRequests(ext, host).length; i++) await new Promise(r => setTimeout(r, 100));
+  return tileRequests(ext, host);
+}
 
 test('ohne Einwilligung: keine externen Requests, Umrisskarte mit Legende', async () => {
   const { page, ext, errors, ctx } = await open();
@@ -80,7 +85,7 @@ test('Einwilligung erteilt: Kacheln von OSM, Namensnennung sichtbar, Wahl bleibt
   await page.getByRole('button', { name: 'Straßenkarte laden' }).click();
   await page.getByRole('button', { name: 'Einwilligen und laden' }).click();
   await page.locator('.leaflet-tile-pane img').first().waitFor({ state: 'attached' });
-  assert.ok(tileRequests(ext, 'tile.openstreetmap.org').length > 0);
+  assert.ok((await waitTiles(ext, 'tile.openstreetmap.org')).length > 0);
   assert.match(await page.locator('.gm-map .leaflet-control-attribution').innerText(), /© OpenStreetMap-Mitwirkende/);
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.locator('.tab', { hasText: 'Ausschreibungen' }).click();
@@ -113,7 +118,7 @@ test('konfigurierter EU-Anbieter: Dialog nennt ihn, Kacheln kommen von seinem Ho
   assert.match(await dlg.innerText(), /Testanbieter EU/);
   await dlg.getByRole('button', { name: 'Einwilligen und laden' }).click();
   await page.locator('.leaflet-tile-pane img').first().waitFor({ state: 'attached' });
-  assert.ok(tileRequests(ext, 'tiles.example.eu').length > 0);
+  assert.ok((await waitTiles(ext, 'tiles.example.eu')).length > 0);
   assert.equal(tileRequests(ext, 'openstreetmap.org').length, 0);
   const attr = await page.locator('.gm-map .leaflet-control-attribution').innerText();
   assert.match(attr, /OpenStreetMap-Mitwirkende/);
@@ -130,10 +135,17 @@ test('Klick auf ein Bundesland setzt den Regionsfilter', async () => {
   await ctx.close();
 });
 
-test('Pins werden geclustert, Standorte bleiben einzeln sichtbar', async () => {
+test('Übersicht: je Bundesland ein Kreis mit Anzahl; Klick zoomt hinein und zeigt die einzelnen Standorte', async () => {
   const { page, ctx } = await open();
-  assert.ok(await page.locator('.gm-map .marker-cluster').count() >= 1, 'mindestens ein Cluster');
-  assert.equal(await page.locator('.gm-map .gm-home').count(), 2, 'Lübben und Wittenburg');
+  const bubbles = page.locator('.gm-map .gm-sb-wrap');
+  assert.equal(await bubbles.count(), 4, 'Sachsen, Brandenburg, Mecklenburg-Vorpommern, Hamburg');
+  assert.equal(await page.locator('.gm-map .gm-sb-wrap[title^="Sachsen:"]').innerText(), '3');
+  assert.equal(await page.locator('.gm-map .marker-cluster, .gm-map .gm-pin-wrap').count(), 0, 'in der Übersicht keine Einzelpins');
+  assert.equal(await page.locator('.gm-map .gm-home').count(), 2, 'Lübben und Wittenburg bleiben sichtbar');
+  await page.locator('.gm-map .gm-sb-wrap[title^="Sachsen:"]').click();
+  await page.waitForFunction(() => document.querySelector('.gm-map').dataset.mode === 'detail');
+  assert.equal(await bubbles.count(), 0);
+  assert.ok(await page.locator('.gm-map .marker-cluster, .gm-map .gm-pin-wrap').count() >= 1, 'Standorte nach dem Hineinzoomen');
   await ctx.close();
 });
 

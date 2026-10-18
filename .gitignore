@@ -32,3 +32,6 @@ dist/
 
 # Node-Abhängigkeiten (npm install)
 node_modules/
+
+# Messwerte des visuellen Umbaus (Cockpit) – versioniert
+!messe/rotterdam-2027/umbau/*.json
