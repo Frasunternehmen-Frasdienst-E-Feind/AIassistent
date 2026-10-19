@@ -3,16 +3,12 @@
 Zentrale, konsolidierte Planung für den Messeauftritt der Fräsdienst-Service E. Feind GmbH
 auf der **InfraTech 2027, Rotterdam Ahoy, 12.–15. Januar 2027**.
 
-> **Hinweis (28.09.2026):** Das InfraTech-Cockpit ist im konsolidierten **Feind Cockpit** aufgegangen
-> (`cockpit/Feind-Cockpit.html`, Welt „InfraTech 2027“). `infratech-2027-liste.html` bleibt als Referenz v3
-> erhalten und wird nicht weiterentwickelt. Schema: `cockpit/docs/SCHEMA.md`.
-
 ## Inhalt dieses Ordners
 
 | Datei | Zweck |
 |---|---|
 | `feind-cockpit.html` | Altstand v1.1 (Artefakt `4zX58…`, inzwischen gelöscht). Enthält die Erstfassung des Reiters „Checkliste 26→27“. |
-| `feind-cockpit-v3.html` | **Quelle des führenden Live-Cockpits** „Feind Cockpit (Copy)“ (v3.1, Leaflet-Karte): Kartenansicht mit Einwilligung, konfigurierbarem Kachelanbieter, Clustering, lokal eingebetteter Schrift. Doku: **`KARTE.md`**, Tests: `test/` (Unit) und `e2e/` (Playwright). |
+| `feind-cockpit-v3.html` | **Quelle des führenden Live-Cockpits** „Feind Cockpit“ (ab 07.10.2026; vorher „Feind Cockpit (Copy)“) (v3.1, Leaflet-Karte): Kartenansicht mit Einwilligung, konfigurierbarem Kachelanbieter, Clustering, lokal eingebetteter Schrift. Doku: **`KARTE.md`**, Tests: `test/` (Unit) und `e2e/` (Playwright). |
 | `infratech-2027-liste.html` | Vorgängerstand des Cockpits (v2, Altstand – nicht mehr live). Aufgaben, Fristen, Budget, KPIs, Lessons Learned, Faktencheck, Wissensbasis. Kategorisiert, filterbar, mit Fortschritt und Terminwarnungen. |
 | `MASTER-TODO.md` | Vollständige, kategorisierte Aufgabenliste als versionierbarer Text (Grundlage des Cockpits). |
 | `KATEGORISIERUNG-MANUS.md` | Kategorisierung der MANUS-Export-Inhalte + Plan, wie sie die ToDo-Liste ergänzen. |
@@ -33,7 +29,6 @@ Einstieg/Überblick über das Gesamtsystem: **`SYSTEM-UEBERSICHT.md`**.
 - Datenhaltung: geteilte Artefakt-Datenbank (`db`): `tasks/<id>` (Aufgaben), `checkliste/<Kategorie-Punkt>` = `{ status, rolle, frist, budget, beschluss, notiz }` (Checkliste 26→27), Alt-Bestand `overrides/<taskId>`.
   Fällt die Datenbank aus, speichert die Seite pro Gerät lokal (localStorage).
 - Der eingebettete Aufgabenstand im HTML ist Erstbefüllung und Notfall-Anzeige.
-- **A1-Funktionen übernommen (08.10.2026):** Aktionsleiste je Reiter (PDF, Druck, CSV, Kalender, Kopieren), Brennglas-PDF (jsPDF 4.2.1 mit SRI), Erläuterungs-Bubbles, Notion-Stand im Kopf, Filter und Admin-Sicherung sowie die Notion-Korrekturen aus PR #36 (Schreibvorgänge je Aufgabe nacheinander, „Blockiert durch“ beim Anlegen). Quelle der Module: `../../cockpit-a1/src/`; `test/a1-module.test.mjs` prüft, dass sie unverändert eingebettet sind. Vor dem Veröffentlichen: Capability `downloads` und die drei Notion-Werkzeuge im Manifest deklarieren.
 
 ## Corporate Design
 

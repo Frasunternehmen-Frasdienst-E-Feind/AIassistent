@@ -3,7 +3,8 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-export const PAGE = fileURLToPath(new URL('../feind-cockpit-v3.html', import.meta.url));
+// Führend ist seit 14.10.2026 „Feind Cockpit“ (TfuzbG) = cockpit-a1/Feind-Cockpit-A1.html; v3 ist Archiv.
+export const PAGE = fileURLToPath(new URL('../../../cockpit-a1/Feind-Cockpit-A1.html', import.meta.url));
 
 export function loadModule(name) {
   const html = readFileSync(PAGE, 'utf8');
