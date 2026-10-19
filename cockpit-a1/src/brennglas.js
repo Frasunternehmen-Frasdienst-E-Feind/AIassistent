@@ -58,7 +58,7 @@
 
   /* ---------- Layout ---------- */
   const PT = 72 / 25.4;
-  const C = { green: '#84bb20', anth: '#424e4e', red: '#e3000b', sig: '#b8000a', text: '#3c5457', muted: '#6b7575', line: '#d5dada', area: '#f2f4f4', white: '#ffffff' };
+  const C = { green: '#84bb20', anth: '#424e4e', red: '#e3000b', sig: '#b8000a', text: '#3c5457', muted: '#5f6969', line: '#d5dada', area: '#f2f4f4', white: '#ffffff' };
   const FS = 11, LD = 14.5, P = 5;
   const COLOR = { signal: C.sig, muted: C.muted, strong: C.anth };
 
