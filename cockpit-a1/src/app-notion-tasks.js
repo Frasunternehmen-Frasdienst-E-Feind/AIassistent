@@ -27,8 +27,26 @@
     nt.byId = new Map(tasks.map(t => [t.id, t]));
     nt.dupes = dupes || [];
   }
-  // Aufgaben-Dokumente fürs Modell: Speicher zuerst, Notion zuletzt (Notion gewinnt je Feld).
-  app.taskDocs = () => (S.data.tasks || []).concat(nt.tasks);
+  // Quelle der Aufgabenliste: Notion live, sonst Notion-Stand (notion/tasks), sonst eingebauter Notfallstand.
+  // Notion-Daten und Notfallstand werden nie gemischt.
+  const sourceKind = () => (nt.state === 'live' ? 'live' : nt.snap && Array.isArray(nt.snap.tasks) && nt.snap.tasks.length ? 'snapshot' : 'notfall');
+  app.taskSource = function () {
+    const kind = sourceKind();
+    const at = kind === 'live' ? nt.at : kind === 'snapshot' ? nt.snap.at : D.TASKS_STAND;
+    const label = kind === 'live' ? 'Notion live' : kind === 'snapshot' ? 'Notion-Stand (Snapshot)' : 'Notfallstand, nicht aktuell';
+    const tip = kind === 'live' ? 'Die Aufgaben kommen direkt aus der Notion-Datenbank „Aufgaben InfraTech 2027“ (führende Liste) und werden jede Minute neu geladen.'
+      : kind === 'snapshot' ? 'Notion ist in dieser Ansicht nicht erreichbar. Angezeigt wird der zuletzt gespeicherte Notion-Stand (notion/tasks), nur lesend.'
+        : 'Weder Notion noch ein gespeicherter Notion-Stand ist erreichbar. Angezeigt wird die beim Veröffentlichen eingebaute Liste vom ' + H.fmtD(D.TASKS_STAND) + '. Sie ist nicht aktuell; Änderungen bitte direkt in Notion.';
+    return { kind, at, label, tip, count: app.tasks().length };
+  };
+  app.taskSeed = () => (sourceKind() === 'notfall' ? D.TASKS : []);
+  // Aufgaben-Dokumente fürs Modell: Speicher zuerst, Notion zuletzt (Notion gewinnt je Feld). Mit Notion-Daten nur die
+  // Speicher-Dokumente, die zu einer Notion-Aufgabe gehören (Links, Anhänge) oder im Cockpit neu angelegt wurden.
+  app.taskDocs = function () {
+    const local = S.data.tasks || [];
+    if (sourceKind() === 'notfall') return local;
+    return local.filter(d => nt.byId.has(d.id || d._id) || d.custom).concat(nt.tasks);
+  };
   app.notionLinked = t => !!(t && t._nurl);
   app.notionLive = () => nt.state === 'live';
 
@@ -111,9 +129,9 @@
   app.notionReload = () => load(true);
 
   /* ---------- Schreiben ---------- */
-  const show = (k, v) => (k === 'status' ? N.STATUS[v] || v : k === 'archived' ? (v ? 'ja' : 'nein') : k === 'due' ? (v ? H.fmtD(v) : 'ohne Termin') : H.str(v) || 'leer');
+  const show = (k, v) => (k === 'owner' ? ((D.ROLES.find(x => x.key === v) || {}).label || H.str(v) || 'leer') : k === 'status' ? N.STATUS[v] || v : k === 'archived' ? (v ? 'ja' : 'nein') : k === 'due' ? (v ? H.fmtD(v) : 'ohne Termin') : H.str(v) || 'leer');
   function findTask(id) {
-    return app.tasks().concat(FC.model.allTasks(D.TASKS, app.taskDocs(), true)).find(t => t.id === id) || null;
+    return app.tasks().concat(app.archivedTasks()).find(t => t.id === id) || null;
   }
   function roleLabel(owner) {
     const r = D.ROLES.find(x => x.key === owner);
@@ -174,6 +192,8 @@
     finally { nt.busy--; }
   }
 
+  // Alle Aufgaben-Schreibvorgänge (Liste, Dialog, Meeting-Modus) laufen hier durch.
+  const origPatch = app.cmd.tasks.patch;
   // Schreibvorgänge je Aufgabe strikt nacheinander: Eine zweite Änderung startet erst, wenn die erste
   // (Neu-Lesen, Konfliktprüfung, Update) fertig ist – sonst könnte der ältere Wert zuletzt ankommen.
   const queues = new Map();
@@ -184,8 +204,6 @@
     return run;
   }
 
-  // Alle Aufgaben-Schreibvorgänge (Liste, Dialog, Meeting-Modus) laufen hier durch.
-  const origPatch = app.cmd.tasks.patch;
   app.cmd.tasks.patch = function (id, patch) { return serial(id, () => patchTask(id, patch)); };
   async function patchTask(id, patch) {
     const cur = findTask(id);
@@ -204,6 +222,10 @@
       return ok;
     }
     const isNew = !cur && patch && patch.custom && H.str(patch.title);
+    if (cur && !cur.custom && sourceKind() === 'notfall') {
+      app.toast('Notfallstand, nicht aktuell: Notion ist nicht erreichbar. Änderungen bitte direkt in Notion vornehmen.', true);
+      return false;
+    }
     const ok = await origPatch(id, isNew ? Object.assign({}, patch, { notionPending: true }) : patch);
     if (ok && isNew && nt.state === 'live') {
       if (await createNotion(id, patch)) origPatch(id, { notionPending: false });
@@ -212,10 +234,46 @@
     return ok;
   }
 
+  // Mehrere Aufgaben in einem Durchgang (PDF-Rücklauf): einmal frisch lesen, in Notion inzwischen geänderte Felder
+  // mit Rückfrage, dann je Aufgabe update_properties. items: [{ cur, fields }]; cur ist der angezeigte Stand.
+  app.notionWriteMany = async function (items) {
+    const mcp = await useMcp();
+    if (!mcp || nt.state !== 'live') { app.toast('Notion ist nicht verbunden: nichts geschrieben.', true); return { ok: 0, failed: items.length, skipped: 0 }; }
+    nt.busy++;
+    try {
+      try { const { rows, at } = await fetchAll(mcp, true); apply(rows, at); }
+      catch (e) { app.toast('Notion-Stand konnte nicht geprüft werden: ' + errText((e && e.code) || 'upstream_error'), true); return { ok: 0, failed: items.length, skipped: 0 }; }
+      const todo = [], gone = [], lines = [];
+      for (const it of items) {
+        const fresh = nt.byId.get(it.cur.id);
+        if (!fresh || !fresh._nurl) { gone.push(it); continue; }
+        const cf = N.conflicts(it.cur, fresh, it.fields);
+        cf.forEach(k => lines.push('„' + H.str(fresh.title).slice(0, 60) + '“ ' + N.LABEL[k] + ': jetzt „' + show(k, fresh[k]) + '“, vorher „' + show(k, it.cur[k]) + '“'));
+        todo.push({ fresh, fields: it.fields });
+      }
+      if (lines.length) {
+        const ok = await app.confirm({ title: 'In Notion inzwischen geändert', text: lines.slice(0, 8).join(' · ') + (lines.length > 8 ? ' · …' : '') + '. Mit den Werten aus dem PDF überschreiben?', confirmLabel: 'Überschreiben' });
+        if (!ok) { app.refresh(); return { ok: 0, failed: 0, skipped: items.length }; }
+      }
+      let ok = 0, failed = gone.length;
+      for (const t of todo) {
+        try {
+          await mcp.callTool(CFG.server, CFG.update, { page_id: N.pageId(t.fresh._nurl), command: 'update_properties', properties: N.toProps(t.fields, D.ROLES) }, { cache: false });
+          Object.assign(t.fresh, t.fields);
+          ok++;
+        } catch (e) { failed += todo.length - ok; writeFailed(e, 'Die Übernahme'); break; }
+      }
+      setTasks(nt.tasks.slice(), nt.dupes);
+      if (mcp.invalidate) mcp.invalidate(CFG.server, CFG.read).catch(() => {});
+      app.refresh();
+      return { ok, failed, skipped: 0 };
+    } finally { nt.busy--; }
+  };
+
   // Im Cockpit angelegte Aufgaben, die (noch) nicht in Notion stehen.
   function pending() {
     if (nt.state !== 'live') return [];
-    return FC.model.allTasks(D.TASKS, S.data.tasks || []).filter(t => t.custom && !nt.byId.has(t.id));
+    return FC.model.allTasks([], S.data.tasks || []).filter(t => t.custom && !nt.byId.has(t.id));
   }
   let pushing = false;
   async function pushPending() {
@@ -236,13 +294,27 @@
   app.notionTaskStatus = function () {
     const cls = nt.state === 'live' ? 'live' : nt.state === 'warn' ? 'warn' : nt.state === 'err' ? 'err' : '';
     const pend = pending();
-    return h('div', { class: 'sync-line ' + cls, role: 'status', id: 'it-notion' },
+    const src = app.taskSource();
+    const when = src.kind === 'notfall' ? 'Stand ' + H.fmtD(src.at) : 'Stand ' + fmtAt(src.at);
+    const detail = src.kind !== 'live' || /fehlgeschlagen/.test(nt.text) ? nt.text : '';
+    return h('div', { class: 'sync-line ' + (src.kind === 'notfall' ? 'err' : cls), role: 'status', id: 'it-notion' },
       h('span', { class: 'dot', 'aria-hidden': 'true' }),
-      h('span', { text: nt.text || 'Notion-Anbindung wird geprüft …' }),
+      h('span', { class: 'pill ' + (src.kind === 'live' ? 'ready' : src.kind === 'snapshot' ? 'wait' : 'block'), id: 'it-src', tabindex: '0', 'data-tip': src.tip }, 'Quelle: ' + src.label),
+      h('span', { class: 'num', id: 'it-src-meta', text: when + ' · ' + src.count + ' Aufgaben' }),
+      detail ? h('span', { class: 'muted', text: detail }) : null,
       nt.dupes.length ? h('span', { class: 'pill flag', text: 'Doppelte Cockpit-ID in Notion: ' + Array.from(new Set(nt.dupes)).join(', ') }) : null,
       pend.length && !app.ro() ? h('button', { class: 'btn small', type: 'button', disabled: pushing, 'aria-busy': String(pushing), onclick: pushPending }, pushing ? 'Wird übertragen …' : pend.length + ' nach Notion übertragen') : null,
-      inViewer() ? h('button', { class: 'linkbtn', type: 'button', onclick: () => load(true) }, 'Neu laden') : null,
+      inViewer() ? h('button', { class: 'linkbtn', type: 'button', 'data-tip': 'Lädt die Aufgaben sofort neu aus Notion.', onclick: () => load(true) }, 'Neu laden') : null,
       h('a', { href: CFG.db, target: '_blank', rel: 'noopener', class: 'small' }, 'In Notion öffnen'));
+  };
+  // Sichtbarer Hinweis, solange nur die eingebaute Liste angezeigt wird.
+  app.taskFallbackBanner = function () {
+    const src = app.taskSource();
+    if (src.kind !== 'notfall') return null;
+    return h('div', { class: 'banner crit', role: 'status', id: 'it-notfall' }, h('div', { class: 'txt' },
+      h('strong', { text: 'Notfallstand, nicht aktuell. ' }),
+      'Notion ist nicht erreichbar und es liegt kein gespeicherter Notion-Stand vor. Angezeigt wird die eingebaute Liste vom ' + H.fmtD(D.TASKS_STAND) + '; erledigte Punkte und neue Aufgaben fehlen. Änderungen bitte direkt in Notion.'),
+      h('a', { class: 'btn small', href: CFG.db, target: '_blank', rel: 'noopener noreferrer' }, 'Notion öffnen'));
   };
 
   /* ---------- Start ---------- */

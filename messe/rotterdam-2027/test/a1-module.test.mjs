@@ -2,7 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-// Aus A1 übernommene Module müssen unverändert in v3 stecken (Quelle: cockpit-a1/src).
+// v3 („Feind Cockpit“, TfuzbG) ist seit 18.10.2026 führend (Entscheidung David); die A1-Kopien in
+// cockpit-a1/src und Feind-Cockpit-A1.html folgen v3 und müssen mit v3 übereinstimmen.
 const html = readFileSync(new URL('../feind-cockpit-v3.html', import.meta.url), 'utf8');
 
 for (const f of ['notion-tasks.js', 'app-notion-tasks.js', 'brennglas.js']) {
