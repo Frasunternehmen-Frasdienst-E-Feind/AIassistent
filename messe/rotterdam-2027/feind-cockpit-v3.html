@@ -16018,7 +16018,7 @@ let shown = false, hideT = null;
     q.addEventListener('input', () => { st.q = q.value; const b = document.getElementById('fs-remote'); if (b) b.disabled = !inViewer() || !st.q.trim(); });
     q.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); if (st.files) searchLocal(); if (inViewer()) searchRemote(); } });
     return h('div', { class: 'section' }, h('h3', { text: 'Dateien suchen' }),
-      h('div', { class: 'field grow' }, h('label', { for: 'fs-q', text: 'Suchbegriff' }), q),
+      h('div', { class: 'field' }, h('label', { for: 'fs-q', text: 'Suchbegriff' }), q),
       h('div', { class: 'grid2' }, localPart(), remotePart()),
       h('p', { class: 'muted small', text: 'Treffer können personenbezogene Dateien enthalten: Solche nur mit dokumentierter Einwilligung ablegen.' }));
   };
@@ -16270,7 +16270,8 @@ let shown = false, hideT = null;
         h('div', { class: 'field' }, h('span', { class: 'label', text: 'Ansicht' }), h('div', { class: 'row', role: 'group', 'aria-label': 'Ansicht' },
           h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(MP.view === 'karte'), onclick: () => { MP.view = 'karte'; app.refresh(); } }, app.ico('karte'), 'Karte'),
           h('button', { class: 'btn small', type: 'button', 'aria-pressed': String(MP.view === 'liste'), onclick: () => { MP.view = 'liste'; app.refresh(); } }, app.ico('liste'), 'Liste'))));
-      const all = visible(points()).filter(p => p.kind !== 'home');
+      // Events ohne findbaren Ort (z. B. Rotterdam Ahoy) bleiben aus der Liste: „Setzen“ ist für sie nicht sinnvoll (Wunsch David 19.10.2026).
+      const all = visible(points()).filter(p => p.kind !== 'home' && !(p.kind === 'event' && !hasPos(p)));
       const list = h('div', { class: 'tbl-wrap' }, h('table', { class: 'data' }, h('caption', { class: 'sr', text: 'Projekte, Referenzen und Events' }),
         h('thead', {}, h('tr', {}, ['Name', 'Ort', 'Jahr', 'Leistungen', 'Status', 'Position', ''].map(t => h('th', { scope: 'col', text: t })))),
         h('tbody', {}, all.sort((a, b) => (b.year || 0) - (a.year || 0) || a.name.localeCompare(b.name, 'de')).map(p => h('tr', {},

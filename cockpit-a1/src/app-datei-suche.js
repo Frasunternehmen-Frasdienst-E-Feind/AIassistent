@@ -112,7 +112,7 @@
     q.addEventListener('input', () => { st.q = q.value; const b = document.getElementById('fs-remote'); if (b) b.disabled = !inViewer() || !st.q.trim(); });
     q.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); if (st.files) searchLocal(); if (inViewer()) searchRemote(); } });
     return h('div', { class: 'section' }, h('h3', { text: 'Dateien suchen' }),
-      h('div', { class: 'field grow' }, h('label', { for: 'fs-q', text: 'Suchbegriff' }), q),
+      h('div', { class: 'field' }, h('label', { for: 'fs-q', text: 'Suchbegriff' }), q),
       h('div', { class: 'grid2' }, localPart(), remotePart()),
       h('p', { class: 'muted small', text: 'Treffer können personenbezogene Dateien enthalten: Solche nur mit dokumentierter Einwilligung ablegen.' }));
   };
