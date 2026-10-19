@@ -1,4 +1,4 @@
-# Kartenansicht im Feind Cockpit (v3.1)
+# Kartenansicht im Feind Cockpit (v3.2)
 
 Gilt für `feind-cockpit-v3.html`, das ist die Quelle des Artefakts „Feind Cockpit (Copy)“
 (https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i). Betroffen sind der Reiter
@@ -55,14 +55,31 @@ Plus/Minus und Pfeiltasten). Pins mit Aktion sind per Tab erreichbar und lösen 
 
 ## Kachelanbieter wechseln (ohne Code)
 
-Admin › Konfiguration › **Funktionen und Quellen** › Karte „Straßenkarte: Kachelanbieter“:
+Admin › Konfiguration › **Funktionen und Quellen** › Karte „Straßenkarte: Kachelanbieter“.
 
-| Feld | Beispiel |
+**Schnellweg über die Vorlage:** Unter „Vorlage (EU-Endpunkt)“ den Eintrag „Stadia Maps, EU-Endpunkt
+(Alidade Smooth)“ wählen und auf „Vorlage übernehmen“ klicken. Danach den API-Key an die Kachel-URL
+anhängen. Solange er fehlt, meldet die Karte „API-Key fehlt in der Kachel-URL“.
+
+| Feld | Vorlage Stadia Maps (EU) |
 |---|---|
-| Anbietername | MapTiler |
-| Kachel-URL | `https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=…` |
-| Namensnennung | `© MapTiler` |
-| Link Datenschutzhinweise | `https://www.maptiler.com/privacy-policy/` |
+| Anbietername | Stadia Maps (EU) |
+| Kachel-URL | `https://tiles-eu.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=…` |
+| Namensnennung | `© Stadia Maps © OpenMapTiles` (OSM wird automatisch ergänzt) |
+| Link Datenschutzhinweise | `https://stadiamaps.com/privacy/privacy-policy/` |
+
+Warum Stadia: Stadia dokumentiert EU-only-Endpunkte mit Servern in Frankfurt und Paris
+([docs.stadiamaps.com/eu-gdpr-endpoints](https://docs.stadiamaps.com/eu-gdpr-endpoints/), abgerufen am
+01.10.2026). Die Karte erkennt diesen Host und zeigt im Admin-Bereich und im Einwilligungsdialog
+„EU-Endpunkt“ an. Bei jedem anderen Host steht dort „EU-Verarbeitung nicht belegt, Anbieter prüfen“.
+
+- **Kosten:** Stadia unterscheidet kommerzielle und nicht-kommerzielle Nutzung. Den passenden Tarif
+  vor dem Live-Betrieb prüfen und von David freigeben lassen.
+  `{r}` lädt auf Retina-Displays die @2x-Kacheln.
+- **MapTiler:** In der Dokumentation ist nur `api.maptiler.com` beschrieben. Den in der
+  Arbeitsanweisung genannten Endpunkt `api.maptiler.eu` konnte ich nicht belegen, deshalb gibt es
+  dafür keine Vorlage. Wer MapTiler einsetzen will, trägt die URL von Hand ein und klärt den
+  Verarbeitungsort per AVV.
 
 Dann veröffentlichen. Gespeichert wird in `admin/config` → `mapTiles`, bereinigt durch
 `FC.config.merge()`. Prüfregeln stehen in `FC.geoLogic.provider()`: nur `https`, Platzhalter
@@ -81,10 +98,10 @@ Hinweise:
 
 | Modul in `feind-cockpit-v3.html` | Aufgabe |
 |---|---|
-| `geo-logic.js` | reine Funktionen: `classes()`, `provider()`, `consent.read/grant/setOn` |
+| `geo-logic.js` | reine Funktionen: `classes()`, `provider()` (inkl. `eu`, `warning`), `presets()`, `consent.read/grant/setOn` |
 | `geomap.js` | `app.geoMap(opts)`: Leaflet, Einwilligungsdialog, Legende, Cluster, Lazy-Init per IntersectionObserver, Ladehinweis (`aria-busy`) |
 | `config.js` | `mapTiles` in `merge()` |
-| `app-admin.js` | Karte „Straßenkarte: Kachelanbieter“ |
+| `app-admin.js` | Karte „Straßenkarte: Kachelanbieter“ mit Vorlage „Stadia Maps, EU-Endpunkt“ |
 | `app-marketing.js` | `regionMap()`: liefert Zählung, Auswahl und Pins an `app.geoMap` |
 
 ## Tests
@@ -113,3 +130,22 @@ Chromium `localStorage` gelegentlich beim Neuladen. Jeder Request an einen ander
 - Cluster und Choropleth werden bei jedem Filterwechsel neu aufgebaut, wie bisher bei `app.refresh()`.
   Bei Hunderten Pins ist das unkritisch (`chunkedLoading`). Bei vierstelligen Mengen sollte man die
   Karte zwischen Renderläufen wiederverwenden.
+
+## Abgleich mit der Arbeitsanweisung „Kartenansicht (Leaflet)“ vom 01.10.2026
+
+| Akzeptanzkriterium | Stand | Nachweis |
+|---|---|---|
+| Keine externen Requests ohne Einwilligung | erfüllt | E2E „ohne Einwilligung: keine externen Requests“ |
+| Nach Einwilligung EU-Anbieter oder self-hosted | technisch erfüllt (Vorlage Stadia EU), **Entscheidung offen** | E2E „EU-Endpunkt Stadia“; Live-Betrieb braucht Key und Tarif |
+| „© OpenStreetMap-Mitwirkende“ sichtbar | erfüllt | Unit „OSM-Namensnennung ist Pflicht“, E2E Namensnennung |
+| Choropleth über alle 16 Länder | erfüllt | Unit Farbklassen |
+| Pins inkl. Lübben und Wittenburg | erfüllt | E2E „Pins werden geclustert, Standorte bleiben einzeln“ |
+| Klick auf Bundesland setzt Regionsfilter | erfüllt | E2E Regionsfilter |
+| Zoom per Mausrad, Touch, +/−, Tastatur | erfüllt | E2E Tastatur, Leaflet-Standard |
+| Layer-Toggle mit gespeicherter Wahl | erfüllt | E2E „Wahl bleibt nach Neuladen“ |
+| Marker-Clustering aktiv | erfüllt | E2E Cluster |
+| Datenschutzerklärung um Kachelanbieter ergänzt | erfüllt als Entwurf (Bericht v1.4, Abschnitt 12.1) | **Bitte Rechtsabteilung prüfen** |
+| Tests vorhanden und grün | erfüllt | `npm run test:cockpit`, `npm run test:cockpit:e2e` |
+| Dokumentation aktualisiert | erfüllt | diese Datei |
+
+Self-Hosting (PMTiles/OpenMapTiles) bleibt außerhalb des Artefakts, siehe Hinweise oben.
