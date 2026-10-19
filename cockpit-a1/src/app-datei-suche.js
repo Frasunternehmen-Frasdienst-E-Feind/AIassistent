@@ -35,18 +35,22 @@
     }
     st.local = hits; st.busyLocal = false; app.refresh();
   }
-  function pickFolder() {
-    const inp = h('input', { type: 'file', multiple: true, class: 'kb-pick', tabindex: '-1', 'aria-hidden': 'true' });
-    inp.setAttribute('webkitdirectory', '');
-    inp.addEventListener('change', () => {
-      st.files = Array.from(inp.files || []);
-      st.folder = st.files.length ? String(st.files[0].webkitRelativePath || '').split('/')[0] : '';
-      inp.remove();
-      if (st.q.trim()) searchLocal(); else app.refresh();
-    });
-    inp.addEventListener('cancel', () => inp.remove());
-    document.body.append(inp);
-    inp.click();
+  // Fester <label> um ein bleibendes Dateifeld (wie „Ordner wählen“ im Ablagefeld): Ein per Skript erzeugtes und
+  // angeklicktes Feld öffnet in der Claude-App und in Safari keinen Dialog (Fehlerbild 19.10.2026: Knopf reagiert nicht).
+  function pickButton(id, dir, label, onFiles) {
+    const inp = h('input', { type: 'file', multiple: true, class: 'file-native', id: 'fi-' + id, tabindex: '-1', 'aria-hidden': 'true' });
+    if (dir) inp.setAttribute('webkitdirectory', '');
+    inp.addEventListener('change', () => { const files = Array.from(inp.files || []); if (files.length) Promise.resolve(onFiles(files)).catch(() => null).then(() => { try { inp.value = ''; } catch (e) { /* weiter */ } }); });
+    const lab = h('label', { class: 'btn', role: 'button', tabindex: '0', id, onkeydown: e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } } }, app.ico('ordner'), label);
+    lab.append(inp);
+    return lab;
+  }
+  function useFolder(files) {
+    st.files = files;
+    st.folder = String(files[0].webkitRelativePath || '').split('/')[0] || 'Ordner';
+    st.local = null;
+    if (st.q.trim()) return searchLocal();
+    app.refresh();
   }
   async function searchRemote() {
     const q = st.q.trim();
@@ -66,8 +70,8 @@
   function localPart() {
     const touch = isTouch();
     const btn = touch
-      ? h('button', { class: 'btn', type: 'button', onclick: () => app.kbPickFiles && app.kbPickFiles(false) }, app.ico('ordner'), 'Auf dem Gerät suchen')
-      : h('button', { class: 'btn', type: 'button', id: 'fs-folder', onclick: pickFolder }, app.ico('ordner'), st.files ? 'Anderen Ordner wählen' : 'Ordner freigeben');
+      ? pickButton('fs-device', false, 'Auf dem Gerät suchen', files => app.kbIntake && app.kbIntake({ files, texts: [] }, 'suche'))
+      : pickButton('fs-folder', true, st.files ? 'Anderen Ordner wählen' : 'Ordner freigeben', useFolder);
     let body;
     if (touch) body = h('p', { class: 'muted small', text: 'Am Handy und Tablet erlaubt der Browser keine Ordnersuche. Die Dateiauswahl des Geräts hat eine eigene Suche; gewählte Dateien werden direkt abgelegt.' });
     else if (!st.files) body = h('p', { class: 'muted small', text: 'Gibt einen Ordner samt Unterordnern frei. Gesucht wird nur im Browser: Dateinamen, bei kleinen Textdateien auch der Inhalt. Nichts wird hochgeladen, bis du bei einem Treffer „Ablegen“ klickst.' });

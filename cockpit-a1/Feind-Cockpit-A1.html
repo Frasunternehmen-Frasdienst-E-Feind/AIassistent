@@ -1,4 +1,3 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Feind Cockpit</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns="http://www.w3.org/2000/svg"%20viewBox="0%200%2024%2024"%20fill="none"%20stroke="#84bb20"%20stroke-width="2.4"%20stroke-linecap="square"%3E%3Ccircle%20cx="12"%20cy="12"%20r="6"/%3E%3Cpath%20d="M12%203v3M21%2012h-3M12%2021v-3M3%2012h3M18.4%205.6l-2.2%202.2M18.4%2018.4l-2.2-2.2M5.6%2018.4l2.2-2.2M5.6%205.6l2.2%202.2"/%3E%3Crect%20x="10"%20y="10"%20width="4"%20height="4"%20fill="#84bb20"%20stroke="none"/%3E%3C/svg%3E">
 <style>/* Exo (SIL Open Font License 1.1, The Exo Project Authors), Latin-Teilmenge aus @fontsource/exo 5.3.0.
@@ -14,8 +13,8 @@
    Pflicht: --accent #84bb20, --signal #e3000b, --surface-inverse #424e4e.
    Farbsystem 1.1 (branding/farbsystem.md): Grün trägt Flächen, Linien und Symbole; kleiner Text auf hellem
    Grund nutzt --accent-text/--accent-ink (#4d7311, 5,56:1) und --signal-text. Warnung = Signal-Gelbgrün
-   --warn #d6e000 nur als Fläche, darauf --on-warn (Anthrazit, 5,97:1). Diagramme: --chart-1 … --chart-4
-   laut Freigabe „Diagrammfarben“ vom 09.10.2026 (branding/feind-ci.tokens.json); --chart-3 (Hellgrün) immer mit Kontur --chart-3-edge. Kein Bernstein, Braun, Beige. */
+   --warn #d6e000 nur als Fläche, darauf --on-warn (Anthrazit, 5,97:1). Diagramme (Farbsystem 1.2): --chart-1 … --chart-3,
+   höchstens drei Serien; --chart-3 (Hellgrau) immer mit Kontur --chart-3-edge. Kein Bernstein, Braun, Beige. */
 :root {
   --accent: #84bb20;
   --accent-text: #4d7311;
@@ -29,10 +28,9 @@
   --info: #2c5a7a;
   --info-text: #1f455c;
   --chart-1: #84bb20;
-  --chart-2: #223131;
-  --chart-3: #cae1b0;
-  --chart-3-edge: #7ca04c;
-  --chart-4: #286f77;
+  --chart-2: #424e4e;
+  --chart-3: #c9d3d3;
+  --chart-3-edge: #5f6969;
   --map-fill: #424e4e; /* Länderflächen der Karten in Abstufungen (Wunsch David 08.10.2026); dunkel hell-grau */
   --brand-anth: #424e4e; /* Feind-Grau für Logo-Marken, in beiden Themes gleich */
   --chart-track: #e6eaea;
@@ -94,11 +92,10 @@
     --warn-text: #d6e000;
     --info: #8fb6d1;
     --info-text: #8fb6d1;
-    --chart-1: #659016;
-    --chart-2: #e0f3f3;
-    --chart-3: #b1d18b;
-    --chart-3-edge: #b1d18b;
-    --chart-4: #74a2a7;
+    --chart-1: #84bb20;
+    --chart-2: #e7ecec;
+    --chart-3: #4d5858;
+    --chart-3-edge: #b8bfbf;
     --map-fill: #b8bfbf;
     --chart-track: #384242;
     --ok: #a6d65a;
@@ -142,11 +139,10 @@
   --warn-text: #d6e000;
   --info: #8fb6d1;
   --info-text: #8fb6d1;
-  --chart-1: #659016;
-  --chart-2: #e0f3f3;
-  --chart-3: #b1d18b;
-  --chart-3-edge: #b1d18b;
-  --chart-4: #74a2a7;
+  --chart-1: #84bb20;
+  --chart-2: #e7ecec;
+  --chart-3: #4d5858;
+  --chart-3-edge: #b8bfbf;
   --map-fill: #b8bfbf;
   --chart-track: #384242;
   --ok: #a6d65a;
@@ -1356,10 +1352,9 @@ circle.fc-track { fill: none; stroke: var(--chart-track); }
     --warn-text: #424e4e;
     --warn-soft: var(--print-paper);
     --chart-1: #84bb20;
-    --chart-2: #223131;
-    --chart-3: #cae1b0;
-    --chart-3-edge: #7ca04c;
-    --chart-4: #286f77;
+    --chart-2: #424e4e;
+    --chart-3: #c9d3d3;
+    --chart-3-edge: #5f6969;
     --chart-track: #e6eaea;
   }
   @page { margin: 14mm 12mm; }
@@ -2730,6 +2725,27 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
 .tools:has(> h3:first-child):has(> .field) { justify-content: flex-start !important; align-items: flex-end; column-gap: var(--s4); }
 /* Vier Kacheln nie als 3 + 1: passen vier nebeneinander, stehen sie in einer Reihe, sonst als 2 × 2. */
 .strip:has(> :nth-child(4):last-child) { grid-template-columns: repeat(auto-fit, minmax(max(150px, min(calc(50% - var(--s2) / 2), calc((624px - 100%) * 999))), 1fr)); }
+
+/* Startseite „Heute“: drei Einstiegskacheln (19.10.2026) */
+.ov-top3 { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: var(--s3); }
+@media (max-width: 520px) { .ov-top3 { gap: 6px; } .ov-top3 .ov-stat { padding: 10px 8px; } .ov-top3 .sub, .ov-top3 .src { display: none; } .ov-top3 .k { font-size: 12px; line-height: 1.25; } .ov-top3 .v { font-size: 28px; } }
+
+/* Mobil (19.10.2026): Bereichs-Tabs als untere Leiste, Statuszeile im Kopf einklappbar. */
+.meta-toggle { display: none; }
+@media (max-width: 640px) {
+  .top { z-index: 30; } /* Kopf bildet eigenen Stapelkontext; so liegt die untere Leiste über dem Inhalt */
+  .topnav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; margin: 0; max-width: none; display: flex; flex-wrap: nowrap; gap: 4px; overflow: visible;
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px)); background: var(--surface-inverse); border-top: 3px solid var(--accent); box-shadow: 0 -6px 16px -10px rgba(0,0,0,.45); }
+  .topnav .worldtab { flex: 1 1 0; min-width: 0; min-height: 48px; margin: 0; justify-content: center; flex-direction: column; gap: 2px; padding: 6px 4px; font-size: 12px; overflow: hidden; text-overflow: ellipsis; border-radius: 10px; border-top-width: 0; white-space: nowrap; }
+  .topnav .worldtab .cnt { margin-left: 0; }
+  body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  .toast { bottom: calc(86px + env(safe-area-inset-bottom, 0px)) !important; }
+  .top .data-stand, .top .store-state { display: none; }
+  .top.meta-open .data-stand, .top.meta-open .store-state { display: inline-flex; }
+  .meta-toggle { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; background: transparent; border: 1px solid var(--ink-inverse-muted); color: var(--ink-inverse); border-radius: var(--r-btn); font: inherit; font-size: 13px; cursor: pointer; }
+  .meta-toggle[aria-expanded="true"] { background: color-mix(in srgb, var(--ink-inverse) 15%, transparent); }
+}
+@media print { .topnav { position: static !important; } body { padding-bottom: 0 !important; } }
 </style>
 <a class="skip" href="#main">Zum Inhalt springen</a>
 <header class="top">
@@ -14263,6 +14279,21 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
       h('span', { class: 'sr', text: r.pct + ' Prozent' }))));
   }
 
+  // Einstieg „Heute“: drei Kacheln – Fristen 7 Tage, offene Freigaben, InfraTech-Countdown.
+  function top3(at, t, over, pr, days, rev) {
+    const soon7 = M.dueSoon(at, t, 7);
+    const tend7 = (S.data.tenders || []).filter(x => { const d = H.parseDay(x && x.deadline); if (!d) return false; const dd = H.dayDiff(t, d); return dd >= 0 && dd <= 7; }).length;
+    const fristen = over.length + soon7.length + tend7;
+    const review = (S.data.content || []).filter(c => c && c.status === 'review').length;
+    const frei = review + rev;
+    return h('div', { class: 'ov-stats ov-top3', role: 'group', 'aria-label': 'Heute zuerst' },
+      stat('t3-fristen', over.length ? 'crit' : fristen ? 'warn' : 'ok', fristen, 'Fristen in 7 Tagen',
+        over.length + ' überfällig · ' + soon7.length + ' Aufgaben · ' + tend7 + ' Ausschreibungen', 'Quelle: Aufgabenliste und Ausschreibungen · heute', () => app.go('infratech', 'fristen')),
+      stat('t3-frei', frei ? 'warn' : 'ok', frei, 'Offene Freigaben',
+        review + ' Content im Review · ' + rev + ' Wissen zu prüfen', 'Quelle: Content und Wissensarchiv · live', () => app.go(review ? 'marketing' : 'wissen', review ? 'content' : 'pruefung')),
+      stat('t3-messe', '', Math.max(0, days), 'Tage bis InfraTech 2027',
+        pr.pct + ' % der Aufgaben erledigt', 'Quelle: Messetermin 12.01.2027 · Aufgabenliste', () => app.go('infratech', 'dashboard')));
+  }
   app.module('marketing', 'heute', {
     count: () => { try { const c = checks(app.tasks()).filter(x => x.t === 'crit' || x.t === 'warn').length; return c || null; } catch (e) { return null; } },
     render() {
@@ -14277,6 +14308,7 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
       const verdict = w === 'ok' ? 'Alle geprüften Punkte sind in Ordnung.' : w === 'warn' ? 'Es gibt Hinweise, die du ansehen solltest.' : 'Es gibt Punkte mit Handlungsbedarf.';
       return [
         panelHead('Auf einen Blick', null, h('span', { class: 'muted small', text: fmtD(t) })),
+        top3(at, t, over, pr, days, rev),
         heroSlider(hero(pr, days)),
         h('div', { class: 'ov-quick', role: 'group', 'aria-label': 'Schnellzugriff' },
           h('button', { class: 'btn', type: 'button', onclick: () => app.go('wissen', 'eingang') }, 'Ablegen'),
@@ -14972,7 +15004,6 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
     inp.click();
   }
   app.kbIntake = intake;
-  app.kbPickFiles = pickFiles;
   app.kbQuickCapture = function () { app.go('wissen', 'eingang'); setTimeout(() => { const t = document.getElementById('kb-text'); if (t) t.focus(); }, 80); };
 
   /* ---------- Bausteine ---------- */
@@ -15911,18 +15942,22 @@ let shown = false, hideT = null;
     }
     st.local = hits; st.busyLocal = false; app.refresh();
   }
-  function pickFolder() {
-    const inp = h('input', { type: 'file', multiple: true, class: 'kb-pick', tabindex: '-1', 'aria-hidden': 'true' });
-    inp.setAttribute('webkitdirectory', '');
-    inp.addEventListener('change', () => {
-      st.files = Array.from(inp.files || []);
-      st.folder = st.files.length ? String(st.files[0].webkitRelativePath || '').split('/')[0] : '';
-      inp.remove();
-      if (st.q.trim()) searchLocal(); else app.refresh();
-    });
-    inp.addEventListener('cancel', () => inp.remove());
-    document.body.append(inp);
-    inp.click();
+  // Fester <label> um ein bleibendes Dateifeld (wie „Ordner wählen“ im Ablagefeld): Ein per Skript erzeugtes und
+  // angeklicktes Feld öffnet in der Claude-App und in Safari keinen Dialog (Fehlerbild 19.10.2026: Knopf reagiert nicht).
+  function pickButton(id, dir, label, onFiles) {
+    const inp = h('input', { type: 'file', multiple: true, class: 'file-native', id: 'fi-' + id, tabindex: '-1', 'aria-hidden': 'true' });
+    if (dir) inp.setAttribute('webkitdirectory', '');
+    inp.addEventListener('change', () => { const files = Array.from(inp.files || []); if (files.length) Promise.resolve(onFiles(files)).catch(() => null).then(() => { try { inp.value = ''; } catch (e) { /* weiter */ } }); });
+    const lab = h('label', { class: 'btn', role: 'button', tabindex: '0', id, onkeydown: e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } } }, app.ico('ordner'), label);
+    lab.append(inp);
+    return lab;
+  }
+  function useFolder(files) {
+    st.files = files;
+    st.folder = String(files[0].webkitRelativePath || '').split('/')[0] || 'Ordner';
+    st.local = null;
+    if (st.q.trim()) return searchLocal();
+    app.refresh();
   }
   async function searchRemote() {
     const q = st.q.trim();
@@ -15942,8 +15977,8 @@ let shown = false, hideT = null;
   function localPart() {
     const touch = isTouch();
     const btn = touch
-      ? h('button', { class: 'btn', type: 'button', onclick: () => app.kbPickFiles && app.kbPickFiles(false) }, app.ico('ordner'), 'Auf dem Gerät suchen')
-      : h('button', { class: 'btn', type: 'button', id: 'fs-folder', onclick: pickFolder }, app.ico('ordner'), st.files ? 'Anderen Ordner wählen' : 'Ordner freigeben');
+      ? pickButton('fs-device', false, 'Auf dem Gerät suchen', files => app.kbIntake && app.kbIntake({ files, texts: [] }, 'suche'))
+      : pickButton('fs-folder', true, st.files ? 'Anderen Ordner wählen' : 'Ordner freigeben', useFolder);
     let body;
     if (touch) body = h('p', { class: 'muted small', text: 'Am Handy und Tablet erlaubt der Browser keine Ordnersuche. Die Dateiauswahl des Geräts hat eine eigene Suche; gewählte Dateien werden direkt abgelegt.' });
     else if (!st.files) body = h('p', { class: 'muted small', text: 'Gibt einen Ordner samt Unterordnern frei. Gesucht wird nur im Browser: Dateinamen, bei kleinen Textdateien auch der Inhalt. Nichts wird hochgeladen, bis du bei einem Treffer „Ablegen“ klickst.' });
@@ -16980,4 +17015,15 @@ let shown = false, hideT = null;
 
 
 
-</body></html>
+<script>
+/* Mobil: Statuszeile (Notion-Stand, Speicherort) im Kopf ein- und ausklappen. */
+(function () {
+  var top = document.querySelector('header.top'), meta = top && top.querySelector('.top-meta');
+  if (!meta) return;
+  var b = document.createElement('button');
+  b.type = 'button'; b.className = 'meta-toggle'; b.setAttribute('aria-expanded', 'false');
+  b.setAttribute('aria-label', 'Status anzeigen: Datenstand und Speicherort'); b.textContent = 'Status';
+  b.addEventListener('click', function () { var on = top.classList.toggle('meta-open'); b.setAttribute('aria-expanded', String(on)); b.setAttribute('aria-label', (on ? 'Status ausblenden' : 'Status anzeigen') + ': Datenstand und Speicherort'); });
+  meta.appendChild(b);
+})();
+</script>
