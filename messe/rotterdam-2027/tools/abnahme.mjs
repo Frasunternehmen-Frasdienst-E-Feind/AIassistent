@@ -10,7 +10,7 @@ import { marketingSeed } from '../e2e/fixtures-marketing.mjs';
 
 const ORIGIN = 'http://cockpit.test';
 const URL_ = ORIGIN + '/feind-cockpit-v3.html';
-const HTML = readFileSync(new URL('../feind-cockpit-v3.html', import.meta.url));
+const HTML = readFileSync(new URL('../../../cockpit-a1/Feind-Cockpit-A1.html', import.meta.url));
 const OUT = process.argv[2] || null;
 
 // Im Browser: Kontrast aller sichtbaren Textstellen gegen die tatsächliche Hintergrundfarbe.
