@@ -12,7 +12,7 @@
 :root {
   color-scheme: light;
   --accent: #84bb20;
-  --accent-text: #5e8a14;
+  --accent-text: #4d7311;
   --on-accent: #424e4e;
   --on-accent-strong: #1f2525;
   --signal: #e3000b;
@@ -22,10 +22,15 @@
   --surface-inverse: #424e4e;
   --ink: #3c5457;
   --ink-strong: #424e4e;
-  --ink-muted: #6b7575;
+  --ink-muted: #5f6969;
   --ink-inverse: #ffffff;
   --line: #d5dada;
   --focus: #424e4e;
+  --accent-ink: #4d7311;
+  --warn: #d6e000;
+  --warn-text: #424e4e;
+  --on-warn: #424e4e;
+  --print-ink: #1f2626;
   --font-display: Exo, "Arial Black", Arial, sans-serif;
   --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --radius: 0px;
@@ -43,7 +48,7 @@
   :root:not([data-theme="light"]) {
     color-scheme: dark;
     --accent: #84bb20;
-    --accent-text: #84bb20;
+    --accent-text: #a6d65a;
     --on-accent: #424e4e;
     --on-accent-strong: #1f2525;
     --signal: #e3000b;
@@ -57,13 +62,17 @@
     --ink-inverse: #ffffff;
     --line: #4d5858;
     --focus: #84bb20;
+    --accent-ink: #a6d65a;
+    --warn: #d6e000;
+    --warn-text: #d6e000;
+    --on-warn: #424e4e;
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
   --accent: #84bb20;
-  --accent-text: #84bb20;
+  --accent-text: #a6d65a;
   --on-accent: #424e4e;
   --on-accent-strong: #1f2525;
   --signal: #e3000b;
@@ -77,6 +86,10 @@
   --ink-inverse: #ffffff;
   --line: #4d5858;
   --focus: #84bb20;
+  --accent-ink: #a6d65a;
+  --warn: #d6e000;
+  --warn-text: #d6e000;
+  --on-warn: #424e4e;
 }
 
 body { background: var(--surface); color: var(--ink); font-family: var(--font-sans); }
@@ -286,7 +299,8 @@ footer { font-size: 13px; color: var(--ink-muted); margin-top: var(--space-5); }
     return e;
   }
   const daten = coll => L.mergeById(SEED[coll], dbDocs[coll]);
-  const link = (href, text) => href ? el('a', { href, target: '_blank', rel: 'noopener' }, text) : null;
+  // Links stammen auch aus dem geteilten Speicher: nur http(s) zulassen, nie javascript: o. Ä.
+  const link = (href, text) => /^https?:\/\//i.test(href || '') ? el('a', { href, target: '_blank', rel: 'noopener' }, text) : null;
 
   // Änderung speichern: vorhandenes Dokument nur feldweise ergänzen, fehlendes aus der Momentaufnahme anlegen.
   async function speichern(coll, id, feld) {

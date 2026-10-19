@@ -43,6 +43,11 @@ test('Hub: Momentaufnahme ist vollständig und frei von Personendaten', () => {
   assert.doesNotMatch(JSON.stringify(seed), /@(?!infratech\.nl)[a-z0-9-]+\.[a-z]/i, 'keine E-Mail-Adressen');
 });
 
+test('Hub: Links aus dem Speicher nur mit http(s)', () => {
+  const html = readFileSync(HUB, 'utf8');
+  assert.match(html, /const link = \(href, text\) => \/\^https\?:/);
+});
+
 test('Hub: CI – keine Hex-Farben außerhalb des Token-Blocks', () => {
   const html = readFileSync(HUB, 'utf8');
   const ohneTokens = html.replace(/\/\* tokens:start[^*]*\*\/[\s\S]*?\/\* tokens:end \*\//, '').replace(/<meta name="theme-color"[^>]*>/g, '');

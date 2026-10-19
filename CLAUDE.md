@@ -5,19 +5,34 @@ Antworten und Commit-Messages auf Deutsch. Fachbegriffe der Zeitwirtschaft
 (Ist, Soll, Saldo, Kommen/Gehen, Pause) so verwenden, wie sie in OptiTime und in
 der Lohnabrechnung stehen.
 
+## Entscheidungen und Optionen (Wunsch von David, 30.09.2026)
+* Optionen und Entscheidungen immer als **klickbare Auswahl** anzeigen (Werkzeug
+  `AskUserQuestion`), nicht als Fließtext-Frage – das spart Zeit.
+* Die aus Expertensicht beste Option steht immer **an erster Stelle** und trägt
+  den Zusatz **„(Empfohlen)“**; die Beschreibung nennt kurz den Grund.
+* Höchstens 4 Optionen je Frage, höchstens 4 Fragen auf einmal; „Sonstiges“ ergänzt
+  das System selbst.
+
 ## Corporate Design (verbindlich für Artefakte, Dashboards, Präsentationen)
 Farben, Schriften, Radien und Abstände stehen in `branding/feind-ci.tokens.json`
-und sind die einzige Quelle (Skill `feind-brand` erzeugt daraus den
-Theme-Block; `brand-guidelines` ist Anthropic-CI und gilt hier nicht) – keine eigenen Paletten erfinden, keine Farbwerte
-im Markup hart setzen.
+und sind die einzige Quelle – keine eigenen Paletten erfinden, keine Farbwerte
+im Markup hart setzen. Regeln, Statusfarben, Diagrammfarben und Kontrastwerte
+stehen im Farbsystem `branding/farbsystem.md` (Version 1.2). Rangfolge:
+CI-Leitfaden, dann Farbsystem, dann sonstige Vorgaben.
 
 * Grün `#84bb20` ist Akzent- und Flächenfarbe. Auf Grün steht Anthrazit
   `#424e4e`, nie Weiß.
   Schrift auf vollem Grün (Buttons) in `on-accent-strong` `#1f2525` (6,9:1),
   weil `#424e4e` auf Grün nur 3,74:1 erreicht.
-* Grün nie als Textfarbe auf hellem Grund (2,3:1) – dort `accent-text` `#5e8a14`.
+* Grün nie als Textfarbe auf hellem Grund (2,31:1) – dort `accent-text` `#4d7311`.
+  `#5e8a14` ist keine Textfarbe (4,10:1).
 * Rot `#e3000b` ausschließlich als Signal (Fehler, Fehlbuchung, Minus), nie als
-  Schmuckfarbe und auf dunklem Grund nur als Fläche.
+  Schmuck- oder Serienfarbe und auf dunklem Grund nur als Fläche.
+* Diagramme: höchstens drei Füllfarben (Grün, Anthrazit, Hellgrau mit Kontur),
+  Legende und Tabelle per `<details>` Pflicht.
+* Warnung („bald fällig“): Signal-Gelbgrün `#d6e000` als Fläche, Schrift und
+  Symbol in Anthrazit.
+* Ausgeschlossen: Lila/Violett, Rosa/Pink, Ocker/Bernstein, Braun, Beige.
 * Schrift: Display `Exo`, Text `Helvetica Neue / Helvetica / Arial`.
 * Radien nahe 0 (Eingaben 2 px, Buttons 4 px), Abstände aus der Skala
   4 / 8 / 16 / 24 / 40 / 64.

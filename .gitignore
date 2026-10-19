@@ -12,6 +12,9 @@ credentials/
 *.json
 !config.schema.json
 !.mcp.json
+# Plugin-Manifest und Connector-Datei des Marketing Cockpits (keine Geheimnisse)
+!feind-marketing-cockpit/.claude-plugin/plugin.json
+!feind-marketing-cockpit/.mcp.json
 # Hook-Registrierung für Claude Code; enthält nur einen Dateipfad,
 # keine Zugangsdaten.
 !.claude/settings.json
@@ -34,7 +37,15 @@ reports/
 # Build-Artefakte
 build/
 dist/
+
+# Plugin-Paket (wird mit build-zip.sh erzeugt)
+*.zip
+
+# Node-Abhängigkeiten (npm install)
 node_modules/
+
+# Messwerte des visuellen Umbaus (Cockpit) – versioniert
+!messe/rotterdam-2027/umbau/*.json
 test-results/
 playwright-report/
 
