@@ -8,7 +8,9 @@ package main
 // Erkennung. Er ist zum Weitergeben an den Entwickler gedacht.
 
 import (
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -49,7 +51,7 @@ func (a *App) diagnose() string {
 	var all []string
 	_ = filepath.WalkDir(path, func(p string, d os.DirEntry, err error) error {
 		if err != nil {
-			w("  Fehler: %s: %v", p, err)
+			w("  Fehler beim Durchsuchen: %v", errNoPath(err))
 			return nil
 		}
 		if d.IsDir() {
@@ -62,8 +64,11 @@ func (a *App) diagnose() string {
 		return nil
 	})
 	sort.Strings(all)
+	label := map[string]string{}
+	for i, p := range all {
+		label[p] = diagLabel(p, i+1)
+	}
 	for _, p := range all {
-		rel, _ := filepath.Rel(path, p)
 		info, err := os.Stat(p)
 		if err != nil {
 			continue
@@ -72,7 +77,7 @@ func (a *App) diagnose() string {
 		if magic == "" {
 			magic = "-"
 		}
-		w("  %-60s %10d B  %s  [%s]", rel, info.Size(), info.ModTime().Format("02.01.2006 15:04"), magic)
+		w("  %-30s %10d B  %s  [%s]", label[p], info.Size(), info.ModTime().Format("02.01.2006 15:04"), magic)
 	}
 	if len(all) >= diagMaxFiles {
 		w("  … (Liste bei %d Dateien abgeschnitten)", diagMaxFiles)
@@ -94,12 +99,16 @@ func (a *App) diagnose() string {
 	}
 	master := loadMasterFrom(files)
 	for _, f := range files {
-		rel, _ := filepath.Rel(path, f)
+		name, ok := label[f]
+		if !ok {
+			name = diagLabel(f, len(label)+1)
+			label[f] = name
+		}
 		w("")
-		w("-- %s", rel)
+		w("-- %s", name)
 		raw, err := os.ReadFile(f)
 		if err != nil {
-			w("  Lesefehler: %v", err)
+			w("  Lesefehler: %v", errNoPath(err))
 			continue
 		}
 		if isSQLite(raw) {
@@ -195,6 +204,27 @@ func (a *App) diagnoseSQLite(b *strings.Builder, path string) {
 			w("    Lesefehler: %v", rerr)
 		}
 	}
+}
+
+// diagSystemFile: OptiTime-eigene Dateinamen, die keine Person nennen.
+var diagSystemFile = regexp.MustCompile(`(?i)^(config\.ini|offliste.*|logger.*)$`)
+
+// diagLabel nennt nur OptiTime-Systemdateien beim Namen. Andere Datei- und
+// Ordnernamen können Namen Dritter enthalten (buchungen_e.fremd.csv).
+func diagLabel(p string, n int) string {
+	if base := filepath.Base(p); diagSystemFile.MatchString(base) {
+		return base
+	}
+	return fmt.Sprintf("Datei %d%s", n, strings.ToLower(filepath.Ext(p)))
+}
+
+// errNoPath entfernt den Dateipfad aus Fehlermeldungen des Dateisystems.
+func errNoPath(err error) error {
+	var pe *fs.PathError
+	if errors.As(err, &pe) {
+		return pe.Err
+	}
+	return err
 }
 
 // diagConfigKeys: Schlüssel der config.ini, deren Werte die Diagnose zeigt.

@@ -172,6 +172,15 @@ func TestLokaleAPIAbgesichert(t *testing.T) {
 	if c := do("GET", "/api/quit", "", "", "", ""); c == 200 {
 		t.Errorf("/api/quit per GET")
 	}
+	if c := do("GET", "/api/ping", "", "", "", ""); c == 200 {
+		t.Errorf("/api/ping per GET hält den Server wach")
+	}
+	if c := do("PUT", "/api/state", "text/plain", "", "", `{"bookings":[]}`); c == 200 {
+		t.Errorf("PUT /api/state ohne JSON-Content-Type angenommen")
+	}
+	if c := do("POST", "/api/datadir", "application/json", "http://127.0.0.1:1", "", body); c == 200 {
+		t.Errorf("Origin mit anderem Port angenommen")
+	}
 	// Eigene Oberfläche funktioniert weiter
 	port := srv.URL[strings.LastIndex(srv.URL, ":"):]
 	if c := do("GET", "/api/info", "", "", "localhost"+port, ""); c != 200 {
@@ -205,5 +214,52 @@ func TestDateirechtePrivat(t *testing.T) {
 		if st.Mode().Perm() != want {
 			t.Errorf("%s: Rechte %v, erwartet %v", filepath.Base(p), st.Mode().Perm(), want)
 		}
+	}
+}
+
+func TestDiagnoseOhneDateinamenDritter(t *testing.T) {
+	dir := optiFolder(t)
+	write(t, dir, "buchungen_e.fremd.csv", []byte("Datum;Kommen;Gehen\n2026-08-24;08:00;16:00\n"))
+	write(t, filepath.Join(dir, "Fremd, Erika"), "export.csv", []byte("Datum;Kommen;Gehen\n2026-08-24;08:00;16:00\n"))
+	rep := datenschutzApp(t, dir).diagnose()
+	for _, bad := range []string{"e.fremd", "Fremd, ", "Erika"} {
+		if strings.Contains(rep, bad) {
+			t.Errorf("Diagnose nennt Dateinamen mit %q:\n%s", bad, rep)
+		}
+	}
+	if !strings.Contains(rep, "config.ini") || !strings.Contains(rep, "Datei ") {
+		t.Errorf("Systemdatei oder Platzhalter fehlt:\n%s", rep)
+	}
+}
+
+func TestDateinameNurVollerAnmeldename(t *testing.T) {
+	dir := t.TempDir()
+	csv := []byte("Datum;Kommen;Gehen\n2026-08-24;08:00;16:00\n")
+	write(t, dir, "buchungen_m.musterfrau.csv", csv)
+	write(t, dir, "tim.muster.csv", csv)
+	write(t, dir, "buchungen_m.muster.csv", csv)
+	id := Identity{Username: "m.muster", FullName: "Max Muster", Keys: []string{"m.muster", "Max Muster"}}
+	b, res := importOptiTime(dir, id)
+	if len(b) != 1 || res.Unassigned != 2 {
+		t.Errorf("erwartet 1 Buchung aus eigener Datei, 2 nicht zugeordnet: %d / %d", len(b), res.Unassigned)
+	}
+}
+
+func TestKonfigSpeicherfehlerWirdGemeldet(t *testing.T) {
+	a := datenschutzApp(t, optiFolder(t))
+	blocker := filepath.Join(t.TempDir(), "keinordner")
+	write(t, filepath.Dir(blocker), filepath.Base(blocker), []byte("x"))
+	a.dataFile = filepath.Join(blocker, "data.json") // Elternpfad ist eine Datei: Speichern scheitert
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest("POST", "/api/config", strings.NewReader(`{"keys":["Max Muster"]}`))
+	a.handleConfig(rec, req)
+	if rec.Code != http.StatusInternalServerError {
+		t.Errorf("Speicherfehler als Erfolg gemeldet: %d", rec.Code)
+	}
+}
+
+func TestNurLoopbackAdresse(t *testing.T) {
+	if got := listenAddr(8080); got != "127.0.0.1:8080" {
+		t.Errorf("Server lauscht auf %q", got)
 	}
 }

@@ -54,16 +54,17 @@ Zeiterfassung. Zwei Betriebsarten:
      werden gezählt, aber nie importiert.
    - Ist die Zuordnung nur automatisch über den vollständigen Windows-Namen erfolgt, zeigt die App
      „automatisch erkannt – bitte bestätigen". Mit „Das bin ich" wird sie fest gespeichert. Passt
-     keine Person, wird die eigene Personalnummer eingetragen. Die Oberfläche zeigt nur die
+     keine Person, bitte die eigene Personalnummer in den Einstellungen eintragen. Die Oberfläche zeigt nur die
      **Anzahl** der Personen in den Dateien, keine Namen anderer.
-   - Dateien **ohne** Personenspalte gelten nur als eigene, wenn Dateiname bzw. Ordner den
-     vollständigen Anmeldenamen nennen (z. B. `buchungen_m.muster.csv`). Andernfalls erscheinen sie
+   - Dateien **ohne** Personenspalte gelten nur als eigene, wenn Dateiname bzw. Unterordner
+     innerhalb des OptiTime-Ordners den vollständigen Anmeldenamen als eigenes Wort nennen (z. B.
+     `buchungen_m.muster.csv`, nicht `m.musterfrau.csv`). Andernfalls erscheinen sie
      als „nicht zugeordnet" – auch wenn sie im eigenen Benutzerprofil liegen.
 5. **Oberfläche öffnen**: lokaler Server nur auf `127.0.0.1` mit freiem Port, Standardbrowser
    startet automatisch. Der Server beantwortet nur Anfragen an `127.0.0.1:<Port>` bzw.
    `localhost:<Port>` aus der eigenen Oberfläche: fremder Host-Header (DNS-Rebinding) oder fremder
-   `Origin` werden abgewiesen, ändernde Aufrufe (auch Diagnose und Beenden) nur per POST/PUT mit
-   `Content-Type: application/json`. Wird das Browserfenster geschlossen, beendet sich das Programm nach
+   `Origin` werden abgewiesen. Alles außer GET/HEAD braucht `Content-Type: application/json`;
+   Diagnose, Ping und Beenden gehen nur per POST. Wird das Browserfenster geschlossen, beendet sich das Programm nach
    zwei Minuten von selbst; „Stempeluhr beenden" beendet sofort.
 
 OptiTime ist führend: Bei jedem Abgleich ersetzt eine OptiTime-Buchung eine vorhandene Buchung
@@ -87,9 +88,13 @@ Anzahlen**, keine Datenzeilen:
   `LOKALZEIT`, `RECONNECT`, `BUCHLISTETAGE` und `LOGGERSTUFE`; alle anderen als `<ausgeblendet>`.
 - Stammdatenlisten (`Offliste*`): Zahl der Zeilen und Felder, keine Inhalte – unabhängig vom
   Dateinamen.
-- CSV/TXT/JSON/XML und Protokoll: Trennzeichen, Feldzahl, Zahl der Datensätze und Personen,
-  davon eigene. Als Beispiel höchstens drei **eigene** Buchungen (Datum, Uhrzeit, Tätigkeit).
+- CSV/TXT/JSON/XML: Trennzeichen, Feldzahl, Zahl der Datensätze und Personen, davon eigene.
+- OptiTime-Protokoll (`logger*`): Zahl der Datensätze und Personen, davon eigene.
+- Bei beiden als Beispiel höchstens drei **eigene** Buchungen (Datum, Uhrzeit, Tätigkeit).
+- Dateinamen: nur OptiTime-Systemdateien (`config.ini`, `Offliste*`, `logger*`) mit Namen,
+  alle anderen als „Datei n“ mit Endung – Dateinamen können Namen Dritter enthalten.
 - SQLite: Tabellen- und Spaltennamen mit Zeilenzahl.
+- Fehlermeldungen des Dateisystems ohne Pfad.
 
 Der Bericht liegt unter `%APPDATA%\Stempeluhr\diagnose.txt`.
 
