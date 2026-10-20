@@ -68,10 +68,10 @@ func TestSwitchDataDirMigriert(t *testing.T) {
 	if s := readState(t, a.dataFile); len(s.Bookings) != 1 || s.Bookings[0].ID != "m1" {
 		t.Fatalf("Buchungen nicht übernommen: %+v", s.Bookings)
 	}
-	if _, err := os.Stat(oldFile); err != nil {
-		t.Fatal("bisherige Datei muss als Sicherung bleiben")
+	if _, err := os.Stat(oldFile); err == nil {
+		t.Fatal("bisherige Datei muss nach geprüfter Übernahme gelöscht sein")
 	}
-	if !strings.Contains(msg, "Sicherung") {
+	if !strings.Contains(msg, "geprüfter Übernahme gelöscht") {
 		t.Fatalf("Meldung: %q", msg)
 	}
 	if a.cfg.DataDir != target {

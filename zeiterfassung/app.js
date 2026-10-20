@@ -283,7 +283,7 @@
       + '<div class="check-row"><button class="btn sm primary" type="submit">Speichern &amp; übernehmen</button>'
       + (isDefault ? '' : '<button class="btn sm" type="button" id="btn-data-default">Standard wiederherstellen</button>') + '</div>'
       + '</form>'
-      + '<p class="foot">Im gewählten Ordner wird je Benutzer ein Unterordner angelegt, damit sich mehrere Personen einen Ordner teilen können. Für dieselben Buchungen auf mehreren Geräten einen OneDrive-Ordner wählen. Beim Wechsel werden vorhandene Buchungen übernommen, eine Datei im Zielordner wird zusammengeführt, und die bisherige Datei bleibt als Sicherung liegen.</p>'
+      + '<p class="foot">Im gewählten Ordner wird je Benutzer ein Unterordner angelegt, damit sich mehrere Personen einen Ordner teilen können. Für dieselben Buchungen auf mehreren Geräten einen OneDrive-Ordner wählen. Beim Wechsel werden vorhandene Buchungen übernommen, eine Datei im Zielordner wird zusammengeführt, und die bisherige Datei wird nach geprüfter Übernahme gelöscht (sonst bleibt sie als Sicherung liegen).</p>'
       + '</div>';
     const setDir = async dir => {
       try {
