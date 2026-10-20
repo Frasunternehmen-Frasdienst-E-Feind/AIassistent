@@ -20,7 +20,7 @@ func write(t *testing.T, dir, name string, content []byte) string {
 }
 
 func ident() Identity {
-	return Identity{Username: "d.halko", FullName: "David Halko", Keys: []string{"d.halko", "David Halko"}}
+	return Identity{Username: "e.beispiel", FullName: "Erika Beispiel", Keys: []string{"e.beispiel", "Erika Beispiel"}}
 }
 
 func TestDecodeText(t *testing.T) {
@@ -54,23 +54,23 @@ func TestParseDateTime(t *testing.T) {
 func TestImportIntervalWithPersonColumn(t *testing.T) {
 	dir := t.TempDir()
 	csv := "Personalnummer;Mitarbeiter;Datum;von;bis;Auftrag;T\xe4tigkeit\r\n" +
-		"1042;Halko, David;07.09.2026;06:54;;000999;Kommen\r\n" +
-		"1042;Halko, David;04.09.2026;15:00;15:07;000007;*Pause*\r\n" +
-		"1042;Halko, David;04.09.2026;07:03;15:00;000999;Kommen\r\n" +
+		"1042;Beispiel, Erika;07.09.2026;06:54;;000999;Kommen\r\n" +
+		"1042;Beispiel, Erika;04.09.2026;15:00;15:07;000007;*Pause*\r\n" +
+		"1042;Beispiel, Erika;04.09.2026;07:03;15:00;000999;Kommen\r\n" +
 		"2001;Muster, Erika;04.09.2026;08:00;16:00;000999;Kommen\r\n"
 	write(t, dir, "OptiTime/Export/buchungen_2026-09.csv", []byte(csv))
 	bookings, res := importOptiTime(filepath.Join(dir, "OptiTime"), ident())
 	if len(bookings) != 3 {
 		t.Fatalf("erwartet 3 eigene Buchungen, got %d (%+v)", len(bookings), res)
 	}
-	if res.Identity.MatchedPerson != "Halko, David" || !res.Identity.AutoMatched {
+	if res.Identity.MatchedPerson != "Beispiel, Erika" || !res.Identity.AutoMatched {
 		t.Fatalf("automatische Zuordnung fehlt: %+v", res.Identity)
 	}
 	if res.Persons != 2 || res.Files[0].Skipped != 1 {
 		t.Fatalf("Personen/Skipped: %+v", res)
 	}
 	for _, b := range bookings {
-		if b.Person != "Halko, David" || b.Source != "optitime" {
+		if b.Person != "Beispiel, Erika" || b.Source != "optitime" {
 			t.Fatalf("Buchung falsch zugeordnet: %+v", b)
 		}
 	}
@@ -92,10 +92,10 @@ func TestImportIntervalWithPersonColumn(t *testing.T) {
 func TestImportEventsFormat(t *testing.T) {
 	dir := t.TempDir()
 	csv := "Datum\tUhrzeit\tBuchung\tName\n" +
-		"18.08.2026\t08:01\tKommen\tDavid Halko\n" +
-		"18.08.2026\t11:16\tPause Beginn\tDavid Halko\n" +
-		"18.08.2026\t11:23\tPause Ende\tDavid Halko\n" +
-		"18.08.2026\t15:30\tGehen\tDavid Halko\n" +
+		"18.08.2026\t08:01\tKommen\tErika Beispiel\n" +
+		"18.08.2026\t11:16\tPause Beginn\tErika Beispiel\n" +
+		"18.08.2026\t11:23\tPause Ende\tErika Beispiel\n" +
+		"18.08.2026\t15:30\tGehen\tErika Beispiel\n" +
 		"18.08.2026\t08:00\tKommen\tErika Muster\n"
 	write(t, dir, "terminal.txt", []byte(csv))
 	bookings, res := importOptiTime(dir, ident())
@@ -113,7 +113,7 @@ func TestImportEventsFormat(t *testing.T) {
 func TestFileWithoutPersonColumn(t *testing.T) {
 	dir := t.TempDir()
 	csv := "Datum;von;bis;Auftrag;Tätigkeit\n17.08.2026;08:00;15:30;000999;Kommen\n"
-	write(t, dir, "buchungen_d.halko.csv", []byte(csv)) // Dateiname nennt den Benutzer -> übernehmen
+	write(t, dir, "buchungen_e.beispiel.csv", []byte(csv)) // Dateiname nennt den Benutzer -> übernehmen
 	write(t, dir, "alle.csv", []byte(csv))              // kein Bezug -> nicht zuordnen
 	write(t, dir, "daten.db", []byte("binär"))          // unbekannter Typ -> nur zählen
 	bookings, res := importOptiTime(dir, ident())
@@ -132,10 +132,10 @@ func TestFileWithoutPersonColumn(t *testing.T) {
 
 func TestXMLImport(t *testing.T) {
 	dir := t.TempDir()
-	x := `<?xml version="1.0" encoding="UTF-8"?><Export><Buchung Mitarbeiter="Halko, David"><Datum>17.08.2026</Datum><Von>08:00</Von><Bis>15:30</Bis></Buchung>` +
+	x := `<?xml version="1.0" encoding="UTF-8"?><Export><Buchung Mitarbeiter="Beispiel, Erika"><Datum>17.08.2026</Datum><Von>08:00</Von><Bis>15:30</Bis></Buchung>` +
 		`<Buchung Mitarbeiter="Muster, Erika"><Datum>17.08.2026</Datum><Von>08:00</Von><Bis>15:30</Bis></Buchung>` +
-		`<Stempel><Zeitstempel>18.08.2026 07:00:12</Zeitstempel><Buchungsart>Kommen</Buchungsart><Benutzer>d.halko</Benutzer></Stempel>` +
-		`<Stempel><Zeitstempel>18.08.2026 15:30:00</Zeitstempel><Buchungsart>Gehen</Buchungsart><Benutzer>d.halko</Benutzer></Stempel></Export>`
+		`<Stempel><Zeitstempel>18.08.2026 07:00:12</Zeitstempel><Buchungsart>Kommen</Buchungsart><Benutzer>e.beispiel</Benutzer></Stempel>` +
+		`<Stempel><Zeitstempel>18.08.2026 15:30:00</Zeitstempel><Buchungsart>Gehen</Buchungsart><Benutzer>e.beispiel</Benutzer></Stempel></Export>`
 	write(t, dir, "export.xml", []byte(x))
 	bookings, res := importOptiTime(dir, ident())
 	if res.Files[0].Format != "xml" || res.Files[0].Rows != 4 {
@@ -151,15 +151,15 @@ func TestProfileDir(t *testing.T) {
 	t.Setenv("USERPROFILE", filepath.Join(dir, "Users", "admin"))
 	t.Setenv("HOME", "")
 	t.Setenv("SystemDrive", "")
-	write(t, dir, filepath.Join("Users", "d.halko", "x.txt"), []byte("x"))
-	if got := profileDir("d.halko"); got != filepath.Join(dir, "Users", "d.halko") {
+	write(t, dir, filepath.Join("Users", "e.beispiel", "x.txt"), []byte("x"))
+	if got := profileDir("e.beispiel"); got != filepath.Join(dir, "Users", "e.beispiel") {
 		t.Fatalf("profileDir=%q", got)
 	}
 	if got := profileDir("admin"); got != filepath.Join(dir, "Users", "admin") {
 		t.Fatalf("profileDir(admin)=%q", got)
 	}
-	id := currentIdentity("FEIND\\d.halko", "parameter")
-	if id.Username != "d.halko" || id.Domain != "FEIND" || id.Source != "parameter" || id.ProfileDir == "" {
+	id := currentIdentity("FEIND\\e.beispiel", "parameter")
+	if id.Username != "e.beispiel" || id.Domain != "FEIND" || id.Source != "parameter" || id.ProfileDir == "" {
 		t.Fatalf("identity: %+v", id)
 	}
 }
@@ -168,7 +168,7 @@ func TestPersonalnummerMatchesWithoutAuto(t *testing.T) {
 	dir := t.TempDir()
 	csv := "PersNr;Datum;von;bis\n77;17.08.2026;08:00;15:30\n78;17.08.2026;09:00;15:30\n"
 	write(t, dir, "x.csv", []byte(csv))
-	id := Identity{Username: "d.halko", Keys: []string{"d.halko", "77"}, ConfirmedKeys: []string{"77"}}
+	id := Identity{Username: "e.beispiel", Keys: []string{"e.beispiel", "77"}, ConfirmedKeys: []string{"77"}}
 	bookings, res := importOptiTime(dir, id)
 	if len(bookings) != 1 || res.Identity.MatchedPerson != "77" || res.Identity.AutoMatched {
 		t.Fatalf("bookings=%d identity=%+v", len(bookings), res.Identity)
@@ -177,7 +177,7 @@ func TestPersonalnummerMatchesWithoutAuto(t *testing.T) {
 
 func TestJSONImport(t *testing.T) {
 	dir := t.TempDir()
-	js := `{"buchungen":[{"Mitarbeiter":"Halko, David","Datum":"2026-08-17","Von":"08:00","Bis":"15:30"},{"Mitarbeiter":"X","Datum":"2026-08-17","Von":"08:00","Bis":"15:30"}]}`
+	js := `{"buchungen":[{"Mitarbeiter":"Beispiel, Erika","Datum":"2026-08-17","Von":"08:00","Bis":"15:30"},{"Mitarbeiter":"X","Datum":"2026-08-17","Von":"08:00","Bis":"15:30"}]}`
 	write(t, dir, "export.json", []byte(js))
 	bookings, _ := importOptiTime(dir, ident())
 	if len(bookings) != 1 {
@@ -207,7 +207,7 @@ func TestFindOptiTimePath(t *testing.T) {
 		t.Fatalf("explicit: %q %q", p2, src2)
 	}
 	// Benutzerprofil C:\Users\<user>\AppData\Local\OptiTime hat Vorrang vor der allgemeinen Suche
-	prof := filepath.Join(dir, "Users", "d.halko")
+	prof := filepath.Join(dir, "Users", "e.beispiel")
 	write(t, prof, filepath.Join("AppData", "Local", "OptiTime", "stempel.csv"), []byte("Datum;von;bis\n"))
 	p3, src3, _ := findOptiTimePath("", "", prof)
 	if src3 != "benutzerprofil" || !strings.HasSuffix(p3, filepath.Join("AppData", "Local", "OptiTime")) {

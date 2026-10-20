@@ -24,7 +24,7 @@ for i in range(3000):
     rows.append((str(1042 if i % 2 == 0 else 2001), d, "%02d:%02d" % (i % 24, i % 60), "Kommen" if i % 2 == 0 else "Gehen", ""))
 c.executemany("INSERT INTO Buchungen (Personalnummer, Datum, Uhrzeit, Buchungsart, Bemerkung) VALUES (?,?,?,?,?)", rows)
 c.execute("INSERT INTO Buchungen (Personalnummer, Datum, Uhrzeit, Buchungsart, Bemerkung) VALUES ('1042','2026-09-11','06:54','Kommen',?)", ("x" * 9000,))
-c.execute("INSERT INTO Mitarbeiter VALUES (1042, 'Halko, David')")
+c.execute("INSERT INTO Mitarbeiter VALUES (1042, 'Beispiel, Erika')")
 c.execute("INSERT INTO Mitarbeiter VALUES (2001, 'Muster, Erika')")
 c.commit()
 `
@@ -76,14 +76,14 @@ func TestSQLiteReader(t *testing.T) {
 	if rows[0]["Personalnummer"] != "1042" || rows[0]["Buchungsart"] != "Kommen" {
 		t.Fatalf("erste Zeile: %v", rows[0])
 	}
-	if mrows, _ := db.rows(ma, 0); len(mrows) != 2 || mrows[0]["Name"] != "Halko, David" || mrows[0]["Nr"] != "1042" {
+	if mrows, _ := db.rows(ma, 0); len(mrows) != 2 || mrows[0]["Name"] != "Beispiel, Erika" || mrows[0]["Nr"] != "1042" {
 		t.Fatalf("Mitarbeiter: %v", mrows)
 	}
 }
 
 func TestSQLiteImport(t *testing.T) {
 	path := makeTestDB(t)
-	id := Identity{Username: "d.halko", Keys: []string{"d.halko", "1042"}, ConfirmedKeys: []string{"1042"}}
+	id := Identity{Username: "e.beispiel", Keys: []string{"e.beispiel", "1042"}, ConfirmedKeys: []string{"1042"}}
 	bookings, res := importOptiTime(filepath.Dir(path), id)
 	if len(res.Files) != 1 || !strings.HasPrefix(res.Files[0].Format, "sqlite") {
 		t.Fatalf("files: %+v", res.Files)
@@ -92,11 +92,11 @@ func TestSQLiteImport(t *testing.T) {
 		t.Fatalf("rows/skipped: %+v", res.Files[0])
 	}
 	// Personalnummer 1042 wird über die Tabelle Mitarbeiter zum Namen aufgelöst
-	if len(bookings) == 0 || res.Identity.MatchedPerson != "Halko, David" || res.Identity.AutoMatched {
+	if len(bookings) == 0 || res.Identity.MatchedPerson != "Beispiel, Erika" || res.Identity.AutoMatched {
 		t.Fatalf("bookings=%d identity=%+v", len(bookings), res.Identity)
 	}
 	for _, b := range bookings {
-		if b.Person != "Halko, David" {
+		if b.Person != "Beispiel, Erika" {
 			t.Fatalf("fremde Buchung: %+v", b)
 		}
 	}
@@ -117,7 +117,7 @@ func TestColumnsFromCreate(t *testing.T) {
 }
 
 func TestEpochValues(t *testing.T) {
-	m := map[string]string{"Zeitstempel": "1788764040", "Buchungsart": "Kommen", "Benutzer": "d.halko"} // 2026-09-07 06:54 UTC
+	m := map[string]string{"Zeitstempel": "1788764040", "Buchungsart": "Kommen", "Benutzer": "e.beispiel"} // 2026-09-07 06:54 UTC
 	e, ok := entryFromMap(m)
 	if !ok || e.date != "2026-09-07" || e.start == "" {
 		t.Fatalf("epoch: %+v ok=%v", e, ok)

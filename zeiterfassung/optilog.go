@@ -10,7 +10,7 @@ package main
 //
 //	11.09.2026 13:19:12 2/10[NB-EFEIND-0021] - StarteBuchungsvorgang
 //	11.09.2026 13:19:12 2/10[NB-EFEIND-0021] - VerarbeiteBuchung: PNR=1626 KST=000007 …
-//	11.09.2026 13:19:12 2/10[NB-EFEIND-0021] - Erzeuge_Buchung_Online Meldung: Halko, David hat umgestempelt.
+//	11.09.2026 13:19:12 2/10[NB-EFEIND-0021] - Erzeuge_Buchung_Online Meldung: Beispiel, Erika hat umgestempelt.
 //
 // Maßgeblich ist der Zeitstempel der Protokollzeile; BEG_STD/BEG_MIN enthalten
 // beide die Stunde und sind als Uhrzeit unbrauchbar.

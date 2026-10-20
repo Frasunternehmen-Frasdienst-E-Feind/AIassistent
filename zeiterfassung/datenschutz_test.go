@@ -30,7 +30,7 @@ func TestDiagnoseKonfigNurErlaubteWerte(t *testing.T) {
 	leaks := []string{
 		" SMTPPW=geheim1", "SMTP_PASS=geheim2", "MAIL_PASSWD=geheim3", ";SMTPPW=geheim4",
 		"SMTPPW: geheim5", "SMTP PW=geheim6", "smtp.password=geheim7", "APIKEY=geheim8",
-		`  "password": "geheim9",`, "<Passwort>geheim10</Passwort>", "1626;Muster;geheim11", "SMTPPW\t=geheim12",
+		`  "password": "geheim9",`, "<Passwort>geheim10</Passwort>", "9999;Muster;geheim11", "SMTPPW\t=geheim12",
 	}
 	for _, l := range leaks {
 		if got := diagConfigLine(l); strings.Contains(got, "geheim") {

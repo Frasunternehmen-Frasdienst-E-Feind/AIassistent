@@ -13,9 +13,9 @@ Zeiterfassung. Zwei Betriebsarten:
 `Stempeluhr.exe` ist eine einzelne Datei ohne Installation. Beim Start:
 
 1. **Benutzer festlegen**: Standard ist der angemeldete Windows-Benutzer. Mit dem Startparameter
-   `--user d.halko` oder der Umgebungsvariable `STEMPELUHR_USER=d.halko` wird der Benutzer als
+   `--user e.beispiel` oder der Umgebungsvariable `STEMPELUHR_USER=e.beispiel` wird der Benutzer als
    Variable gesetzt, z. B. in einer Verknüpfung oder Batch-Datei. Daraus ergibt sich das Profil
-   `C:\Users\d.halko`, auch wenn das Programm unter einem anderen Konto läuft.
+   `C:\Users\e.beispiel`, auch wenn das Programm unter einem anderen Konto läuft.
 2. **OptiTime-Ordner suchen**, in dieser Reihenfolge: Startparameter `--optitime`,
    Umgebungsvariable `OPTITIME_PATH`, gespeicherter Pfad aus den Einstellungen, dann
    **`C:\Users\<user>\AppData\Local\OptiTime`** (sowie `AppData\Roaming\OptiTime`,
@@ -80,7 +80,7 @@ liegt weiterhin auf dem Server (`\\S21\OptiControl` laut `config.ini`).
 ### Diagnose
 
 Wenn nichts oder das Falsche eingelesen wird: In der OptiTime-Karte auf **Diagnose** klicken
-(oder `Stempeluhr.exe --user d.halko --diagnose` starten). Der Bericht listet alle Dateien im
+(oder `Stempeluhr.exe --user e.beispiel --diagnose` starten). Der Bericht listet alle Dateien im
 OptiTime-Ordner mit Größe, Datum und erkanntem Typ und zeigt je Datei nur **Struktur und
 Anzahlen**, keine Datenzeilen:
 - `config.ini`: alle Schlüssel, Werte aber nur für `KSTPAUSE`, `DEFAULTKST`, `SERVERZEIT`,
@@ -104,7 +104,7 @@ Der Bericht liegt unter `%APPDATA%\Stempeluhr\diagnose.txt`.
 ### Startparameter
 
 ```
-Stempeluhr.exe --user d.halko                            Benutzer als Variable setzen (auch STEMPELUHR_USER)
+Stempeluhr.exe --user e.beispiel                            Benutzer als Variable setzen (auch STEMPELUHR_USER)
 Stempeluhr.exe --optitime "\\server\OptiTime\Export"   OptiTime-Ordner fest vorgeben
 Stempeluhr.exe --data "%OneDrive%\Stempeluhr"            Datenordner vorgeben (sonst in der Oberfläche einstellbar)
 Stempeluhr.exe --port 8123 --no-browser                  fester Port, Browser nicht öffnen
@@ -117,7 +117,7 @@ Stempeluhr.exe --sammeln --stillstand 336h               Stillstandswarnung erst
 Protokoll: `%APPDATA%\Stempeluhr\stempeluhr.log`. Einstellungen: `%APPDATA%\Stempeluhr\config.json`.
 `Stempeluhr-Konsole.exe` ist dieselbe App mit sichtbarem Konsolenfenster für die Fehlersuche.
 
-Beispiel-Verknüpfung (Ziel): `"C:\Tools\Stempeluhr.exe" --user d.halko`
+Beispiel-Verknüpfung (Ziel): `"C:\Tools\Stempeluhr.exe" --user e.beispiel`
 
 ### Automatisch sammeln
 
