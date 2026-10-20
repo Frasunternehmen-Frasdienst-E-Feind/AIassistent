@@ -56,7 +56,7 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
   Innovationspreis-Frist), nicht ungeprüft übernehmen – verifizieren und markieren.
 
 ## Kontextdateien
-- `cockpit-a1/Feind-Cockpit-A1.html` – Quelle des führenden Cockpits (https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd); `messe/rotterdam-2027/feind-cockpit-v3.html` (GRG81) = Altstand bis 13.10.2026; `feind-cockpit.html` (v1.1) und `infratech-2027-liste.html` = Altstände
+- `cockpit-a1/Feind-Cockpit-A1.html` – Quelle des führenden Cockpits (https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd); einzige Quelle seit 20.10.2026 (`messe/rotterdam-2027/feind-cockpit-v3.html` entfallen); `feind-cockpit.html` (v1.1) und `infratech-2027-liste.html` = Altstände
 - `messe/rotterdam-2027/MASTER-TODO.md` – Aufgabenquelle
 - `messe/rotterdam-2027/FUNKTIONS-BACKLOG.md` – Feature-Backlog
 - `messe/rotterdam-2027/KATEGORISIERUNG-MANUS.md` – Herkunft/Integration der Daten

@@ -415,7 +415,7 @@ geladene Dienste anpassen; TLS/HSTS erzwingen.
 
 ### 12.1 Internes Feind Cockpit – Kartenansicht der Ausschreibungen (Stand v3.1, 01.10.2026)
 
-Betrifft das Artefakt „Feind Cockpit“ (Quelle: `messe/rotterdam-2027/feind-cockpit-v3.html`,
+Betrifft das Artefakt „Feind Cockpit“ (Quelle: `cockpit-a1/Feind-Cockpit-A1.html`, bis 19.10.2026 `messe/rotterdam-2027/feind-cockpit-v3.html`,
 Doku: `messe/rotterdam-2027/KARTE.md`). Nutzerkreis: Beschäftigte, keine Website-Besucher.
 
 | Datenfluss | Wann | Empfänger | Daten | Rechtsgrundlage (Vorschlag) |

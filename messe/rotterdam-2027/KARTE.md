@@ -1,7 +1,7 @@
 # Kartenansicht im Feind Cockpit (v3.1)
 
-Gilt für `feind-cockpit-v3.html`, das ist die Quelle des Artefakts „Feind Cockpit (Copy)“
-(https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i). Betroffen sind der Reiter
+Gilt für `../../cockpit-a1/Feind-Cockpit-A1.html`, die Quelle des Artefakts „Feind Cockpit“
+(https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd; bis 19.10.2026 `feind-cockpit-v3.html`). Betroffen sind der Reiter
 **Marketing › Ausschreibungen** (Choropleth und Pins) und **Wissen › Projektkarte › Straßenkarte**.
 
 ## Was die Karte zeigt
@@ -79,7 +79,7 @@ Hinweise:
 
 ## Aufbau im Code
 
-| Modul in `feind-cockpit-v3.html` | Aufgabe |
+| Modul in `Feind-Cockpit-A1.html` | Aufgabe |
 |---|---|
 | `geo-logic.js` | reine Funktionen: `classes()`, `provider()`, `consent.read/grant/setOn` |
 | `geomap.js` | `app.geoMap(opts)`: Leaflet, Einwilligungsdialog, Legende, Cluster, Lazy-Init per IntersectionObserver, Ladehinweis (`aria-busy`) |

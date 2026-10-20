@@ -4,8 +4,8 @@
 > `Feind-Cockpit-A1.html` ist der Live-Stand vom 12./13.10.2026 (enthält v3, Wissens-Upload M1, Diagramme, Handy-Tabellen)
 > plus aus GRG81 übernommen: „Blockiert durch“ beim Anlegen, Schalter `notionTasks`/`kbAuto` standardmäßig an, Startreiter
 > der Welt „Wissen“. Neu: Marketing-Modul **KPIs** (`kpis/<id>`, ehemals KOMPASS KPI-Tracker) und Diagrammfarben
-> `chart-1…4` laut Freigabe vom 09.10.2026. GRG81 („Feind Cockpit (Copy)“) und `messe/rotterdam-2027/feind-cockpit-v3.html`
-> sind Altstand: nicht mehr beschreiben, Archivierung nur nach Rückfrage.
+> nach Farbsystem 1.2 (drei Farben, Entscheidung 19.10.2026). GRG81 („Feind Cockpit (Copy)“) ist Altstand: nicht mehr
+> beschreiben. Seit 20.10.2026 ist diese Datei die **einzige** Quelle; `messe/rotterdam-2027/feind-cockpit-v3.html` ist entfallen.
 
 **Live:** https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd (Veröffentlichung nach Freigabe)
 

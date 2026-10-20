@@ -8,7 +8,7 @@ auf der **InfraTech 2027, Rotterdam Ahoy, 12.–15. Januar 2027**.
 | Datei | Zweck |
 |---|---|
 | `feind-cockpit.html` | Altstand v1.1 (Artefakt `4zX58…`, inzwischen gelöscht). Enthält die Erstfassung des Reiters „Checkliste 26→27“. |
-| `feind-cockpit-v3.html` | **Quelle des führenden Live-Cockpits** „Feind Cockpit“ (ab 07.10.2026; vorher „Feind Cockpit (Copy)“) (v3.1, Leaflet-Karte): Kartenansicht mit Einwilligung, konfigurierbarem Kachelanbieter, Clustering, lokal eingebetteter Schrift. Doku: **`KARTE.md`**, Tests: `test/` (Unit) und `e2e/` (Playwright). |
+| `../../cockpit-a1/Feind-Cockpit-A1.html` | **Einzige Quelle des Live-Cockpits** „Feind Cockpit“ (seit 20.10.2026; `feind-cockpit-v3.html` entfallen, Leaflet-Karte): Kartenansicht mit Einwilligung, konfigurierbarem Kachelanbieter, Clustering, lokal eingebetteter Schrift. Doku: **`KARTE.md`**, Tests: `test/` (Unit) und `e2e/` (Playwright). |
 | `infratech-2027-liste.html` | Vorgängerstand des Cockpits (v2, Altstand – nicht mehr live). Aufgaben, Fristen, Budget, KPIs, Lessons Learned, Faktencheck, Wissensbasis. Kategorisiert, filterbar, mit Fortschritt und Terminwarnungen. |
 | `MASTER-TODO.md` | Vollständige, kategorisierte Aufgabenliste als versionierbarer Text (Grundlage des Cockpits). |
 | `KATEGORISIERUNG-MANUS.md` | Kategorisierung der MANUS-Export-Inhalte + Plan, wie sie die ToDo-Liste ergänzen. |
@@ -25,7 +25,7 @@ Einstieg/Überblick über das Gesamtsystem: **`SYSTEM-UEBERSICHT.md`**.
 - **Führendes Cockpit (ab 07.10.2026):** „Feind Cockpit“ – https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd. Es enthält alles aus „Feind Cockpit (Copy)“ (GRG81) plus Aktionsleiste, Tooltips, Bibliothek, Links, PDF-Rückgabe, Schutz und Brennglas. Ziel des visuellen Umbaus (`umbau/`).
 - Vorher führend: „Feind Cockpit (Copy)“ – https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i (Stand 02.10.2026, bleibt bis zur Stilllegung unverändert).
   Seit 02.10.2026 wieder mit dem Reiter **„Checkliste 26→27“** (64 Punkte der ToDo-Liste `2FT2wp…`).
-  `feind-cockpit-v3.html` und `cockpit-a1/Feind-Cockpit-A1.html` entsprechen dem Live-Stand von „Feind Cockpit“ vom 19.10.2026 (Version 46ba plus Dateisuche-Fix und Diagrammfarben nach Farbsystem 1.2; inkl. Checkliste, db `checkliste/<Kategorie-Punkt>`).
+  `cockpit-a1/Feind-Cockpit-A1.html` entspricht dem Live-Stand von „Feind Cockpit“ vom 20.10.2026 (Version 8465); `feind-cockpit-v3.html` ist entfallen (eine Quelle statt zwei).
 - Das frühere Cockpit `4zX58…` existiert nicht mehr.
 - Datenhaltung: geteilte Artefakt-Datenbank (`db`): `tasks/<id>` (Aufgaben), `checkliste/<Kategorie-Punkt>` = `{ status, rolle, frist, budget, beschluss, notiz }` (Checkliste 26→27), Alt-Bestand `overrides/<taskId>`.
   Fällt die Datenbank aus, speichert die Seite pro Gerät lokal (localStorage).
