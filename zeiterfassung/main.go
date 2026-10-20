@@ -11,6 +11,7 @@ import (
 	"embed"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io/fs"
@@ -384,10 +385,12 @@ func (a *App) saveState() error {
 // wenn sie vorher mit weiteren Rechten existierte. Unter Windows gelten die
 // Rechte des Benutzerprofils.
 func writePrivate(path string, b []byte) error {
-	if err := os.WriteFile(path, b, 0o600); err != nil {
+	// erst einschränken, dann schreiben: WriteFile behält die Rechte einer
+	// vorhandenen Datei, sonst wäre der neue Inhalt kurz für alle lesbar
+	if err := os.Chmod(path, 0o600); err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return err
 	}
-	return os.Chmod(path, 0o600)
+	return os.WriteFile(path, b, 0o600)
 }
 
 // identityKeys: Windows-Konto plus bestätigte Kennungen aus dem Profil.
@@ -636,7 +639,11 @@ func (a *App) handleConfig(w http.ResponseWriter, r *http.Request) {
 	if in.Keys != nil {
 		a.state.Profile.Keys = in.Keys
 	}
-	_ = a.saveState()
+	if err := a.saveState(); err != nil {
+		a.mu.Unlock()
+		http.Error(w, "Speichern fehlgeschlagen: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 	a.mu.Unlock()
 	a.runSync()
 	a.mu.Lock()
@@ -707,6 +714,10 @@ func (a *App) handleDiagnose(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) handlePing(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	a.mu.Lock()
 	a.lastPing = time.Now()
 	a.mu.Unlock()
@@ -737,6 +748,9 @@ func (a *App) routes() http.Handler {
 	mux.Handle("/", http.FileServer(http.FS(sub)))
 	return localOnly(mux)
 }
+
+// listenAddr: nur Loopback – die Stempeluhr ist von anderen Rechnern nicht erreichbar.
+func listenAddr(port int) string { return fmt.Sprintf("127.0.0.1:%d", port) }
 
 // localOnly lässt nur Anfragen der eigenen Oberfläche durch: Host muss
 // 127.0.0.1:<Port> oder localhost:<Port> sein (Schutz vor DNS-Rebinding), ein
@@ -833,7 +847,7 @@ func main() {
 		os.Exit(code)
 	}
 
-	ln, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", *portFlag))
+	ln, err := net.Listen("tcp", listenAddr(*portFlag))
 	if err != nil {
 		fatal("Stempeluhr kann keinen lokalen Port öffnen:\n" + err.Error())
 	}

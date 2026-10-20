@@ -1079,8 +1079,8 @@ func importOptiTime(path string, id Identity) ([]Booking, SyncResult) {
 	sort.Strings(persons)
 	res.Persons = len(persons)
 
-	// Zuordnung: erst über die bestätigten Kennungen, sonst automatisch über den
-	// Windows-Anzeigenamen bzw. Anmeldenamen – nur wenn eindeutig.
+	// Zuordnung: erst über die bestätigten Kennungen, sonst automatisch nur über
+	// den vollständigen Windows-Anzeigenamen – nur wenn eindeutig.
 	matched := ""
 	confirmed := Identity{Keys: id.ConfirmedKeys}
 	for _, p := range all {
