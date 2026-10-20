@@ -66,7 +66,7 @@ test('Fristen: Zeitachse ab heute mit Legende, alle Fristen weiterhin als Tabell
   assert.ok(await page.locator('.fc-timeline .fc-mark').count() >= 5);
   assert.match(await page.locator('.fc-legend').innerText(), /bestätigt[\s\S]*Referenz[\s\S]*Messetermin/);
   await page.getByText('Alle Fristen als Tabelle').click();
-  assert.equal(await page.locator('details table.data tbody tr').count(), 10);
+  assert.equal(await page.locator('details table.data tbody tr').count(), 11); // 11 Fristen: Pitch Innovationspreis (11.12.) kam im Live-Stand dazu
   await ctx.close();
 });
 

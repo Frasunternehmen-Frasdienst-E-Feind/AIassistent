@@ -28,6 +28,7 @@ Manager-Agent und Migration.
 | `events/<id>` | `{ title, type, date, endDate, location, region, checklist:[{area,item,done}], followupStatus, leadsCaptured, notes, slug }` | Skill `event-planning`. **`events/infratech-2027` = Brücke zur InfraTech-Welt** |
 | `seo_keywords/<id>`, `seo_traffic/<JJJJ-MM>`, `seo_gaps/<id>` | wie bisher | Skill `seo-local` |
 | `references/<id>` | `{ title, year, region, client, clientApproved, services[], facts[], summary, feedback, files[] }` | Skill `reference-library` |
+| `kpis/<id>` | `{ kpi, ziel, ist, basis, messung, checkin }`; `ziel` als Text („≤ 1“, „≥ 300“, „0 Fälle“, ohne Zeichen = höchstens), `ist` Zahl oder `null` | `/cockpit-sync`, Freitags-Review (ehemals KOMPASS KPI-Tracker) |
 | `briefings/<JJJJ-MM-TT>` | Marketing-Tagesbrief `{ date, kind:'marketing', summary, items[], weekPlan[], generatedBy, createdAt }` | Copilot / Seite |
 | `briefings/<JJJJ-MM-TT>-messe` | Messe-Briefing InfraTech, gleiche Form mit `kind:'messe'` | Seite (KI) |
 | `meta/sync` | `{ <modul>: { at, source } }` | `/cockpit-sync` |

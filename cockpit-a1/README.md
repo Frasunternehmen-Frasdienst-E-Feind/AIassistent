@@ -1,12 +1,13 @@
 # Feind Cockpit A1 (Live-Stand)
 
-> **Übernommen in v3 (08.10.2026):** Alle A1-Funktionen stecken jetzt im führenden Cockpit v3 (`messe/rotterdam-2027/feind-cockpit-v3.html`, Artefakt GRG81). `src/` bleibt die Quelle dieser Module; Änderungen dort in v3 übernehmen. A1 ist seit der Veröffentlichung von v3 (08.10.2026, GRG81 Version 10) eingefroren: nicht mehr beschreiben.
+> **Entscheidung 14.10.2026 (LevelUp Cluster 2):** A1 ist wieder **das führende Cockpit** und Ziel von `/cockpit-sync`.
+> `Feind-Cockpit-A1.html` ist der Live-Stand vom 12./13.10.2026 (enthält v3, Wissens-Upload M1, Diagramme, Handy-Tabellen)
+> plus aus GRG81 übernommen: „Blockiert durch“ beim Anlegen, Schalter `notionTasks`/`kbAuto` standardmäßig an, Startreiter
+> der Welt „Wissen“. Neu: Marketing-Modul **KPIs** (`kpis/<id>`, ehemals KOMPASS KPI-Tracker) und Diagrammfarben
+> `chart-1…4` laut Freigabe vom 09.10.2026. GRG81 („Feind Cockpit (Copy)“) und `messe/rotterdam-2027/feind-cockpit-v3.html`
+> sind Altstand: nicht mehr beschreiben, Archivierung nur nach Rückfrage.
 
-**Live:** https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd (Version 17 vom 01.10.2026, Veröffentlichung nach Freigabe)
-
-> **Stand Repo 02.10.2026: vor der Live-Version.** Korrekturen aus dem Code-Review zu PR #36 (Schreibreihenfolge je
-> Aufgabe, „Blockiert durch“ beim Anlegen, Übertragen-Sperre, Admin-Schalter `notionTasks`) sind hier enthalten und
-> gehen erst mit der nächsten freigegebenen Veröffentlichung live.
+**Live:** https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd (Veröffentlichung nach Freigabe)
 
 `Feind-Cockpit-A1.html` ist der veröffentlichte Stand des Artefakts. A1 ist die führende Codebasis;
 der Ordner `cockpit/` ist der ältere A4-Stand und nur noch Archiv.

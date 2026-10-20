@@ -33,7 +33,8 @@ async function open({ reducedMotion = 'no-preference', colorScheme = 'light' } =
   await page.locator('.lz-day').first().waitFor();
   return { page, ctx, errors };
 }
-const settle = page => page.waitForFunction(() => document.getAnimations().every(a => a.playState !== 'running'), null, { timeout: 3000 });
+// Endlose Ziermotive (Design 2.0, Kopf) laufen immer; gewartet wird nur auf endliche Animationen.
+const settle = page => page.waitForFunction(() => document.getAnimations().every(a => a.playState !== 'running' || a.effect.getTiming().iterations === Infinity), null, { timeout: 3000 });
 
 test('Ringe, Ziel-Balken und Tabelle zeigen die Stückzahlen; Diagramme haben Textalternativen', async () => {
   const { page, ctx, errors } = await open();
@@ -56,7 +57,7 @@ test('Plus animiert nur den geänderten Tag (Ring und Zeile), nicht das ganze Mo
   await settle(page);
   await page.getByRole('button', { name: 'Tag 2 A erhöhen' }).click();
   await page.waitForFunction(() => document.querySelectorAll('.lz-day .fc-center')[1].textContent === '69');
-  const targets = await page.evaluate(() => document.getAnimations().map(a => {
+  const targets = await page.evaluate(() => document.getAnimations().filter(a => a.effect.getTiming().iterations !== Infinity).map(a => {
     const t = a.effect && a.effect.target;
     const card = t && t.closest('.lz-day');
     const row = t && t.closest('.fc-hrow');

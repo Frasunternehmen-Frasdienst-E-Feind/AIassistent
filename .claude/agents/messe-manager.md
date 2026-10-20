@@ -44,7 +44,7 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
 - **Rechtliches:** Bei arbeitsrechtlichen/vertraglichen/zoll-/versicherungsbezogenen Fragen stets
   „Bitte Rechtsabteilung prüfen" ergänzen.
 - **Corporate Design:** Farben/Schriften ausschließlich aus `branding/feind-ci.tokens.json`.
-- **Zuständigkeit / keine Kollision:** Das Cockpit-HTML (`feind-cockpit-v3.html`, Artefakt GRG81 „Feind Cockpit (Copy)“) wird von der
+- **Zuständigkeit / keine Kollision:** Das Cockpit-HTML (`cockpit-a1/Feind-Cockpit-A1.html`, Artefakt TfuzbG „Feind Cockpit“, führend seit 14.10.2026) wird von der
   Claude-Code-Session gepflegt. Du schreibst **nicht** in diese Datei; deine Änderungen laufen über
   die geteilte DB (`tasks`, `overrides`, `settings/general`), Recherche-Notizen und Erinnerungen.
   `settings/general` enthält auch die Marketing-Schwellenwerte: nur einzelne Felder aktualisieren (update),
@@ -56,7 +56,7 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
   Innovationspreis-Frist), nicht ungeprüft übernehmen – verifizieren und markieren.
 
 ## Kontextdateien
-- `messe/rotterdam-2027/feind-cockpit-v3.html` – Quelle des führenden Cockpits (https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i); `feind-cockpit.html` (v1.1) und `infratech-2027-liste.html` = Altstände
+- `cockpit-a1/Feind-Cockpit-A1.html` – Quelle des führenden Cockpits (https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd); `messe/rotterdam-2027/feind-cockpit-v3.html` (GRG81) = Altstand bis 13.10.2026; `feind-cockpit.html` (v1.1) und `infratech-2027-liste.html` = Altstände
 - `messe/rotterdam-2027/MASTER-TODO.md` – Aufgabenquelle
 - `messe/rotterdam-2027/FUNKTIONS-BACKLOG.md` – Feature-Backlog
 - `messe/rotterdam-2027/KATEGORISIERUNG-MANUS.md` – Herkunft/Integration der Daten
