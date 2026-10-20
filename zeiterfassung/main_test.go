@@ -12,7 +12,7 @@ import (
 func testApp(t *testing.T, base string) *App {
 	t.Helper()
 	t.Setenv("APPDATA", base)
-	a := &App{id: Identity{Username: "d.halko"}}
+	a := &App{id: Identity{Username: "e.beispiel"}}
 	a.cfgPath = filepath.Join(baseDir(), "config.json")
 	a.logFile = filepath.Join(baseDir(), "stempeluhr.log")
 	a.dataDir = baseDir()
@@ -38,9 +38,9 @@ func readState(t *testing.T, path string) State {
 }
 
 func TestExpandPath(t *testing.T) {
-	t.Setenv("OneDrive", filepath.Join("C:", "Users", "d.halko", "OneDrive"))
+	t.Setenv("OneDrive", filepath.Join("C:", "Users", "e.beispiel", "OneDrive"))
 	got := expandPath(`  "%OneDrive%\Stempeluhr"  `)
-	want := filepath.Join("C:", "Users", "d.halko", "OneDrive") + `\Stempeluhr`
+	want := filepath.Join("C:", "Users", "e.beispiel", "OneDrive") + `\Stempeluhr`
 	if got != want {
 		t.Fatalf("got %q want %q", got, want)
 	}
@@ -62,7 +62,7 @@ func TestSwitchDataDirMigriert(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if a.dataFile != filepath.Join(target, "d.halko", "data.json") {
+	if a.dataFile != filepath.Join(target, "e.beispiel", "data.json") {
 		t.Fatalf("neue Datei: %s", a.dataFile)
 	}
 	if s := readState(t, a.dataFile); len(s.Bookings) != 1 || s.Bookings[0].ID != "m1" {
@@ -99,11 +99,11 @@ func TestSwitchDataDirFuehrtZusammen(t *testing.T) {
 	target := filepath.Join(base, "Netz")
 	// Im Zielordner liegt bereits eine Datei mit anderer Buchung
 	pre := State{Bookings: []Booking{{ID: "alt", Date: "2026-08-31", Start: "07:00", Kind: kindWork}}}
-	if err := os.MkdirAll(filepath.Join(target, "d.halko"), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Join(target, "e.beispiel"), 0o755); err != nil {
 		t.Fatal(err)
 	}
 	b, _ := json.Marshal(pre)
-	if err := os.WriteFile(filepath.Join(target, "d.halko", "data.json"), b, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(target, "e.beispiel", "data.json"), b, 0o644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -148,7 +148,7 @@ func TestDataSuggestions(t *testing.T) {
 	base := t.TempDir()
 	a := testApp(t, base)
 	t.Setenv("OneDrive", filepath.Join(base, "OneDrive"))
-	a.id.ProfileDir = filepath.Join(base, "Users", "d.halko")
+	a.id.ProfileDir = filepath.Join(base, "Users", "e.beispiel")
 	got := a.dataSuggestions()
 	if len(got) != 3 || got[0] != filepath.Join(base, "OneDrive", "Stempeluhr") || got[2] != baseDir() {
 		t.Fatalf("Vorschläge: %v", got)
@@ -180,12 +180,12 @@ func TestLastBookingDate(t *testing.T) {
 func TestCollectReportOK(t *testing.T) {
 	now := time.Date(2026, 9, 15, 7, 0, 0, 0, time.UTC)
 	a := &App{
-		id:       Identity{Username: "d.halko", Source: "windows", Host: "NB-EFEIND-0021"},
-		dataFile: `C:\Users\d.halko\AppData\Roaming\Stempeluhr\d.halko\data.json`,
+		id:       Identity{Username: "e.beispiel", Source: "windows", Host: "NB-EFEIND-0021"},
+		dataFile: `C:\Users\e.beispiel\AppData\Roaming\Stempeluhr\e.beispiel\data.json`,
 		sync: SyncResult{
-			Path: `C:\Users\d.halko\AppData\Local\OptiTime`, PathSource: "benutzerprofil",
+			Path: `C:\Users\e.beispiel\AppData\Local\OptiTime`, PathSource: "benutzerprofil",
 			Files: []FileResult{{}}, Imported: 4,
-			Identity: Identity{MatchedPerson: "Halko, David"},
+			Identity: Identity{MatchedPerson: "Beispiel, Erika"},
 		},
 		state: State{Bookings: []Booking{{Date: "2026-09-14", Start: "06:48", End: ptr("14:37")}}},
 	}
@@ -193,7 +193,7 @@ func TestCollectReportOK(t *testing.T) {
 	if code != 0 {
 		t.Errorf("Exit-Code = %d, erwartet 0\n%s", code, report)
 	}
-	for _, want := range []string{"Halko, David", "2026-09-14", "NB-EFEIND-0021"} {
+	for _, want := range []string{"Beispiel, Erika", "2026-09-14", "NB-EFEIND-0021"} {
 		if !strings.Contains(report, want) {
 			t.Errorf("Bericht enthält %q nicht:\n%s", want, report)
 		}
@@ -208,7 +208,7 @@ func TestCollectReportOK(t *testing.T) {
 func TestCollectReportProbleme(t *testing.T) {
 	now := time.Date(2026, 9, 30, 7, 0, 0, 0, time.UTC)
 	a := &App{
-		id:    Identity{Username: "d.halko", Source: "windows"},
+		id:    Identity{Username: "e.beispiel", Source: "windows"},
 		sync:  SyncResult{Path: `C:\OptiTime`, Errors: []string{"Datei nicht lesbar"}},
 		state: State{Bookings: []Booking{{Date: "2026-09-14", Start: "06:48", End: nil}}},
 	}

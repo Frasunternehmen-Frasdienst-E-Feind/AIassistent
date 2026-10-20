@@ -11,25 +11,25 @@ import (
 const testLog = `20.08.2026 13:01:05 1/10[NB-TEST-01] - Programm gestartet
 20.08.2026 13:01:05 2/10[NB-TEST-01] - LadeOfflineListen
 21.08.2026 06:44:04 2/10[NB-TEST-01] - StarteBuchungsvorgang
-21.08.2026 06:44:04 2/10[NB-TEST-01] - 1626 -1 000999
-21.08.2026 06:44:04 2/10[NB-TEST-01] - VerarbeiteBuchung: PNR=1626 KST=000999 BEG_STD=6 BEG_MIN=6
+21.08.2026 06:44:04 2/10[NB-TEST-01] - 9999 -1 000999
+21.08.2026 06:44:04 2/10[NB-TEST-01] - VerarbeiteBuchung: PNR=9999 KST=000999 BEG_STD=6 BEG_MIN=6
 21.08.2026 06:44:04 2/10[NB-TEST-01] - Erzeuge_Buchung_Online Meldung: Muster, Max hat angestempelt.
 21.08.2026 06:44:08 2/10[NB-TEST-01] - StarteBuchungsvorgang beendet
-21.08.2026 09:21:49 2/10[NB-TEST-01] - VerarbeiteBuchung: PNR=1626 KST=000007 BEG_STD=9 BEG_MIN=9
+21.08.2026 09:21:49 2/10[NB-TEST-01] - VerarbeiteBuchung: PNR=9999 KST=000007 BEG_STD=9 BEG_MIN=9
 21.08.2026 09:21:49 2/10[NB-TEST-01] - Erzeuge_Buchung_Online Meldung: Muster, Max hat umgestempelt.
-21.08.2026 09:30:21 2/10[NB-TEST-01] - VerarbeiteBuchung: PNR=1626 KST=000999 BEG_STD=9 BEG_MIN=9
+21.08.2026 09:30:21 2/10[NB-TEST-01] - VerarbeiteBuchung: PNR=9999 KST=000999 BEG_STD=9 BEG_MIN=9
 21.08.2026 09:30:21 2/10[NB-TEST-01] - Erzeuge_Buchung_Online Meldung: Muster, Max hat umgestempelt.
-21.08.2026 15:33:04 2/10[NB-TEST-01] - VerarbeiteBuchung: PNR=1626 KST=000000 BEG_STD=15 BEG_MIN=15
+21.08.2026 15:33:04 2/10[NB-TEST-01] - VerarbeiteBuchung: PNR=9999 KST=000000 BEG_STD=15 BEG_MIN=15
 21.08.2026 15:33:04 2/10[NB-TEST-01] - Erzeuge_Buchung_Online Meldung: Muster, Max hat ausgestempelt.
-21.08.2026 15:40:00 2/10[NB-TEST-01] - VerarbeiteBuchung: PNR=1626 KST=000000 BEG_STD=15 BEG_MIN=15
+21.08.2026 15:40:00 2/10[NB-TEST-01] - VerarbeiteBuchung: PNR=9999 KST=000000 BEG_STD=15 BEG_MIN=15
 21.08.2026 15:40:00 2/10[NB-TEST-01] - Erzeuge_Buchung_Online Meldung: Muster, Max ist noch gar nicht da.
-24.08.2026 07:00:00 2/10[NB-TEST-01] - VerarbeiteBuchung: PNR=1626 KST=000999 BEG_STD=7 BEG_MIN=7
+24.08.2026 07:00:00 2/10[NB-TEST-01] - VerarbeiteBuchung: PNR=9999 KST=000999 BEG_STD=7 BEG_MIN=7
 24.08.2026 07:00:00 2/10[NB-TEST-01] - Erzeuge_Buchung_Online Meldung: Muster, Max hat angestempelt.
 24.08.2026 08:00:00 2/10[NB-TEST-01] - VerarbeiteBuchung: PNR=2001 KST=000999 BEG_STD=8 BEG_MIN=8
 24.08.2026 08:00:00 2/10[NB-TEST-01] - Erzeuge_Buchung_Online Meldung: Fremd, Erika hat angestempelt.
 `
 
-const testOfflisteMa = "µ1626µMusterµMaxµ0µµGEHEIMPINµ0µ0µ0µ1000µµµ\r\n" +
+const testOfflisteMa = "µ9999µMusterµMaxµ0µµGEHEIMPINµ0µ0µ0µ1000µµµ\r\n" +
 	"µ2001µFremdµErikaµ0µµµ0µ0µ0µ1000µµµ\r\n"
 
 const testOfflisteTaet = "µ000000µArbeitsende vom Systemµ1µµµµµµµµµµµ\r\n" +
@@ -78,7 +78,7 @@ func TestClassifyOptiFile(t *testing.T) {
 func TestMasterUndTaetigkeitstyp(t *testing.T) {
 	dir := optiFolder(t)
 	m := loadMasterFrom(listDataFiles(dir))
-	if m.persons["1626"] != "Muster, Max" || m.persons["2001"] != "Fremd, Erika" {
+	if m.persons["9999"] != "Muster, Max" || m.persons["2001"] != "Fremd, Erika" {
 		t.Fatalf("Mitarbeiter: %v", m.persons)
 	}
 	if m.activities["000007"] != "*Pause*" || m.activities["000999"] != "Kommen" {
@@ -123,7 +123,7 @@ func TestParseOptiLog(t *testing.T) {
 		}
 	}
 	// Personalnummer und Name stehen beide zur Zuordnung bereit
-	if len(entries[0].persons) != 2 || entries[0].persons[0] != "1626" {
+	if len(entries[0].persons) != 2 || entries[0].persons[0] != "9999" {
 		t.Fatalf("Kennungen: %v", entries[0].persons)
 	}
 }
@@ -137,7 +137,7 @@ func TestPairOptiEvents(t *testing.T) {
 	}
 	var mine []rawEntry
 	for _, e := range entries {
-		if e.persons[0] == "1626" {
+		if e.persons[0] == "9999" {
 			mine = append(mine, e)
 		}
 	}
