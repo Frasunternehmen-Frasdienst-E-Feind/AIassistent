@@ -66,7 +66,7 @@ func TestImportIntervalWithPersonColumn(t *testing.T) {
 	if res.Identity.MatchedPerson != "Halko, David" || !res.Identity.AutoMatched {
 		t.Fatalf("automatische Zuordnung fehlt: %+v", res.Identity)
 	}
-	if len(res.Persons) != 2 || res.Files[0].Skipped != 1 {
+	if res.Persons != 2 || res.Files[0].Skipped != 1 {
 		t.Fatalf("Personen/Skipped: %+v", res)
 	}
 	for _, b := range bookings {
@@ -121,11 +121,11 @@ func TestFileWithoutPersonColumn(t *testing.T) {
 		t.Logf("other=%v", res.OtherFiles)
 		t.Fatalf("bookings=%d unassigned=%d other=%v files=%+v", len(bookings), res.Unassigned, res.OtherFiles, res.Files)
 	}
-	// Liegt der Ordner im Profil des Benutzers, gelten Dateien ohne Personenspalte als seine
+	// Im Profil des Benutzers zu liegen reicht nicht (#56): ohne Anmeldenamen bleibt alle.csv offen
 	id := ident()
 	id.ProfileDir = dir
 	bookings2, res2 := importOptiTime(dir, id)
-	if len(bookings2) != 2 || res2.Unassigned != 0 {
+	if len(bookings2) != 1 || res2.Unassigned != 1 {
 		t.Fatalf("profil: bookings=%d unassigned=%d", len(bookings2), res2.Unassigned)
 	}
 }

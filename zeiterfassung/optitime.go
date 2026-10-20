@@ -61,7 +61,7 @@ type SyncResult struct {
 	PathSource string         `json:"pathSource"` // "parameter", "umgebung", "konfiguration", "gefunden", ""
 	Searched   []string       `json:"searched"`
 	Files      []FileResult   `json:"files"`
-	Persons    []string       `json:"persons"` // in den Dateien gefundene Personen
+	Persons    int            `json:"persons"` // Anzahl der in den Dateien gefundenen Personen – Namen bleiben im Programm
 	Identity   Identity       `json:"identity"`
 	Imported   int            `json:"imported"`
 	Unassigned int            `json:"unassigned"` // Dateien ohne Personenspalte, die nicht zugeordnet werden konnten
@@ -856,16 +856,6 @@ func normPerson(s string) string {
 	}), " ")
 }
 
-func tokens(s string) []string {
-	var out []string
-	for _, t := range strings.Fields(normPerson(s)) {
-		if len(t) >= 3 {
-			out = append(out, t)
-		}
-	}
-	return out
-}
-
 // entryMatches prüft alle Personenwerte einer Zeile (Name, Personalnummer, Login).
 func entryMatches(e rawEntry, id Identity) bool {
 	if matchesIdentity(e.person, id) {
@@ -879,7 +869,9 @@ func entryMatches(e rawEntry, id Identity) bool {
 	return false
 }
 
-// matchesIdentity prüft, ob ein Personenwert dem Benutzer entspricht.
+// matchesIdentity prüft, ob ein Personenwert dem Benutzer entspricht: gleicher
+// Wert (Personalnummer, Anmeldename) oder Name aus genau denselben Wörtern in
+// beliebiger Reihenfolge ("Muster, Max" = "Max Muster", nicht "Muster-Max, Erika").
 func matchesIdentity(person string, id Identity) bool {
 	p := normPerson(person)
 	if p == "" {
@@ -890,73 +882,51 @@ func matchesIdentity(person string, id Identity) bool {
 		if nk == "" {
 			continue
 		}
-		if p == nk {
-			return true
-		}
-		// Namen: alle Tokens der Kennung (z. B. "David Halko") im Wert enthalten, egal in welcher Reihenfolge
-		toks := tokens(nk)
-		if len(toks) >= 2 && containsAll(strings.Fields(p), toks) {
+		if p == nk || fullName(nk) && sameWords(p, nk) {
 			return true
 		}
 	}
 	return false
 }
 
-func containsAll(have, want []string) bool {
-	for _, w := range want {
-		found := false
-		for _, h := range have {
-			if h == w {
-				found = true
-				break
-			}
-		}
-		if !found {
+// fullName: mindestens zwei ausgeschriebene Wörter – "m muster" aus dem
+// Anmeldenamen m.muster ist kein Name und würde "Muster, M." treffen.
+func fullName(n string) bool {
+	f := strings.Fields(n)
+	for _, w := range f {
+		if len(w) < 2 {
 			return false
 		}
 	}
-	return true
+	return len(f) >= 2
 }
 
-// autoMatch versucht, aus den in den Dateien gefundenen Personen eindeutig den
-// Benutzer zu bestimmen: genau eine Person enthält alle Tokens des Windows-
-// Anzeigenamens bzw. den Nachnamen aus dem Anmeldenamen (z. B. "d.halko" -> "halko").
+// sameWords vergleicht zwei normierte Namen wortweise, ohne Reihenfolge.
+func sameWords(a, b string) bool {
+	x, y := strings.Fields(a), strings.Fields(b)
+	sort.Strings(x)
+	sort.Strings(y)
+	return strings.Join(x, " ") == strings.Join(y, " ")
+}
+
+// autoMatch bestimmt aus den in den Dateien gefundenen Personen eindeutig den
+// Benutzer – nur über den vollständigen Windows-Anzeigenamen, nie über den
+// Nachnamen allein.
 func autoMatch(persons []string, id Identity) string {
-	var cands [][]string
-	if t := tokens(id.FullName); len(t) > 0 {
-		cands = append(cands, t)
+	full := normPerson(id.FullName)
+	if !fullName(full) {
+		return ""
 	}
-	if t := tokens(id.Username); len(t) > 0 {
-		longest := t[0]
-		for _, x := range t {
-			if len(x) > len(longest) {
-				longest = x
-			}
+	var hits []string
+	for _, p := range persons {
+		if sameWords(normPerson(p), full) {
+			hits = append(hits, p)
 		}
-		cands = append(cands, []string{longest})
 	}
-	for _, toks := range cands {
-		var hits []string
-		for _, p := range persons {
-			if containsAll(strings.Fields(normPerson(p)), toks) {
-				hits = append(hits, p)
-			}
-		}
-		if len(hits) == 1 {
-			return hits[0]
-		}
+	if len(hits) == 1 {
+		return hits[0]
 	}
 	return ""
-}
-
-// inUserProfile: liegt die Datei im Profil des Benutzers (C:\Users\<Benutzer>\…)?
-func inUserProfile(path, profile string) bool {
-	if profile != "" {
-		if rel, err := filepath.Rel(profile, path); err == nil && !strings.HasPrefix(rel, "..") {
-			return true
-		}
-	}
-	return false
 }
 
 // ---------- Ereignisse zu Buchungen ----------
@@ -1066,7 +1036,7 @@ func intervalBookings(entries []rawEntry, file string) []Booking {
 
 // importOptiTime liest alle Datendateien unter path und liefert die Buchungen des Benutzers.
 func importOptiTime(path string, id Identity) ([]Booking, SyncResult) {
-	res := SyncResult{At: time.Now(), Path: path, Identity: id, Files: []FileResult{}, Persons: []string{}, Errors: []string{}}
+	res := SyncResult{At: time.Now(), Path: path, Identity: id, Files: []FileResult{}, Errors: []string{}}
 	files, other := listFiles(path)
 	res.OtherFiles = other
 
@@ -1102,10 +1072,12 @@ func importOptiTime(path string, id Identity) ([]Booking, SyncResult) {
 		all = append(all, parsed{f, format, entries})
 		res.Files = append(res.Files, fr)
 	}
+	var persons []string
 	for _, p := range personSet {
-		res.Persons = append(res.Persons, p)
+		persons = append(persons, p)
 	}
-	sort.Strings(res.Persons)
+	sort.Strings(persons)
+	res.Persons = len(persons)
 
 	// Zuordnung: erst über die bestätigten Kennungen, sonst automatisch über den
 	// Windows-Anzeigenamen bzw. Anmeldenamen – nur wenn eindeutig.
@@ -1124,7 +1096,7 @@ func importOptiTime(path string, id Identity) ([]Booking, SyncResult) {
 		}
 	}
 	if matched == "" {
-		if m := autoMatch(res.Persons, id); m != "" {
+		if m := autoMatch(persons, id); m != "" {
 			matched = m
 			id.Keys = append(id.Keys, m)
 			id.AutoMatched = true
@@ -1157,21 +1129,14 @@ func importOptiTime(path string, id Identity) ([]Booking, SyncResult) {
 				}
 			}
 		} else {
-			// Ohne Personenspalte: Datei nur übernehmen, wenn Dateiname/Ordner den Benutzer nennt
-			// oder die Datei im Benutzerprofil liegt.
+			// Ohne Personenspalte: Datei nur übernehmen, wenn Dateiname/Ordner den
+			// vollständigen Anmeldenamen nennen (z. B. buchungen_m.muster.csv).
 			rel, _ := filepath.Rel(path, p.file)
-			nameMatch := false
-			for _, k := range id.Keys {
-				for _, t := range tokens(k) {
-					if strings.Contains(normPerson(rel), t) {
-						nameMatch = true
-					}
-				}
-			}
-			if nameMatch || inUserProfile(p.file, id.ProfileDir) {
+			user := normPerson(id.Username)
+			if user != "" && strings.Contains(" "+normPerson(rel)+" ", " "+user+" ") {
 				mine = p.entries
 			} else {
-				fr.Reason = "keine Personenspalte und kein Benutzerbezug im Dateinamen – nicht zugeordnet"
+				fr.Reason = "keine Personenspalte und Anmeldename nicht im Dateinamen – nicht zugeordnet"
 				res.Unassigned++
 				continue
 			}

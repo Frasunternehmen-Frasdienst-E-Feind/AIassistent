@@ -267,21 +267,6 @@ func (m *optiMaster) loadMaster(path, text, kind string) (string, int) {
 	return "", 0
 }
 
-// redactOffliste entfernt die Kennwortspalte (Feld 6) der Mitarbeiterliste.
-func redactOffliste(line, kind string) string {
-	line = strings.TrimRight(line, "\r")
-	if kind != "offliste-ma" || !strings.HasPrefix(line, "µ") {
-		return line
-	}
-	f := strings.Split(line, "µ")
-	for _, i := range []int{5, 6} {
-		if i < len(f) && f[i] != "" {
-			f[i] = "<entfernt>"
-		}
-	}
-	return strings.Join(f, "µ")
-}
-
 // ---------- Protokoll ----------
 
 type optiEvent struct {

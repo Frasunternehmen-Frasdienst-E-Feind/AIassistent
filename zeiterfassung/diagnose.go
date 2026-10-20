@@ -1,9 +1,11 @@
 package main
 
 // diagnose.go – Diagnosebericht über den OptiTime-Ordner: welche Dateien liegen dort,
-// welche Formate wurden erkannt, wie sehen die ersten Zeilen bzw. Tabellen aus.
-// Der Bericht enthält Auszüge der eigenen Daten und ist zum Weitergeben an den
-// Entwickler gedacht.
+// welche Formate wurden erkannt, wie viele Zeilen, Felder und Datensätze sie haben.
+// Der Bericht zeigt nur Struktur und Anzahlen – keine Datenzeilen, keine Namen
+// oder Personalnummern anderer und keine Konfigurationswerte außerhalb einer
+// Positivliste. Einzige Ausnahme: wenige eigene Buchungen zur Kontrolle der
+// Erkennung. Er ist zum Weitergeben an den Entwickler gedacht.
 
 import (
 	"fmt"
@@ -16,18 +18,9 @@ import (
 )
 
 const (
-	diagMaxFiles = 400
-	diagMaxLines = 6
-	diagMaxCell  = 60
+	diagMaxFiles  = 400
+	diagMaxConfig = 200
 )
-
-func trunc(s string, n int) string {
-	s = strings.ReplaceAll(strings.ReplaceAll(s, "\r", ""), "\n", "⏎")
-	if len(s) > n {
-		return s[:n] + "…"
-	}
-	return s
-}
 
 func (a *App) diagnose() string {
 	a.mu.Lock()
@@ -119,44 +112,47 @@ func (a *App) diagnose() string {
 		kind := classifyOptiFile(f, text)
 		if label, ok := master.files[f]; ok {
 			w("  Art: %s, %d Einträge übernommen", label, master.rows[f])
-			for i := 0; i < len(lines) && i < diagMaxLines; i++ {
-				w("  %2d| %s", i+1, trunc(redactOffliste(redactLine(lines[i]), kind), 200))
+			if kind == "config" {
+				for i, l := range lines {
+					if i >= diagMaxConfig {
+						w("  | … (abgeschnitten)")
+						break
+					}
+					if l = strings.TrimSpace(l); l != "" {
+						w("  | %s", diagConfigLine(l))
+					}
+				}
+			} else if rows := parseOffliste(text); len(rows) > 0 {
+				w("  %d Datenzeilen mit %d Feldern (Inhalte ausgeblendet)", len(rows), len(rows[0]))
 			}
 			continue
 		}
 		if kind == "log" {
 			w("  Art: OptiTime-Protokoll")
-			entries, _, perr := parseFile(f, master)
-			if perr != nil {
-				w("  Erkennung: %v", perr)
-			} else {
-				w("  %d Stempelereignisse erkannt", len(entries))
-				for i := 0; i < len(entries) && i < 3; i++ {
-					e := entries[i]
-					w("  -> %s %s Tätigkeit=%s (%s) Typ=%d Person=%q", e.date, e.start, e.order, e.activity, e.optiKind, e.person)
-				}
-				if len(entries) > 0 {
-					last := entries[len(entries)-1]
-					w("  -> … letztes: %s %s Tätigkeit=%s (%s)", last.date, last.start, last.order, last.activity)
-				}
-			}
-			for i := 0; i < len(lines) && i < 3; i++ {
-				w("  %2d| %s", i+1, trunc(lines[i], 200))
-			}
-			continue
-		}
-		w("  Trennzeichen: %q", string(detectDelimiter(lines[0])))
-		for i := 0; i < len(lines) && i < diagMaxLines; i++ {
-			w("  %2d| %s", i+1, trunc(redactLine(lines[i]), 200))
+		} else {
+			d := detectDelimiter(lines[0])
+			w("  Trennzeichen: %q, Felder in Zeile 1: %d", string(d), len(strings.Split(lines[0], string(d))))
 		}
 		entries, format, perr := parseFile(f, master)
 		if perr != nil {
 			w("  Erkennung: %s – %v", format, perr)
-		} else {
-			w("  Erkennung: %s, %d Datensätze", format, len(entries))
-			for i := 0; i < len(entries) && i < 3; i++ {
-				e := entries[i]
-				w("  -> %s %s-%s person=%q event=%q order=%q activity=%q", e.date, e.start, e.end, e.person, e.event, e.order, e.activity)
+			continue
+		}
+		persons, own := map[string]bool{}, 0
+		for _, e := range entries {
+			if e.person != "" {
+				persons[normPerson(e.person)] = true
+			}
+			if entryMatches(e, sync.Identity) {
+				own++
+			}
+		}
+		w("  Erkennung: %s, %d Datensätze von %d Personen, davon %d eigene", format, len(entries), len(persons), own)
+		shown := 0
+		for _, e := range entries {
+			if shown < 3 && entryMatches(e, sync.Identity) {
+				w("  -> eigene: %s %s-%s Tätigkeit=%s (%s)", e.date, e.start, e.end, e.order, e.activity)
+				shown++
 			}
 		}
 	}
@@ -195,40 +191,32 @@ func (a *App) diagnoseSQLite(b *strings.Builder, path string) {
 	for _, t := range tables {
 		rows, rerr := db.rows(t, 0)
 		w("  Tabelle %s (%d Zeilen): %s", t.Name, len(rows), strings.Join(t.Columns, ", "))
-		w("    %s", trunc(t.SQL, 300))
 		if rerr != nil {
 			w("    Lesefehler: %v", rerr)
-		}
-		for i := 0; i < len(rows) && i < 3; i++ {
-			var parts []string
-			for _, c := range t.Columns {
-				parts = append(parts, c+"="+trunc(rows[i][c], diagMaxCell))
-			}
-			w("    %s", strings.Join(parts, " | "))
-		}
-		if len(rows) > 3 {
-			last := rows[len(rows)-1]
-			var parts []string
-			for _, c := range t.Columns {
-				parts = append(parts, c+"="+trunc(last[c], diagMaxCell))
-			}
-			w("    … letzte: %s", strings.Join(parts, " | "))
 		}
 	}
 }
 
-var secretKeyRe = regexp.MustCompile(`(?i)^([A-Za-z_][A-Za-z0-9_()]*(pw|passwor|kennwort|pin|secret|token|user)[A-Za-z0-9_()]*) *=(.*)$`)
+// diagConfigKeys: Schlüssel der config.ini, deren Werte die Diagnose zeigt.
+// Alle anderen (Kennwörter, Server, Benutzer …) erscheinen ohne Wert.
+var diagConfigKeys = map[string]bool{
+	"KSTPAUSE": true, "DEFAULTKST": true, "SERVERZEIT": true, "LOKALZEIT": true,
+	"RECONNECT": true, "BUCHLISTETAGE": true, "LOGGERSTUFE": true,
+}
 
-// redactLine entfernt Zugangsdaten aus Diagnosezeilen: Schlüssel wie SMTPPW
-// oder SUPERPIN in config.ini und die Kennwortspalte der Mitarbeiterliste.
-func redactLine(line string) string {
-	if m := secretKeyRe.FindStringSubmatch(line); m != nil {
-		if strings.TrimSpace(m[3]) == "" {
-			return line
-		}
-		return m[1] + "=<entfernt>"
+var diagKeyRe = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
+
+// diagConfigLine gibt eine Konfigurationszeile nur mit Schlüssel aus; den Wert
+// nur bei Schlüsseln der Positivliste. Alles andere wird ganz ausgeblendet.
+func diagConfigLine(line string) string {
+	k, v, ok := strings.Cut(line, "=")
+	if k = strings.TrimSpace(k); !ok || !diagKeyRe.MatchString(k) {
+		return "<ausgeblendet>"
 	}
-	return line
+	if diagConfigKeys[strings.ToUpper(k)] {
+		return k + "=" + strings.TrimSpace(v)
+	}
+	return k + "=<ausgeblendet>"
 }
 
 func isValidUTF8(b []byte) bool {

@@ -212,11 +212,11 @@ func expandPath(p string) string {
 
 // ensureWritable legt den Ordner an und prüft, ob wirklich geschrieben werden kann.
 func ensureWritable(dir string) error {
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return err
 	}
 	probe := filepath.Join(dir, ".stempeluhr-schreibtest")
-	if err := os.WriteFile(probe, []byte("ok"), 0o644); err != nil {
+	if err := os.WriteFile(probe, []byte("ok"), 0o600); err != nil {
 		return err
 	}
 	return os.Remove(probe)
@@ -315,11 +315,11 @@ func (a *App) loadConfig() {
 }
 
 func (a *App) saveConfig() error {
-	if err := os.MkdirAll(filepath.Dir(a.cfgPath), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(a.cfgPath), 0o700); err != nil {
 		return err
 	}
 	b, _ := json.MarshalIndent(a.cfg, "", "  ")
-	return os.WriteFile(a.cfgPath, b, 0o644)
+	return writePrivate(a.cfgPath, b)
 }
 
 func (a *App) loadState() {
@@ -338,7 +338,7 @@ func (a *App) loadState() {
 }
 
 func (a *App) saveState() error {
-	if err := os.MkdirAll(filepath.Dir(a.dataFile), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(a.dataFile), 0o700); err != nil {
 		return err
 	}
 	b, err := json.MarshalIndent(a.state, "", "  ")
@@ -346,10 +346,20 @@ func (a *App) saveState() error {
 		return err
 	}
 	tmp := a.dataFile + ".tmp"
-	if err := os.WriteFile(tmp, b, 0o644); err != nil {
+	if err := writePrivate(tmp, b); err != nil {
 		return err
 	}
 	return os.Rename(tmp, a.dataFile)
+}
+
+// writePrivate schreibt eine Datei nur für den Benutzer lesbar (0600) – auch
+// wenn sie vorher mit weiteren Rechten existierte. Unter Windows gelten die
+// Rechte des Benutzerprofils.
+func writePrivate(path string, b []byte) error {
+	if err := os.WriteFile(path, b, 0o600); err != nil {
+		return err
+	}
+	return os.Chmod(path, 0o600)
 }
 
 // identityKeys: Windows-Konto plus bestätigte Kennungen aus dem Profil.
@@ -411,7 +421,7 @@ func (a *App) runSync() {
 	id := a.identityWithProfile()
 	path, source, searched := findOptiTimePath(a.explicit, a.cfg.OptiTimePath, id.ProfileDir)
 	if path == "" {
-		a.sync = SyncResult{At: time.Now(), Searched: searched, Identity: id, Files: []FileResult{}, Persons: []string{}, Errors: []string{"Kein OptiTime-Ordner gefunden. Pfad in den Einstellungen angeben."}}
+		a.sync = SyncResult{At: time.Now(), Searched: searched, Identity: id, Files: []FileResult{}, Errors: []string{"Kein OptiTime-Ordner gefunden. Pfad in den Einstellungen angeben."}}
 		log.Printf("OptiTime: kein Ordner gefunden (%d Orte geprüft)", len(searched))
 		return
 	}
@@ -651,8 +661,12 @@ func (a *App) handleOpen(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) handleDiagnose(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	report := a.diagnose()
-	_ = os.WriteFile(filepath.Join(filepath.Dir(a.logFile), "diagnose.txt"), []byte(report), 0o644)
+	_ = writePrivate(filepath.Join(filepath.Dir(a.logFile), "diagnose.txt"), []byte(report))
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-store")
 	_, _ = w.Write([]byte(report))
@@ -666,6 +680,10 @@ func (a *App) handlePing(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) handleQuit(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	a.writeJSON(w, map[string]bool{"ok": true})
 	go func() { time.Sleep(300 * time.Millisecond); close(a.quit) }()
 }
@@ -683,7 +701,40 @@ func (a *App) routes() http.Handler {
 	mux.HandleFunc("/api/quit", a.handleQuit)
 	sub, _ := fs.Sub(webFS, ".")
 	mux.Handle("/", http.FileServer(http.FS(sub)))
-	return mux
+	return localOnly(mux)
+}
+
+// localOnly lässt nur Anfragen der eigenen Oberfläche durch: Host muss
+// 127.0.0.1:<Port> oder localhost:<Port> sein (Schutz vor DNS-Rebinding), ein
+// mitgesendeter Origin ebenso, und alles außer GET/HEAD braucht
+// Content-Type application/json – das kann eine fremde Seite nicht ohne
+// CORS-Vorabfrage senden, die hier nie beantwortet wird.
+func localOnly(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		port := ""
+		if addr, ok := r.Context().Value(http.LocalAddrContextKey).(net.Addr); ok {
+			_, port, _ = net.SplitHostPort(addr.String())
+		}
+		local := func(hostport string) bool {
+			h, p, err := net.SplitHostPort(hostport)
+			return err == nil && p == port && (h == "127.0.0.1" || h == "localhost")
+		}
+		if !local(r.Host) {
+			http.Error(w, "nur lokal erreichbar", http.StatusForbidden)
+			return
+		}
+		if o := r.Header.Get("Origin"); o != "" && !(strings.HasPrefix(o, "http://") && local(strings.TrimPrefix(o, "http://"))) {
+			http.Error(w, "fremder Origin", http.StatusForbidden)
+			return
+		}
+		if r.Method != http.MethodGet && r.Method != http.MethodHead {
+			if ct, _, _ := strings.Cut(r.Header.Get("Content-Type"), ";"); !strings.EqualFold(strings.TrimSpace(ct), "application/json") {
+				http.Error(w, "Content-Type application/json erforderlich", http.StatusUnsupportedMediaType)
+				return
+			}
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 // ---------- Start ----------
@@ -720,8 +771,9 @@ func main() {
 	}
 	a.dataFile = a.userDataFile(a.dataDir)
 	a.logFile = filepath.Join(dir, "stempeluhr.log")
-	if err := os.MkdirAll(dir, 0o755); err == nil {
-		if f, err := os.OpenFile(a.logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644); err == nil {
+	if err := os.MkdirAll(dir, 0o700); err == nil {
+		if f, err := os.OpenFile(a.logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600); err == nil {
+			_ = f.Chmod(0o600) // ältere Protokolle waren für alle lesbar
 			log.SetOutput(f)
 		}
 	}
@@ -731,7 +783,7 @@ func main() {
 	if *diag {
 		report := a.diagnose()
 		out := filepath.Join(dir, "diagnose.txt")
-		if err := os.WriteFile(out, []byte(report), 0o644); err != nil {
+		if err := writePrivate(out, []byte(report)); err != nil {
 			fatal("Diagnose konnte nicht geschrieben werden: " + err.Error())
 		}
 		fmt.Println(report)
