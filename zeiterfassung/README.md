@@ -15,7 +15,9 @@ Zeiterfassung. Zwei Betriebsarten:
 1. **Benutzer festlegen**: Standard ist der angemeldete Windows-Benutzer. Mit dem Startparameter
    `--user d.halko` oder der Umgebungsvariable `STEMPELUHR_USER=d.halko` wird der Benutzer als
    Variable gesetzt, z. B. in einer Verknüpfung oder Batch-Datei. Daraus ergibt sich das Profil
-   `C:\Users\d.halko`, auch wenn das Programm unter einem anderen Konto läuft.
+   `C:\Users\d.halko`, auch wenn das Programm unter einem anderen Konto läuft. Mit gesetztem
+   Benutzer liest die Stempeluhr OptiTime erst ein, wenn in den Einstellungen die eigene
+   Personalnummer bestätigt ist (siehe Datenschutz).
 2. **OptiTime-Ordner suchen**, in dieser Reihenfolge: Startparameter `--optitime`,
    Umgebungsvariable `OPTITIME_PATH`, gespeicherter Pfad aus den Einstellungen, dann
    **`C:\Users\<user>\AppData\Local\OptiTime`** (sowie `AppData\Roaming\OptiTime`,
@@ -103,8 +105,25 @@ Der Bericht liegt unter `%APPDATA%\Stempeluhr\diagnose.txt`.
 - Namen, Personalnummern und Buchungen anderer Personen verlassen das Programm nicht: weder in
   der Oberfläche (`/api/info` liefert nur die Personenanzahl) noch im Diagnosebericht.
 - `data.json`, `config.json`, `diagnose.txt` und `stempeluhr.log` werden nur für den Benutzer
-  lesbar geschrieben (Rechte `0600`, neu angelegte Ordner `0700`). Unter Windows gelten die
-  Zugriffsrechte des Benutzerprofils bzw. des gewählten Datenordners.
+  lesbar geschrieben (Rechte `0600`). Eigene Ordner (`%APPDATA%\Stempeluhr` und der
+  Benutzer-Unterordner im Datenordner) werden mit `0700` angelegt; bestehende Ordner mit weiteren
+  Rechten werden beim Schreiben auf `0700` eingeengt. Unter Windows wirkt das praktisch nicht
+  (Chmod setzt dort nur das Schreibschutz-Attribut) – es gelten die Zugriffsrechte des
+  Benutzerprofils bzw. des gewählten Datenordners.
+- `--user` / `STEMPELUHR_USER`: Ohne bestätigte Personalnummer in den Einstellungen wird OptiTime
+  nicht eingelesen; die Oberfläche zeigt dazu einen Hinweis. Erst das Eintragen der eigenen
+  Personalnummer gibt den Abgleich frei. So liest ein Startparameter allein keine fremden Daten.
+
+### Aufbewahrung
+
+| Datei | Regel (geprüft bei jedem Start) |
+| --- | --- |
+| `stempeluhr.log` | über 1 MB → umbenannt in `stempeluhr.log.1`, höchstens zwei alte Dateien (`.1`, `.2`) |
+| `stempeluhr.log.1`, `.2` | gelöscht, wenn älter als 30 Tage |
+| `diagnose.txt` | gelöscht, wenn älter als 7 Tage – bei Bedarf neu erzeugen |
+| alte `data.json` nach Ordnerwechsel | gelöscht, sobald die neue Datei lesbar ist und alle Buchungen enthält; schlägt Kopie oder Prüfung fehl, bleibt sie als Sicherung liegen |
+
+Fristen und Größe stehen als Konstanten in `aufbewahrung.go`.
 
 ### Startparameter
 
@@ -178,7 +197,8 @@ aufgelöst. Beim Wechsel gilt:
 - Vorhandene Buchungen werden in den neuen Ordner übernommen.
 - Liegt dort bereits eine `data.json`, werden beide zusammengeführt (gleiches Datum und gleiche
   Startzeit zählt als dieselbe Buchung).
-- Die bisherige Datei bleibt als Sicherung liegen und wird nicht gelöscht.
+- Die bisherige Datei wird gelöscht, sobald die neue Datei lesbar ist und alle ihre Buchungen
+  enthält. Schlägt das Speichern oder die Prüfung fehl, bleibt sie als Sicherung liegen.
 - Der Ordner wird in `config.json` gespeichert und beim nächsten Start wieder verwendet.
 
 Im gewählten Ordner wird je Benutzer ein Unterordner angelegt, damit sich mehrere Personen einen
@@ -217,6 +237,7 @@ In der HTML-Betriebsart sind die Buchungen vom 17.08. bis 07.09.2026 aus der Goo
 | Datei | Zweck |
 | --- | --- |
 | `main.go` | Windows-Programm: Benutzer, lokaler Server, Datenablage |
+| `aufbewahrung.go` | Protokoll-Rotation, Löschfristen, private Ordnerrechte |
 | `optitime.go` | OptiTime-Pfadsuche, Dateiformate, Zuordnung zum Benutzer |
 | `optilog.go` | Terminal-Protokoll, Offlisten und config.ini |
 | `sqlite.go` | Lesender SQLite-Zugriff ohne externe Module |

@@ -213,7 +213,7 @@ func expandPath(p string) string {
 
 // ensureWritable legt den Ordner an und prüft, ob wirklich geschrieben werden kann.
 func ensureWritable(dir string) error {
-	if err := os.MkdirAll(dir, 0o700); err != nil {
+	if err := privateDir(dir); err != nil {
 		return err
 	}
 	probe := filepath.Join(dir, ".stempeluhr-schreibtest")
@@ -257,7 +257,8 @@ func (a *App) dataSuggestions() []string {
 
 // switchDataDir wechselt den Datenordner. Vorhandene Buchungen werden
 // übernommen; liegt im Zielordner bereits eine Datei, werden beide
-// zusammengeführt. Die bisherige Datei bleibt als Sicherung liegen.
+// zusammengeführt. Die bisherige Datei wird gelöscht, sobald die neue geprüft
+// ist (siehe removeIfCopied); sonst bleibt sie als Sicherung liegen.
 // Aufruf mit gehaltener Sperre.
 func (a *App) switchDataDir(dir string) (string, error) {
 	dir = expandPath(dir)
@@ -291,19 +292,50 @@ func (a *App) switchDataDir(dir string) (string, error) {
 		a.dataDir, a.dataFile = oldDir, oldFile
 		return "", fmt.Errorf("Speichern im neuen Ordner fehlgeschlagen: %w", err)
 	}
+	oldCfg := a.cfg.DataDir
 	if dir == baseDir() {
 		a.cfg.DataDir = ""
 	} else {
 		a.cfg.DataDir = dir
 	}
 	if err := a.saveConfig(); err != nil {
-		log.Printf("Konfiguration speichern: %v", err)
+		// ohne gespeicherte Einstellung liest der nächste Start den alten Ordner:
+		// alte Datei behalten und beim alten Ordner bleiben
+		a.cfg.DataDir, a.dataDir, a.dataFile = oldCfg, oldDir, oldFile
+		return "", fmt.Errorf("Einstellung nicht gespeichert, bisheriger Ordner bleibt: %w", err)
 	}
-	if _, err := os.Stat(oldFile); err == nil {
+	if removeIfCopied(oldFile, target) {
+		msg += " Die bisherige Datei wurde nach geprüfter Übernahme gelöscht."
+	} else if _, err := os.Stat(oldFile); err == nil {
 		msg += " Die bisherige Datei bleibt als Sicherung unter " + oldFile + "."
 	}
 	log.Printf("Datenordner gewechselt: %s -> %s", oldFile, target)
 	return msg, nil
+}
+
+// removeIfCopied löscht die alte Datendatei nur, wenn sie lesbar ist und jede
+// ihrer Buchungen in der neuen, ebenfalls lesbaren Datei steht.
+func removeIfCopied(oldFile, newFile string) bool {
+	read := func(p string) (State, bool) {
+		var s State
+		b, err := os.ReadFile(p)
+		return s, err == nil && len(b) > 0 && json.Unmarshal(b, &s) == nil
+	}
+	oldS, ok1 := read(oldFile)
+	newS, ok2 := read(newFile)
+	if !ok1 || !ok2 || len(newS.Bookings) < len(oldS.Bookings) {
+		return false
+	}
+	ids := map[string]bool{}
+	for _, b := range newS.Bookings {
+		ids[b.ID] = true
+	}
+	for _, b := range oldS.Bookings {
+		if !ids[b.ID] {
+			return false
+		}
+	}
+	return os.Remove(oldFile) == nil
 }
 
 // ---------- Laden / Speichern ----------
@@ -316,7 +348,7 @@ func (a *App) loadConfig() {
 }
 
 func (a *App) saveConfig() error {
-	if err := os.MkdirAll(filepath.Dir(a.cfgPath), 0o700); err != nil {
+	if err := privateDir(filepath.Dir(a.cfgPath)); err != nil {
 		return err
 	}
 	b, _ := json.MarshalIndent(a.cfg, "", "  ")
@@ -339,7 +371,7 @@ func (a *App) loadState() {
 }
 
 func (a *App) saveState() error {
-	if err := os.MkdirAll(filepath.Dir(a.dataFile), 0o700); err != nil {
+	if err := privateDir(filepath.Dir(a.dataFile)); err != nil {
 		return err
 	}
 	b, err := json.MarshalIndent(a.state, "", "  ")
@@ -422,6 +454,12 @@ func (a *App) runSync() {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	id := a.identityWithProfile()
+	// --user/STEMPELUHR_USER liest fremde Profile nur nach bestätigter Personalnummer.
+	if (id.Source == "parameter" || id.Source == "umgebung") && strings.TrimSpace(a.state.Profile.Personalnummer) == "" {
+		a.sync = SyncResult{At: time.Now(), Identity: id, Files: []FileResult{}, Errors: []string{"Benutzer per --user/STEMPELUHR_USER gesetzt: bitte zuerst die eigene Personalnummer bestätigen (Einstellungen), dann wird OptiTime eingelesen."}}
+		log.Printf("OptiTime: Abgleich gesperrt – Benutzer per %s gesetzt, keine Personalnummer bestätigt", id.Source)
+		return
+	}
 	path, source, searched := findOptiTimePath(a.explicit, a.cfg.OptiTimePath, id.ProfileDir)
 	if path == "" {
 		a.sync = SyncResult{At: time.Now(), Searched: searched, Identity: id, Files: []FileResult{}, Errors: []string{"Kein OptiTime-Ordner gefunden. Pfad in den Einstellungen angeben."}}
@@ -785,7 +823,8 @@ func main() {
 	}
 	a.dataFile = a.userDataFile(a.dataDir)
 	a.logFile = filepath.Join(dir, "stempeluhr.log")
-	if err := os.MkdirAll(dir, 0o700); err == nil {
+	if err := privateDir(dir); err == nil {
+		aufraeumen(dir, time.Now())
 		if f, err := os.OpenFile(a.logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600); err == nil {
 			_ = f.Chmod(0o600) // ältere Protokolle waren für alle lesbar
 			log.SetOutput(f)

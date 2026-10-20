@@ -68,10 +68,10 @@ func TestSwitchDataDirMigriert(t *testing.T) {
 	if s := readState(t, a.dataFile); len(s.Bookings) != 1 || s.Bookings[0].ID != "m1" {
 		t.Fatalf("Buchungen nicht übernommen: %+v", s.Bookings)
 	}
-	if _, err := os.Stat(oldFile); err != nil {
-		t.Fatal("bisherige Datei muss als Sicherung bleiben")
+	if _, err := os.Stat(oldFile); err == nil {
+		t.Fatal("bisherige Datei muss nach geprüfter Übernahme gelöscht sein")
 	}
-	if !strings.Contains(msg, "Sicherung") {
+	if !strings.Contains(msg, "geprüfter Übernahme gelöscht") {
 		t.Fatalf("Meldung: %q", msg)
 	}
 	if a.cfg.DataDir != target {
@@ -233,5 +233,25 @@ func TestCollectReportOhneOrdner(t *testing.T) {
 	report, code := a.collectReport(0, time.Now())
 	if code != 1 || !strings.Contains(report, "nicht gefunden, 2 Orte geprüft") {
 		t.Errorf("Exit-Code = %d, Bericht:\n%s", code, report)
+	}
+}
+
+func TestSwitchDataDirKonfigFehlerBehaeltAlteDatei(t *testing.T) {
+	base := t.TempDir()
+	a := testApp(t, base)
+	old := a.dataFile
+	blocker := filepath.Join(base, "keinordner")
+	if err := os.WriteFile(blocker, []byte("x"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	a.cfgPath = filepath.Join(blocker, "config.json") // Einstellung lässt sich nicht speichern
+	if _, err := a.switchDataDir(filepath.Join(base, "Netz")); err == nil {
+		t.Fatal("Fehler erwartet, wenn die Einstellung nicht gespeichert werden kann")
+	}
+	if a.dataFile != old {
+		t.Fatalf("Pfad trotz Fehler gewechselt: %s", a.dataFile)
+	}
+	if len(readState(t, old).Bookings) != 1 {
+		t.Fatal("alte Datendatei gelöscht, obwohl der neue Ordner nicht gespeichert ist")
 	}
 }
