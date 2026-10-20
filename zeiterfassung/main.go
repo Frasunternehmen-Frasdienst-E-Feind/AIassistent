@@ -292,13 +292,17 @@ func (a *App) switchDataDir(dir string) (string, error) {
 		a.dataDir, a.dataFile = oldDir, oldFile
 		return "", fmt.Errorf("Speichern im neuen Ordner fehlgeschlagen: %w", err)
 	}
+	oldCfg := a.cfg.DataDir
 	if dir == baseDir() {
 		a.cfg.DataDir = ""
 	} else {
 		a.cfg.DataDir = dir
 	}
 	if err := a.saveConfig(); err != nil {
-		log.Printf("Konfiguration speichern: %v", err)
+		// ohne gespeicherte Einstellung liest der nächste Start den alten Ordner:
+		// alte Datei behalten und beim alten Ordner bleiben
+		a.cfg.DataDir, a.dataDir, a.dataFile = oldCfg, oldDir, oldFile
+		return "", fmt.Errorf("Einstellung nicht gespeichert, bisheriger Ordner bleibt: %w", err)
 	}
 	if removeIfCopied(oldFile, target) {
 		msg += " Die bisherige Datei wurde nach geprüfter Übernahme gelöscht."

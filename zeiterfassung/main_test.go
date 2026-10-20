@@ -235,3 +235,23 @@ func TestCollectReportOhneOrdner(t *testing.T) {
 		t.Errorf("Exit-Code = %d, Bericht:\n%s", code, report)
 	}
 }
+
+func TestSwitchDataDirKonfigFehlerBehaeltAlteDatei(t *testing.T) {
+	base := t.TempDir()
+	a := testApp(t, base)
+	old := a.dataFile
+	blocker := filepath.Join(base, "keinordner")
+	if err := os.WriteFile(blocker, []byte("x"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	a.cfgPath = filepath.Join(blocker, "config.json") // Einstellung lässt sich nicht speichern
+	if _, err := a.switchDataDir(filepath.Join(base, "Netz")); err == nil {
+		t.Fatal("Fehler erwartet, wenn die Einstellung nicht gespeichert werden kann")
+	}
+	if a.dataFile != old {
+		t.Fatalf("Pfad trotz Fehler gewechselt: %s", a.dataFile)
+	}
+	if len(readState(t, old).Bookings) != 1 {
+		t.Fatal("alte Datendatei gelöscht, obwohl der neue Ordner nicht gespeichert ist")
+	}
+}
