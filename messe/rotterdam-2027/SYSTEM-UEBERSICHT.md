@@ -8,17 +8,18 @@ Ziel: ein rundes, überschaubares Gesamtbild – eine Quelle pro Zweck, keine Do
 
 | Baustein | Zweck | Kopplung / Quelle |
 |---|---|---|
-| **Google Sheet** „Aufgabenliste_Team_Marketing_FEIND" | **Führende Quelle für Team-Aufgaben & Status** (Automatik: Wochenmail, Log, Backup, Archiv) | Neuer Tab „Messe-Aufgaben" = Live-Sicht (Apps Script) auf Thema Events/InfraTech |
+| **Google Sheet** „Aufgabenliste_Team_Marketing_FEIND" | Team-Aufgaben außerhalb der Messe (Automatik: Wochenmail, Log, Backup, Archiv); **für InfraTech nicht mehr führend** (Entscheidung 21.10.2026) | Neuer Tab „Messe-Aufgaben" = Live-Sicht (Apps Script) auf Thema Events/InfraTech |
 | **Cockpit-Artefakt** `GRG81…` (db) – „Feind Cockpit (Copy)“ v3.1, führend seit 02.10.2026 | Marketing · InfraTech 2027 · Admin: Dashboard, Aufgaben, **Checkliste 26→27**, Fristen, Budget, KPIs, Lessons, Faktencheck | Eigene Artefakt-DB; Aufgaben ↔ Sheet über den Import + Agent-Report (kein Echtzeit-Sync). Quelle: `feind-cockpit-v3.html` |
 | **Checkliste-Artefakt** `2FT2wp…` | Ursprüngliche ToDo-Liste (64 Punkte, 12 Kategorien) | **Ins Cockpit übernommen** (Reiter „Checkliste 26→27“, db `checkliste/<Kategorie-Punkt>`); Original bleibt unverändert als Archiv |
 | **ClickUp-Liste** | Ticket-/Epic-Sicht (7 Epics/~15) | Bisher **lose**, kein automatischer Abgleich |
-| **Notion-Projektseite** | Projekt-/Doku-Ebene | Bisher **lose** |
+| **Notion-Datenbank** „Aufgaben InfraTech 2027“ | **Führende Quelle für Messe-Aufgaben** (Entscheidung David, 21.10.2026) | Cockpit A1 liest und schreibt zurück (siehe Artefakt „Aufgabenfluss“); Messe-Hub `VyegcZ…` verlinkt nur |
 | **Repo** `AIassistent` (PR #13 gemergt, PR #22 offen) | Versionierte Quellen (HTML, Vorlagen, PDFs, Apps Script, Agent-Charter) | Branch `claude/pensive-allen-ri802b` |
 | **Manager-Agent** (Routine, Mo) | Terminwächter, DB-Pflege, Erinnerungen (Push/E-Mail) | Charter `.claude/agents/messe-manager.md` |
 | **Verknüpftes Claude-Code-Thema** | Baut Cockpit-Funktionen weiter | pflegt `infratech-2027-liste.html` |
 
 ## 2. Empfohlene Rollen (eine Quelle pro Zweck)
-- **Team-Aufgaben & Status → Google Sheet** (mit Tab „Messe-Aufgaben"). Hier wird gepflegt.
+- **Messe-Aufgaben & Status → Notion-Datenbank „Aufgaben InfraTech 2027“**, gepflegt direkt oder über Cockpit A1 (Entscheidung 21.10.2026).
+- **Messe-Übersicht (Hotels, Giveaways, Fristen, Stand) → Messe-Hub `messe-hub.html`**; Aufgaben dort nur als Fristen, keine eigene Liste.
 - **Messe-Steuerung (Budget, KPIs, Fristenmatrix, Lessons, Faktencheck) → Cockpit-Artefakt.**
 - **Vorlagen/Dokumente (A–E, PDFs) → Repo.**
 - **ClickUp/Notion:** bewusst entscheiden (siehe blinde Flecken B3).
@@ -48,8 +49,8 @@ Nach Prüfung der tatsächlichen Inhalte gilt „eine Quelle pro Zweck":
 
 | System | Entscheidung | Rolle ab jetzt |
 |---|---|---|
-| **Google Sheet** | **behalten** | Einzige operative Aufgaben-/Statusquelle (Team + Messe, Tab „Messe-Aufgaben") |
-| **Notion-Hub** | **behalten** | Wissens- & Entscheidungs-Hub (verifizierte Fakten, Fristen, Entscheidungsreihenfolge, Risiken) – **kein** Task-Tracker |
+| **Google Sheet** | behalten | Team-Aufgaben außerhalb der Messe; für InfraTech abgelöst durch Notion (21.10.2026) |
+| **Notion** | **behalten** | Wissens- & Entscheidungs-Hub **und** führende Messe-Aufgabenquelle (DB „Aufgaben InfraTech 2027“, Stand 21.10.2026) |
 | **Cockpit-Artefakt** | behalten | Visuelle Messe-Übersicht (KPIs, Budget, Faktencheck) |
 | **ClickUp** | **stilllegen** | Redundanter dritter Task-Speicher; einzigartige Tickets ins Sheet übernommen, dann archivieren |
 | **Checkliste-Artefakt** | ins Cockpit übernommen | Inhalt 1:1 im Cockpit-Reiter „Checkliste 26→27“ (Klarnamen Dritter ausgenommen); Original = Archiv |
