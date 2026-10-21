@@ -99,15 +99,20 @@ nicht aktiv, darauf hinweisen und die Installation anbieten. Bei
 Kleinständerungen (Tippfehler, Farbwert, Einzeiler) entfällt der Vorschlag.
 
 ## Arbeitsweise bei Entscheidungen
-Bei schwer umkehrbaren oder nach außen wirkenden Aktionen (PR mergen, Branch
-löschen, E-Mail senden, Veröffentlichen, Daten überschreiben) und bei
-mehrdeutigen Anweisungen: **immer zuerst nachfragen** und dabei klar sagen,
-welche Option in diesem Fall die beste ist und warum. Erst nach ausdrücklicher
-Bestätigung ausführen.
 
-Auswahlmöglichkeiten (Optionen, Varianten, Rückfragen) immer **zum Anklicken**
-ausgeben (Multiple-Choice-Abfrage), nicht nur als Text – die empfohlene Option
-steht zuerst und ist als „(Empfohlen)“ markiert.
+### Technische Dev-/Git-Entscheidungen → selbst entscheiden
+David hat noch wenig technisches Verständnis für Git-/Entwickler-Begriffe
+(mergen, Branch, Rebase, Flags, Build, Abhängigkeiten). Bis David etwas anderes
+sagt: Bei rein technischen Entwickler-/Git-Schritten NICHT nachfragen, sondern
+die beste Option wählen bzw. selbst entscheiden, was das Projekt braucht, und
+kurz in einfachem Deutsch berichten (ohne Fachjargon vorauszusetzen).
+
+### Geschäftlich / nach außen wirkende Aktionen → weiter zuerst nachfragen
+Bei realer Außen-/Geschäftswirkung (E-Mail an Dritte, Veröffentlichen, Geld
+ausgeben/Dienstleister, personenbezogene Daten, unwiderruflich löschen/
+überschreiben): immer zuerst nachfragen mit klarer Empfehlung, erst nach
+Bestätigung ausführen. Auswahlmöglichkeiten immer zum Anklicken, empfohlene
+Option zuerst und als „(Empfohlen)" markiert.
 
 ## Sparsamer Umgang mit Nutzungsguthaben
 Verbindlich gilt `docs/arbeitsanweisung-sparsamkeit.md` (Rangfolge: Sicherheit
