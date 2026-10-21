@@ -48,6 +48,11 @@ Nur eigene Personaldaten (Personalnummer 1626) verarbeiten. Keine Buchungen,
 Namen oder Kontaktdaten Dritter in Repository, Artefakte oder Exporte
 übernehmen. Zugangsdaten gehören nicht in versionierte Dateien.
 
+JSON-Dateien sind in `.gitignore` pauschal gesperrt, weil Zugangsdaten meist
+als `.json` vorliegen. Soll eine JSON-Datei versioniert werden, gehört sie in
+den kommentierten Ausnahmeblock der `.gitignore` (Pfad plus Grund), nie per
+`git add -f`. Voraussetzung: keine Zugangsdaten, keine personenbezogenen Daten.
+
 ## Artefakt „Arbeitszeitkonto 1626“
 https://claude.ai/artifact/7Uvmb6GjyHjfwzo5TtmXmQ
 
