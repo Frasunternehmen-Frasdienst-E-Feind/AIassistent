@@ -2857,6 +2857,72 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
   .kb-drop#kb-drop > .row { width: 100%; }
   .kb-drop#kb-drop > .row .btn, .kb-drop#kb-drop > .row label.btn { flex: 1 1 100%; min-height: 44px; }
 }
+/* Kennzahl-Kacheln 2/3 Text, 1/3 Motiv (Wunsch David 21.10.2026): Hintergrundgrafik rechts, weich zum Text auslaufend. */
+.kpi.kpi-art { container-type: inline-size; }
+.kpi.kpi-art::before { content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 34%; pointer-events: none; z-index: 0;
+  background: var(--kpi-art) no-repeat 62% 58% / auto 78%, linear-gradient(135deg, color-mix(in srgb, var(--accent) 6%, transparent), color-mix(in srgb, var(--accent) 16%, transparent));
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 38%); mask-image: linear-gradient(90deg, transparent, #000 38%); opacity: .9; transition: opacity .2s ease, transform .3s var(--ease-out, ease); }
+.kpi.kpi-art > * { position: relative; z-index: 1; }
+.kpi.kpi-art > .v, .kpi.kpi-art > .k, .kpi.kpi-art > .sub { max-width: 66%; }
+.kpi.kpi-art > .ic { display: none; }
+.kpi.kpi-art:hover::before { opacity: 1; transform: scale(1.04); }
+.kpi.kpi-art.warn::before { background-image: var(--kpi-art), linear-gradient(135deg, color-mix(in srgb, var(--warn) 8%, transparent), color-mix(in srgb, var(--warn) 18%, transparent)); }
+.kpi.kpi-art.crit::before { background-image: var(--kpi-art), linear-gradient(135deg, color-mix(in srgb, var(--signal) 8%, transparent), color-mix(in srgb, var(--signal) 18%, transparent)); }
+@container (max-width: 210px) { .kpi.kpi-art > .v, .kpi.kpi-art > .k, .kpi.kpi-art > .sub { max-width: none; } .kpi.kpi-art::before { width: 46%; opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .kpi.kpi-art::before { transition: none; } .kpi.kpi-art:hover::before { transform: none; } }
+@media print { .kpi.kpi-art::before { display: none; } }
+.kpi.kpi-art.art-tenders { --kpi-art: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22 fill=%22none%22 stroke=%22%2384bb20%22 stroke-width=%223%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M30 14h40l18 18v66a6 6 0 0 1-6 6H30a6 6 0 0 1-6-6V20a6 6 0 0 1 6-6z%22 fill=%22%2384bb20%22 fill-opacity=%22.14%22/><path d=%22M70 14v18h18%22/><path d=%22M36 46h36M36 58h36M36 70h22%22/><circle cx=%2284%22 cy=%2286%22 r=%2218%22 fill=%22%23fff%22 fill-opacity=%22.0%22/><circle cx=%2284%22 cy=%2286%22 r=%2218%22 fill=%22%2384bb20%22 fill-opacity=%22.14%22/><path d=%22M84 76v10l7 5%22/></svg>"); }
+.kpi.kpi-art.art-leads { --kpi-art: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22 fill=%22none%22 stroke=%22%2384bb20%22 stroke-width=%223%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><circle cx=%2234%22 cy=%2220%22 r=%227%22 fill=%22%2384bb20%22 fill-opacity=%22.14%22/><circle cx=%2260%22 cy=%2216%22 r=%227%22 fill=%22%2384bb20%22 fill-opacity=%22.14%22/><circle cx=%2286%22 cy=%2220%22 r=%227%22 fill=%22%2384bb20%22 fill-opacity=%22.14%22/><path d=%22M14 38h92L72 76v30l-24-10V76z%22 fill=%22%2384bb20%22 fill-opacity=%22.14%22/><path d=%22M30 52h60%22/></svg>"); }
+.kpi.kpi-art.art-events { --kpi-art: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22 fill=%22none%22 stroke=%22%2384bb20%22 stroke-width=%223%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><rect x=%2210%22 y=%2214%22 width=%2252%22 height=%2248%22 rx=%226%22 fill=%22%2384bb20%22 fill-opacity=%22.14%22/><path d=%22M10 30h52M24 8v12M48 8v12%22/><path d=%22M20 42h8M34 42h8M48 42h6M20 52h8M34 52h8%22/><rect x=%2256%22 y=%2248%22 width=%2256%22 height=%2216%22 rx=%223%22 fill=%22%2384bb20%22 fill-opacity=%22.14%22/><path d=%22M62 64v44M106 64v44%22/><rect x=%2270%22 y=%2284%22 width=%2230%22 height=%2224%22 rx=%222%22 fill=%22%2384bb20%22 fill-opacity=%22.14%22/><path d=%22M70 92h30%22/><path d=%22M106 48V30l10 5-10 5%22/></svg>"); }
+.kpi.kpi-art.art-content { --kpi-art: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22 fill=%22none%22 stroke=%22%2384bb20%22 stroke-width=%223%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><rect x=%2216%22 y=%2216%22 width=%2262%22 height=%2280%22 rx=%226%22 fill=%22%2384bb20%22 fill-opacity=%22.14%22/><path d=%22M26 30h42M26 42h42M26 54h28%22/><rect x=%2226%22 y=%2264%22 width=%2234%22 height=%2220%22 rx=%223%22 fill=%22%2384bb20%22 fill-opacity=%22.14%22/><path d=%22M100 40l12 12-40 40H60V80z%22 fill=%22%2384bb20%22 fill-opacity=%22.14%22/><path d=%22M92 48l12 12%22/></svg>"); }
+
+/* Tagesbrief: Kernaussage fett; verbundene Quellen (Outlook, Team-Aufgaben) im eigenen Kasten (Wunsch David 21.10.2026). */
+.sev-list .txt strong { font-weight: 700; color: var(--ink-strong); }
+.src-box { margin-top: var(--s3); padding: 10px 14px 12px; border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line)); border-left: 4px solid var(--accent); border-radius: var(--r-card, 10px); background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 6%, var(--surface)), color-mix(in srgb, var(--accent) 10%, var(--raised))); box-shadow: var(--e1); min-width: 0; }
+.src-box > div > .label:first-child { margin-top: 0 !important; }
+.src-box .agenda-list, .src-box ul { margin-bottom: 0; }
+@media print { .src-box { box-shadow: none; background: none; } }
+
+/* Tab-Leiste vom Seiteninhalt absetzen (Wunsch David 21.10.2026): eigener Streifen mit Kante und Innenschatten, Reiter als helle Karten davor. */
+.tabs-wrap::before { content: ""; position: absolute; top: -6px; bottom: -2px; left: 16px; right: 16px; z-index: 0; pointer-events: none; border-radius: 14px 14px 0 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ink-strong) 5%, var(--ground)), color-mix(in srgb, var(--ink-strong) 10%, var(--ground)));
+  border: 1px solid color-mix(in srgb, var(--ink-strong) 14%, var(--line)); border-bottom: 0;
+  box-shadow: inset 0 -10px 14px -12px color-mix(in srgb, var(--ink-strong) 40%, transparent); }
+.tabs-wrap { border-bottom-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
+.tabs-wrap > .tabs, .tabs-wrap > .tabs-nav { position: relative; z-index: 1; }
+.tabs-wrap > .tabs { padding-inline: 6px; padding-top: 2px; }
+.tabs-nav { background: transparent; }
+.tabs .tab:not([aria-selected="true"]) { background: var(--surface); box-shadow: 0 1px 2px color-mix(in srgb, var(--ink-strong) 10%, transparent); }
+.tabs .tab[aria-selected="true"] { box-shadow: 0 -4px 12px -6px color-mix(in srgb, var(--ink-strong) 35%, transparent), inset 0 -1px 0 var(--accent); }
+.tabs-wrap::before { --tb-dark: linear-gradient(180deg, color-mix(in srgb, #000 22%, var(--ground)), color-mix(in srgb, #000 34%, var(--ground))); }
+:root[data-theme="dark"] .tabs-wrap::before { background: var(--tb-dark); border-color: color-mix(in srgb, #000 30%, var(--line)); box-shadow: inset 0 -10px 14px -12px #000; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tabs-wrap::before { background: var(--tb-dark); border-color: color-mix(in srgb, #000 30%, var(--line)); box-shadow: inset 0 -10px 14px -12px #000; } }
+@media print { .tabs-wrap::before { display: none; } }
+
+/* Tab-Leiste Kontrast-Nachbesserung (Kommentar David 21.10.2026 „fix errors and design bugs“):
+   aktive Markierung mind. 3:1 zum Streifen, inaktive Reiter treten in den Streifen zurück, aktiver Reiter als helle Karte. */
+.tabs-wrap::before { background: linear-gradient(180deg, color-mix(in srgb, var(--ink-strong) 9%, var(--ground)), color-mix(in srgb, var(--ink-strong) 15%, var(--ground))); }
+.tabs .tab:not([aria-selected="true"]) { background: color-mix(in srgb, var(--surface) 62%, transparent); box-shadow: none; border-color: color-mix(in srgb, var(--ink-strong) 16%, transparent); border-bottom-color: transparent; }
+.tabs .tab:not([aria-selected="true"]):hover { background: var(--surface); }
+.tabs .tab[aria-selected="true"] { background: var(--surface); border-color: color-mix(in srgb, var(--ink-strong) 22%, var(--line)); border-bottom-color: var(--accent-ink); color: var(--ink-strong); }
+.tabs .tab[aria-selected="true"] { box-shadow: 0 -4px 12px -6px color-mix(in srgb, var(--ink-strong) 35%, transparent), inset 0 -1px 0 var(--accent-ink); }
+.tabs-wrap { border-bottom-color: var(--accent-ink); }
+:root[data-theme="dark"] .tabs .tab[aria-selected="true"] { background: color-mix(in srgb, var(--accent) 16%, var(--surface)); border-bottom-color: var(--accent); box-shadow: 0 -4px 12px -6px #000, inset 0 -1px 0 var(--accent); }
+:root[data-theme="dark"] .tabs-wrap { border-bottom-color: var(--accent); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tabs .tab[aria-selected="true"] { background: color-mix(in srgb, var(--accent) 16%, var(--surface)); border-bottom-color: var(--accent); box-shadow: 0 -4px 12px -6px #000, inset 0 -1px 0 var(--accent); } :root:not([data-theme="light"]) .tabs-wrap { border-bottom-color: var(--accent); } }
+.tabbar.d2-stuck .tabs-wrap::before { top: -2px; }
+
+/* Tab-Streifen dunkler und tiefer (Kommentar David 21.10.2026 „background darker and deeper“): eingelassene Schiene mit Innenschatten oben, Schatten nach unten. */
+.tabs-wrap::before { background: linear-gradient(180deg, color-mix(in srgb, var(--ink-strong) 36%, var(--ground)), color-mix(in srgb, var(--ink-strong) 26%, var(--ground)));
+  border-color: color-mix(in srgb, var(--ink-strong) 34%, var(--line));
+  box-shadow: inset 0 7px 10px -6px color-mix(in srgb, #000 45%, transparent), inset 0 -6px 10px -8px color-mix(in srgb, #000 25%, transparent), 0 8px 16px -12px color-mix(in srgb, #000 55%, transparent); }
+.tabs .tab:not([aria-selected="true"]) { background: color-mix(in srgb, var(--surface) 78%, transparent); }
+.tabs-nav { color: var(--ink-strong); }
+:root[data-theme="dark"] .tabs-wrap::before { background: linear-gradient(180deg, color-mix(in srgb, #000 52%, var(--ground)), color-mix(in srgb, #000 40%, var(--ground))); border-color: color-mix(in srgb, #000 45%, var(--line)); box-shadow: inset 0 7px 12px -6px #000, inset 0 -6px 10px -8px #000, 0 8px 18px -10px #000; }
+:root[data-theme="dark"] .tabs .tab:not([aria-selected="true"]) { background: color-mix(in srgb, var(--surface) 70%, transparent); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tabs-wrap::before { background: linear-gradient(180deg, color-mix(in srgb, #000 52%, var(--ground)), color-mix(in srgb, #000 40%, var(--ground))); border-color: color-mix(in srgb, #000 45%, var(--line)); box-shadow: inset 0 7px 12px -6px #000, inset 0 -6px 10px -8px #000, 0 8px 18px -10px #000; }
+  :root:not([data-theme="light"]) .tabs .tab:not([aria-selected="true"]) { background: color-mix(in srgb, var(--surface) 70%, transparent); } }
+.tabbar.d2-stuck { box-shadow: 0 12px 26px -16px rgba(0, 0, 0, .7); }
 </style>
 <a class="skip" href="#main">Zum Inhalt springen</a>
 <header class="top">
@@ -7151,7 +7217,7 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
   function kpiStrip() {
     const t = today();
     const TIP = { tenders: 'Offene Ausschreibungen mit Frist ab heute. Rot, wenn die nächste Frist in der roten Ampelzone liegt. Klick öffnet den Monitor.', leads: 'Neue Leads der letzten 30 Tage; qualifiziert = über „Neu“ hinaus, ohne „Verloren“. Klick öffnet die Pipeline.', events: 'Events ab heute; Prozent = erledigte Punkte der Checkliste des nächsten Events (InfraTech 2027: erledigte Notion-Aufgaben).', content: 'Beiträge in Entwurf, Review oder freigegeben; Bernstein, wenn etwas im Review wartet.' };
-    const tile = (cls, v, k, sub, go, ic) => h('button', { class: 'kpi' + (cls ? ' ' + cls : ''), type: 'button', 'data-tip': TIP[go] || null, onclick: () => app.go('marketing', go), 'aria-label': k + ': ' + v + '. ' + sub + '. Modul öffnen' },
+    const tile = (cls, v, k, sub, go, ic) => h('button', { class: 'kpi kpi-art art-' + go + (cls ? ' ' + cls : ''), type: 'button', 'data-tip': TIP[go] || null, onclick: () => app.go('marketing', go), 'aria-label': k + ': ' + v + '. ' + sub + '. Modul öffnen' },
       app.ico(ic), h('div', { class: 'v', text: String(v) }), h('div', { class: 'k', text: k }), h('div', { class: 'sub', text: sub }));
     const ready = c => S.loaded[c];
     const openT = S.data.tenders.filter(x => H.tenderOpen(x) && (d => d && d >= t)(parseDay(x.deadline))).sort((a, b) => parseDay(a.deadline) - parseDay(b.deadline));
@@ -7199,6 +7265,15 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
     if (parts.length <= 4) return h('p', { class: 'brief-summary', text: str(text) });
     return h('div', {}, h('p', { class: 'brief-summary', text: parts.slice(0, 4).join(' ') }), h('details', {}, h('summary', { class: 'small', text: 'Weiterlesen' }), h('p', { class: 'small', text: parts.slice(4).join(' ') })));
   }
+  // Kernaussage einer Tagesbrief-Zeile fett (Wunsch David 21.10.2026): bis zum ersten Satzzeichen, sonst die ersten Wörter; höchstens eine Fettung je Zeile.
+  function briefEmph(text) {
+    const t = str(text).trim();
+    const m = t.slice(8).search(/[:;–—(]|,\s|\.\s/);
+    let cut = m >= 0 ? m + 8 : -1;
+    if (cut < 0 || cut > 90) { const w = t.split(/\s+/); cut = w.length > 8 ? w.slice(0, 5).join(' ').length : t.length; }
+    if (cut >= t.length) return [h('strong', { text: t })];
+    return [h('strong', { text: t.slice(0, cut) }), t.slice(cut)];
+  }
   app.module('marketing', 'copilot', {
     render() {
       const b = currentBriefing();
@@ -7210,7 +7285,7 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
           h('div', { class: 'label' }, isToday ? 'Tagesbrief von heute' : 'Letzter Tagesbrief vom ' + fmtD(b.date), b.generatedBy === 'dashboard' ? ' · im Cockpit erzeugt' : b.generatedBy === 'copilot' ? ' · vom Copilot' : '', b._unsaved ? ' · nicht gespeichert' : ''),
           str(b.summary) ? shortSummary(b.summary) : null,
           items.length ? h('ul', { class: 'sev-list' }, items.map(i => h('li', {}, sevChip(D.SEV_ORDER[i.severity] != null ? i.severity : 'info'),
-            h('span', { class: 'txt', 'data-tip': str(i.module) || null }, str(i.text))))) : null);
+            h('span', { class: 'txt', 'data-tip': str(i.module) || null }, ...briefEmph(i.text))))) : null);
         const wp = arr(b.weekPlan).filter(w => w && typeof w === 'object');
         if (wp.length) left.append(h('div', { class: 'label', style: 'margin-top:16px', text: 'Wochenplan' }), ...weekPlanGrid(wp).filter(Boolean));
         if (!isToday) left.append(h('p', { class: 'muted small', style: 'margin-top:8px', text: 'Für heute liegt noch kein Tagesbrief vor (Copilot in Claude oder KI unten).' }));
@@ -7218,8 +7293,8 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
         left.append(h('div', { class: 'label', text: 'Tagesbrief' }), S.loaded.briefings ? h('p', { class: 'muted brief-summary', text: 'Noch kein Tagesbrief für heute. Der Feind Copilot legt ihn in Claude an, oder er wird hier mit KI erzeugt.' }) : app.skeleton(4, 'Lade Tagesbrief'));
       }
       const right = h('div', {}, h('div', { class: 'label', text: 'Hinweise aus den Daten' }), hintTiles(localHints()),
-        app.calendarBox ? app.calendarBox() : null,
-        app.teamTasksBox ? app.teamTasksBox() : null);
+        app.calendarBox ? h('div', { class: 'src-box' }, app.calendarBox()) : null,
+        app.teamTasksBox ? h('div', { class: 'src-box' }, app.teamTasksBox()) : null);
       const ai = app.aiBox ? app.aiBox() : null;
       return [
         panelHead('Feind Copilot · Tagesbrief', null, h('span', { class: 'muted small', text: fmtD(today()) })),
