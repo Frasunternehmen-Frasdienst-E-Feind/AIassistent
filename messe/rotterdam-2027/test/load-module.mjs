@@ -6,8 +6,10 @@ import { fileURLToPath } from 'node:url';
 // Führend ist seit 14.10.2026 „Feind Cockpit“ (TfuzbG) = cockpit-a1/Feind-Cockpit-A1.html; v3 ist Archiv.
 export const PAGE = fileURLToPath(new URL('../../../cockpit-a1/Feind-Cockpit-A1.html', import.meta.url));
 
-export function loadModule(name) {
-  const html = readFileSync(PAGE, 'utf8');
+export const HUB = fileURLToPath(new URL('../messe-hub.html', import.meta.url));
+
+export function loadModule(name, page = PAGE) {
+  const html = readFileSync(page, 'utf8');
   const marker = `/* ---- ${name} ---- */`;
   const start = html.indexOf(marker);
   if (start < 0) throw new Error(`Modul ${name} nicht gefunden`);
