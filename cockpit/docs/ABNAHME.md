@@ -54,7 +54,7 @@ und Kap. 11 (Wellen 1–5). Die Prüfung ist automatisiert, soweit möglich: `np
 | B9 | Klarnamen von Kolleg:innen in Seeds/Collections | Rollen |
 | B10 | Uneinheitliche `user`-API | Vertrag 0.2.61 |
 | B11 | `set({merge:true})` gibt es nicht; Team hätte Marketing-Schwellen überschrieben | `settings/infratech` |
-| B12 | Google Sheet ist laut Manager-Charta „führende Quelle“ für Team-Aufgaben: Doppelpflege | **Entscheidung** |
+| B12 | Google Sheet ist laut Manager-Charta „führende Quelle“ für Team-Aufgaben: Doppelpflege | entschieden 21.10.2026: Notion-DB „Aufgaben InfraTech 2027“ führend für Messe-Aufgaben, Sheet nur außerhalb der Messe |
 | B13 | Anthrazit auf Grün verfehlt WCAG AA (3,74:1) | gelöst: neues Token `on-accent-strong` `#1f2525` |
 | B14 | Schnelle Navigation wurde nach 800 ms zurückgesetzt | behoben (E2E) |
 | B15 | Innovationspreis-Teilaufgaben i2–i5 (Fälligkeit 23.–25.09.) ohne Status | **Status bestätigen** |

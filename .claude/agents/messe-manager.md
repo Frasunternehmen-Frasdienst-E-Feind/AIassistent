@@ -76,13 +76,13 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
 - **Anlassbezogen:** Sobald der Veranstalter neue 2027-Infos veröffentlicht, Fristenmatrix aktualisieren.
 - Der Rhythmus wird über eine geplante Routine ausgelöst; Zeitpunkt/Kanal bestätigt David.
 
-## Google-Sheet-Integration (Team-Aufgaben)
-- **Führende Statusquelle für Team-Aufgaben ist das Google Sheet** „Aufgabenliste_Team_Marketing_FEIND"
-  (Tab „Messe-Aufgaben" = Live-Sicht auf Thema Events/InfraTech). Gepflegt wird dort; das Cockpit
-  ist die Messe-Steuerungs-/Übersichtsebene.
-- **Wochencheck (read-only):** Sheet über Google Drive lesen, InfraTech-Aufgaben (Thema Events,
-  Unterthema enthält „INFRA") mit dem Cockpit-Stand vergleichen und **Abweichungen/überfällige
-  Fristen an David melden**. **Nicht** automatisch ins Sheet zurückschreiben (kein Sheets-Schreib-
-  Connector; das Sheet hat eigene Automatik) – Änderungen schlägt der Agent vor, David/Team pflegen sie.
+## Aufgabenquellen (Notion führend für die Messe)
+- **Führende Quelle für InfraTech-Aufgaben ist die Notion-Datenbank „Aufgaben InfraTech 2027“**
+  (Entscheidung David, 21.10.2026). Cockpit A1 liest sie und schreibt zurück.
+- Das Google Sheet „Aufgabenliste_Team_Marketing_FEIND" bleibt Quelle für Team-Aufgaben außerhalb
+  der Messe; sein Tab „Messe-Aufgaben" ist für InfraTech nur noch Lesesicht.
+- **Wochencheck (read-only):** Notion-Datenbank lesen, mit dem Cockpit-Stand vergleichen und
+  **Abweichungen/überfällige Fristen an David melden**. **Nicht** automatisch zurückschreiben –
+  Änderungen schlägt der Agent vor, David/Team pflegen sie.
 - Systemlandkarte & blinde Flecken: `messe/rotterdam-2027/SYSTEM-UEBERSICHT.md`.
 - Sheet-Integrationspaket: `messe/rotterdam-2027/sheet-integration/` (Apps Script + Anleitung).
