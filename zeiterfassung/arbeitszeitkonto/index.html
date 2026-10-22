@@ -124,30 +124,84 @@
   a { color: var(--accent-text); }
   :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
-  /* ---- Kopf ---- */
+  /* ---- Kopf (wie Feind Cockpit): dunkler Verlauf, Raster, Lichtschimmer,
+     Zifferblatt mit Tages-Soll-Bogen und 24-h-Zeitstrahl als Hintergrundgrafik ---- */
+  :root { --top-shade: #222929; --r-pill: 999px; --ease-out: cubic-bezier(.16, 1, .3, 1); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --top-shade: #161b1b; } }
+  :root[data-theme="dark"] { --top-shade: #161b1b; }
   .masthead {
-    background: var(--surface-inverse);
-    color: var(--ink-inverse);
-    padding: var(--s4) var(--s3);
-    margin-bottom: var(--s3);
+    position: relative; isolation: isolate; overflow: hidden;
+    color: var(--ink-inverse); margin-bottom: var(--s3);
+    border-bottom: 4px solid var(--accent);
+    background: radial-gradient(900px 260px at 12% -40%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 70%),
+      linear-gradient(180deg, var(--top-shade) 0%, var(--surface-inverse) 100%);
   }
-  .masthead .wrap { padding-block: 0; }
-  .masthead h1 { color: var(--ink-inverse); font-size: 28px; margin: 0; letter-spacing: .01em; }
-  .masthead .sub { color: var(--ink-inverse-muted); font-size: 13px; margin-top: var(--s1); }
-  .rule { height: 3px; background: var(--accent); }
+  .masthead::before { content: ""; position: absolute; inset: 0; z-index: -2; pointer-events: none; opacity: .5;
+    background-image: linear-gradient(color-mix(in srgb, var(--ink-inverse) 6%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--ink-inverse) 6%, transparent) 1px, transparent 1px);
+    background-size: 28px 28px; -webkit-mask-image: linear-gradient(100deg, #000 0%, transparent 55%); mask-image: linear-gradient(100deg, #000 0%, transparent 55%); }
+  .masthead::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(105deg, transparent 30%, color-mix(in srgb, var(--ink-inverse) 8%, transparent) 45%, transparent 60%);
+    background-size: 250% 100%; animation: mh-sheen 9s ease-in-out infinite; }
+  @keyframes mh-sheen { 0%, 60% { background-position: 120% 0; } 100% { background-position: -120% 0; } }
+  .masthead .wrap { padding-block: var(--s4) var(--s2); }
+  .mh-dial { position: absolute; z-index: -1; right: -110px; top: 50%; width: 400px; height: 400px; transform: translateY(-50%); pointer-events: none; }
+  .mh-dial .tick { stroke: color-mix(in srgb, var(--ink-inverse) 22%, transparent); stroke-width: 2; }
+  .mh-dial .tick.h { stroke: color-mix(in srgb, var(--ink-inverse) 45%, transparent); stroke-width: 4; }
+  .mh-dial .ring { fill: none; stroke: color-mix(in srgb, var(--ink-inverse) 10%, transparent); stroke-width: 1; }
+  .mh-dial .shift { fill: none; stroke: var(--accent); stroke-width: 10; opacity: .55; }
+  .mh-dial .hand { stroke: var(--ink-inverse); stroke-linecap: round; opacity: .55; }
+  .mh-dial .hand.s { stroke: var(--accent); opacity: .9; stroke-width: 2; }
+  .mh-dial .hub { fill: var(--accent); }
+  .mh-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s3); }
+  .mh-brand { display: flex; align-items: center; gap: var(--s3); min-width: 0; }
+  .mh-brand .fe-logo { display: block; flex: none; height: 44px; width: auto; color: #ffffff; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .4)); }
+  .mh-title { padding-left: var(--s3); border-left: 1px solid color-mix(in srgb, var(--ink-inverse) 28%, transparent); min-width: 0; }
+  .masthead h1 { color: var(--ink-inverse); font-size: 26px; font-weight: 700; margin: 0; letter-spacing: .015em; text-shadow: 0 1px 0 rgba(0, 0, 0, .25); }
+  .masthead .sub { color: var(--ink-inverse-muted); font-size: 12.5px; margin: 2px 0 0; }
+  .mh-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); }
+  .mh-clock { display: flex; align-items: baseline; gap: var(--s2); }
+  .mh-clock b { font-family: var(--display); font-size: 28px; line-height: 1; color: var(--ink-inverse); font-variant-numeric: tabular-nums; }
+  .mh-clock span { font-size: 11px; line-height: 1.3; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-inverse-muted); font-weight: 700; }
+  .seg { display: inline-flex; border: 1px solid color-mix(in srgb, var(--ink-inverse) 28%, transparent); border-radius: 8px; overflow: hidden;
+    background: color-mix(in srgb, var(--ink-inverse) 6%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .masthead .seg button { font-size: 12.5px; color: var(--ink-inverse); background: transparent; border: 0; border-radius: 0; padding: 6px 11px; min-height: 32px; }
+  .masthead .seg button + button { border-left: 1px solid color-mix(in srgb, var(--ink-inverse) 20%, transparent); }
+  @media (hover: hover) and (pointer: fine) { .masthead .seg button:hover:not(:disabled) { background: color-mix(in srgb, var(--ink-inverse) 12%, transparent); } }
+  .masthead .seg button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent-strong); font-weight: 700; }
+  .masthead :focus-visible { outline-color: var(--accent); }
+  .rule { display: none; }
   .statusbar {
     display: flex; flex-wrap: wrap; gap: var(--s2);
     align-items: center; margin-top: var(--s3);
   }
   .chip {
     display: inline-flex; align-items: center; gap: 6px;
-    font-size: 12px; letter-spacing: .04em; text-transform: uppercase;
-    padding: 4px var(--s2); border-radius: var(--r-input);
-    border: 1px solid color-mix(in srgb, var(--ink-inverse) 28%, transparent); color: var(--ink-inverse-muted);
+    font-size: 12px; letter-spacing: .02em;
+    padding: 3px 10px; border-radius: var(--r-pill);
+    border: 1px solid color-mix(in srgb, var(--ink-inverse) 28%, transparent); color: var(--ink-inverse);
+    background: color-mix(in srgb, var(--ink-inverse) 6%, transparent);
   }
-  .chip .dot { width: 8px; height: 8px; background: var(--accent); }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
   .chip.warn .dot { background: var(--signal); }
   .chip.local .dot { background: var(--ink-inverse-muted); }
+  .mh-ruler { position: relative; height: 34px; margin-top: var(--s3); }
+  .mh-ruler .base { position: absolute; left: 0; right: 0; bottom: 14px; height: 1px; background: color-mix(in srgb, var(--ink-inverse) 30%, transparent); }
+  .mh-ruler .t { position: absolute; bottom: 14px; width: 1px; height: 6px; background: color-mix(in srgb, var(--ink-inverse) 35%, transparent); }
+  .mh-ruler .t.m { height: 12px; background: color-mix(in srgb, var(--ink-inverse) 55%, transparent); }
+  .mh-ruler .n { position: absolute; bottom: 0; transform: translateX(-50%); font-size: 10.5px; color: var(--ink-inverse-muted); font-variant-numeric: tabular-nums; }
+  .mh-ruler .now { position: absolute; bottom: 10px; width: 2px; height: 18px; background: var(--accent); border-radius: 1px; box-shadow: 0 0 10px var(--accent); }
+  .mh-ruler .now::after { content: "jetzt"; position: absolute; left: 6px; top: -4px; font-size: 10.5px; font-weight: 700; color: var(--accent); }
+  @media (max-width: 640px) {
+    .mh-brand .fe-logo { height: 30px; }
+    .mh-title { padding-left: var(--s2); }
+    .masthead h1 { font-size: 20px; }
+    .mh-clock b { font-size: 22px; }
+    .mh-dial { width: 300px; height: 300px; right: -150px; opacity: .3; }
+  }
+  @media (prefers-reduced-motion: reduce) { .masthead::after { animation: none; } }
+  @media (prefers-contrast: more) { .masthead { background: var(--surface-inverse); } .mh-dial, .masthead::before, .masthead::after { display: none; } }
+  @media print { .masthead { display: none; } }
 
   /* ---- Kennzahlen ---- */
   .figures {
@@ -288,8 +342,10 @@
   .formgrid { display: grid; gap: var(--s2); grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
   .bookrow {
     display: grid; gap: var(--s2); align-items: end;
-    grid-template-columns: 1fr 1fr 1.2fr auto; margin-bottom: var(--s2);
+    grid-template-columns: 1fr 1fr 1.2fr 1.6fr auto; margin-bottom: var(--s2);
   }
+  textarea.notefield { min-height: 0; font-family: var(--sans); font-size: 14px; }
+  .daynote { display: block; font-size: 12px; color: var(--ink-muted); margin-top: 2px; max-width: 320px; white-space: normal; text-align: left; }
   @media (max-width: 520px) { .bookrow { grid-template-columns: 1fr 1fr; } }
   .field { display: grid; gap: 2px; }
   .err {
@@ -312,7 +368,7 @@
   .stamp-since { color: var(--ink-muted); font-size: 13px; }
   .stamp-net { color: var(--ink-muted); font-size: 14px; }
   .stamp-net b { color: var(--ink-strong); font-size: 18px; }
-  .stamp-btns { flex: none; }
+  .stamp-btns { flex: 0 1 auto; max-width: 100%; }   /* Handy: Knöpfe brechen um statt seitlich zu schieben */
   .stamp-remind { border-left: 3px solid var(--accent); padding-left: var(--s2); margin: var(--s2) 0 0; font-size: 14px; }
   .stamp-remind b { font-family: var(--display); color: var(--ink-strong); }
   .stamp-at { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: end; margin-top: var(--s2); }
@@ -398,13 +454,30 @@
 </style>
 
 <header class="masthead">
+  <svg class="mh-dial" id="mh-dial" viewBox="-210 -210 420 420" aria-hidden="true"></svg>
   <div class="wrap">
-    <h1>Arbeitszeitkonto 1626</h1>
-    <p class="sub">Personalnummer 1626 &middot; Fräsdienst-Service E. Feind GmbH &middot; Buchungen aus OptiTime</p>
+    <div class="mh-row">
+      <div class="mh-brand">
+        <svg class="fe-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 475" aria-hidden="true" focusable="false"><defs><clipPath id="feLogoClip"><rect width="1500" height="475"/></clipPath></defs><g clip-path="url(#feLogoClip)"><path fill="none" d="M278,.86h1223v476H1c0-157.17,0-314.33.06-471.5,0-1.46-1.15-3.39.94-4.5,145.46,126.41,228.75,288.38,271.45,473.76h23.38c.04-.82.14-1.33.07-1.81-1.03-8.26-1.95-16.53-3.16-24.76-9.04-61.4-24.2-121.29-44.83-179.79-23.26-65.96-51.92-129.34-89.86-188.3C141.08,52.02,121.11,25.63,99,.86h9c.44.67.81,1.42,1.34,2.01,14.68,16.17,28.22,33.26,40.79,51.11,40.77,57.85,71.89,120.73,96.67,186.83,23.88,63.69,41.17,129.13,51.37,196.42,1.88,12.44,3.58,24.92,5.4,37.68,6.99,0,13.8,0,20.61-.01.97,0,1.94-.14,3.13-.24.1-1.46.26-2.75.26-4.05.19-48.2-3.07-96.13-10.34-143.81-8.52-55.86-21.84-110.49-40.87-163.72C255.91,105.87,229.38,51.67,196,.86h7c26.44,39.77,48.19,82.01,66.05,126.26,43.08,106.71,63.73,217.8,64.77,332.7.05,4.93,0,9.86,0,14.91h18.23c.29-2.29.64-4.41.82-6.55,1.4-16.43,2.65-32.87,3.44-49.35,3.27-67.63-.05-134.9-11.74-201.62-12.26-69.94-33.47-137.23-61.2-202.53-1.93-4.55-4.58-8.84-5.39-13.83M1098.64,281.8c2.02.85,2.38,2.43,3.09,3.65,15.15,26.22,30.25,52.48,45.39,78.71,2.99,5.18,4.97,12.07,9.47,14.96,4.73,3.04,11.96.66,18.1.87,1.5.05,3,0,4.5,0h30.56v-124.94h-53.69v23.54c-4.67-6.58-8.52-13.17-12-19.96-1.49-2.9-3.2-3.93-6.53-3.91-29.33.15-58.66.08-87.99.11-1.58,0-3.33-.58-4.72.71v124.07h53.82v-97.83ZM1340.44,255c.97,13.59.93,26.74.44,39.87-.36,9.63-1.16,19.27-4.74,28.41-2.42,6.17-6.47,10.98-13.32,11.24-12.43.47-24.88.13-37.86.13v-79.48h-53.34v124.52c.95.13,1.6.29,2.25.29,32.31-.01,64.63.26,96.93-.15,26.97-.34,45.5-13.84,55.23-39.04,5.95-15.42,7.83-31.6,8.64-47.92.62-12.59.6-25.19-1.08-37.88h-53.15ZM555.48,258.14c-42.6-2.33-84.93-4.28-127.36-3.06,0,29.65-.8,58.98.3,88.23.67,17.64,11.31,29.36,28.43,34.63,6.57,2.02,13.3,3,20.17,2.96,29.49-.18,58.94-1.35,88.32-4.05,3.1-.28,4.31-1.22,4.27-4.51-.18-12.49-.07-24.99-.09-37.49,0-1.13.25-2.37-1.24-3.53-22.26,0-44.9.02-67.55-.02-3.33,0-6.67-.08-9.97-.44-4.42-.49-7.43-3.09-8.48-7.36-1.47-6.02-1.08-12.14-.7-18.44,24.85-.85,49.25-1.69,73.9-2.54v-44.39ZM811.98,255.08c0,29.32-.56,58.14.21,86.92.45,16.99,9.63,28.99,25.89,35.02,7.9,2.93,16.11,3.94,24.5,3.9,26.15-.14,52.26-1.31,78.33-3.32,4.03-.31,8.24-.16,12.06-1.74v-44.53h-5.7c-21.32,0-42.63.01-63.95-.01-2.66,0-5.34-.06-7.98-.35-5.43-.6-8.37-3.35-9.45-8.71-1.13-5.58-.73-11.19-.48-17.17,24.79-.86,49.29-1.71,73.88-2.56v-44.41c-42.52-2.28-84.72-4.27-127.31-3.04M655.31,379.58h53.74v-74.52c24.74-.85,49.13-1.68,73.55-2.52v-44.45c-42.6-2.25-84.8-4.26-127.29-3.01v124.49ZM1231.57,242.83h53.58v-19.37c12.69,0,24.98-.04,37.27.02,7.07.04,11.43,3.91,13.78,10.3,1.13,3.06,2.07,6.19,3,9.04h52.99c-.43-2.5-.76-4.62-1.18-6.73-2.75-13.68-7.12-26.7-16.09-37.69-12.11-14.82-28.54-20.22-46.92-20.38-31.16-.27-62.33-.1-93.49-.08-.94,0-2.03-.34-2.95.87v64.03ZM569.41,227.49c0-14.13-.14-27.43.09-40.73.07-3.76-1.2-4.65-4.75-5.03-22.2-2.39-44.5-2.95-66.78-3.58-10.47-.3-20.97-.89-31.41.7-14.48,2.2-26.76,7.88-33.75,21.72-6.87,13.59-4.64,28.1-4.9,42.35h53.09c.21-1.7.39-3.17.59-4.65.95-7.12,3.82-9.92,10.92-10.51,2.48-.21,4.99-.25,7.48-.25,18.98-.02,37.96-.01,56.93-.01h12.49ZM655.17,242.75h53.5c.99-12.86,3.37-15.06,16.1-15.25,1.33-.02,2.67,0,4,0,20.82,0,41.65.01,62.47-.02,1.78,0,3.67.5,5.33-.59v-44.41c-1.59-.24-2.88-.46-4.18-.61-22.36-2.59-44.85-3.09-67.32-3.7-10.14-.28-20.33-.97-30.42.7-17.91,2.98-31.32,11.62-37.04,29.77-3.52,11.18-2.38,22.65-2.44,34.13M864.98,243.01c.13-1.57.19-2.72.32-3.86.85-7.92,3.84-10.87,11.72-11.45,2.32-.17,4.66-.2,6.99-.2,21.16-.01,42.32,0,63.48-.03,1.79,0,3.66.47,5.43-.57v-44.46c-1.55-.22-2.84-.44-4.14-.59-22.37-2.62-44.86-3.07-67.33-3.71-10.31-.3-20.65-.85-30.94.71-13.93,2.11-25.93,7.39-33.12,20.37-7.69,13.89-5.31,28.95-5.52,43.8h53.1ZM969.71,379.67h53.07v-124.68h-53.07v124.68ZM1044.79,242.72h89.41c-.1-.75-.05-1.12-.19-1.38-11.3-20.34-22.66-40.66-33.89-61.05-1.2-2.18-2.73-2.43-4.85-2.41-10.83.07-21.66.03-32.49.03-5.95,0-11.9,0-18,0v64.81ZM1156.56,242.83h53.21v-64.7h-53.21v64.7ZM583.4,319.13v60.81c19.58,0,38.85,0,58.13-.01.79,0,1.58-.17,2.32-.25,2.55-31.09-29-62.71-60.45-60.55M969.96,242.86h52.75c2.41-30.7-26.02-63.18-52.75-60.27v60.27Z"/><path fill="currentColor" d="M196,.86c33.38,50.81,59.91,105.01,80.36,162.22,19.03,53.22,32.35,107.86,40.87,163.72,7.27,47.67,10.53,95.61,10.34,143.81,0,1.3-.16,2.6-.26,4.05-1.2.1-2.17.23-3.13.24-6.81.02-13.61.01-20.61.01-1.82-12.76-3.52-25.24-5.4-37.68-10.19-67.28-27.49-132.73-51.37-196.42-24.78-66.1-55.9-128.98-96.67-186.83-12.58-17.85-26.11-34.94-40.79-51.11-.54-.59-.9-1.34-1.34-2.01h88Z"/><path fill="#85bc21" d="M99,.86c22.11,24.77,42.08,51.16,60.05,79.09,37.94,58.96,66.6,122.35,89.86,188.3,20.63,58.51,35.79,118.39,44.83,179.8,1.21,8.23,2.13,16.51,3.16,24.76.06.49-.04.99-.07,1.82h-23.38C230.75,289.24,147.46,127.27,2,.86h97Z"/><path fill="#e3000b" d="M278,.86c.81,4.99,3.46,9.28,5.39,13.83,27.73,65.3,48.94,132.59,61.2,202.53,11.7,66.73,15.01,133.99,11.74,201.62-.8,16.48-2.04,32.92-3.44,49.35-.18,2.14-.53,4.26-.82,6.55h-18.23c0-5.05.04-9.98,0-14.91-1.05-114.9-21.7-225.99-64.77-332.7C251.19,82.87,229.44,40.64,203,.86h75Z"/><path fill="#85bc21" d="M1098.64,281.8v97.83h-53.82v-124.07c1.4-1.29,3.14-.71,4.72-.71,29.33-.04,58.66.04,87.99-.12,3.33-.02,5.05,1.01,6.53,3.91,3.48,6.78,7.33,13.38,12,19.96v-23.54h53.69v124.94h-30.56c-1.5,0-3,.04-4.5,0-6.14-.21-13.37,2.17-18.1-.87-4.5-2.89-6.48-9.78-9.47-14.96-15.14-26.23-30.24-52.49-45.39-78.71-.71-1.23-1.07-2.81-3.09-3.65"/><path fill="#85bc21" d="M1340.44,254.99h53.15c1.68,12.68,1.71,25.29,1.08,37.88-.81,16.32-2.69,32.5-8.64,47.92-9.72,25.2-28.26,38.7-55.23,39.04-32.31.41-64.62.14-96.93.15-.65,0-1.3-.16-2.25-.29v-124.52h53.34v79.48c12.98,0,25.43.34,37.86-.13,6.85-.26,10.9-5.07,13.32-11.24,3.58-9.14,4.39-18.77,4.74-28.41.49-13.13.53-26.28-.44-39.87"/><path fill="#85bc21" d="M555.48,258.14v44.39c-24.65.84-49.05,1.68-73.9,2.54-.38,6.29-.77,12.42.7,18.44,1.05,4.27,4.06,6.87,8.48,7.36,3.3.36,6.65.43,9.97.44,22.65.04,45.29.02,67.55.02,1.49,1.16,1.24,2.4,1.24,3.53.02,12.5-.09,24.99.09,37.49.05,3.29-1.17,4.23-4.27,4.51-29.38,2.69-58.82,3.87-88.32,4.05-6.88.04-13.61-.94-20.17-2.96-17.12-5.27-27.76-16.99-28.43-34.63-1.1-29.25-.3-58.58-.3-88.23,42.43-1.22,84.76.74,127.36,3.06"/><path fill="#85bc21" d="M811.98,255.08c42.59-1.23,84.78.76,127.31,3.04v44.41c-24.59.85-49.09,1.7-73.88,2.56-.26,5.98-.65,11.59.48,17.17,1.08,5.35,4.02,8.1,9.45,8.7,2.64.29,5.32.35,7.98.35,21.32.03,42.64.01,63.95.01h5.7v44.53c-3.82,1.58-8.04,1.43-12.06,1.74-26.07,2.01-52.18,3.18-78.33,3.32-8.39.04-16.6-.97-24.5-3.9-16.26-6.03-25.43-18.03-25.89-35.01-.77-28.78-.21-57.6-.21-86.92"/><path fill="#85bc21" d="M655.31,379.58v-124.49c42.49-1.25,84.7.76,127.29,3.01v44.45c-24.42.84-48.81,1.67-73.55,2.52v74.52h-53.75Z"/><path fill="currentColor" d="M1231.57,242.83v-64.03c.93-1.2,2.01-.87,2.95-.87,31.17-.01,62.33-.18,93.49.08,18.38.16,34.81,5.56,46.92,20.38,8.97,10.99,13.34,24.01,16.09,37.69.42,2.11.74,4.24,1.18,6.73h-52.99c-.94-2.85-1.88-5.98-3-9.04-2.35-6.39-6.71-10.27-13.78-10.3-12.29-.06-24.58-.02-37.27-.02v19.37h-53.58Z"/><path fill="currentColor" d="M569.41,227.49h-12.49c-18.98,0-37.96,0-56.93.01-2.49,0-5,.05-7.48.25-7.1.59-9.96,3.4-10.92,10.51-.2,1.47-.38,2.95-.59,4.65h-53.09c.25-14.25-1.98-28.76,4.9-42.35,7-13.84,19.27-19.51,33.76-21.72,10.43-1.59,20.94-.99,31.41-.7,22.29.63,44.58,1.19,66.78,3.58,3.55.38,4.81,1.28,4.75,5.03-.24,13.3-.09,26.6-.09,40.73"/><path fill="currentColor" d="M655.17,242.75c.06-11.48-1.08-22.95,2.44-34.13,5.72-18.15,19.13-26.79,37.04-29.77,10.1-1.68,20.29-.98,30.42-.7,22.47.61,44.95,1.11,67.32,3.7,1.3.15,2.59.38,4.18.62v44.41c-1.66,1.09-3.55.59-5.33.59-20.82.04-41.64.02-62.47.02-1.33,0-2.67-.01-4,0-12.73.19-15.12,2.4-16.1,15.25h-53.5Z"/><path fill="currentColor" d="M864.98,243.01h-53.1c.21-14.85-2.18-29.91,5.52-43.8,7.19-12.98,19.2-18.27,33.12-20.37,10.28-1.55,20.63-1,30.94-.71,22.47.64,44.96,1.09,67.33,3.71,1.29.15,2.58.36,4.13.59v44.47c-1.77,1.04-3.64.57-5.43.57-21.16.04-42.32.02-63.48.03-2.33,0-4.67.03-6.99.2-7.88.58-10.87,3.52-11.72,11.45-.12,1.14-.19,2.29-.32,3.86"/><rect fill="#85bc21" x="969.71" y="254.99" width="53.07" height="124.68"/><path fill="currentColor" d="M1044.79,242.72v-64.81h18c10.83,0,21.66.04,32.49-.03,2.12-.01,3.65.23,4.85,2.41,11.22,20.39,22.58,40.7,33.89,61.05.14.26.09.63.19,1.38h-89.41Z"/><rect fill="currentColor" x="1156.56" y="178.14" width="53.21" height="64.7"/><path fill="currentColor" d="M583.4,319.13c31.45-2.15,63,29.46,60.45,60.55-.74.08-1.53.25-2.32.25-19.27.01-38.55.01-58.13.01v-60.81Z"/><path fill="#e3000b" d="M969.96,242.86v-60.27c26.73-2.91,55.17,29.57,52.75,60.27h-52.75Z"/></g><g><path fill="currentColor" d="M450.86,426.8c2.4,0,4.86.01,7.38.03,2.52.02,4.99.09,7.41.2,2.42.11,4.68.28,6.77.51l-.54,7.48h-17c-1.22,0-2.15.3-2.79.88-.64.59-.95,1.45-.95,2.58v35.43h-10.4v-37.54c0-2.9.93-5.22,2.79-6.97,1.86-1.75,4.31-2.62,7.34-2.62ZM441.96,446.65h27.4v7.34h-27.4v-7.34Z"/><path fill="currentColor" d="M512.61,426.32c4.12,0,7.47.42,10.03,1.26,2.56.84,4.44,2.27,5.64,4.28,1.2,2.02,1.8,4.82,1.8,8.4,0,2.18-.28,4.09-.85,5.75-.57,1.66-1.51,2.98-2.82,3.98-1.32,1-3.11,1.63-5.37,1.9v.34c.82.14,1.67.45,2.55.95.88.5,1.71,1.24,2.48,2.21.77.98,1.34,2.28,1.7,3.91l4.08,14.62h-10.95l-3.6-14.28c-.41-1.54-1.01-2.61-1.8-3.2-.79-.59-1.89-.88-3.3-.88-3.08,0-5.68-.01-7.79-.03s-3.88-.06-5.3-.1c-1.43-.04-2.71-.09-3.84-.14l.2-7.55h16.93c1.81,0,3.25-.19,4.32-.58,1.06-.38,1.81-1.08,2.24-2.07.43-1,.65-2.38.65-4.15s-.22-3.21-.65-4.18c-.43-.97-1.18-1.65-2.24-2.04-1.07-.38-2.51-.58-4.32-.58-4.26,0-7.87.02-10.81.07-2.95.05-4.96.11-6.05.2l-1.02-7.41c1.9-.23,3.69-.38,5.37-.48,1.68-.09,3.51-.15,5.51-.17,1.99-.02,4.4-.03,7.21-.03ZM504.79,427v46.92h-10.27v-46.92h10.27Z"/><path fill="currentColor" d="M576.73,427c.86,0,1.62.25,2.28.75.66.5,1.1,1.16,1.33,1.97l13.6,44.2h-10.61l-9.59-34.48c-.18-.77-.36-1.55-.54-2.35-.18-.79-.34-1.55-.48-2.28h-1.84c-.14.73-.28,1.49-.44,2.28-.16.79-.35,1.58-.58,2.35l-9.59,34.48h-10.68l13.67-44.2c.23-.82.67-1.47,1.33-1.97.66-.5,1.42-.75,2.28-.75h9.86ZM583.94,453.72v7.82h-24.34v-7.82h24.34ZM567.21,413.81c1.4,0,2.11.73,2.11,2.18v4.01c0,1.45-.7,2.18-2.11,2.18h-3.33c-1.41,0-2.11-.72-2.11-2.18v-4.01c0-1.45.7-2.18,2.11-2.18h3.33ZM579.65,413.81c1.45,0,2.18.73,2.18,2.18v4.01c0,1.45-.73,2.18-2.18,2.18h-3.33c-1.41,0-2.11-.72-2.11-2.18v-4.01c0-1.45.7-2.18,2.11-2.18h3.33Z"/><path fill="currentColor" d="M629.97,426.12c2.31,0,4.83.12,7.55.37,2.72.25,5.37.76,7.96,1.53l-.68,6.87c-2-.04-4.33-.09-7-.14-2.68-.04-5.3-.07-7.89-.07-1.27,0-2.35.03-3.23.1-.88.07-1.6.25-2.14.54s-.93.74-1.16,1.33c-.23.59-.34,1.41-.34,2.45,0,1.59.37,2.74,1.12,3.47.75.73,2.03,1.38,3.84,1.97l9.04,2.92c3.76,1.27,6.37,2.99,7.82,5.17,1.45,2.18,2.18,5.03,2.18,8.57,0,2.67-.32,4.9-.95,6.66-.64,1.77-1.63,3.15-2.99,4.15-1.36,1-3.15,1.71-5.37,2.14-2.22.43-4.94.65-8.16.65-1.54,0-3.74-.1-6.6-.31s-6.12-.71-9.79-1.53l.68-7.34c2.67.05,5,.1,6.97.17,1.97.07,3.66.11,5.07.14,1.4.02,2.63.03,3.67.03,1.81,0,3.23-.11,4.25-.34,1.02-.23,1.73-.68,2.14-1.36.41-.68.61-1.65.61-2.92,0-1.09-.15-1.96-.44-2.62-.3-.66-.77-1.18-1.43-1.56-.66-.38-1.55-.74-2.69-1.05l-9.52-3.26c-3.58-1.31-6.12-3.04-7.62-5.17-1.5-2.13-2.24-4.94-2.24-8.43,0-2.72.33-4.93.99-6.63.66-1.7,1.68-3.03,3.06-3.98,1.38-.95,3.17-1.61,5.37-1.97,2.2-.36,4.84-.54,7.92-.54Z"/><path fill="currentColor" d="M688.52,426.32c3.72,0,6.86.4,9.42,1.19,2.56.79,4.62,2.1,6.19,3.91,1.56,1.81,2.71,4.27,3.43,7.38.72,3.11,1.09,6.99,1.09,11.66s-.36,8.56-1.09,11.66c-.73,3.11-1.87,5.57-3.43,7.38-1.56,1.81-3.63,3.12-6.19,3.91-2.56.79-5.7,1.19-9.42,1.19s-6.87-.07-9.86-.2c-2.99-.14-5.85-.29-8.57-.48l4.35-7.68c1.72.09,3.77.17,6.15.24,2.38.07,5.02.1,7.92.1,2.31,0,4.14-.46,5.47-1.39,1.34-.93,2.29-2.57,2.86-4.93.57-2.36.85-5.62.85-9.79s-.28-7.43-.85-9.79c-.57-2.36-1.52-4.01-2.86-4.96-1.34-.95-3.16-1.43-5.47-1.43-2.77,0-5.24.01-7.41.03-2.18.02-4.31.03-6.39.03l-4.62-7.34c2.72-.18,5.56-.34,8.53-.48,2.97-.14,6.27-.2,9.89-.2ZM680.5,427v46.92h-10.4v-46.92h10.4Z"/><path fill="currentColor" d="M742.72,427v46.92h-10.34v-46.92h10.34Z"/><path fill="currentColor" d="M777.6,426.8c2.54,0,5.1.01,7.68.03,2.58.02,5.12.08,7.62.17,2.49.09,4.83.25,7,.48l-.48,7.55h-18.02c-1.13,0-1.98.3-2.55.88-.57.59-.85,1.45-.85,2.58v23.94c0,1.13.28,2,.85,2.58.57.59,1.42.88,2.55.88h18.02l.48,7.55c-2.18.18-4.51.33-7,.44-2.49.11-5.03.18-7.62.2-2.58.02-5.15.03-7.68.03-2.99,0-5.41-.87-7.24-2.62-1.84-1.74-2.75-4.02-2.75-6.83v-28.42c0-2.86.92-5.14,2.75-6.87,1.84-1.72,4.25-2.58,7.24-2.58ZM768.83,445.84h28.08v7.34h-28.08v-7.34Z"/><path fill="currentColor" d="M862.74,427v43.18c0,2.49-1.25,3.74-3.74,3.74h-5.71c-1.13,0-2-.26-2.58-.78-.59-.52-1.13-1.3-1.63-2.35l-12.99-24.62c-.54-1.04-1.08-2.2-1.6-3.47-.52-1.27-.96-2.49-1.33-3.67h-.75c.14,1.22.25,2.46.34,3.71.09,1.25.14,2.48.14,3.71v27.47h-9.86v-43.18c0-2.49,1.27-3.74,3.81-3.74h5.64c1.09,0,1.92.26,2.48.78.57.52,1.12,1.3,1.67,2.35l12.58,23.87c.54,1.04,1.11,2.2,1.7,3.47.59,1.27,1.16,2.58,1.7,3.94h.82c-.14-1.36-.24-2.69-.31-3.98-.07-1.29-.1-2.57-.1-3.84l-.07-26.59h9.79Z"/><path fill="currentColor" d="M903.4,426.12c2.31,0,4.83.12,7.55.37s5.37.76,7.96,1.53l-.68,6.87c-2-.04-4.33-.09-7-.14-2.67-.04-5.3-.07-7.89-.07-1.27,0-2.35.03-3.23.1-.88.07-1.6.25-2.14.54s-.93.74-1.16,1.33c-.23.59-.34,1.41-.34,2.45,0,1.59.37,2.74,1.12,3.47.75.73,2.03,1.38,3.84,1.97l9.04,2.92c3.76,1.27,6.37,2.99,7.82,5.17,1.45,2.18,2.18,5.03,2.18,8.57,0,2.67-.32,4.9-.95,6.66-.63,1.77-1.63,3.15-2.99,4.15-1.36,1-3.15,1.71-5.37,2.14-2.22.43-4.94.65-8.16.65-1.54,0-3.74-.1-6.6-.31-2.86-.2-6.12-.71-9.79-1.53l.68-7.34c2.67.05,5,.1,6.97.17,1.97.07,3.66.11,5.07.14,1.4.02,2.63.03,3.67.03,1.81,0,3.23-.11,4.25-.34,1.02-.23,1.73-.68,2.14-1.36.41-.68.61-1.65.61-2.92,0-1.09-.15-1.96-.44-2.62-.29-.66-.77-1.18-1.43-1.56-.66-.38-1.55-.74-2.69-1.05l-9.52-3.26c-3.58-1.31-6.12-3.04-7.62-5.17-1.5-2.13-2.24-4.94-2.24-8.43,0-2.72.33-4.93.99-6.63.66-1.7,1.68-3.03,3.06-3.98,1.38-.95,3.17-1.61,5.37-1.97,2.2-.36,4.84-.54,7.92-.54Z"/><path fill="currentColor" d="M978.61,427v8.16h-38.62v-8.16h38.62ZM964.46,427v46.92h-10.4v-46.92h10.4Z"/><path fill="currentColor" d="M1016.14,453.38v6.39h-20.26v-6.39h20.26Z"/><path fill="currentColor" d="M1055.65,426.12c2.31,0,4.83.12,7.55.37s5.37.76,7.96,1.53l-.68,6.87c-2-.04-4.33-.09-7-.14-2.67-.04-5.3-.07-7.89-.07-1.27,0-2.35.03-3.23.1-.88.07-1.6.25-2.14.54s-.93.74-1.16,1.33c-.23.59-.34,1.41-.34,2.45,0,1.59.37,2.74,1.12,3.47.75.73,2.03,1.38,3.84,1.97l9.04,2.92c3.76,1.27,6.37,2.99,7.82,5.17,1.45,2.18,2.18,5.03,2.18,8.57,0,2.67-.32,4.9-.95,6.66-.63,1.77-1.63,3.15-2.99,4.15-1.36,1-3.15,1.71-5.37,2.14-2.22.43-4.94.65-8.16.65-1.54,0-3.74-.1-6.6-.31-2.86-.2-6.12-.71-9.79-1.53l.68-7.34c2.67.05,5,.1,6.97.17,1.97.07,3.66.11,5.07.14,1.4.02,2.63.03,3.67.03,1.81,0,3.23-.11,4.25-.34,1.02-.23,1.73-.68,2.14-1.36.41-.68.61-1.65.61-2.92,0-1.09-.15-1.96-.44-2.62-.29-.66-.77-1.18-1.43-1.56-.66-.38-1.55-.74-2.69-1.05l-9.52-3.26c-3.58-1.31-6.12-3.04-7.62-5.17-1.5-2.13-2.24-4.94-2.24-8.43,0-2.72.33-4.93.99-6.63.66-1.7,1.68-3.03,3.06-3.98,1.38-.95,3.17-1.61,5.37-1.97,2.2-.36,4.84-.54,7.92-.54Z"/><path fill="currentColor" d="M1105.43,426.8c2.54,0,5.1.01,7.68.03,2.58.02,5.12.08,7.62.17,2.49.09,4.83.25,7,.48l-.48,7.55h-18.02c-1.13,0-1.98.3-2.55.88-.57.59-.85,1.45-.85,2.58v23.94c0,1.13.28,2,.85,2.58.57.59,1.42.88,2.55.88h18.02l.48,7.55c-2.18.18-4.51.33-7,.44-2.49.11-5.03.18-7.62.2-2.58.02-5.15.03-7.68.03-2.99,0-5.41-.87-7.24-2.62-1.84-1.74-2.75-4.02-2.75-6.83v-28.42c0-2.86.92-5.14,2.75-6.87,1.84-1.72,4.25-2.58,7.24-2.58ZM1096.65,445.84h28.08v7.34h-28.08v-7.34Z"/><path fill="currentColor" d="M1168.94,426.32c4.12,0,7.47.42,10.03,1.26s4.44,2.27,5.64,4.28c1.2,2.02,1.8,4.82,1.8,8.4,0,2.18-.28,4.09-.85,5.75-.57,1.66-1.51,2.98-2.82,3.98-1.32,1-3.11,1.63-5.37,1.9v.34c.82.14,1.67.45,2.55.95.88.5,1.71,1.24,2.48,2.21.77.98,1.34,2.28,1.7,3.91l4.08,14.62h-10.95l-3.6-14.28c-.41-1.54-1.01-2.61-1.8-3.2-.79-.59-1.89-.88-3.3-.88-3.08,0-5.68-.01-7.79-.03s-3.88-.06-5.3-.1c-1.43-.04-2.71-.09-3.84-.14l.2-7.55h16.93c1.81,0,3.25-.19,4.32-.58,1.07-.38,1.81-1.08,2.24-2.07.43-1,.65-2.38.65-4.15s-.22-3.21-.65-4.18c-.43-.97-1.18-1.65-2.24-2.04-1.07-.38-2.5-.58-4.32-.58-4.26,0-7.87.02-10.81.07-2.95.05-4.96.11-6.05.2l-1.02-7.41c1.9-.23,3.69-.38,5.37-.48,1.68-.09,3.51-.15,5.51-.17,1.99-.02,4.4-.03,7.21-.03ZM1161.12,427v46.92h-10.27v-46.92h10.27Z"/><path fill="currentColor" d="M1248.43,427l-12.78,44.06c-.23.82-.67,1.5-1.33,2.04-.66.54-1.44.82-2.35.82h-9.52c-.95,0-1.76-.27-2.41-.82-.66-.54-1.08-1.22-1.26-2.04l-12.85-44.06h10.74l8.57,33.86c.18.86.37,1.73.58,2.62.2.88.37,1.76.51,2.62h1.77c.14-.86.31-1.74.51-2.65.2-.91.42-1.79.65-2.65l8.5-33.8h10.68Z"/><path fill="currentColor" d="M1279.84,427v46.92h-10.34v-46.92h10.34Z"/><path fill="currentColor" d="M1323.43,426.18c2.22,0,4.11.06,5.68.17,1.56.11,3,.28,4.32.51,1.31.23,2.67.54,4.08.95l-.82,7.62c-1.5-.09-2.87-.16-4.11-.2-1.25-.04-2.58-.08-4.01-.1-1.43-.02-3.14-.03-5.13-.03-2.31,0-4.11.45-5.41,1.36-1.29.91-2.21,2.48-2.75,4.73s-.82,5.34-.82,9.28.27,7.04.82,9.28,1.46,3.82,2.75,4.73c1.29.91,3.09,1.36,5.41,1.36,3.13,0,5.76-.04,7.89-.14,2.13-.09,4.24-.25,6.32-.48l.88,7.62c-2.18.68-4.4,1.17-6.66,1.46-2.27.29-5.08.44-8.43.44-4.85,0-8.74-.78-11.66-2.35-2.92-1.56-5.03-4.11-6.32-7.65s-1.94-8.3-1.94-14.28.65-10.74,1.94-14.28,3.4-6.09,6.32-7.65c2.92-1.56,6.81-2.35,11.66-2.35Z"/><path fill="currentColor" d="M1370.49,426.8c2.54,0,5.1.01,7.68.03,2.58.02,5.12.08,7.62.17,2.49.09,4.83.25,7,.48l-.48,7.55h-18.02c-1.13,0-1.98.3-2.55.88-.57.59-.85,1.45-.85,2.58v23.94c0,1.13.28,2,.85,2.58.57.59,1.42.88,2.55.88h18.02l.48,7.55c-2.18.18-4.51.33-7,.44-2.49.11-5.03.18-7.62.2-2.58.02-5.15.03-7.68.03-2.99,0-5.41-.87-7.24-2.62-1.84-1.74-2.75-4.02-2.75-6.83v-28.42c0-2.86.92-5.14,2.75-6.87,1.84-1.72,4.25-2.58,7.24-2.58ZM1361.72,445.84h28.08v7.34h-28.08v-7.34Z"/></g></svg>
+        <div class="mh-title">
+          <h1>Arbeitszeitkonto 1626</h1>
+          <p class="sub">Personalnummer 1626 &middot; Fräsdienst-Service E. Feind GmbH &middot; Buchungen aus OptiTime</p>
+        </div>
+      </div>
+      <div class="mh-meta">
+        <div class="mh-clock"><b id="mh-time">--:--</b><span id="mh-date">heute</span></div>
+        <div class="seg" role="group" aria-label="Darstellung">
+          <button type="button" id="theme-auto" data-theme-set="auto" aria-pressed="true">System</button>
+          <button type="button" id="theme-light" data-theme-set="light" aria-pressed="false">Hell</button>
+          <button type="button" id="theme-dark" data-theme-set="dark" aria-pressed="false">Dunkel</button>
+        </div>
+      </div>
+    </div>
     <div class="statusbar">
       <span class="chip" id="chip-db"><span class="dot"></span><span id="chip-db-text">Verbindung wird geprüft</span></span>
       <span class="chip" id="chip-period"><span class="dot"></span><span id="chip-period-text">Zeitraum</span></span>
     </div>
+    <div class="mh-ruler" id="mh-ruler" aria-hidden="true"><div class="base"></div></div>
   </div>
 </header>
 <div class="rule"></div>
@@ -1109,6 +1182,28 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     return out.join(" ");
   }
 
+  /* Projekte der Arbeitsbuchungen und Tagesnotiz unter den Status-Pills. */
+  function dayProjects(books) {
+    var seen = {}, out = [];
+    (books || []).forEach(function (b) {
+      var p = b && b.kind !== "pause" && typeof b.project === "string" ? b.project.trim() : "";
+      if (p && !seen[p]) { seen[p] = 1; out.push(p); }
+    });
+    return out;
+  }
+  function dayExtraHTML(d) {
+    var pr = dayProjects(d.books);
+    return (pr.length ? '<span class="daynote">Projekt: ' + esc(pr.join(", ")) + "</span>" : "") +
+      (d.note ? '<span class="daynote">Notiz: ' + esc(d.note) + "</span>" : "");
+  }
+  /* Vorschläge fürs Projektfeld: alle bereits verwendeten Projekte. Der alte
+     Stundenzettel hatte keine feste Liste und keine gespeicherten Projekte. */
+  function projectOptions() {
+    var all = [];
+    Object.keys(days).forEach(function (k) { all = all.concat(dayProjects(days[k].books)); });
+    return all.filter(function (p, i) { return all.indexOf(p) === i; }).sort();
+  }
+
   function renderWeeks(st) {
     if (!st.length) {
       document.getElementById("weeks").innerHTML =
@@ -1140,8 +1235,8 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
           '<td class="num">' + esc(hm(d.pause)) + '</td>' +
           '<td class="num">' + esc(d.brutto ? hm(d.brutto) : "–") + '</td>' +
           '<td class="num">' + esc(d.soll ? hm(d.soll) : "–") + '</td>' +
-          '<td class="num saldo' + (d.saldo >= 0 ? "pos" : "neg") + '">' + esc(signed(d.saldo)) + '</td>' +
-          '<td>' + pillsFor(d) + '</td>' +
+          '<td class="num saldo ' + (d.saldo >= 0 ? "pos" : "neg") + '">' + esc(signed(d.saldo)) + '</td>' +
+          '<td>' + pillsFor(d) + dayExtraHTML(d) + '</td>' +
           '<td><button type="button" class="link" data-act="edit" data-date="' + esc(d.date) + '">bearbeiten</button></td>' +
           '</tr>';
       }).join("");
@@ -1172,6 +1267,9 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         '<select id="bk-k' + i + '" data-f="kind" data-i="' + i + '">' +
         '<option value="work"' + (b.kind !== "pause" ? " selected" : "") + '>Arbeitszeit</option>' +
         '<option value="pause"' + (b.kind === "pause" ? " selected" : "") + '>Pause</option></select></div>' +
+        (b.kind === "pause" ? "<div></div>" : '<div class="field"><label for="bk-p' + i + '">Projekt (optional)</label>' +
+          '<input id="bk-p' + i + '" type="text" list="proj-list" data-f="project" data-i="' + i + '" value="' + esc(b.project || "") +
+          '" placeholder="z. B. Hausmesse" autocomplete="off"></div>') +
         '<div><button type="button" class="ghost" data-act="rmrow" data-i="' + i + '" ' +
         'aria-label="Buchung ' + (i + 1) + ' entfernen">entfernen</button></div>' +
         "</div>";
@@ -1191,8 +1289,9 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         '<button type="button" class="ghost" data-act="close">schließen</button></div>' +
         '<p class="hint">Buchungen in der Reihenfolge des Tages. Das letzte Feld &bdquo;Bis&ldquo; darf leer ' +
         "bleiben, solange der Tag noch läuft. Mit einer Tagesart (Urlaub, Krank …) sind Buchungen optional." +
-        (isNew ? " Mit einem Datum &bdquo;bis&ldquo; wird derselbe Eintrag f\u00fcr jeden Arbeitstag des Zeitraums " +
-          "angelegt \u2013 arbeitsfreie Tage, Feiertage und bereits erfasste Tage bleiben unber\u00fchrt." : "") +
+        (isNew ? " Mit einem Datum &bdquo;bis&ldquo; wird die gew\u00e4hlte Tagesart (Urlaub, Krank \u2026) f\u00fcr jeden Arbeitstag " +
+          "des Zeitraums angelegt \u2013 Buchungszeiten gelten nur f\u00fcr einen einzelnen Tag; arbeitsfreie Tage, Feiertage " +
+          "und bereits erfasste Tage bleiben unber\u00fchrt." : "") +
         (draft.date && holidayName(draft.date) ? " <strong>" + esc(dLong(draft.date)) + " ist Feiertag in Brandenburg (" + esc(holidayName(draft.date)) + ").</strong>" : "") +
         "</p>" +
         '<fieldset><legend>' + (isNew ? "Datum / Zeitraum" : "Datum") + "</legend>" +
@@ -1207,12 +1306,13 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         TYPE_ORDER.filter(function (t) { return t !== "gleittag" || settings.gleittag || draft.type === "gleittag"; }).map(function (t) {
           return '<option value="' + t + '"' + (draft.type === t ? " selected" : "") + ">" + esc(TYPES[t].label) + "</option>";
         }).join("") + "</select></div>" +
-        '<div class="field"><label for="f-note">Notiz (optional)</label>' +
-        '<input id="f-note" type="text" data-f="note" value="' + esc(draft.note || "") +
-        '" placeholder="z. B. Dienstreise"></div></div>' +
+        '<div class="field" style="grid-column:1/-1"><label for="f-note">Notiz zum Tag (optional)</label>' +
+        '<textarea id="f-note" class="notefield" rows="2" data-f="note" placeholder="z. B. Dienstreise">' +
+        esc(draft.note || "") + "</textarea></div></div>" +
         (isNew && draft.date2 ? '<p class="hint" style="margin:var(--s2) 0 0">' + esc(rangeHint()) + "</p>" : "") +
         "</fieldset>" +
         '<fieldset><legend>Buchungen</legend>' + bookRows() +
+        '<datalist id="proj-list">' + projectOptions().map(function (p) { return '<option value="' + esc(p) + '"></option>'; }).join("") + "</datalist>" +
         '<div class="btnrow"><button type="button" data-act="addrow">Buchung hinzufügen</button>' +
         (st ? '<span class="hint" id="calc-hint" style="margin:0">Ergibt: Ist ' + esc(hm(st.work)) + ", Pause " +
           esc(hm(st.pause)) + ", Soll " + esc(st.soll ? hm(st.soll) : "0:00") + ", Saldo " +
@@ -1230,7 +1330,8 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         "Enthält &bdquo;Pause&ldquo; in Art oder Tätigkeit, wird die Buchung als Pause gewertet. " +
         "Zeilen ohne Uhrzeit sind Tagesarten, z. B. <code>2026-12-28;;;Urlaub</code> &ndash; erkannt werden " +
         "Urlaub, halber Urlaub, Sonderurlaub (000004), Krank, Feiertag und Gleittag. " +
-        "Importierte Tage ersetzen den bisherigen Stand dieses Tages vollständig.</p>" +
+        "Importierte Tage ersetzen den bisherigen Stand dieses Tages; Projekte der Arbeitsbuchungen und die " +
+        "Tagesnotiz bleiben erhalten (Spalten &bdquo;Projekt&ldquo;/&bdquo;Notiz&ldquo; in der Kopfzeile haben Vorrang).</p>" +
         '<label for="f-import">Exportzeilen</label>' +
         '<textarea id="f-import" data-f="text" placeholder="Datum;Start;Ende;Art;Taetigkeit;Notiz&#10;' +
         '2026-09-15;06:40;09:10;Arbeitszeit;Kommen;&#10;2026-09-15;09:10;09:25;Pause;*Pause*;">' +
@@ -1359,16 +1460,26 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
   }
   function parseImport(text) {
     var lines = String(text || "").split(/\r?\n/);
-    var out = {}, types = {}, errs = [], n = 0;
+    var out = {}, types = {}, notes = {}, errs = [], n = 0, col = { note: -1, proj: -1 };
     lines.forEach(function (raw, idx) {
       var line = raw.trim();
-      if (!line || /^datum/i.test(line)) return;
+      if (!line) return;
+      if (/^datum/i.test(line)) {   /* Notiz/Projekt nur lesen, wenn die Kopfzeile sie benennt */
+        line.toLowerCase().split(/[;\t]/).forEach(function (h, i) {
+          h = h.trim();
+          if (h === "notiz") col.note = i;
+          if (h === "projekt") col.proj = i;
+        });
+        return;
+      }
       var f = line.split(/[;\t]/);
       if (f.length < 3) f = line.split(/\s*,\s*/);
       if (f.length < 3) { errs.push("Zeile " + (idx + 1) + ": weniger als drei Felder."); return; }
       var date = normDate(f[0]);
       if (!date) { errs.push("Zeile " + (idx + 1) + ": Datum „" + f[0] + "“ nicht erkannt."); return; }
       var s = normTime(f[1]), e = normTime(f[2]);
+      var nt = col.note >= 0 ? String(f[col.note] || "").trim() : "";
+      if (nt) notes[date] = nt;
       if (s === null && e === null) {   /* Zeile ohne Uhrzeit = Tagesart */
         var ty = typeFromText(f.slice(3).join(" "));
         if (!ty) { errs.push("Zeile " + (idx + 1) + ": ohne Uhrzeit, Tagesart „" + (f.slice(3).join(" ").trim() || "leer") + "“ nicht erkannt."); return; }
@@ -1381,10 +1492,35 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       if (e === undefined) { errs.push("Zeile " + (idx + 1) + ": Bis-Zeit „" + f[2] + "“ nicht erkannt."); return; }
       var kindSrc = ((f[3] || "") + " " + (f[4] || "")).toLowerCase();
       out[date] = out[date] || [];
-      out[date].push({ start: s, end: e, kind: /pause/.test(kindSrc) ? "pause" : "work" });
+      var bk = { start: s, end: e, kind: /pause/.test(kindSrc) ? "pause" : "work" };
+      var pr = col.proj >= 0 ? String(f[col.proj] || "").trim() : "";
+      if (pr && bk.kind === "work") bk.project = pr;
+      out[date].push(bk);
       n++;
     });
-    return { days: out, types: types, errs: errs, count: n };
+    return { days: out, types: types, notes: notes, errs: errs, count: n };
+  }
+
+  /* Projekte beim Ersetzen eines Tages behalten: je neue Arbeitsbuchung das
+     Projekt der alten mit gleicher Startzeit, sonst der mit der größten
+     Überschneidung. Rückgabe: alte Projektbuchungen ohne Gegenstück. */
+  function carryProjects(books, old) {
+    var src = (old || []).filter(function (b) { return b && b.kind !== "pause" && typeof b.project === "string" && b.project.trim(); });
+    var used = [], END = 24 * 60;
+    if (!src.length) return [];
+    books.forEach(function (b) {
+      if (b.kind === "pause") return;
+      var hit = -1, best = 0, s = toMin(b.start), e = b.end == null ? END : toMin(b.end);
+      src.forEach(function (o, i) { if (hit < 0 && o.start === b.start) hit = i; });
+      if (hit < 0) src.forEach(function (o, i) {
+        var ov = Math.min(e, o.end == null ? END : toMin(o.end)) - Math.max(s, toMin(o.start));
+        if (ov > best) { best = ov; hit = i; }
+      });
+      if (hit < 0) return;
+      used[hit] = true;
+      if (!b.project) b.project = src[hit].project.trim();   /* Projekt aus der Datei hat Vorrang */
+    });
+    return src.filter(function (o, i) { return !used[i]; });
   }
   /* Protokoll des OptiTime-Erfassungsplatzes (logger.txt) lesen.
      Eine Buchung zählt nur, wenn das Terminal sie bestätigt hat
@@ -1450,10 +1586,9 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     arr.forEach(function (b, i) {
       var date = normDate(b && b.date), s = normTime(b && b.start), e = normTime(b && b.end);
       if (!date || !s || e === undefined) { errs.push("Buchung " + (i + 1) + " unvollständig."); return; }
-      (out[date] = out[date] || []).push({
-        start: s, end: e,
-        kind: /pause/i.test((b.kind || "") + " " + (b.activity || "")) ? "pause" : "work"
-      });
+      var bk = { start: s, end: e, kind: /pause/i.test((b.kind || "") + " " + (b.activity || "")) ? "pause" : "work" };
+      if (bk.kind === "work" && typeof b.project === "string" && b.project.trim()) bk.project = b.project.trim();
+      (out[date] = out[date] || []).push(bk);
       n++;
     });
     return { days: out, count: n, persons: [], errs: errs.slice(0, 3) };
@@ -1477,14 +1612,15 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
   }
 
   function buildCSV() {
-    var rows = ["Datum;Start;Ende;Art;Taetigkeit;Notiz"];
+    var rows = ["Datum;Start;Ende;Art;Taetigkeit;Notiz;Projekt"];
+    var clean = function (s) { return String(s || "").replace(/[;\t\r\n]/g, " ").trim(); };   /* Import trennt an ; und Tab */
     allStats().forEach(function (d) {
-      if (d.type) rows.push([d.date, "", "", d.typeLabel, "", (d.note || "").replace(/[;\r\n]/g, " ")].join(";"));
+      if (d.type) rows.push([d.date, "", "", d.typeLabel, "", clean(d.note), ""].join(";"));
       d.books.forEach(function (b) {
         rows.push([d.date, b.start, b.end || "",
           b.kind === "pause" ? "Pause" : "Arbeitszeit",
           b.kind === "pause" ? "*Pause*" : "Kommen",
-          (d.note || "").replace(/[;\r\n]/g, " ")].join(";"));
+          clean(d.note), b.kind === "pause" ? "" : clean(b.project)].join(";"));
       });
     });
     return rows.join("\n");
@@ -1524,13 +1660,16 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     return { rows: rows, sum: sum };
   }
   function buildMonthCSV(ym) {
-    var r = monthRows(ym), out = ["Datum;Wochentag;Kommen;Gehen;Ist;Pause;Soll;Saldo;Status"];
+    var r = monthRows(ym), out = ["Datum;Wochentag;Kommen;Gehen;Ist;Pause;Soll;Saldo;Status;Projekt"];
+    /* Projektliste ist selbst mit "; " getrennt – Feld in Anführungszeichen (RFC 4180, Excel liest das) */
+    var q = function (s) { return /[;"\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
     r.rows.forEach(function (d) {
       var wd = WD[wdOf(d.date)];
-      if (d.empty) { out.push([d.date, wd, "", "", "", "", "0,00", "0,00", d.hol ? "keine Buchung (Feiertag " + d.hol + ")" : "keine Buchung"].join(";")); return; }
-      out.push([d.date, wd, d.first || "", d.open ? "" : (d.last || ""), dec(d.work), dec(d.pause), dec(d.soll), dec(d.saldo), d.status].join(";"));
+      if (d.empty) { out.push([d.date, wd, "", "", "", "", "0,00", "0,00", d.hol ? "keine Buchung (Feiertag " + d.hol + ")" : "keine Buchung", ""].join(";")); return; }
+      out.push([d.date, wd, d.first || "", d.open ? "" : (d.last || ""), dec(d.work), dec(d.pause), dec(d.soll), dec(d.saldo), d.status,
+        q(dayProjects(d.books).join("; "))].join(";"));
     });
-    out.push(["Summe", "", "", "", dec(r.sum.work), dec(r.sum.pause), dec(r.sum.soll), dec(r.sum.saldo), ""].join(";"));
+    out.push(["Summe", "", "", "", dec(r.sum.work), dec(r.sum.pause), dec(r.sum.soll), dec(r.sum.saldo), "", ""].join(";"));
     return out.join("\r\n");
   }
   function exportText() {
@@ -1580,6 +1719,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     var from = draft.date, to = draft.date2;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(from) || !/^\d{4}-\d{2}-\d{2}$/.test(to)) return "Bitte ein Datum \u201ebis\u201c angeben oder das Feld leer lassen.";
     if (to < from) return "\u201ebis\u201c liegt vor \u201evon\u201c \u2013 bitte korrigieren oder das Feld leer lassen.";
+    if (!TYPES[draft.type]) return "F\u00fcr einen Zeitraum bitte eine Tagesart w\u00e4hlen (Urlaub, Krank \u2026) \u2013 Buchungszeiten gelten nur f\u00fcr einen einzelnen Tag.";
     var r = rangeDays(from, to);
     if (r.over) return "Zeitraum ist l\u00e4nger als ein Jahr \u2013 bitte k\u00fcrzer w\u00e4hlen.";
     var have = r.days.filter(function (iso) { return days[iso]; }).length;
@@ -1595,9 +1735,12 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(from)) { note = { type: "err", text: "Bitte ein Datum angeben." }; return renderPanel(); }
     if (to < from) { note = { type: "err", text: "\u201ebis\u201c muss nach \u201evon\u201c liegen oder leer bleiben." }; return renderPanel(); }
     if (from < ENTRY_DATE) { note = { type: "err", text: "Vor dem " + dLong(ENTRY_DATE) + " (Beginn des Arbeitsverh\u00e4ltnisses) wird nichts erfasst." }; return renderPanel(); }
+    /* Zeitraum nur f\u00fcr Tagesarten (Entscheidung David, 19.10.2026): Buchungszeiten
+       werden nie in mehrere Tage kopiert, sonst entst\u00fcnden erfundene Zeiten. */
+    if (!TYPES[draft.type]) { note = { type: "err", text: "Ein Zeitraum geht nur mit einer Tagesart (Urlaub, Krank \u2026). Buchungszeiten bitte je Tag erfassen oder \u201ebis\u201c leeren." }; return renderPanel(); }
     var r = rangeDays(from, to);
     if (r.over) { note = { type: "err", text: "Zeitraum ist l\u00e4nger als ein Jahr \u2013 bitte k\u00fcrzer w\u00e4hlen." }; return renderPanel(); }
-    var books = draft.books.filter(function (b) { return b.start || b.end; });
+    var books = [];
     var have = [], docs = [], bad = null;
     r.days.forEach(function (iso) {
       if (days[iso]) { have.push(iso); return; }
@@ -1766,13 +1909,14 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     var all = Object.keys(res.days).sort(), bad = null, docs = {};
     var dates = all.filter(function (dt) { return dt >= ENTRY_DATE; }), early = all.length - dates.length;
     if (!dates.length) { note = { type: "err", text: "Alle Buchungen liegen vor dem " + dLong(ENTRY_DATE) + " – nichts übernommen." }; return renderPanel(); }
-    var types = res.types || {}, nTypes = 0;
+    var types = res.types || {}, notes = res.notes || {}, nTypes = 0, lostBy = {};
     dates.forEach(function (dt) {
-      var doc = { date: dt, books: res.days[dt], origin: "import", note: (days[dt] && days[dt].note) || "" };
+      var doc = { date: dt, books: res.days[dt], origin: "import", note: notes[dt] || (days[dt] && days[dt].note) || "" };
       if (types[dt]) {
         doc.type = types[dt]; nTypes++;
         if (!doc.books.length && days[dt] && days[dt].books.length) { doc.books = days[dt].books.slice(); doc.origin = days[dt].origin || "import"; }
       }
+      if (days[dt] && doc.books !== days[dt].books) lostBy[dt] = carryProjects(doc.books, days[dt].books);
       var e = validate(doc);
       if (e && !bad) bad = dLong(dt) + ": " + e;
       docs[dt] = doc;
@@ -1792,6 +1936,14 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     if (skip.length) {
       summary += " " + skip.length + " Tag(e) unverändert gelassen (" + skip.slice(0, 5).map(dShort).join(", ") +
         (skip.length > 5 ? " …" : "") + "), dort ist der gespeicherte Stand vollständiger.";
+    }
+    var lost = [];
+    take.forEach(function (dt) {
+      (lostBy[dt] || []).forEach(function (o) { lost.push(dShort(dt) + " " + o.start + "–" + (o.end || "offen") + " „" + o.project.trim() + "“"); });
+    });
+    if (lost.length) {
+      summary += " Achtung: " + lost.length + " Projektangabe(n) ohne passende neue Buchung, bitte über „bearbeiten“ neu zuordnen: " +
+        lost.slice(0, 5).join(", ") + (lost.length > 5 ? " …" : "") + ".";
     }
     if (!db) {
       panel = null; note = { type: "ok", text: summary + " (nur in dieser Ansicht)" };
@@ -1892,7 +2044,8 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       if (!b) return;
       if (f === "end") b.end = el.value || null;
       else if (f === "start") b.start = el.value || "";
-      else b.kind = el.value;
+      else if (f === "project") b.project = el.value;
+      else { b.kind = el.value; if (ev.type === "change") { renderPanel(); return; } }   /* Projektfeld nur bei Arbeitszeit */
     } else if (f === "wd") {
       var wd = +el.dataset.wd, at = draft.workdays.indexOf(wd);
       if (el.checked && at < 0) draft.workdays.push(wd);
@@ -2003,7 +2156,9 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       draft = {
         date: d.date, note: d.note || "", origin: d.origin, type: typeOf(d),
         books: sortBooks(d.books).map(function (b) {
-          return { start: b.start, end: b.end || null, kind: b.kind === "pause" ? "pause" : "work" };
+          var o = { start: b.start, end: b.end || null, kind: b.kind === "pause" ? "pause" : "work" };
+          if (typeof b.project === "string" && b.project) o.project = b.project;
+          return o;
         })
       };
       return renderPanel();
@@ -2020,7 +2175,12 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       var doc = {
         date: draft.date, note: draft.note || "",
         origin: panel.kind === "add" ? "manuell" : (draft.origin || "manuell"),
-        books: draft.books.filter(function (b) { return b.start || b.end; })
+        books: draft.books.filter(function (b) { return b.start || b.end; }).map(function (b) {
+          var o = { start: b.start, end: b.end || null, kind: b.kind === "pause" ? "pause" : "work" };
+          var p = typeof b.project === "string" ? b.project.trim() : "";
+          if (p && o.kind === "work") o.project = p;   /* Feld nur, wenn gefüllt – alte Tage bleiben unverändert */
+          return o;
+        })
       };
       if (TYPES[draft.type]) doc.type = draft.type;
       if (panel.kind === "add" && days[doc.date]) {
@@ -2194,8 +2354,23 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       { t: todo.length > 1 ? todo[1] : "Nächsten Bericht zum Monatsende exportieren und ablegen.", w: "David", d: "15 Min" },
       { t: "Bericht als passwortgeschützte PDF ablegen; Passwort getrennt aufbewahren.", w: "David", d: "5 Min" }
     ];
+    /* Netto-Arbeitszeit je Projekt: abgeschlossene Arbeitsbuchungen, ohne den
+       heute noch laufenden Tag (zählt auch im Ist noch nicht) – Summe = Ist. */
+    var pm = {}, proj = [];
+    rows.forEach(function (d) {
+      if (d.running) return;
+      d.books.forEach(function (b) {
+        var a = toMin(b.start), e = toMin(b.end);
+        if (b.kind === "pause" || a == null || e == null || e <= a) return;
+        var k = typeof b.project === "string" && b.project.trim() ? b.project.trim() : "";
+        if (!pm[k]) { pm[k] = { name: k, min: 0, days: {} }; proj.push(pm[k]); }
+        pm[k].min += e - a; pm[k].days[d.date] = 1;
+      });
+    });
+    proj.sort(function (a, b) { return !a.name ? 1 : !b.name ? -1 : b.min - a.min; });   /* "ohne Projekt" zuletzt */
+    if (!proj.some(function (p) { return p.name; })) proj = [];
     return {
-      gran: gran, per: per, rows: rows, carry: carry, t: t, weeks: weeks, months: months, pts: pts, trend: trend,
+      gran: gran, per: per, rows: rows, carry: carry, t: t, weeks: weeks, months: months, pts: pts, trend: trend, proj: proj,
       why: why, risks: risks, steps: steps, created: nowLabel(),
       title: "Arbeitszeitkonto 1626 · " + GRAN_LABEL[gran], last: rows.length ? rows[rows.length - 1].date : per.to,
       sub: per.label
@@ -2287,14 +2462,29 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       inner + '<div class="p-foot"><span>Arbeitszeitkonto 1626 &middot; Brennglas &middot; Vertraulich</span><span>Seite ' + n + ' / ' + N + '</span></div></div>';
   }
   function cls(v) { return v >= 0 ? "pos" : "neg"; }
+  function artLabel(b) { return b.kind === "pause" ? "Pause" : (typeof b.project === "string" && b.project.trim() ? b.project.trim() : "Arbeitszeit"); }
+  /* Zeilen für "Netto je Projekt": Name, Netto, Anteil am Ist, Tage. */
+  function projRows(r) {
+    var tot = r.proj.reduce(function (a, p) { return a + p.min; }, 0) || 1;
+    return r.proj.map(function (p) {
+      return [p.name || "ohne Projekt", hm(p.min), Math.round(p.min / tot * 100) + " %", String(Object.keys(p.days).length)];
+    });
+  }
+  function projTableHTML(r) {
+    if (!r.proj.length) return "";
+    return '<h2>Anhang C – Netto-Arbeitszeit je Projekt</h2><table><thead><tr><th>Projekt</th><th>Netto</th><th>Anteil</th><th>Tage</th></tr></thead><tbody>' +
+      projRows(r).map(function (x) { return "<tr><td>" + esc(x[0]) + "</td><td>" + esc(x[1]) + "</td><td>" + esc(x[2]) + "</td><td>" + esc(x[3]) + "</td></tr>"; }).join("") +
+      '<tr class="sum"><td>Summe (= Ist)</td><td>' + esc(hm(r.t.work)) + '</td><td>100 %</td><td></td></tr></tbody></table>' +
+      '<p class="src">Abgeschlossene Arbeitsbuchungen; ein heute noch laufender Tag zählt erst nach dem Gehen.</p>';
+  }
   function compareTableHTML(r) {
     var h, rows;
     if (r.gran === "day") {
       var d = r.rows[0];
-      h = '<table><thead><tr><th>Buchung</th><th>Art</th><th>Dauer</th></tr></thead><tbody>';
+      h = '<table><thead><tr><th>Buchung</th><th>Art / Projekt</th><th>Dauer</th></tr></thead><tbody>';
       d.books.forEach(function (b) {
         var a = toMin(b.start), e = toMin(b.end);
-        h += '<tr' + (e == null ? ' class="open"' : "") + '><td>' + esc(b.start) + " – " + esc(b.end || "offen") + '</td><td>' + (b.kind === "pause" ? "Pause" : "Arbeitszeit") +
+        h += '<tr' + (e == null ? ' class="open"' : "") + '><td>' + esc(b.start) + " – " + esc(b.end || "offen") + '</td><td>' + esc(artLabel(b)) +
           '</td><td>' + (e == null ? "–" : esc(hm(e - a))) + '</td></tr>';
       });
       h += '<tr class="sum"><td>Ist / Soll</td><td>' + esc(hm(d.work)) + " / " + esc(d.soll ? hm(d.soll) : "0:00") + '</td><td class="' + cls(d.saldo) + '">' + esc(signed(d.saldo)) + '</td></tr></tbody></table>';
@@ -2377,6 +2567,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         });
         pages.push(h);
       });
+      if (r.proj.length) pages[pages.length - 1] += projTableHTML(r);
     }
     var N = pages.length;
     return '<div class="report">' + pages.map(function (p, i) { return pageHTML(p, i + 1, N, r); }).join("") + '</div>';
@@ -2671,8 +2862,8 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
           h2(2, "Vergleich Ist / Soll");
           if (r.gran === "day") {
             var d0 = r.rows[0];
-            table([{ w: 40 }, { w: 30 }, { w: 30, a: "r" }], ["Buchung", "Art", "Dauer"],
-              d0.books.map(function (b) { var a = toMin(b.start), e = toMin(b.end); return { cells: [b.start + " – " + (b.end || "offen"), b.kind === "pause" ? "Pause" : "Arbeitszeit", e == null ? "–" : hm(e - a)], open: e == null }; })
+            table([{ w: 30 }, { w: 45 }, { w: 25, a: "r" }], ["Buchung", "Art / Projekt", "Dauer"],
+              d0.books.map(function (b) { var a = toMin(b.start), e = toMin(b.end); return { cells: [b.start + " – " + (b.end || "offen"), artLabel(b), e == null ? "–" : hm(e - a)], open: e == null }; })
                 .concat([{ cells: ["Ist / Soll", hm(d0.work) + " / " + (d0.soll ? hm(d0.soll) : "0:00"), sgn(d0.saldo)], sum: true }]));
           } else {
             var crow = r.gran === "week" ? r.rows.map(function (d) { return [WD[wdOf(d.date)] + " " + dShort(d.date), hm(d.work) + " / " + (d.soll ? hm(d.soll) : "0:00"), sgn(d.saldo)]; })
@@ -2726,6 +2917,12 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
                   return { cells: [WD[wdOf(d.date)] + " " + dShort(d.date), d.books.length ? (d.first || "–") + " – " + (d.open ? "offen" : (d.last || "–")) : "–", hm(d.work), hm(d.pause), d.soll ? hm(d.soll) : "–", sgn(d.saldo), stx], open: d.open || d.noStart };
                 }));
             });
+            if (r.proj.length) {
+              h2(null, "Anhang C – Netto-Arbeitszeit je Projekt");
+              table([{ w: 52 }, { w: 16, a: "r" }, { w: 16, a: "r" }, { w: 16, a: "r" }], ["Projekt", "Netto", "Anteil", "Tage"],
+                projRows(r).concat([{ cells: ["Summe (= Ist)", hm(t.work), "100 %", ""], sum: true }]));
+              para("Abgeschlossene Arbeitsbuchungen; ein heute noch laufender Tag zählt erst nach dem Gehen.", { color: C.muted });
+            }
           }
           /* Fußzeilen */
           pages.forEach(function (pg, i) {
@@ -2809,15 +3006,29 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     if (m > curMin()) { stampErr = "Kommen kann nicht in der Zukunft liegen."; return renderStamp(); }
     stampAt = null;
     var doc = todayDoc();
-    doc.books = doc.books.concat([{ start: pad(Math.floor(m / 60)) + ":" + pad(m % 60), end: null, kind: "work" }]);
+    doc.books = doc.books.concat([withStampProj({ start: pad(Math.floor(m / 60)) + ":" + pad(m % 60), end: null, kind: "work" })]);
     saveStamp(doc);
   }
+  /* Projekt fürs Einstempeln (optional); nach Pausenende läuft das Projekt der
+     vorigen Arbeitsbuchung weiter. */
+  var stampProj = "";
+  function withStampProj(b) {
+    var p = stampProj.trim();
+    if (p) b.project = p;
+    stampProj = "";
+    return b;
+  }
+  document.addEventListener("input", function (ev) { if (ev.target && ev.target.id === "stamp-proj") stampProj = ev.target.value; });
   function nowHM() { var d = new Date(); return pad(d.getHours()) + ":" + pad(d.getMinutes()); }
   function curMin() { var d = new Date(); return d.getHours() * 60 + d.getMinutes(); }
   function todayDoc() {
     var t = todayISO(), d = days[t];
     var doc = { date: t, origin: "manuell", note: (d && d.note) || "",
-      books: (d && d.books ? d.books.map(function (b) { return { start: b.start, end: (b.end == null ? null : b.end), kind: b.kind === "pause" ? "pause" : "work" }; }) : []) };
+      books: (d && d.books ? d.books.map(function (b) {
+        var o = { start: b.start, end: (b.end == null ? null : b.end), kind: b.kind === "pause" ? "pause" : "work" };
+        if (typeof b.project === "string" && b.project) o.project = b.project;   /* Projekt beim Stempeln behalten */
+        return o;
+      }) : []) };
     if (d && typeOf(d)) doc.type = d.type;
     return doc;
   }
@@ -2870,7 +3081,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     if (!dataReady) return;   /* sonst überschreibt ein früher Klick den gespeicherten Tag */
     var s = liveState(); if (s.status !== "out" || s.hasType || stampBusy) return;
     var doc = todayDoc();
-    doc.books = doc.books.concat([{ start: nowHM(), end: null, kind: "work" }]);
+    doc.books = doc.books.concat([withStampProj({ start: nowHM(), end: null, kind: "work" })]);
     saveStamp(doc);
   }
   function breakStart() {
@@ -2883,8 +3094,9 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
   function breakEnd() {
     if (!dataReady) return;   /* sonst überschreibt ein früher Klick den gespeicherten Tag */
     var s = liveState(); if (s.status !== "break" || stampBusy) return;
-    var doc = todayDoc(), b = doc.books, now = nowHM();
-    b[b.length - 1].end = now; b.push({ start: now, end: null, kind: "work" });
+    var doc = todayDoc(), b = doc.books, now = nowHM(), nb = { start: now, end: null, kind: "work" };
+    for (var i = b.length - 1; i >= 0; i--) if (b[i].kind === "work") { if (b[i].project) nb.project = b[i].project; break; }
+    b[b.length - 1].end = now; b.push(nb);
     saveStamp(doc);
   }
   function clockOut() {
@@ -2943,14 +3155,17 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     else if (s.status === "break") { statusText = "Pause läuft"; dotCls = "pause"; }
     else { statusText = "Ausgestempelt"; dotCls = ""; }
     var btns, due = s.status === "out" && remindDue();
+    var projField = '<input id="stamp-proj" type="text" list="stamp-proj-list" autocomplete="off" placeholder="Projekt (optional)" ' +
+      'aria-label="Projekt für die Arbeitszeit (optional)" value="' + esc(stampProj) + '"><datalist id="stamp-proj-list">' +
+      projectOptions().map(function (p) { return '<option value="' + esc(p) + '"></option>'; }).join("") + "</datalist>";
     try { document.title = due ? "Einstempeln? – Arbeitszeitkonto 1626" : "Arbeitszeitkonto 1626"; } catch (e) { /* egal */ }
     if (due) {
       statusText = "Noch nicht eingestempelt";
-      btns = '<button type="button" class="primary" data-act="stamp-in"' + (stampBusy || !dataReady ? " disabled" : "") + ">Jetzt einstempeln (" + esc(nowHM()) + ")</button>" +
+      btns = projField + '<button type="button" class="primary" data-act="stamp-in"' + (stampBusy || !dataReady ? " disabled" : "") + ">Jetzt einstempeln (" + esc(nowHM()) + ")</button>" +
         '<button type="button" data-act="stamp-at-open">Andere Uhrzeit</button>' +
         '<button type="button" class="ghost" data-act="stamp-snooze">Heute nicht</button>';
     } else if (s.status === "out") {
-      btns = '<button type="button" class="primary" data-act="stamp-in"' + (stampBusy || !dataReady ? " disabled" : "") + ">Einstempeln</button>";
+      btns = projField + '<button type="button" class="primary" data-act="stamp-in"' + (stampBusy || !dataReady ? " disabled" : "") + ">Einstempeln</button>";
     } else if (s.status === "working") {
       btns = '<button type="button" data-act="stamp-bstart"' + (stampBusy || !dataReady ? " disabled" : "") + ">Pause beginnen</button>" +
         '<button type="button" class="primary" data-act="stamp-out"' + (stampBusy || !dataReady ? " disabled" : "") + ">Ausstempeln</button>";
@@ -3045,7 +3260,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
   render();
   /* Laufende Zeit und Erinnerung aktuell halten (auch Tageswechsel); nicht,
      während das Uhrzeit-Feld offen ist. */
-  setInterval(function () { if (stampAt === null) renderStamp(); }, 30000);
+  setInterval(function () { if (stampAt === null && !(document.activeElement && document.activeElement.id === "stamp-proj")) renderStamp(); }, 30000);
   setInterval(function () { if (liveState().status !== "out") tickStamp(); }, 1000);
   if (typeof claude !== "undefined" && claude && typeof claude.use === "function") {
     setChip("chip-db", "Speicher wird verbunden", "local");
@@ -3055,6 +3270,78 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
   }
 })();
 </script>
+<script>
+/* Kopf: Darstellung System/Hell/Dunkel (Wahl nur in diesem Browser),
+   Zifferblatt mit Bogen für 8 h Tages-Soll ab 7 Uhr und 24-h-Zeitstrahl. */
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var KEY = "azk1626-theme", NS = "http://www.w3.org/2000/svg";
+  function applyTheme(mode) {
+    var root = document.documentElement;
+    if (mode === "light" || mode === "dark") root.setAttribute("data-theme", mode); else { mode = "auto"; root.removeAttribute("data-theme"); }
+    ["auto", "light", "dark"].forEach(function (m) { var b = $("theme-" + m); if (b) b.setAttribute("aria-pressed", String(m === mode)); });
+  }
+  try { applyTheme(window.localStorage.getItem(KEY) || "auto"); } catch (e) { applyTheme("auto"); }
+  document.addEventListener("click", function (ev) {
+    var b = ev.target.closest && ev.target.closest("[data-theme-set]");
+    if (!b) return;
+    applyTheme(b.dataset.themeSet);
+    try { window.localStorage.setItem(KEY, b.dataset.themeSet); } catch (e) { /* nur für diese Ansicht */ }
+  });
+
+  var dial = $("mh-dial");
+  if (!dial) return;
+  function el(tag, attrs, parent) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; }
+  el("circle", { "class": "ring", r: 196 }, dial);
+  el("circle", { "class": "ring", r: 120 }, dial);
+  for (var i = 0; i < 60; i++) {
+    var a = i * Math.PI / 30, h = i % 5 === 0, r1 = h ? 160 : 172;
+    el("line", { "class": "tick" + (h ? " h" : ""), x1: (Math.sin(a) * r1).toFixed(1), y1: (-Math.cos(a) * r1).toFixed(1),
+      x2: (Math.sin(a) * 186).toFixed(1), y2: (-Math.cos(a) * 186).toFixed(1) }, dial);
+  }
+  var a1 = 7 / 12 * 2 * Math.PI, a2 = 15 / 12 * 2 * Math.PI;
+  el("path", { "class": "shift", d: "M" + (Math.sin(a1) * 140).toFixed(1) + " " + (-Math.cos(a1) * 140).toFixed(1) +
+    " A140 140 0 1 1 " + (Math.sin(a2) * 140).toFixed(1) + " " + (-Math.cos(a2) * 140).toFixed(1) }, dial);
+  var hh = el("line", { "class": "hand", x1: 0, y1: 0, x2: 0, y2: -90, "stroke-width": 7 }, dial);
+  var mh = el("line", { "class": "hand", x1: 0, y1: 0, x2: 0, y2: -135, "stroke-width": 4 }, dial);
+  var sh = el("line", { "class": "hand s", x1: 0, y1: 22, x2: 0, y2: -150 }, dial);
+  el("circle", { "class": "hub", r: 7 }, dial);
+
+  var ruler = $("mh-ruler"), now = document.createElement("div");
+  for (var t = 0; t <= 24; t++) {
+    var tk = document.createElement("div");
+    tk.className = "t" + (t % 6 === 0 ? " m" : ""); tk.style.left = (t / 24 * 100) + "%"; ruler.appendChild(tk);
+    if (t % 6 === 0) {
+      var n = document.createElement("div");
+      n.className = "n"; n.textContent = (t < 10 ? "0" : "") + t + ":00"; n.style.left = (t / 24 * 100) + "%";
+      if (t === 0) n.style.transform = "none";
+      if (t === 24) n.style.transform = "translateX(-100%)";
+      ruler.appendChild(n);
+    }
+  }
+  now.className = "now"; ruler.appendChild(now);
+
+  var WD = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+  function pad(v) { return (v < 10 ? "0" : "") + v; }
+  function kw(d) {
+    var x = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())), dow = x.getUTCDay() || 7;
+    x.setUTCDate(x.getUTCDate() + 4 - dow);
+    return Math.ceil(((x - Date.UTC(x.getUTCFullYear(), 0, 1)) / 86400000 + 1) / 7);
+  }
+  function tick() {
+    var d = new Date(), H = d.getHours(), M = d.getMinutes(), S = d.getSeconds();
+    $("mh-time").textContent = pad(H) + ":" + pad(M);
+    $("mh-date").innerHTML = WD[d.getDay()] + " " + pad(d.getDate()) + "." + pad(d.getMonth() + 1) + ".<br>KW " + kw(d);
+    hh.setAttribute("transform", "rotate(" + ((H % 12) * 30 + M / 2) + ")");
+    mh.setAttribute("transform", "rotate(" + (M * 6 + S / 10) + ")");
+    sh.setAttribute("transform", "rotate(" + (S * 6) + ")");
+    now.style.left = ((H * 60 + M) / 1440 * 100) + "%";
+  }
+  tick(); setInterval(tick, 1000);
+})();
+</script>
+
 
 
 
