@@ -124,16 +124,65 @@
   a { color: var(--accent-text); }
   :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
-  /* ---- Kopf ---- */
+  /* ---- Kopf ----
+     Grün liegt nur als Fläche, Linie und Großschrift auf dem Anthrazit;
+     Lauftext bleibt weiß bzw. abgeschwächt weiß (CI: kein Grün als
+     Kleinschrift). Die Grafik ist reine Deko (aria-hidden) und folgt den
+     Tokens, damit sie in hell und dunkel stimmt. */
   .masthead {
+    position: relative; isolation: isolate; overflow: hidden;
     background: var(--surface-inverse);
     color: var(--ink-inverse);
-    padding: var(--s4) var(--s3);
+    padding: var(--s5) var(--s3) var(--s4);
     margin-bottom: var(--s3);
   }
-  .masthead .wrap { padding-block: 0; }
-  .masthead h1 { color: var(--ink-inverse); font-size: 28px; margin: 0; letter-spacing: .01em; }
-  .masthead .sub { color: var(--ink-inverse-muted); font-size: 13px; margin-top: var(--s1); }
+  .masthead > .wrap { position: relative; z-index: 1; padding-block: 0; }
+  .mh-bg, .mh-glow { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+  .mh-glow { background: radial-gradient(120% 150% at 88% -25%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 62%); }
+  .mh-bg .s0 { stop-color: var(--accent); stop-opacity: 0; }
+  .mh-bg .s1 { stop-color: var(--accent); stop-opacity: .3; }
+  .mh-bg .s2 { stop-color: var(--accent); stop-opacity: .7; }
+  .mh-bg .hatch line { stroke: var(--ink-inverse); stroke-opacity: .07; stroke-width: 1; }
+  .mh-bg .arcs { fill: none; stroke: url(#mh-arc); }
+  .mh-bg .trail { fill: none; stroke: var(--accent); stroke-opacity: .45; stroke-width: 2; }
+  .mh-bg .dots { fill: var(--accent); fill-opacity: .85; }
+  .mh-top {
+    display: flex; flex-wrap: wrap; gap: var(--s3) var(--s4);
+    align-items: flex-start; justify-content: space-between;
+  }
+  .mh-eyebrow {
+    display: flex; align-items: center; gap: var(--s2);
+    font-family: var(--display); font-weight: 600;
+    font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--ink-inverse-muted); margin: 0 0 var(--s2);
+  }
+  .mh-eyebrow::before { content: ""; display: block; width: 28px; height: 3px; background: var(--accent); flex: none; }
+  .masthead h1 {
+    color: var(--ink-inverse); margin: 0; font-weight: 700; line-height: 1.04;
+    font-size: clamp(26px, 5vw, 38px); letter-spacing: .01em;
+  }
+  .masthead h1 .nr { color: var(--accent); }   /* nur Großschrift, 3,7:1 auf Anthrazit */
+  .masthead .sub { color: var(--ink-inverse-muted); font-size: 13px; margin: var(--s2) 0 0; }
+  .mh-side { display: grid; gap: var(--s1); justify-items: end; margin-left: auto; }
+  .mh-side .mh-hint { font-size: 11px; color: var(--ink-inverse-muted); margin: 0; }
+  .themeswitch {
+    display: inline-flex; border-radius: var(--r-btn); overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--ink-inverse) 28%, transparent);
+  }
+  .themeswitch button {
+    border: 0; border-radius: 0; background: transparent;
+    color: var(--ink-inverse-muted); font-size: 12px; letter-spacing: .04em; padding: 6px var(--s2);
+  }
+  .themeswitch button + button { border-left: 1px solid color-mix(in srgb, var(--ink-inverse) 22%, transparent); }
+  .themeswitch button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent-strong); font-weight: 700; }
+  @media (hover: hover) and (pointer: fine) {
+    .themeswitch button:hover:not([aria-pressed="true"]) { background: color-mix(in srgb, var(--ink-inverse) 14%, transparent); }
+  }
+  @media (max-width: 560px) {
+    .mh-side { justify-items: start; margin-left: 0; }
+    /* Auf dem Handy liegt der Linienzug sonst quer im Text */
+    .mh-bg .trail, .mh-bg .dots { display: none; }
+  }
   .rule { height: 3px; background: var(--accent); }
   .statusbar {
     display: flex; flex-wrap: wrap; gap: var(--s2);
@@ -288,8 +337,10 @@
   .formgrid { display: grid; gap: var(--s2); grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
   .bookrow {
     display: grid; gap: var(--s2); align-items: end;
-    grid-template-columns: 1fr 1fr 1.2fr auto; margin-bottom: var(--s2);
+    grid-template-columns: 1fr 1fr 1.2fr 1.6fr auto; margin-bottom: var(--s2);
   }
+  textarea.notefield { min-height: 0; font-family: var(--sans); font-size: 14px; }
+  .daynote { display: block; font-size: 12px; color: var(--ink-muted); margin-top: 2px; max-width: 320px; white-space: normal; text-align: left; }
   @media (max-width: 520px) { .bookrow { grid-template-columns: 1fr 1fr; } }
   .field { display: grid; gap: 2px; }
   .err {
@@ -312,7 +363,7 @@
   .stamp-since { color: var(--ink-muted); font-size: 13px; }
   .stamp-net { color: var(--ink-muted); font-size: 14px; }
   .stamp-net b { color: var(--ink-strong); font-size: 18px; }
-  .stamp-btns { flex: none; }
+  .stamp-btns { flex: 0 1 auto; max-width: 100%; }   /* Handy: Knöpfe brechen um statt seitlich zu schieben */
   .stamp-remind { border-left: 3px solid var(--accent); padding-left: var(--s2); margin: var(--s2) 0 0; font-size: 14px; }
   .stamp-remind b { font-family: var(--display); color: var(--ink-strong); }
   .stamp-at { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: end; margin-top: var(--s2); }
@@ -397,10 +448,54 @@
   }
 </style>
 
+<script>
+/* Darstellung vor dem ersten Zeichnen setzen, damit beim Laden nichts blitzt.
+   Ohne data-theme gilt die Systemeinstellung (@media prefers-color-scheme). */
+(function () {
+  try {
+    var v = window.localStorage.getItem("azk1626-theme");
+    if (v === "light" || v === "dark") document.documentElement.setAttribute("data-theme", v);
+  } catch (e) { /* Browser-Speicher gesperrt – dann System */ }
+})();
+</script>
+
 <header class="masthead">
+  <span class="mh-glow" aria-hidden="true"></span>
+  <svg class="mh-bg" viewBox="0 0 1200 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="mh-arc" x1="0" y1="1" x2="1" y2="0">
+        <stop class="s0" offset="0"/><stop class="s1" offset=".55"/><stop class="s2" offset="1"/>
+      </linearGradient>
+      <pattern id="mh-hatch" class="hatch" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(-24)">
+        <line x1="0" y1="0" x2="0" y2="26"/>
+      </pattern>
+    </defs>
+    <rect width="1200" height="240" fill="url(#mh-hatch)"/>
+    <g class="arcs">
+      <circle cx="1086" cy="34" r="58" stroke-width="2"/>
+      <circle cx="1086" cy="34" r="102" stroke-width="1.5"/>
+      <circle cx="1086" cy="34" r="150" stroke-width="1.5"/>
+      <circle cx="1086" cy="34" r="206" stroke-width="1"/>
+    </g>
+    <path class="trail" d="M0 198 H358 L416 152 H754 L812 106 H1200" stroke-linejoin="round"/>
+    <g class="dots"><circle cx="358" cy="198" r="3.5"/><circle cx="754" cy="152" r="3.5"/><circle cx="1180" cy="106" r="3.5"/></g>
+  </svg>
   <div class="wrap">
-    <h1>Arbeitszeitkonto 1626</h1>
-    <p class="sub">Personalnummer 1626 &middot; Fräsdienst-Service E. Feind GmbH &middot; Buchungen aus OptiTime</p>
+    <div class="mh-top">
+      <div>
+        <p class="mh-eyebrow">Fräsdienst-Service E. Feind GmbH</p>
+        <h1>Arbeitszeitkonto <span class="nr">1626</span></h1>
+        <p class="sub">Personalnummer 1626 &middot; Zeitwirtschaft OptiTime &middot; Ist, Soll und Saldo je Tag</p>
+      </div>
+      <div class="mh-side">
+        <div class="themeswitch" id="themeswitch" role="group" aria-label="Darstellung">
+          <button type="button" data-act="theme" data-theme="system" aria-pressed="true">System</button>
+          <button type="button" data-act="theme" data-theme="light" aria-pressed="false">Hell</button>
+          <button type="button" data-act="theme" data-theme="dark" aria-pressed="false">Dunkel</button>
+        </div>
+        <p class="mh-hint">Darstellung &ndash; gilt nur auf diesem Gerät</p>
+      </div>
+    </div>
     <div class="statusbar">
       <span class="chip" id="chip-db"><span class="dot"></span><span id="chip-db-text">Verbindung wird geprüft</span></span>
       <span class="chip" id="chip-period"><span class="dot"></span><span id="chip-period-text">Zeitraum</span></span>
@@ -768,6 +863,35 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     return Object.keys(days).sort().map(function (k) { return statOf(days[k]); });
   }
 
+  /* -------------------------- Darstellung ------------------------- */
+  /* Hell, dunkel oder wie im System. "System" entfernt data-theme, dann
+     greifen die @media-Regeln des Theme-Blocks. Gemerkt wird nur im
+     Browser-Speicher dieses Geräts – eine Ansichtssache, die nicht in den
+     Artefakt-Speicher gehört (dort stehen nur Buchungen und Soll-Zeiten).
+     Diagramme brauchen kein Neuzeichnen: ihre Farben sind Tokens. */
+  var THEME_KEY = "azk1626-theme";
+  function themeNow() {
+    var v = document.documentElement.getAttribute("data-theme");
+    return v === "light" || v === "dark" ? v : "system";
+  }
+  function setTheme(v) {
+    if (v !== "light" && v !== "dark") v = "system";
+    if (v === "system") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", v);
+    try {
+      if (v === "system") window.localStorage.removeItem(THEME_KEY);
+      else window.localStorage.setItem(THEME_KEY, v);
+    } catch (e) { /* nur für diese Ansicht */ }
+    renderTheme();
+  }
+  function renderTheme() {
+    var cur = themeNow(), host = document.getElementById("themeswitch");
+    if (!host) return;
+    host.querySelectorAll("button[data-theme]").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.dataset.theme === cur ? "true" : "false");
+    });
+  }
+
   /* --------------------------- Ausgabe --------------------------- */
   function setChip(id, text, cls) {
     var chip = document.getElementById(id);
@@ -1109,6 +1233,28 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     return out.join(" ");
   }
 
+  /* Projekte der Arbeitsbuchungen und Tagesnotiz unter den Status-Pills. */
+  function dayProjects(books) {
+    var seen = {}, out = [];
+    (books || []).forEach(function (b) {
+      var p = b && b.kind !== "pause" && typeof b.project === "string" ? b.project.trim() : "";
+      if (p && !seen[p]) { seen[p] = 1; out.push(p); }
+    });
+    return out;
+  }
+  function dayExtraHTML(d) {
+    var pr = dayProjects(d.books);
+    return (pr.length ? '<span class="daynote">Projekt: ' + esc(pr.join(", ")) + "</span>" : "") +
+      (d.note ? '<span class="daynote">Notiz: ' + esc(d.note) + "</span>" : "");
+  }
+  /* Vorschläge fürs Projektfeld: alle bereits verwendeten Projekte. Der alte
+     Stundenzettel hatte keine feste Liste und keine gespeicherten Projekte. */
+  function projectOptions() {
+    var all = [];
+    Object.keys(days).forEach(function (k) { all = all.concat(dayProjects(days[k].books)); });
+    return all.filter(function (p, i) { return all.indexOf(p) === i; }).sort();
+  }
+
   function renderWeeks(st) {
     if (!st.length) {
       document.getElementById("weeks").innerHTML =
@@ -1140,8 +1286,8 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
           '<td class="num">' + esc(hm(d.pause)) + '</td>' +
           '<td class="num">' + esc(d.brutto ? hm(d.brutto) : "–") + '</td>' +
           '<td class="num">' + esc(d.soll ? hm(d.soll) : "–") + '</td>' +
-          '<td class="num saldo' + (d.saldo >= 0 ? "pos" : "neg") + '">' + esc(signed(d.saldo)) + '</td>' +
-          '<td>' + pillsFor(d) + '</td>' +
+          '<td class="num saldo ' + (d.saldo >= 0 ? "pos" : "neg") + '">' + esc(signed(d.saldo)) + '</td>' +
+          '<td>' + pillsFor(d) + dayExtraHTML(d) + '</td>' +
           '<td><button type="button" class="link" data-act="edit" data-date="' + esc(d.date) + '">bearbeiten</button></td>' +
           '</tr>';
       }).join("");
@@ -1172,6 +1318,9 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         '<select id="bk-k' + i + '" data-f="kind" data-i="' + i + '">' +
         '<option value="work"' + (b.kind !== "pause" ? " selected" : "") + '>Arbeitszeit</option>' +
         '<option value="pause"' + (b.kind === "pause" ? " selected" : "") + '>Pause</option></select></div>' +
+        (b.kind === "pause" ? "<div></div>" : '<div class="field"><label for="bk-p' + i + '">Projekt (optional)</label>' +
+          '<input id="bk-p' + i + '" type="text" list="proj-list" data-f="project" data-i="' + i + '" value="' + esc(b.project || "") +
+          '" placeholder="z. B. Hausmesse" autocomplete="off"></div>') +
         '<div><button type="button" class="ghost" data-act="rmrow" data-i="' + i + '" ' +
         'aria-label="Buchung ' + (i + 1) + ' entfernen">entfernen</button></div>' +
         "</div>";
@@ -1191,8 +1340,9 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         '<button type="button" class="ghost" data-act="close">schließen</button></div>' +
         '<p class="hint">Buchungen in der Reihenfolge des Tages. Das letzte Feld &bdquo;Bis&ldquo; darf leer ' +
         "bleiben, solange der Tag noch läuft. Mit einer Tagesart (Urlaub, Krank …) sind Buchungen optional." +
-        (isNew ? " Mit einem Datum &bdquo;bis&ldquo; wird derselbe Eintrag f\u00fcr jeden Arbeitstag des Zeitraums " +
-          "angelegt \u2013 arbeitsfreie Tage, Feiertage und bereits erfasste Tage bleiben unber\u00fchrt." : "") +
+        (isNew ? " Mit einem Datum &bdquo;bis&ldquo; wird die gew\u00e4hlte Tagesart (Urlaub, Krank \u2026) f\u00fcr jeden Arbeitstag " +
+          "des Zeitraums angelegt \u2013 Buchungszeiten gelten nur f\u00fcr einen einzelnen Tag; arbeitsfreie Tage, Feiertage " +
+          "und bereits erfasste Tage bleiben unber\u00fchrt." : "") +
         (draft.date && holidayName(draft.date) ? " <strong>" + esc(dLong(draft.date)) + " ist Feiertag in Brandenburg (" + esc(holidayName(draft.date)) + ").</strong>" : "") +
         "</p>" +
         '<fieldset><legend>' + (isNew ? "Datum / Zeitraum" : "Datum") + "</legend>" +
@@ -1207,12 +1357,13 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         TYPE_ORDER.filter(function (t) { return t !== "gleittag" || settings.gleittag || draft.type === "gleittag"; }).map(function (t) {
           return '<option value="' + t + '"' + (draft.type === t ? " selected" : "") + ">" + esc(TYPES[t].label) + "</option>";
         }).join("") + "</select></div>" +
-        '<div class="field"><label for="f-note">Notiz (optional)</label>' +
-        '<input id="f-note" type="text" data-f="note" value="' + esc(draft.note || "") +
-        '" placeholder="z. B. Dienstreise"></div></div>' +
+        '<div class="field" style="grid-column:1/-1"><label for="f-note">Notiz zum Tag (optional)</label>' +
+        '<textarea id="f-note" class="notefield" rows="2" data-f="note" placeholder="z. B. Dienstreise">' +
+        esc(draft.note || "") + "</textarea></div></div>" +
         (isNew && draft.date2 ? '<p class="hint" style="margin:var(--s2) 0 0">' + esc(rangeHint()) + "</p>" : "") +
         "</fieldset>" +
         '<fieldset><legend>Buchungen</legend>' + bookRows() +
+        '<datalist id="proj-list">' + projectOptions().map(function (p) { return '<option value="' + esc(p) + '"></option>'; }).join("") + "</datalist>" +
         '<div class="btnrow"><button type="button" data-act="addrow">Buchung hinzufügen</button>' +
         (st ? '<span class="hint" id="calc-hint" style="margin:0">Ergibt: Ist ' + esc(hm(st.work)) + ", Pause " +
           esc(hm(st.pause)) + ", Soll " + esc(st.soll ? hm(st.soll) : "0:00") + ", Saldo " +
@@ -1230,7 +1381,8 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         "Enthält &bdquo;Pause&ldquo; in Art oder Tätigkeit, wird die Buchung als Pause gewertet. " +
         "Zeilen ohne Uhrzeit sind Tagesarten, z. B. <code>2026-12-28;;;Urlaub</code> &ndash; erkannt werden " +
         "Urlaub, halber Urlaub, Sonderurlaub (000004), Krank, Feiertag und Gleittag. " +
-        "Importierte Tage ersetzen den bisherigen Stand dieses Tages vollständig.</p>" +
+        "Importierte Tage ersetzen den bisherigen Stand dieses Tages; Projekte der Arbeitsbuchungen und die " +
+        "Tagesnotiz bleiben erhalten (Spalten &bdquo;Projekt&ldquo;/&bdquo;Notiz&ldquo; in der Kopfzeile haben Vorrang).</p>" +
         '<label for="f-import">Exportzeilen</label>' +
         '<textarea id="f-import" data-f="text" placeholder="Datum;Start;Ende;Art;Taetigkeit;Notiz&#10;' +
         '2026-09-15;06:40;09:10;Arbeitszeit;Kommen;&#10;2026-09-15;09:10;09:25;Pause;*Pause*;">' +
@@ -1359,16 +1511,26 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
   }
   function parseImport(text) {
     var lines = String(text || "").split(/\r?\n/);
-    var out = {}, types = {}, errs = [], n = 0;
+    var out = {}, types = {}, notes = {}, errs = [], n = 0, col = { note: -1, proj: -1 };
     lines.forEach(function (raw, idx) {
       var line = raw.trim();
-      if (!line || /^datum/i.test(line)) return;
+      if (!line) return;
+      if (/^datum/i.test(line)) {   /* Notiz/Projekt nur lesen, wenn die Kopfzeile sie benennt */
+        line.toLowerCase().split(/[;\t]/).forEach(function (h, i) {
+          h = h.trim();
+          if (h === "notiz") col.note = i;
+          if (h === "projekt") col.proj = i;
+        });
+        return;
+      }
       var f = line.split(/[;\t]/);
       if (f.length < 3) f = line.split(/\s*,\s*/);
       if (f.length < 3) { errs.push("Zeile " + (idx + 1) + ": weniger als drei Felder."); return; }
       var date = normDate(f[0]);
       if (!date) { errs.push("Zeile " + (idx + 1) + ": Datum „" + f[0] + "“ nicht erkannt."); return; }
       var s = normTime(f[1]), e = normTime(f[2]);
+      var nt = col.note >= 0 ? String(f[col.note] || "").trim() : "";
+      if (nt) notes[date] = nt;
       if (s === null && e === null) {   /* Zeile ohne Uhrzeit = Tagesart */
         var ty = typeFromText(f.slice(3).join(" "));
         if (!ty) { errs.push("Zeile " + (idx + 1) + ": ohne Uhrzeit, Tagesart „" + (f.slice(3).join(" ").trim() || "leer") + "“ nicht erkannt."); return; }
@@ -1381,10 +1543,35 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       if (e === undefined) { errs.push("Zeile " + (idx + 1) + ": Bis-Zeit „" + f[2] + "“ nicht erkannt."); return; }
       var kindSrc = ((f[3] || "") + " " + (f[4] || "")).toLowerCase();
       out[date] = out[date] || [];
-      out[date].push({ start: s, end: e, kind: /pause/.test(kindSrc) ? "pause" : "work" });
+      var bk = { start: s, end: e, kind: /pause/.test(kindSrc) ? "pause" : "work" };
+      var pr = col.proj >= 0 ? String(f[col.proj] || "").trim() : "";
+      if (pr && bk.kind === "work") bk.project = pr;
+      out[date].push(bk);
       n++;
     });
-    return { days: out, types: types, errs: errs, count: n };
+    return { days: out, types: types, notes: notes, errs: errs, count: n };
+  }
+
+  /* Projekte beim Ersetzen eines Tages behalten: je neue Arbeitsbuchung das
+     Projekt der alten mit gleicher Startzeit, sonst der mit der größten
+     Überschneidung. Rückgabe: alte Projektbuchungen ohne Gegenstück. */
+  function carryProjects(books, old) {
+    var src = (old || []).filter(function (b) { return b && b.kind !== "pause" && typeof b.project === "string" && b.project.trim(); });
+    var used = [], END = 24 * 60;
+    if (!src.length) return [];
+    books.forEach(function (b) {
+      if (b.kind === "pause") return;
+      var hit = -1, best = 0, s = toMin(b.start), e = b.end == null ? END : toMin(b.end);
+      src.forEach(function (o, i) { if (hit < 0 && o.start === b.start) hit = i; });
+      if (hit < 0) src.forEach(function (o, i) {
+        var ov = Math.min(e, o.end == null ? END : toMin(o.end)) - Math.max(s, toMin(o.start));
+        if (ov > best) { best = ov; hit = i; }
+      });
+      if (hit < 0) return;
+      used[hit] = true;
+      if (!b.project) b.project = src[hit].project.trim();   /* Projekt aus der Datei hat Vorrang */
+    });
+    return src.filter(function (o, i) { return !used[i]; });
   }
   /* Protokoll des OptiTime-Erfassungsplatzes (logger.txt) lesen.
      Eine Buchung zählt nur, wenn das Terminal sie bestätigt hat
@@ -1450,10 +1637,9 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     arr.forEach(function (b, i) {
       var date = normDate(b && b.date), s = normTime(b && b.start), e = normTime(b && b.end);
       if (!date || !s || e === undefined) { errs.push("Buchung " + (i + 1) + " unvollständig."); return; }
-      (out[date] = out[date] || []).push({
-        start: s, end: e,
-        kind: /pause/i.test((b.kind || "") + " " + (b.activity || "")) ? "pause" : "work"
-      });
+      var bk = { start: s, end: e, kind: /pause/i.test((b.kind || "") + " " + (b.activity || "")) ? "pause" : "work" };
+      if (bk.kind === "work" && typeof b.project === "string" && b.project.trim()) bk.project = b.project.trim();
+      (out[date] = out[date] || []).push(bk);
       n++;
     });
     return { days: out, count: n, persons: [], errs: errs.slice(0, 3) };
@@ -1477,14 +1663,15 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
   }
 
   function buildCSV() {
-    var rows = ["Datum;Start;Ende;Art;Taetigkeit;Notiz"];
+    var rows = ["Datum;Start;Ende;Art;Taetigkeit;Notiz;Projekt"];
+    var clean = function (s) { return String(s || "").replace(/[;\t\r\n]/g, " ").trim(); };   /* Import trennt an ; und Tab */
     allStats().forEach(function (d) {
-      if (d.type) rows.push([d.date, "", "", d.typeLabel, "", (d.note || "").replace(/[;\r\n]/g, " ")].join(";"));
+      if (d.type) rows.push([d.date, "", "", d.typeLabel, "", clean(d.note), ""].join(";"));
       d.books.forEach(function (b) {
         rows.push([d.date, b.start, b.end || "",
           b.kind === "pause" ? "Pause" : "Arbeitszeit",
           b.kind === "pause" ? "*Pause*" : "Kommen",
-          (d.note || "").replace(/[;\r\n]/g, " ")].join(";"));
+          clean(d.note), b.kind === "pause" ? "" : clean(b.project)].join(";"));
       });
     });
     return rows.join("\n");
@@ -1524,13 +1711,16 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     return { rows: rows, sum: sum };
   }
   function buildMonthCSV(ym) {
-    var r = monthRows(ym), out = ["Datum;Wochentag;Kommen;Gehen;Ist;Pause;Soll;Saldo;Status"];
+    var r = monthRows(ym), out = ["Datum;Wochentag;Kommen;Gehen;Ist;Pause;Soll;Saldo;Status;Projekt"];
+    /* Projektliste ist selbst mit "; " getrennt – Feld in Anführungszeichen (RFC 4180, Excel liest das) */
+    var q = function (s) { return /[;"\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
     r.rows.forEach(function (d) {
       var wd = WD[wdOf(d.date)];
-      if (d.empty) { out.push([d.date, wd, "", "", "", "", "0,00", "0,00", d.hol ? "keine Buchung (Feiertag " + d.hol + ")" : "keine Buchung"].join(";")); return; }
-      out.push([d.date, wd, d.first || "", d.open ? "" : (d.last || ""), dec(d.work), dec(d.pause), dec(d.soll), dec(d.saldo), d.status].join(";"));
+      if (d.empty) { out.push([d.date, wd, "", "", "", "", "0,00", "0,00", d.hol ? "keine Buchung (Feiertag " + d.hol + ")" : "keine Buchung", ""].join(";")); return; }
+      out.push([d.date, wd, d.first || "", d.open ? "" : (d.last || ""), dec(d.work), dec(d.pause), dec(d.soll), dec(d.saldo), d.status,
+        q(dayProjects(d.books).join("; "))].join(";"));
     });
-    out.push(["Summe", "", "", "", dec(r.sum.work), dec(r.sum.pause), dec(r.sum.soll), dec(r.sum.saldo), ""].join(";"));
+    out.push(["Summe", "", "", "", dec(r.sum.work), dec(r.sum.pause), dec(r.sum.soll), dec(r.sum.saldo), "", ""].join(";"));
     return out.join("\r\n");
   }
   function exportText() {
@@ -1580,6 +1770,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     var from = draft.date, to = draft.date2;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(from) || !/^\d{4}-\d{2}-\d{2}$/.test(to)) return "Bitte ein Datum \u201ebis\u201c angeben oder das Feld leer lassen.";
     if (to < from) return "\u201ebis\u201c liegt vor \u201evon\u201c \u2013 bitte korrigieren oder das Feld leer lassen.";
+    if (!TYPES[draft.type]) return "F\u00fcr einen Zeitraum bitte eine Tagesart w\u00e4hlen (Urlaub, Krank \u2026) \u2013 Buchungszeiten gelten nur f\u00fcr einen einzelnen Tag.";
     var r = rangeDays(from, to);
     if (r.over) return "Zeitraum ist l\u00e4nger als ein Jahr \u2013 bitte k\u00fcrzer w\u00e4hlen.";
     var have = r.days.filter(function (iso) { return days[iso]; }).length;
@@ -1595,9 +1786,12 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(from)) { note = { type: "err", text: "Bitte ein Datum angeben." }; return renderPanel(); }
     if (to < from) { note = { type: "err", text: "\u201ebis\u201c muss nach \u201evon\u201c liegen oder leer bleiben." }; return renderPanel(); }
     if (from < ENTRY_DATE) { note = { type: "err", text: "Vor dem " + dLong(ENTRY_DATE) + " (Beginn des Arbeitsverh\u00e4ltnisses) wird nichts erfasst." }; return renderPanel(); }
+    /* Zeitraum nur f\u00fcr Tagesarten (Entscheidung David, 19.10.2026): Buchungszeiten
+       werden nie in mehrere Tage kopiert, sonst entst\u00fcnden erfundene Zeiten. */
+    if (!TYPES[draft.type]) { note = { type: "err", text: "Ein Zeitraum geht nur mit einer Tagesart (Urlaub, Krank \u2026). Buchungszeiten bitte je Tag erfassen oder \u201ebis\u201c leeren." }; return renderPanel(); }
     var r = rangeDays(from, to);
     if (r.over) { note = { type: "err", text: "Zeitraum ist l\u00e4nger als ein Jahr \u2013 bitte k\u00fcrzer w\u00e4hlen." }; return renderPanel(); }
-    var books = draft.books.filter(function (b) { return b.start || b.end; });
+    var books = [];
     var have = [], docs = [], bad = null;
     r.days.forEach(function (iso) {
       if (days[iso]) { have.push(iso); return; }
@@ -1766,13 +1960,14 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     var all = Object.keys(res.days).sort(), bad = null, docs = {};
     var dates = all.filter(function (dt) { return dt >= ENTRY_DATE; }), early = all.length - dates.length;
     if (!dates.length) { note = { type: "err", text: "Alle Buchungen liegen vor dem " + dLong(ENTRY_DATE) + " – nichts übernommen." }; return renderPanel(); }
-    var types = res.types || {}, nTypes = 0;
+    var types = res.types || {}, notes = res.notes || {}, nTypes = 0, lostBy = {};
     dates.forEach(function (dt) {
-      var doc = { date: dt, books: res.days[dt], origin: "import", note: (days[dt] && days[dt].note) || "" };
+      var doc = { date: dt, books: res.days[dt], origin: "import", note: notes[dt] || (days[dt] && days[dt].note) || "" };
       if (types[dt]) {
         doc.type = types[dt]; nTypes++;
         if (!doc.books.length && days[dt] && days[dt].books.length) { doc.books = days[dt].books.slice(); doc.origin = days[dt].origin || "import"; }
       }
+      if (days[dt] && doc.books !== days[dt].books) lostBy[dt] = carryProjects(doc.books, days[dt].books);
       var e = validate(doc);
       if (e && !bad) bad = dLong(dt) + ": " + e;
       docs[dt] = doc;
@@ -1792,6 +1987,14 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     if (skip.length) {
       summary += " " + skip.length + " Tag(e) unverändert gelassen (" + skip.slice(0, 5).map(dShort).join(", ") +
         (skip.length > 5 ? " …" : "") + "), dort ist der gespeicherte Stand vollständiger.";
+    }
+    var lost = [];
+    take.forEach(function (dt) {
+      (lostBy[dt] || []).forEach(function (o) { lost.push(dShort(dt) + " " + o.start + "–" + (o.end || "offen") + " „" + o.project.trim() + "“"); });
+    });
+    if (lost.length) {
+      summary += " Achtung: " + lost.length + " Projektangabe(n) ohne passende neue Buchung, bitte über „bearbeiten“ neu zuordnen: " +
+        lost.slice(0, 5).join(", ") + (lost.length > 5 ? " …" : "") + ".";
     }
     if (!db) {
       panel = null; note = { type: "ok", text: summary + " (nur in dieser Ansicht)" };
@@ -1892,7 +2095,8 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       if (!b) return;
       if (f === "end") b.end = el.value || null;
       else if (f === "start") b.start = el.value || "";
-      else b.kind = el.value;
+      else if (f === "project") b.project = el.value;
+      else { b.kind = el.value; if (ev.type === "change") { renderPanel(); return; } }   /* Projektfeld nur bei Arbeitszeit */
     } else if (f === "wd") {
       var wd = +el.dataset.wd, at = draft.workdays.indexOf(wd);
       if (el.checked && at < 0) draft.workdays.push(wd);
@@ -1993,6 +2197,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       stampAt = null; return render();
     }
     if (act === "stamp-undo") { return undoAutoIn(); }
+    if (act === "theme") { return setTheme(btn.dataset.theme); }
     if (!act) return;
 
     if (act === "edit") {
@@ -2003,7 +2208,9 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       draft = {
         date: d.date, note: d.note || "", origin: d.origin, type: typeOf(d),
         books: sortBooks(d.books).map(function (b) {
-          return { start: b.start, end: b.end || null, kind: b.kind === "pause" ? "pause" : "work" };
+          var o = { start: b.start, end: b.end || null, kind: b.kind === "pause" ? "pause" : "work" };
+          if (typeof b.project === "string" && b.project) o.project = b.project;
+          return o;
         })
       };
       return renderPanel();
@@ -2020,7 +2227,12 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       var doc = {
         date: draft.date, note: draft.note || "",
         origin: panel.kind === "add" ? "manuell" : (draft.origin || "manuell"),
-        books: draft.books.filter(function (b) { return b.start || b.end; })
+        books: draft.books.filter(function (b) { return b.start || b.end; }).map(function (b) {
+          var o = { start: b.start, end: b.end || null, kind: b.kind === "pause" ? "pause" : "work" };
+          var p = typeof b.project === "string" ? b.project.trim() : "";
+          if (p && o.kind === "work") o.project = p;   /* Feld nur, wenn gefüllt – alte Tage bleiben unverändert */
+          return o;
+        })
       };
       if (TYPES[draft.type]) doc.type = draft.type;
       if (panel.kind === "add" && days[doc.date]) {
@@ -2194,8 +2406,23 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       { t: todo.length > 1 ? todo[1] : "Nächsten Bericht zum Monatsende exportieren und ablegen.", w: "David", d: "15 Min" },
       { t: "Bericht als passwortgeschützte PDF ablegen; Passwort getrennt aufbewahren.", w: "David", d: "5 Min" }
     ];
+    /* Netto-Arbeitszeit je Projekt: abgeschlossene Arbeitsbuchungen, ohne den
+       heute noch laufenden Tag (zählt auch im Ist noch nicht) – Summe = Ist. */
+    var pm = {}, proj = [];
+    rows.forEach(function (d) {
+      if (d.running) return;
+      d.books.forEach(function (b) {
+        var a = toMin(b.start), e = toMin(b.end);
+        if (b.kind === "pause" || a == null || e == null || e <= a) return;
+        var k = typeof b.project === "string" && b.project.trim() ? b.project.trim() : "";
+        if (!pm[k]) { pm[k] = { name: k, min: 0, days: {} }; proj.push(pm[k]); }
+        pm[k].min += e - a; pm[k].days[d.date] = 1;
+      });
+    });
+    proj.sort(function (a, b) { return !a.name ? 1 : !b.name ? -1 : b.min - a.min; });   /* "ohne Projekt" zuletzt */
+    if (!proj.some(function (p) { return p.name; })) proj = [];
     return {
-      gran: gran, per: per, rows: rows, carry: carry, t: t, weeks: weeks, months: months, pts: pts, trend: trend,
+      gran: gran, per: per, rows: rows, carry: carry, t: t, weeks: weeks, months: months, pts: pts, trend: trend, proj: proj,
       why: why, risks: risks, steps: steps, created: nowLabel(),
       title: "Arbeitszeitkonto 1626 · " + GRAN_LABEL[gran], last: rows.length ? rows[rows.length - 1].date : per.to,
       sub: per.label
@@ -2287,14 +2514,29 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
       inner + '<div class="p-foot"><span>Arbeitszeitkonto 1626 &middot; Brennglas &middot; Vertraulich</span><span>Seite ' + n + ' / ' + N + '</span></div></div>';
   }
   function cls(v) { return v >= 0 ? "pos" : "neg"; }
+  function artLabel(b) { return b.kind === "pause" ? "Pause" : (typeof b.project === "string" && b.project.trim() ? b.project.trim() : "Arbeitszeit"); }
+  /* Zeilen für "Netto je Projekt": Name, Netto, Anteil am Ist, Tage. */
+  function projRows(r) {
+    var tot = r.proj.reduce(function (a, p) { return a + p.min; }, 0) || 1;
+    return r.proj.map(function (p) {
+      return [p.name || "ohne Projekt", hm(p.min), Math.round(p.min / tot * 100) + " %", String(Object.keys(p.days).length)];
+    });
+  }
+  function projTableHTML(r) {
+    if (!r.proj.length) return "";
+    return '<h2>Anhang C – Netto-Arbeitszeit je Projekt</h2><table><thead><tr><th>Projekt</th><th>Netto</th><th>Anteil</th><th>Tage</th></tr></thead><tbody>' +
+      projRows(r).map(function (x) { return "<tr><td>" + esc(x[0]) + "</td><td>" + esc(x[1]) + "</td><td>" + esc(x[2]) + "</td><td>" + esc(x[3]) + "</td></tr>"; }).join("") +
+      '<tr class="sum"><td>Summe (= Ist)</td><td>' + esc(hm(r.t.work)) + '</td><td>100 %</td><td></td></tr></tbody></table>' +
+      '<p class="src">Abgeschlossene Arbeitsbuchungen; ein heute noch laufender Tag zählt erst nach dem Gehen.</p>';
+  }
   function compareTableHTML(r) {
     var h, rows;
     if (r.gran === "day") {
       var d = r.rows[0];
-      h = '<table><thead><tr><th>Buchung</th><th>Art</th><th>Dauer</th></tr></thead><tbody>';
+      h = '<table><thead><tr><th>Buchung</th><th>Art / Projekt</th><th>Dauer</th></tr></thead><tbody>';
       d.books.forEach(function (b) {
         var a = toMin(b.start), e = toMin(b.end);
-        h += '<tr' + (e == null ? ' class="open"' : "") + '><td>' + esc(b.start) + " – " + esc(b.end || "offen") + '</td><td>' + (b.kind === "pause" ? "Pause" : "Arbeitszeit") +
+        h += '<tr' + (e == null ? ' class="open"' : "") + '><td>' + esc(b.start) + " – " + esc(b.end || "offen") + '</td><td>' + esc(artLabel(b)) +
           '</td><td>' + (e == null ? "–" : esc(hm(e - a))) + '</td></tr>';
       });
       h += '<tr class="sum"><td>Ist / Soll</td><td>' + esc(hm(d.work)) + " / " + esc(d.soll ? hm(d.soll) : "0:00") + '</td><td class="' + cls(d.saldo) + '">' + esc(signed(d.saldo)) + '</td></tr></tbody></table>';
@@ -2377,6 +2619,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
         });
         pages.push(h);
       });
+      if (r.proj.length) pages[pages.length - 1] += projTableHTML(r);
     }
     var N = pages.length;
     return '<div class="report">' + pages.map(function (p, i) { return pageHTML(p, i + 1, N, r); }).join("") + '</div>';
@@ -2671,8 +2914,8 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
           h2(2, "Vergleich Ist / Soll");
           if (r.gran === "day") {
             var d0 = r.rows[0];
-            table([{ w: 40 }, { w: 30 }, { w: 30, a: "r" }], ["Buchung", "Art", "Dauer"],
-              d0.books.map(function (b) { var a = toMin(b.start), e = toMin(b.end); return { cells: [b.start + " – " + (b.end || "offen"), b.kind === "pause" ? "Pause" : "Arbeitszeit", e == null ? "–" : hm(e - a)], open: e == null }; })
+            table([{ w: 30 }, { w: 45 }, { w: 25, a: "r" }], ["Buchung", "Art / Projekt", "Dauer"],
+              d0.books.map(function (b) { var a = toMin(b.start), e = toMin(b.end); return { cells: [b.start + " – " + (b.end || "offen"), artLabel(b), e == null ? "–" : hm(e - a)], open: e == null }; })
                 .concat([{ cells: ["Ist / Soll", hm(d0.work) + " / " + (d0.soll ? hm(d0.soll) : "0:00"), sgn(d0.saldo)], sum: true }]));
           } else {
             var crow = r.gran === "week" ? r.rows.map(function (d) { return [WD[wdOf(d.date)] + " " + dShort(d.date), hm(d.work) + " / " + (d.soll ? hm(d.soll) : "0:00"), sgn(d.saldo)]; })
@@ -2726,6 +2969,12 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
                   return { cells: [WD[wdOf(d.date)] + " " + dShort(d.date), d.books.length ? (d.first || "–") + " – " + (d.open ? "offen" : (d.last || "–")) : "–", hm(d.work), hm(d.pause), d.soll ? hm(d.soll) : "–", sgn(d.saldo), stx], open: d.open || d.noStart };
                 }));
             });
+            if (r.proj.length) {
+              h2(null, "Anhang C – Netto-Arbeitszeit je Projekt");
+              table([{ w: 52 }, { w: 16, a: "r" }, { w: 16, a: "r" }, { w: 16, a: "r" }], ["Projekt", "Netto", "Anteil", "Tage"],
+                projRows(r).concat([{ cells: ["Summe (= Ist)", hm(t.work), "100 %", ""], sum: true }]));
+              para("Abgeschlossene Arbeitsbuchungen; ein heute noch laufender Tag zählt erst nach dem Gehen.", { color: C.muted });
+            }
           }
           /* Fußzeilen */
           pages.forEach(function (pg, i) {
@@ -2809,15 +3058,29 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     if (m > curMin()) { stampErr = "Kommen kann nicht in der Zukunft liegen."; return renderStamp(); }
     stampAt = null;
     var doc = todayDoc();
-    doc.books = doc.books.concat([{ start: pad(Math.floor(m / 60)) + ":" + pad(m % 60), end: null, kind: "work" }]);
+    doc.books = doc.books.concat([withStampProj({ start: pad(Math.floor(m / 60)) + ":" + pad(m % 60), end: null, kind: "work" })]);
     saveStamp(doc);
   }
+  /* Projekt fürs Einstempeln (optional); nach Pausenende läuft das Projekt der
+     vorigen Arbeitsbuchung weiter. */
+  var stampProj = "";
+  function withStampProj(b) {
+    var p = stampProj.trim();
+    if (p) b.project = p;
+    stampProj = "";
+    return b;
+  }
+  document.addEventListener("input", function (ev) { if (ev.target && ev.target.id === "stamp-proj") stampProj = ev.target.value; });
   function nowHM() { var d = new Date(); return pad(d.getHours()) + ":" + pad(d.getMinutes()); }
   function curMin() { var d = new Date(); return d.getHours() * 60 + d.getMinutes(); }
   function todayDoc() {
     var t = todayISO(), d = days[t];
     var doc = { date: t, origin: "manuell", note: (d && d.note) || "",
-      books: (d && d.books ? d.books.map(function (b) { return { start: b.start, end: (b.end == null ? null : b.end), kind: b.kind === "pause" ? "pause" : "work" }; }) : []) };
+      books: (d && d.books ? d.books.map(function (b) {
+        var o = { start: b.start, end: (b.end == null ? null : b.end), kind: b.kind === "pause" ? "pause" : "work" };
+        if (typeof b.project === "string" && b.project) o.project = b.project;   /* Projekt beim Stempeln behalten */
+        return o;
+      }) : []) };
     if (d && typeOf(d)) doc.type = d.type;
     return doc;
   }
@@ -2870,7 +3133,7 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     if (!dataReady) return;   /* sonst überschreibt ein früher Klick den gespeicherten Tag */
     var s = liveState(); if (s.status !== "out" || s.hasType || stampBusy) return;
     var doc = todayDoc();
-    doc.books = doc.books.concat([{ start: nowHM(), end: null, kind: "work" }]);
+    doc.books = doc.books.concat([withStampProj({ start: nowHM(), end: null, kind: "work" })]);
     saveStamp(doc);
   }
   function breakStart() {
@@ -2883,8 +3146,9 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
   function breakEnd() {
     if (!dataReady) return;   /* sonst überschreibt ein früher Klick den gespeicherten Tag */
     var s = liveState(); if (s.status !== "break" || stampBusy) return;
-    var doc = todayDoc(), b = doc.books, now = nowHM();
-    b[b.length - 1].end = now; b.push({ start: now, end: null, kind: "work" });
+    var doc = todayDoc(), b = doc.books, now = nowHM(), nb = { start: now, end: null, kind: "work" };
+    for (var i = b.length - 1; i >= 0; i--) if (b[i].kind === "work") { if (b[i].project) nb.project = b[i].project; break; }
+    b[b.length - 1].end = now; b.push(nb);
     saveStamp(doc);
   }
   function clockOut() {
@@ -2943,14 +3207,17 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
     else if (s.status === "break") { statusText = "Pause läuft"; dotCls = "pause"; }
     else { statusText = "Ausgestempelt"; dotCls = ""; }
     var btns, due = s.status === "out" && remindDue();
+    var projField = '<input id="stamp-proj" type="text" list="stamp-proj-list" autocomplete="off" placeholder="Projekt (optional)" ' +
+      'aria-label="Projekt für die Arbeitszeit (optional)" value="' + esc(stampProj) + '"><datalist id="stamp-proj-list">' +
+      projectOptions().map(function (p) { return '<option value="' + esc(p) + '"></option>'; }).join("") + "</datalist>";
     try { document.title = due ? "Einstempeln? – Arbeitszeitkonto 1626" : "Arbeitszeitkonto 1626"; } catch (e) { /* egal */ }
     if (due) {
       statusText = "Noch nicht eingestempelt";
-      btns = '<button type="button" class="primary" data-act="stamp-in"' + (stampBusy || !dataReady ? " disabled" : "") + ">Jetzt einstempeln (" + esc(nowHM()) + ")</button>" +
+      btns = projField + '<button type="button" class="primary" data-act="stamp-in"' + (stampBusy || !dataReady ? " disabled" : "") + ">Jetzt einstempeln (" + esc(nowHM()) + ")</button>" +
         '<button type="button" data-act="stamp-at-open">Andere Uhrzeit</button>' +
         '<button type="button" class="ghost" data-act="stamp-snooze">Heute nicht</button>';
     } else if (s.status === "out") {
-      btns = '<button type="button" class="primary" data-act="stamp-in"' + (stampBusy || !dataReady ? " disabled" : "") + ">Einstempeln</button>";
+      btns = projField + '<button type="button" class="primary" data-act="stamp-in"' + (stampBusy || !dataReady ? " disabled" : "") + ">Einstempeln</button>";
     } else if (s.status === "working") {
       btns = '<button type="button" data-act="stamp-bstart"' + (stampBusy || !dataReady ? " disabled" : "") + ">Pause beginnen</button>" +
         '<button type="button" class="primary" data-act="stamp-out"' + (stampBusy || !dataReady ? " disabled" : "") + ">Ausstempeln</button>";
@@ -3042,10 +3309,11 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
   }
 
   days = fromEmbed();
+  renderTheme();
   render();
   /* Laufende Zeit und Erinnerung aktuell halten (auch Tageswechsel); nicht,
      während das Uhrzeit-Feld offen ist. */
-  setInterval(function () { if (stampAt === null) renderStamp(); }, 30000);
+  setInterval(function () { if (stampAt === null && !(document.activeElement && document.activeElement.id === "stamp-proj")) renderStamp(); }, 30000);
   setInterval(function () { if (liveState().status !== "out") tickStamp(); }, 1000);
   if (typeof claude !== "undefined" && claude && typeof claude.use === "function") {
     setChip("chip-db", "Speicher wird verbunden", "local");
@@ -3055,6 +3323,8 @@ if (typeof module === "object" && module.exports) module.exports = AzkPruefung;
   }
 })();
 </script>
+
+
 
 
 
