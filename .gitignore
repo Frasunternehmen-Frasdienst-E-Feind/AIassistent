@@ -9,13 +9,25 @@ venv/
 # Lokale Konfiguration & Geheimnisse (nie committen)
 config.yaml
 credentials/
-*.json
-!config.schema.json
-!.mcp.json
-# Hook-Registrierung für Claude Code; enthält nur einen Dateipfad,
-# keine Zugangsdaten.
-!.claude/settings.json
 .env
+
+# JSON-Dateien: pauschal gesperrt, weil Zugangsdaten (Google-Service-Account-
+# Schlüssel, Tokens, Exporte) meist als .json vorliegen.
+# Ausnahmen NUR hier eintragen, je mit Grund – nie per `git add -f` umgehen.
+# Eine Ausnahme darf keine Zugangsdaten und keine personenbezogenen Daten
+# enthalten (siehe CLAUDE.md, Abschnitt Datenschutz).
+*.json
+# npm-Manifest und Lockfile (reproduzierbare Installation, CI nutzt npm ci)
+!package.json
+!package-lock.json
+# MCP-Server-Registrierung: nur Paketname und Version
+!.mcp.json
+# Hook-Registrierung für Claude Code: nur ein Dateipfad
+!.claude/settings.json
+# Corporate-Design-Tokens: einzige Quelle für Farben/Schriften laut CLAUDE.md
+!branding/feind-ci.tokens.json
+# Messwerte des visuellen Umbaus (Cockpit), bewusst versioniert
+!messe/rotterdam-2027/umbau/*.json
 
 # Rohdaten mit möglichen personenbezogenen Daten (DSGVO)
 data/crm/*
@@ -32,6 +44,3 @@ dist/
 
 # Node-Abhängigkeiten (npm install)
 node_modules/
-
-# Messwerte des visuellen Umbaus (Cockpit) – versioniert
-!messe/rotterdam-2027/umbau/*.json
