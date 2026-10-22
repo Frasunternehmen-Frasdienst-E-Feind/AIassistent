@@ -14,7 +14,7 @@ der Ordner `cockpit/` ist der ältere A4-Stand und nur noch Archiv.
 
 ## InfraTech-Aufgaben live aus Notion
 
-Führende Quelle der Team-Aufgaben ist die Notion-Datenbank **„Aufgaben InfraTech 2027“**
+Führende Quelle der Messe-Aufgaben (InfraTech) ist die Notion-Datenbank **„Aufgaben InfraTech 2027“**
 (https://app.notion.com/p/5718273f9a2c4ba085d5da4e62c0c878, unter „Messe Rotterdam 2027 — InfraTech“).
 Die ClickUp-Liste ist als „[ARCHIV] …“ umbenannt, die alte Notion-Checkliste ist übernommen.
 

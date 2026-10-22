@@ -165,6 +165,6 @@ Der Skill `/cockpit-sync` liest die Zieladresse aus diesem Abschnitt. Ist sie le
 - [x] **Ziel-Artefakt für Go-Live:** InfraTech-Artefakt A4 (4zX58mseXB9vbspN8xAzJ2) wird aktualisiert.
       Entschieden 28.09.2026.
 - [x] **Live-Migration:** ausgeführt 28.09.2026 (siehe oben).
-- [ ] **Führende Quelle Team-Aufgaben:** Vorschlag David: Notion. Konzept offen. Entscheidung: _…_
+- [x] **Führende Quelle Team-Aufgaben:** Entschieden 21.10.2026: Notion-Datenbank „Aufgaben InfraTech 2027“ für Messe-Aufgaben; das Sheet bleibt für Team-Aufgaben außerhalb der Messe.
 - [ ] **Innovationspreis-Teilaufgaben i2–i5:** Status klären (übernommen ist nur `overrides/i1`
       „Innovationspreis eingereicht“). Entscheidung: _…_
