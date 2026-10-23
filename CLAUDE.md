@@ -144,3 +144,14 @@ Standard-Vokabular (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-
 ### Domain docs
 
 Single-context (`GLOSSARY.md` + `docs/adr/` im Repo-Root, werden bei Bedarf angelegt). See `docs/agents/domain.md`.
+
+## Befehle und Fallstricke
+* Tests Stempeluhr: `cd zeiterfassung && go vet ./... && go test ./...`, JS: `npm test` (Repo-Wurzel).
+* Weitere Tests: `npm run test:cockpit`, `test:cockpit-a1`, `test:cockpit-v1`; E2E: `npm run e2e:cockpit`.
+* GitHub nur per REST: `gh api repos/Frasunternehmen-Frasdienst-E-Feind/AIassistent/...` – GraphQL (`gh issue view`, `gh pr view --comments`) ist in Claude-Sessions gesperrt.
+* Das Repo ist öffentlich: Issues, PRs und Kommentare ohne Namen und Personalnummern außer 1626.
+* Gestapelte PRs: `delete_branch_on_merge` ist aus. Nach dem Merge des Basis-PRs die Folge-PRs mit `gh pr edit <n> --base main` umstellen; den Basis-PR per Merge-Commit mergen, nicht squashen.
+* Codex prüft jeden PR automatisch; ein Merge erst nach abgeschlossenem Codex-Review und Freigabe durch einen Reviewer (Vier-Augen-Prinzip).
+* Testdaten: nur erfundene Personen („Erika Beispiel“, `e.beispiel`, Nummer 9999); „Muster, Erika“ ist in `sqlite_test.go` bereits als zweite Person belegt.
+* Diagnose der Stempeluhr zeigt nur Struktur: neue `config.ini`-Schlüssel, deren Wert gebraucht wird, in die Positivliste in `zeiterfassung/diagnose.go` aufnehmen, nie Werte allgemein freigeben.
+* OptiTime-`config.ini` und `Offliste*.txt` enthalten Zugangsdaten und den gesamten Mitarbeiterstamm im Klartext: nie zitieren, committen oder in Berichte übernehmen (siehe `docs/optitime-bde-pc.md`).

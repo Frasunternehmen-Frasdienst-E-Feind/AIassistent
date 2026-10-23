@@ -57,3 +57,6 @@ playwright-report/
 messe/data/*.local.json
 messe/output/*
 !messe/output/.gitkeep
+
+# Arbeitskopien von Claude-Agenten
+.claude/worktrees/
