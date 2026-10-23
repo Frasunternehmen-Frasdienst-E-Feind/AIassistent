@@ -63,8 +63,12 @@ https://claude.ai/artifact/7Uvmb6GjyHjfwzo5TtmXmQ
 
 Datenhaltung im Artefakt-Speicher (`db`), nicht im HTML:
 
-* `days/<JJJJ-MM-TT>` = `{ date, books: [{ start, end, kind: "work"|"pause" }],
-  origin: "export"|"import"|"manuell", note, type? }`
+* `days/<JJJJ-MM-TT>` = `{ date, books: [{ start, end, kind: "work"|"pause",
+  project? }], origin: "export"|"import"|"manuell", note, type? }`
+  * `project` (optional, Text): nur bei `kind: "work"`, wird nur geschrieben,
+    wenn befüllt.
+  * `note` = freie Tagesnotiz, im Bearbeiten-Dialog pflegbar, in der
+    Wochentabelle angezeigt.
   * `type` (optional): `urlaub` (Soll 0, 1 Urlaubstag), `urlaub_halb` (halbes
     Tages-Soll, 0,5 Tage), `sonderurlaub`, `krank`, `feiertag` (je Soll 0),
     `gleittag` (volles Soll, Ist 0). Mit Tagesart dürfen `books` leer sein.
@@ -92,6 +96,20 @@ Erstbefüllung. Neue Buchungen kommen über „Buchungen importieren“
 (`Datum;Von;Bis;Art`) in die Seite – dafür ist keine Änderung am Code nötig.
 Zeilen ohne Uhrzeit sind Tagesarten (`2026-12-28;;;Urlaub`), erkannt per
 Stichwort: halb+urlaub, sonder/000004, urlaub, krank, feiertag, gleit.
+
+Projektfeld (Stand Version 20):
+
+* Import („Zeitdaten holen“, „Einfügen“/„Buchungen importieren“) behält das
+  Projekt einer vorhandenen Arbeitsbuchung mit gleicher Startzeit, sonst das
+  der Arbeitsbuchung mit der größten Überlappung. Eine Spalte „Projekt“ bzw.
+  „Notiz“ im Import (Kopfzeile) hat Vorrang. Nicht zuordenbare alte Projekte
+  nennt die Erfolgsmeldung unter „Achtung“.
+* CSV „Buchungen“ hat die Spalte „Projekt“ (wieder importierbar), CSV
+  „Tagesübersicht“ ebenfalls (Projekte des Tages mit „; “ verbunden).
+* Bericht: Tagesbericht zeigt das Projekt je Buchung („Art / Projekt“), die
+  übrigen Berichte haben Anhang C „Netto-Arbeitszeit je Projekt“.
+* Stempeluhr: optionales Projektfeld beim Kommen; nach Pausenende läuft das
+  vorherige Projekt weiter.
 
 ## Neue Funktionen: Planungs-Skills vorschlagen
 Wenn David eine neue Funktion planen oder umsetzen lassen will (auch im
