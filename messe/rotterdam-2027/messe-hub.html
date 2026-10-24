@@ -173,9 +173,9 @@ footer { font-size: 13px; color: var(--ink-muted); margin-top: var(--space-5); }
 /* Symbole: Strich in currentColor, damit beide Themes ohne eigene Farben auskommen */
 .ico { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -4px; }
 h1 .ico { width: 24px; height: 24px; color: var(--accent); margin-right: var(--space-2); }
-h2 .ico, h3 .ico { color: var(--accent-text); margin-right: var(--space-2); }
+h2 .ico, h3 .ico { color: var(--ink-strong); margin-right: var(--space-2); }
 nav [role="tab"] .ico { margin-right: 6px; }
-.kpi .ico { color: var(--accent-text); margin-bottom: var(--space-1); }
+.kpi .ico { color: var(--ink-strong); margin-bottom: var(--space-1); }
 
 .hero { background: var(--surface-inverse); color: var(--ink-inverse); padding: var(--space-4) var(--space-4) 0; margin-bottom: var(--space-4); position: relative; overflow: hidden; }
 .hero-zahl { display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
@@ -201,8 +201,9 @@ nav [role="tab"] .ico { margin-right: 6px; }
 .iso .offen { fill: none; stroke: var(--ink-muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
 .iso .mass { stroke: var(--ink-muted); stroke-width: 1; }
 .iso text { font: 20px var(--font-sans); fill: var(--ink); }
-.iso .marke { font: 800 1px var(--font-display); fill: var(--ink-inverse); letter-spacing: .08px; }
+.iso .marke { font: 700 1px var(--font-display); fill: var(--ink-inverse); }
 .iso .zone { font-size: 18px; fill: var(--ink-strong); }
+.iso .zone.auf-gruen { fill: var(--on-accent-strong); }
 .legende { display: flex; gap: var(--space-3); flex-wrap: wrap; font-size: 13px; color: var(--ink-muted); margin: var(--space-2) 0 0; padding: 0; list-style: none; }
 .legende i { display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: -1px; }
 .legende .l-wand { background: var(--surface-inverse); }
@@ -296,6 +297,7 @@ nav [role="tab"] .ico { margin-right: 6px; }
       <figure class="karte iso" style="margin: 0"><h3>Grundriss (Zonen)</h3>
         <svg viewBox="0 0 640 430" role="img" aria-labelledby="grTitel" id="grSvg"><title id="grTitel">Grundriss 8 × 7 m mit Zonen</title></svg>
         <ul class="legende"><li><i class="l-wand"></i>Wand</li><li><i class="l-gruen"></i>Demo-Fläche (Pflaster)</li><li><i class="l-grau"></i>Möbel</li></ul>
+        <p class="small">Zum Bearbeiten im Design-Editor: <a href="https://claude.ai/artifact/UdE4sNpC4c4Ur9H2i2CDKw" target="_blank" rel="noopener">Standansichten 5.209</a></p>
       </figure>
     </div>
     <details class="small"><summary>Maße als Tabelle</summary><table id="standTabelle" class="small"></table></details>
@@ -561,6 +563,7 @@ nav [role="tab"] .ico { margin-right: 6px; }
       g.append(sv('polygon', { points: poly(rechts), class: art })); g.append(sv('polygon', { points: poly(rechts), class: 'schatten2' }));
     };
     quader(0, 0, -0.05, 8, 7, 0.05, 'boden');
+    // Claim statt nachgezeichnetem Logo (CI: Logo nie nachzeichnen)
     // Max. Aufbauhöhe 5,6 m als Maßlinie an der hinteren Ecke
     const [hx, hy] = P(0, 0, 0), [, hy2] = P(0, 0, 5.6);
     g.append(sv('line', { x1: hx - 14, y1: hy, x2: hx - 14, y2: hy2, class: 'mass' }));
@@ -568,8 +571,8 @@ nav [role="tab"] .ico { margin-right: 6px; }
     quader(wx, 0, 0, w.b, 0.3, w.h, 'wandf', !w.belegt);
     if (w.belegt) {
       quader(wx, 0.3, 0, w.b, 0.02, 0.45, 'gruen');
-      const [tx, ty] = P(wx + 0.5, 0.32, w.h - 1.1);
-      g.append(sv('text', { class: 'marke', 'font-size': '0.7', transform: 'matrix(' + [C * S, 0.5 * S, 0, S, tx, ty].map(n => n.toFixed(2)).join(' ') + ')' }, 'E.FEIND'));
+      const [tx, ty] = P(wx + 0.4, 0.32, w.h - 0.9);
+      g.append(sv('text', { class: 'marke', 'font-size': '0.4', textLength: (w.b - 0.8).toFixed(2), lengthAdjust: 'spacingAndGlyphs', transform: 'matrix(' + [C * S, 0.5 * S, 0, S, tx, ty].map(n => n.toFixed(2)).join(' ') + ')' }, 'Präzision bewegt Zukunft.'));
     }
     LAYOUT.forEach(o => quader(o.x, o.y, 0, o.b, o.t, o.h, o.art));
     const [ax, ay] = P(4, 7.6, 0), [bx, by] = P(8.6, 3.5, 0);
@@ -582,7 +585,7 @@ nav [role="tab"] .ico { margin-right: 6px; }
     gr.replaceChildren(gr.querySelector('title'));
     const rechteck = (x, y, b, t, art, txt) => {
       gr.append(sv('rect', { x: GX + x * M, y: GY + y * M, width: b * M, height: t * M, class: art }));
-      if (txt) gr.append(sv('text', { x: GX + (x + b / 2) * M, y: GY + (y + t / 2) * M + 4, 'text-anchor': 'middle', class: 'zone' }, txt));
+      if (txt) gr.append(sv('text', { x: GX + (x + b / 2) * M, y: GY + (y + t / 2) * M + 4, 'text-anchor': 'middle', class: 'zone' + (art === 'gruen' ? ' auf-gruen' : '') }, txt));
     };
     rechteck(0, 0, 8, 7, 'boden');
     rechteck(wx, 0, w.b, 0.3, w.belegt ? 'wandf' : 'offen');
