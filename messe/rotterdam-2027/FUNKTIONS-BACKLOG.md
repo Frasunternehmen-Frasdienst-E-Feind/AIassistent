@@ -1,7 +1,7 @@
 # Funktions-Backlog – InfraTech 2027 Cockpit
 
 Backlog für die **funktionale Weiterentwicklung** des Cockpits
-(ursprünglich `infratech-2027-liste.html`, Artefakt `4zX58…` – gelöscht; führend ist jetzt https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i, Quelle `feind-cockpit-v3.html`).
+(ursprünglich `infratech-2027-liste.html`, Artefakt `4zX58…` – gelöscht; führend ist seit 14.10.2026 „Feind Cockpit“ https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd, Quelle `cockpit-a1/Feind-Cockpit-A1.html`; `feind-cockpit-v3.html` ist entfallen).
 Grundlage für die verknüpfte Claude-Code-Session und den Manager-Agenten.
 
 ## Bereits umgesetzt (v1)
