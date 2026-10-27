@@ -22,7 +22,7 @@ async function open(tab) {
     if (sessionStorage.getItem('e2e-seeded')) return;
     sessionStorage.setItem('e2e-seeded', '1');
     localStorage.setItem('feind-cockpit:db', JSON.stringify(d));
-  }, marketingSeed());
+  }, marketingSeed(new Date().toISOString().slice(0, 10))); // Daten relativ zu heute, sonst laufen Events aus dem Kalender
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));

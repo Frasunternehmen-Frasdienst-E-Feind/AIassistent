@@ -25,7 +25,7 @@ Termine ohne offizielle 2027-Bestätigung sind mit *(2027 verifizieren)* markier
 - [ ] (P0 · David · 25.09.26) Jury-Unterlagen final bereitstellen
 
 ## Standbau & Technik
-- [ ] (P0 · David · 16.10.26) Flächenentscheidung 25 m² vs. größer/offen/modular (Eckstand mittig prüfen)
+- [x] (P0 · David · 16.10.26) Flächenentscheidung 25 m² vs. größer/offen/modular – erledigt: 56 m² (8 × 7 m), Halle 5, gebucht (Bestätigung Okt 2026, Notion)
 - [ ] (P1 · David · 06.11.26) Standbau-Partner bestätigen (Global Expo/LOCO verifiziert; weitere prüfen) ⚑
 - [ ] (P1 · David · 30.10.26) Layout: Besucherweg, Gesprächszone, Lager, Kaffee-Bar, Fluchtwege
 - [ ] (P0 · David · 20.11.26) Standdesign/Abweichungen genehmigen lassen (>2,75 m) ⚑

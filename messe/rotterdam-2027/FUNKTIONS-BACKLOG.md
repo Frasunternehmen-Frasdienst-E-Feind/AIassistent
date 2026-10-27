@@ -1,7 +1,7 @@
 # Funktions-Backlog – InfraTech 2027 Cockpit
 
 Backlog für die **funktionale Weiterentwicklung** des Cockpits
-(ursprünglich `infratech-2027-liste.html`, Artefakt `4zX58…` – gelöscht; führend ist jetzt https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i, Quelle `feind-cockpit-v3.html`).
+(ursprünglich `infratech-2027-liste.html`, Artefakt `4zX58…` – gelöscht; führend ist seit 14.10.2026 „Feind Cockpit“ https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd, Quelle `cockpit-a1/Feind-Cockpit-A1.html`; `feind-cockpit-v3.html` ist entfallen).
 Grundlage für die verknüpfte Claude-Code-Session und den Manager-Agenten.
 
 ## Bereits umgesetzt (v1)
@@ -51,6 +51,40 @@ Grundlage für die verknüpfte Claude-Code-Session und den Manager-Agenten.
 - **Deliverables als Dateien**: Nachfassmail .docx, Review-Deck .pptx, Kostenbaseline .xlsx, Budget-/Lead-Charts.
 
 ## Backlog (Vorschläge, priorisiert)
+
+Ergänzung 23.10.2026 (David): Systemanforderungen ans Cockpit. Die zugehörigen
+Messe-Aufgaben (Termin-Reset, Innovationspreis, Stand-Sicherheit, Beschaffung,
+Sprachfreigabe, Lead-Prozess, Lead-SLA) gehören in die Notion-Datenbank
+„Aufgaben InfraTech 2027“. Rechtsfragen: **bitte Rechtsabteilung prüfen.**
+
+### P0 – vor weiterer Umsetzung klären
+12. **„Team & Zugriff“ ehrlich benennen.** Der Tab ist Stammdatenverwaltung, keine
+    Zugriffskontrolle; umbenennen und vor echtem Teilen Rollen, Berechtigungen,
+    Ein-/Austritt, Zugriffsentzug, Audit-Protokoll und Datenbereiche festlegen.
+    *Akzeptanz:* Niemand erhält durch bloßes Anlegen im Cockpit Zugriff oder Einsicht in Leads.
+13. **Erinnerungen technisch absichern.** Der wöchentliche Montags-Agent und die Anzeige im
+    Artefakt (wirkt nur bei geöffneter Seite) garantieren keine 14-/7-/2-Tage-Erinnerungen.
+    Nötig: Ausführungsrhythmus, Versandkanal, Zustellnachweis, Eskalation bei Überfälligkeit,
+    Dubletten-Schutz. *Akzeptanz:* Eine Testaufgabe löst genau eine Erinnerung zum vorgesehenen
+    Zeitpunkt aus und wird bei Nichtreaktion eskaliert.
+
+### P1 – Risiko, Datenschutz, Betriebsfähigkeit
+14. **Lead-Erfassung im Cockpit** (Anteil von Lead-Prozess/CRM): Felder für Version des
+    Datenschutzhinweises, Erhebungsnachweis, Löschregel, Quelle/Standaktion, Sprache, Owner,
+    nächster Schritt, Fälligkeit, Dublettenstatus, Verlustgrund. Vorher Rechtsgrundlage klären
+    (bitte Rechtsabteilung prüfen); bis dahin bleibt der Lead-Zähler bei reinen Stückzahlen.
+    *Akzeptanz:* Jeder Lead hat genau einen Owner, nächsten Schritt und Fälligkeit; Dubletten werden erkannt.
+15. **Aufgabenmodell absichern.** Vorhanden: Status, Blocker, Archiv statt Löschen,
+    Aktivitätsprotokoll. Fehlt: Stellvertretung, Wiederholung, Feldhistorie je Aufgabe,
+    Konflikterkennung bei parallelem Bearbeiten (`if_version`).
+    *Akzeptanz:* Gelöschte Aufgaben sind wiederherstellbar; Änderungen sind nachvollziehbar.
+16. **Daten- und Release-Sicherheit.** Tägliches `db`-Backup, Wiederherstellungstest,
+    Änderungsprotokoll, Testumgebung, Freigabe vor Veröffentlichung, Rollback über
+    Artefakt-Versionen. *Akzeptanz:* Eine fehlerhafte Version lässt sich ohne Datenverlust zurückrollen.
+17. **KPIs messbar machen.** Je KPI Datenquelle, Zählregel, Baseline, Verantwortliche Rolle,
+    Reporting-Rhythmus; ergänzen: qualifizierte Leads, Terminquote, Angebotsquote,
+    Pipeline-Wert, Kosten pro qualifiziertem Lead, Follow-up-Quote < 48 h.
+    *Akzeptanz:* Jede Dashboard-KPI lässt sich auf eine Datenquelle zurückführen.
 
 ### P3 – Ausbau
 11. **Anbindung an Zeitplan/Meilensteine** (Gantt-Mini-Ansicht T-12M … T+14d).
