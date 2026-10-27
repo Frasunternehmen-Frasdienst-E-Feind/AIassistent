@@ -40,6 +40,12 @@ Ein **Upload** ist jeder Eintrag direkt im Eingang außer den Systemdateien (`CL
    `kb-` + Slug des Originalnamens, bei Kollision `-2`, `-3`.
 4. `meta/sync.knowledge` = `{at, source, processed, failed, duplicates, inbox}` per `update` mit `if_version`.
 5. Laufprotokoll als neue Datei `_logs/JJJJ-MM-TT_HHMM_lauf.md`: Zeitstempel | Originalname | Größe | Ziel | Status | Grund.
+6. Pfadprüfung: Enthält ein `dropboxPath`, `fromPath` oder `originalName` einen Strich- oder
+   Leerzeichen-Doppelgänger (U+2010 bis U+2015, U+2212, U+00A0, U+202F), steht im Protokoll zusätzlich
+   eine Zeile mit Status `Pfadwarnung` und dem Zeichen als Code (z. B. „U+2011 in Claude-Assets“), und
+   die Abschlussmeldung nennt sie. Solche Pfade sehen aus wie normale, führen beim Abtippen aber in einen
+   anderen Ordner und sind über die Dropbox-Suche nicht auffindbar (Befund 27.10.2026). Nicht selbst
+   umbenennen – David entscheidet.
 
 Fertig, wenn jeder Upload genau einen Eintrag mit dem tatsächlichen `dropboxPath` hat, `inbox`
 die verbliebenen Uploads zählt (Ziel 0) und das Protokoll angelegt ist. Abschlussmeldung: Zahlen
