@@ -21,11 +21,19 @@ PIP_OPTS="--quiet --disable-pip-version-check --root-user-action=ignore"
 # `-e` hält die Installation an den Arbeitsbaum gebunden: Codeänderungen wirken
 # sofort, ohne erneute Installation.
 if [ -f pyproject.toml ]; then
+  # cryptography liegt im Container als Debian-Paket (41.x) unter
+  # /usr/lib/python3/dist-packages; pyproject verlangt >=42. Pip kann das
+  # Debian-Paket nicht ersetzen („RECORD file not found"). Deshalb gezielt nur
+  # cryptography mit --ignore-installed nach /usr/local legen – dort hat es beim
+  # Import Vorrang. Ein pauschales --ignore-installed für alle Pakete würde
+  # jeden Start um rund 20 s verlängern.
+  if ! python3 -c "import cryptography, sys; sys.exit(int(cryptography.__version__.split('.')[0]) < 42)" >/dev/null 2>&1; then
+    echo "==> pip install cryptography>=42 (ersetzt Debian-Paket)"
+    pip install $PIP_OPTS --ignore-installed "cryptography>=42"
+  fi
+
   echo "==> pip install -e .[dev]"
-  # Einige Abhängigkeiten (z. B. cryptography) liegen im Container als
-  # Debian-Paket unter /usr/lib/python3/dist-packages. Pip kann sie nicht
-  # ersetzen („RECORD file not found") und bricht ab. --ignore-installed legt
-  # dann eine eigene Kopie unter /usr/local ab, die beim Import Vorrang hat.
+  # Rückfallebene, falls künftig ein weiteres Debian-Paket kollidiert.
   if ! pip install $PIP_OPTS -e ".[dev]"; then
     echo "    Erstversuch fehlgeschlagen, weiche auf --ignore-installed aus"
     pip install $PIP_OPTS --ignore-installed -e ".[dev]"

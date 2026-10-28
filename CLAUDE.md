@@ -5,16 +5,34 @@ Antworten und Commit-Messages auf Deutsch. Fachbegriffe der Zeitwirtschaft
 (Ist, Soll, Saldo, Kommen/Gehen, Pause) so verwenden, wie sie in OptiTime und in
 der Lohnabrechnung stehen.
 
+## Entscheidungen und Optionen (Wunsch von David, 30.09.2026)
+* Optionen und Entscheidungen immer als **klickbare Auswahl** anzeigen (Werkzeug
+  `AskUserQuestion`), nicht als Fließtext-Frage – das spart Zeit.
+* Die aus Expertensicht beste Option steht immer **an erster Stelle** und trägt
+  den Zusatz **„(Empfohlen)“**; die Beschreibung nennt kurz den Grund.
+* Höchstens 4 Optionen je Frage, höchstens 4 Fragen auf einmal; „Sonstiges“ ergänzt
+  das System selbst.
+
 ## Corporate Design (verbindlich für Artefakte, Dashboards, Präsentationen)
 Farben, Schriften, Radien und Abstände stehen in `branding/feind-ci.tokens.json`
 und sind die einzige Quelle – keine eigenen Paletten erfinden, keine Farbwerte
-im Markup hart setzen.
+im Markup hart setzen. Regeln, Statusfarben, Diagrammfarben und Kontrastwerte
+stehen im Farbsystem `branding/farbsystem.md` (Version 1.2). Rangfolge:
+CI-Leitfaden, dann Farbsystem, dann sonstige Vorgaben.
 
 * Grün `#84bb20` ist Akzent- und Flächenfarbe. Auf Grün steht Anthrazit
   `#424e4e`, nie Weiß.
-* Grün nie als Textfarbe auf hellem Grund (2,3:1) – dort `accent-text` `#5e8a14`.
+  Schrift auf vollem Grün (Buttons) in `on-accent-strong` `#1f2525` (6,9:1),
+  weil `#424e4e` auf Grün nur 3,74:1 erreicht.
+* Grün nie als Textfarbe auf hellem Grund (2,31:1) – dort `accent-text` `#4d7311`.
+  `#5e8a14` ist keine Textfarbe (4,10:1).
 * Rot `#e3000b` ausschließlich als Signal (Fehler, Fehlbuchung, Minus), nie als
-  Schmuckfarbe und auf dunklem Grund nur als Fläche.
+  Schmuck- oder Serienfarbe und auf dunklem Grund nur als Fläche.
+* Diagramme: höchstens drei Füllfarben (Grün, Anthrazit, Hellgrau mit Kontur),
+  Legende und Tabelle per `<details>` Pflicht.
+* Warnung („bald fällig“): Signal-Gelbgrün `#d6e000` als Fläche, Schrift und
+  Symbol in Anthrazit.
+* Ausgeschlossen: Lila/Violett, Rosa/Pink, Ocker/Bernstein, Braun, Beige.
 * Schrift: Display `Exo`, Text `Helvetica Neue / Helvetica / Arial`.
 * Radien nahe 0 (Eingaben 2 px, Buttons 4 px), Abstände aus der Skala
   4 / 8 / 16 / 24 / 40 / 64.
@@ -46,9 +64,83 @@ https://claude.ai/artifact/7Uvmb6GjyHjfwzo5TtmXmQ
 Datenhaltung im Artefakt-Speicher (`db`), nicht im HTML:
 
 * `days/<JJJJ-MM-TT>` = `{ date, books: [{ start, end, kind: "work"|"pause" }],
-  origin: "export"|"import"|"manuell", note }`
-* `settings/general` = `{ weekHours, workdays: [1..5], seeded: true }`
+  origin: "export"|"import"|"manuell", note, type? }`
+  * `type` (optional): `urlaub` (Soll 0, 1 Urlaubstag), `urlaub_halb` (halbes
+    Tages-Soll, 0,5 Tage), `sonderurlaub`, `krank`, `feiertag` (je Soll 0),
+    `gleittag` (volles Soll, Ist 0). Mit Tagesart dürfen `books` leer sein.
+* `settings/general` = `{ weekHours, workdays: [1..5], seeded: true,
+  vacation: { "2026": 30, "2027": 30 }, gleittag: false,
+  autoIn: { on: false, from: "05:00", to: "10:00" } }`
+  * `vacation` = Urlaubsanspruch je Jahr, von Hand gepflegt (2026 vorläufig,
+    Personalabteilung klärt). `gleittag` blendet die Tagesart ein.
+  * `autoIn` = automatisches Einstempeln beim Öffnen der Seite, nur im
+    Zeitfenster `from`–`to`, standardmäßig aus.
+  * Das Dokument wird immer vollständig geschrieben – neue Felder in
+    `settingsDoc()` ergänzen, sonst gehen sie beim Speichern verloren.
+
+Stempeluhr „Jetzt stempeln“: Standard ist die Erinnerung. An einem Arbeitstag
+ohne Feiertag, Tagesart und Buchung fragt die Seite nach, und erst der Klick
+bucht Kommen. Selbst bucht sie nur, wenn `autoIn.on` eingeschaltet ist.
+Gestempelt wird ins Artefakt, nicht in OptiTime; für die Abrechnung maßgeblich
+bleibt OptiTime. Die Seite wirkt nur, solange sie geöffnet ist.
+
+Feiertage Brandenburg werden im Artefakt berechnet (Ostern nach Gauß) und nur
+nach Klick auf „übernehmen“ als `type: "feiertag"` gespeichert.
 
 Der im HTML eingebettete Stand vom 14.09.2026 ist nur Notfall-Anzeige und
 Erstbefüllung. Neue Buchungen kommen über „Buchungen importieren“
 (`Datum;Von;Bis;Art`) in die Seite – dafür ist keine Änderung am Code nötig.
+Zeilen ohne Uhrzeit sind Tagesarten (`2026-12-28;;;Urlaub`), erkannt per
+Stichwort: halb+urlaub, sonder/000004, urlaub, krank, feiertag, gleit.
+
+## Neue Funktionen: Planungs-Skills vorschlagen
+Wenn David eine neue Funktion planen oder umsetzen lassen will (auch im
+Arbeitszeitkonto), vor dem Coden prüfen und aktiv vorschlagen, ob ein
+Skill aus „Skills For Real Engineers“ (Matt Pocock) vorgeschaltet werden
+sollte:
+
+* `grill-me` – wenn Anforderung, Randfälle oder Fachregeln unklar sind.
+* `to-spec` – wenn die Funktion mehrere Teile hat oder Datenmodell bzw.
+  Artefakt-Speicher (`db`) berührt.
+* `to-tickets` – wenn die Spec in mehrere Arbeitsschritte zerfällt.
+
+Nur vorschlagen, nicht ungefragt ausführen. Die Skills liegen unter
+`.claude/skills/` (siehe dortige README). Bei
+Kleinständerungen (Tippfehler, Farbwert, Einzeiler) entfällt der Vorschlag.
+
+## Arbeitsweise bei Entscheidungen
+Bei schwer umkehrbaren oder nach außen wirkenden Aktionen (PR mergen, Branch
+löschen, E-Mail senden, Veröffentlichen, Daten überschreiben) und bei
+mehrdeutigen Anweisungen: **immer zuerst nachfragen** und dabei klar sagen,
+welche Option in diesem Fall die beste ist und warum. Erst nach ausdrücklicher
+Bestätigung ausführen.
+
+Auswahlmöglichkeiten (Optionen, Varianten, Rückfragen) immer **zum Anklicken**
+ausgeben (Multiple-Choice-Abfrage), nicht nur als Text – die empfohlene Option
+steht zuerst und ist als „(Empfohlen)“ markiert.
+
+## Sparsamer Umgang mit Nutzungsguthaben
+Verbindlich gilt `docs/arbeitsanweisung-sparsamkeit.md` (Rangfolge: Sicherheit
+und Datenschutz, diese Anweisung, aufgabenbezogene Anweisungen). Sorgfalt bleibt
+unangetastet: Die Regeln dieser Datei zu Rückfragen vor schwer umkehrbaren
+Aktionen, Multiple-Choice-Abfragen und Rechtsabteilungs-Hinweisen gelten
+weiter.
+
+Ausnahme zur Längengrenze (David, 2026-10-07): Das Standardformat mit fünf
+Abschnitten (Zusammenfassung, Empfehlung, Vorlage, Risiken, KPIs) hat Vorrang
+vor der 150-Wörter-Grenze. Innerhalb des Formats gilt weiter: keine
+Wiederholungen, keine Alternativen ohne Anfrage.
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues dieses Repos; in Cloud-Sessions ohne `gh` über die GitHub-MCP-Tools. Achtung: Solange das Repo öffentlich ist, sind auch Issues öffentlich – keine Personendaten. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Standard-Vokabular (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context (`GLOSSARY.md` + `docs/adr/` im Repo-Root, werden bei Bedarf angelegt). See `docs/agents/domain.md`.

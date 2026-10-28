@@ -7,6 +7,17 @@ from pathlib import Path
 
 from seo_reporting.config import EmailConfig
 
+# MIME-Typ je Dateiendung; Standard ist Markdown.
+_ATTACHMENT_MIME = {
+    ".json": ("application", "json"),
+    ".xlsx": ("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+    ".md": ("text", "markdown"),
+}
+
+
+def _mime_for(path: Path) -> tuple[str, str]:
+    return _ATTACHMENT_MIME.get(path.suffix, ("text", "markdown"))
+
 
 def send_report(cfg: EmailConfig, subject: str, body_md: str, attachments: list[Path]) -> None:
     if not cfg.smtp_host or not cfg.recipients or not cfg.sender:
@@ -20,8 +31,8 @@ def send_report(cfg: EmailConfig, subject: str, body_md: str, attachments: list[
 
     for path in attachments:
         data = path.read_bytes()
-        subtype = "json" if path.suffix == ".json" else "markdown"
-        msg.add_attachment(data, maintype="application" if subtype == "json" else "text", subtype=subtype, filename=path.name)
+        maintype, subtype = _mime_for(path)
+        msg.add_attachment(data, maintype=maintype, subtype=subtype, filename=path.name)
 
     with smtplib.SMTP(cfg.smtp_host, cfg.smtp_port, timeout=30) as smtp:
         smtp.ehlo()

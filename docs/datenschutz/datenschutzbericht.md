@@ -4,9 +4,10 @@
 **Berichtstyp:** Zusammenfassender Datenschutz-/DSGVO-Statusbericht mit Maßnahmen, Vorlagen und Roadmap
 **Zielgruppe:** Geschäftsführung, Datenschutzbeauftragte(r) (intern/extern), IT-Verantwortliche, ggf. Aufsichtsbehörde (LDA Brandenburg)
 **Erstellt von:** David Halko (Marketing & Eventmanagement) mit KI-Unterstützung
-**Berichtsdatum:** 21.09.2026
-**Version:** 1.4 (Entwurf)
-**Änderungsvermerk v1.4:** Mitgelieferte **`.env`-Vorlage** (`.env.example` im Repository-Wurzelverzeichnis): Alle im Bericht referenzierten Umgebungsvariablen (Abschnitt 0, Anhang R) sind dort als ausfüllbare Vorlage hinterlegt. Abschnitt 0 und der Faktenlage-Hinweis verweisen jetzt auf diese Datei; das Platzhalter-Verzeichnis (Anhang R) nennt die zugehörigen `.env`-Schlüssel.
+**Berichtsdatum:** 28.10.2026
+**Version:** 1.5 (Entwurf)
+**Änderungsvermerk v1.5 (28.10.2026):** Mitgelieferte **`.env`-Vorlage** (`.env.example` im Repository-Wurzelverzeichnis, nur leere Platzhalter): Alle im Bericht referenzierten Umgebungsvariablen (Abschnitt 0, Anhang R) sind dort als ausfüllbare Vorlage hinterlegt. Abschnitt 0 und der Faktenlage-Hinweis verweisen jetzt auf diese Datei; das Platzhalter-Verzeichnis (Anhang R) nennt die zugehörigen `.env`-Schlüssel. Versionsangabe in der Schlusszeile korrigiert (stand noch auf 1.2).
+**Änderungsvermerk v1.4 (01.10.2026):** Abschnitt 12.1 (Kartenansicht im internen Feind Cockpit: Kachelanbieter, Einwilligung, lokal eingebettete Schrift) und Zeile „Kartenkachel-Anbieter“ in 7.1 ergänzt. Alle Fassungen (MD, HTML, DOCX, PDF) aus der Markdown-Quelle neu erzeugt; dabei im HTML „Datenschutzbeauftragte(r)“ korrigiert (stand dort als „®“) und in v1.3 verlorene Hervorhebungen wiederhergestellt.
 **Änderungsvermerk v1.3 (21.09.2026):** Unternehmensprofil korrigiert (Kaltfräsarbeiten im Straßen-/Tiefbau statt CNC-Fertigung), Standorte Lübben (Brandenburg) und Wittenburg (Mecklenburg-Vorpommern) sowie zuständige Aufsichtsbehörde (LDA Brandenburg statt LDI NRW), Datenkategorien und Empfänger an das Baugeschäft angepasst.
 **Änderungsvermerk v1.2:** Aufgewertete Ausgabe (klickbares Inhaltsverzeichnis mit Anker-Links, verbesserte Tabellen-Darstellung, **Fußnoten** zu Rechtsquellen) sowie zusätzliche browserfreundliche HTML-Ansicht mit Navigations-Seitenleiste.
 **Änderungsvermerk v1.1:** Durchgängige `Annahme:`/`Offene Frage:`-Kennzeichnung, `{{PLATZHALTER}}`-Mechanismus in allen Vorlagen, neuer Abschnitt zur `.env`-Ableitungslogik, 4-spaltige Offene-Fragen-Tabelle, ergänzte kostengünstige/Open-Source-Optionen.
@@ -32,7 +33,7 @@
 > **`Annahme:`** gekennzeichnet und über `{{PLATZHALTER}}` sowie den Fragenkatalog (Kap. 16/17)
 > als offene Punkte geführt. Verifizierte Fakten zum Unternehmensprofil stammen von der Website fraesdienst-feind.de und dem Notion Marketing-Scan (09/2026); technische Fakten aus der internen SEO-/Lead-Reporting-Codebasis (`config.example.yaml`, `docs/SPEC.md`, `docs/SETUP.md`, `data/crm/leads.example.csv`).
 >
-> **Seit v1.4** liegt im Repository-Wurzelverzeichnis eine **`.env`-Vorlage (`.env.example`)** bereit,
+> **Seit v1.5** liegt im Repository-Wurzelverzeichnis eine **`.env`-Vorlage (`.env.example`)** bereit,
 > in der alle hier genannten Variablen aufgeführt sind. Sobald David/IT diese Vorlage nach `.env`
 > kopiert und mit echten Werten füllt (`cp .env.example .env`), lassen sich die Annahmen in
 > **Fakten** überführen und der Bericht kann darauf gestützt aktualisiert werden (Anhang Q).
@@ -75,7 +76,7 @@ Der Bericht ist so konstruiert, dass er aus einer `.env`/Konfiguration automatis
 Werten befüllt werden kann. Da aktuell **keine** solchen Werte gesetzt sind, dokumentiert dieser
 Abschnitt die **Ableitungsregeln** und den jeweils gesetzten Platzhalter/Annahmestatus.
 
-> **`.env`-Vorlage (seit v1.4):** Die Datei `.env.example` im Repository-Wurzelverzeichnis enthält
+> **`.env`-Vorlage (seit v1.5):** Die Datei `.env.example` im Repository-Wurzelverzeichnis enthält
 > alle unten aufgeführten Variablen als leere, kommentierte Vorlage. Zum Befüllen:
 > `cp .env.example .env` und echte Werte eintragen. Die echte `.env` ist per `.gitignore`
 > ausgeschlossen und wird **nie** committet (nur die Vorlage `.env.example` ist versioniert).
@@ -304,6 +305,7 @@ Open-Source-Option (neutral, keine Kaufempfehlung).
 | **{{NEWSLETTER_TOOL}}** *(falls genutzt)* | E-Mail-Marketing | Ja | **Offene Frage** | AVV einholen |
 | **Subunternehmer/Entsorger/Logistik** | Baustellenlogistik, Fräsgut-Entsorgung | meist eigenständig Verantwortlicher | EU | klären |
 | **GitHub (Microsoft)** | Code-/Config-Hosting | Ja (soweit personenbezogen) | USA (DPF) | prüfen; keine Rohdaten (verifiziert) |
+| **Kartenkachel-Anbieter** (Feind Cockpit, Straßenkarte) | Auslieferung von Kartenkacheln; dabei IP-Adresse, Zeitpunkt, Browserkennung | Bei OpenStreetMap: eigenständig Verantwortlicher, kein AVV angeboten. Bei einem kommerziellen Anbieter (z. B. MapTiler): AVV/DPA prüfen | **Annahme:** OSMF = Vereinigtes Königreich (Angemessenheitsbeschluss), Auslieferung über CDN; EU-Anbieter vorzuziehen | Nur nach Einwilligung je Person (Abschnitt 12.1); Anbieter vor Produktivbetrieb festlegen |
 
 ### 7.2 AVV-Prüfliste
 
@@ -421,6 +423,39 @@ registriert; Website-Kontaktformular vorhanden.
 **Empfehlungen:** Consent-Management einführen und GA4 daran koppeln (oder auf Matomo mit
 Datenhoheit umstellen); Google Fonts lokal einbinden; Cookies inventarisieren; DSE an tatsächlich
 geladene Dienste anpassen; TLS/HSTS erzwingen.
+
+### 12.1 Internes Feind Cockpit – Kartenansicht der Ausschreibungen (Stand v3.1, 01.10.2026)
+
+Betrifft das Artefakt „Feind Cockpit“ (Quelle: `cockpit-a1/Feind-Cockpit-A1.html`, bis 19.10.2026 `messe/rotterdam-2027/feind-cockpit-v3.html`,
+Doku: `messe/rotterdam-2027/KARTE.md`). Nutzerkreis: Beschäftigte, keine Website-Besucher.
+
+| Datenfluss | Wann | Empfänger | Daten | Rechtsgrundlage (Vorschlag) |
+|---|---|---|---|---|
+| Umrisskarte, Bundesländer, Pins | immer | keiner (eingebettet) | – | – |
+| Schrift Exo | immer | keiner (lokal eingebettet, seit v3.1) | – | – |
+| Straßenkarte (Kartenkacheln) | erst nach Klick auf „Einwilligen und laden“ | konfigurierter Kachelanbieter; Standard OpenStreetMap (`tile.openstreetmap.org`) | IP-Adresse, Zeitpunkt, Browserkennung, abgerufener Kartenausschnitt | Einwilligung, Art. 6 Abs. 1 lit. a DSGVO i. V. m. § 25 Abs. 1 TDDDG (konservativ; berechtigtes Interesse wäre bei EU-Anbieter denkbar) |
+| Einwilligungsstand | bei Erteilung | nur im Browser der Person (`localStorage`, Schlüssel `feind-cockpit:osm-consent`: Host, Zeitpunkt, an/aus) | keine Übermittlung | – |
+
+**Umgesetzte Maßnahmen:** Ohne Einwilligung keine externen Requests (automatisiert geprüft,
+`messe/rotterdam-2027/e2e/karte.e2e.mjs`); Einwilligung gilt je Anbieter-Host und wird bei
+Anbieterwechsel neu eingeholt; Widerruf mit einem Klick („Einwilligung widerrufen“);
+Namensnennung „© OpenStreetMap-Mitwirkende“ (ODbL) immer sichtbar; Google Fonts entfernt.
+
+**Offen:** OpenStreetMap-Kacheln sind laut Tile Usage Policy nur für geringe Last gedacht und ohne
+Verfügbarkeitszusage. Für den Dauerbetrieb einen Anbieter mit EU-Verarbeitung festlegen (Admin ›
+Funktionen und Quellen), AVV prüfen und hier eintragen. **Bitte Rechtsabteilung prüfen**, ob
+Einwilligung oder berechtigtes Interesse gewählt wird und ob eine Information nach Art. 13 DSGVO
+im Beschäftigtenkontext ergänzt werden muss.
+
+**Textbaustein Datenschutzhinweis (Beschäftigte, Feind Cockpit):**
+
+> Kartenansicht: Das Feind Cockpit zeigt standardmäßig eine Umrisskarte ohne Verbindung zu Dritten.
+> Wenn Sie die Straßenkarte laden und einwilligen, ruft Ihr Browser Kartenkacheln von
+> {{KACHELANBIETER}} ({{KACHEL_HOST}}) ab. Dabei werden Ihre IP-Adresse, Datum und Uhrzeit sowie
+> Angaben zu Ihrem Browser an diesen Anbieter übertragen. Rechtsgrundlage ist Ihre Einwilligung
+> (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG). Sie können sie jederzeit über „Einwilligung
+> widerrufen“ in der Karte zurücknehmen; die Rechtmäßigkeit der bis dahin erfolgten Abrufe bleibt
+> unberührt. Datenschutzhinweise des Anbieters: {{KACHEL_DATENSCHUTZ_URL}}.
 
 ---
 
@@ -959,6 +994,7 @@ Rechtlicher Hinweis: Muster vor Einsatz durch Rechtsabteilung/Fachanwalt pruefen
 | `{{CLOUD_STANDORT}}` | Cloud-Speicher-Standort | abgeleitet |
 | `{{LOG_RETENTION}}` / `{{GA4_RETENTION}}` | Aufbewahrungsdauer Logs/GA4 | Konfiguration |
 | `{{DSE_URL}}` / `{{DATUM}}` / `{{DATUM_ANLASS}}` | URL/Datumsangaben | manuell |
+| `{{KACHELANBIETER}}` / `{{KACHEL_HOST}}` / `{{KACHEL_DATENSCHUTZ_URL}}` | Kachelanbieter der Cockpit-Straßenkarte (Abschnitt 12.1) | Admin › Funktionen und Quellen im Cockpit |
 
 ---
 
@@ -983,5 +1019,5 @@ Bericht automatisiert neu erzeugt und Annahmen in Fakten überführt werden.
 
 ---
 
-*Ende des Berichts — Version 1.4 (Entwurf), 21.09.2026. Streng vertraulich. Vor rechtsverbindlichem
+*Ende des Berichts — Version 1.5 (Entwurf), 28.10.2026. Streng vertraulich. Vor rechtsverbindlichem
 Einsatz der Vorlagen: Prüfung durch Rechtsabteilung / Fachanwalt für IT-Recht.*

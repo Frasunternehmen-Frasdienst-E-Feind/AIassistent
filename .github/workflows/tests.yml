@@ -6,7 +6,7 @@ on:
 
 jobs:
   pytest:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -20,3 +20,35 @@ jobs:
           mkdir -p /tmp/elsewhere && cd /tmp/elsewhere
           SEO_REPORTING_CONFIG="$GITHUB_WORKSPACE/config.example.yaml" seo-report monthly --demo --as-of 2026-09-01
           test -f output/monthly_2026-08-01_2026-08-31_demo.md
+
+  cockpit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:cockpit
+      - name: Unit-Tests Cockpit A1 (Notion-Aufgaben, Brennglas-PDF)
+        run: npm run test:cockpit-a1
+      - name: Unit-Tests Feind Cockpit v1 (FeindCore, Referenz)
+        run: npm run test:cockpit-v1
+      - name: Migrationsplan gegen Live-Fixture (Dry-Run, 0 Löschungen)
+        run: |
+          node -e "import('./cockpit/test/fixtures/live-2026-09-28.mjs').then(m=>{const fs=require('fs');for(const k of ['target','a2','a3'])fs.writeFileSync('/tmp/'+k+'.json',JSON.stringify(m.default[k]));})"
+          node cockpit/tools/migrate.mjs --target /tmp/target.json --a2 /tmp/a2.json --a3 /tmp/a3.json | tee /tmp/plan.txt
+          grep -q "0 Löschungen" /tmp/plan.txt
+      - run: npm run test:cockpit:e2e
+      - name: A1-Abnahme gegen das führende A1 (Aktionsleiste, Brennglas-PDF, Notion)
+        shell: bash
+        run: |
+          set -euo pipefail
+          V="$GITHUB_WORKSPACE/cockpit-a1/Feind-Cockpit-A1.html"
+          node cockpit-a1/e2e/actions-smoke.mjs "$V"
+          # notion-smoke protokolliert nur: Abbruch bei Absturz, einem „false“ oder fehlendem leeren Fehler-Array
+          node cockpit-a1/e2e/notion-smoke.mjs "$V" | tee /tmp/notion-smoke.txt
+          ! grep -qE ': false\b|FEHLT|kein Dialog|Create-Aufruf: 0' /tmp/notion-smoke.txt
+          grep -qx 'Fehler: \[\]' /tmp/notion-smoke.txt

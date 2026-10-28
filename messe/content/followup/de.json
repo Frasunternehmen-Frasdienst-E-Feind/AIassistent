@@ -1,0 +1,84 @@
+{
+ "code": "DE",
+ "file": "Followup_Rotterdam_2027_DE.pdf",
+ "title": "Lead-Nachfass- & Nachbereitungsbogen Rotterdam 2027",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Stand 5.209 · Di 12.–Fr 15. Januar 2027",
+ "chip": "Follow-up",
+ "src": "Ausfüllbarer Nachfassbogen · Quelle: Projekt-Hub + ToDo-Brennglas · Stand 28.09.2026",
+ "intern": "INTERN / vertraulich – enthält Teamnamen, nicht veröffentlichen.",
+ "basis": "Basis: Projekt-Hub (Nachbereitung) + Lead-Prozess (EPIC-06)",
+ "howto": "So funktioniert der Nachfassbogen",
+ "howto_lines": [
+  "1)  Kästchen abhaken = erledigt.   2)  Status-Dropdown rechts: Offen / In Arbeit / Erledigt / Wartet / Entfällt.",
+  "3)  Notizfeld je Position – Lead/Firma, Verantwortlich, Datum, Link (max. 250 Zeichen).",
+  "Fristen sind Richtwerte (48 h / 1 Woche); Follow-up-Runde ab 29.01.2027 lt. Projekt-Hub.",
+  "Vorbelegung „Offen“. DSGVO beachten: Leads nur mit Einwilligung ins CRM. Druck in jedem PDF-Viewer."
+ ],
+ "legend_label": "Legende:",
+ "legend": [["ok", "erledigt / bestätigt"], ["warn", "dringend / Frist beachten"], ["none", "offen / zu erledigen"], ["no", "entfällt"], ["add", "Hinweis"]],
+ "blocker_title": "Follow-up-Fristen (Richtwerte)",
+ "blockers": [
+  ["Messeende", "Fr 15.01.2027 – danach Nachfassung starten"],
+  ["Dankes-/Erstkontakt", "binnen 48 h (empfohlen)"],
+  ["Angebote/Detailinfos", "binnen 1 Woche (empfohlen)"],
+  ["Follow-up-Runde", "ab 29.01.2027 (lt. Projekt-Hub)"],
+  ["ROI-/Erfolgsauswertung", "als Lessons Learned 2027"]
+ ],
+ "blocker_note": "48 h und 1 Woche sind Empfehlungen/Richtwerte. Verbindlich aus Projekt-Hub: Follow-up-Runde ab 29.01.2027. Fristen vor Versand bestätigen.",
+ "status": ["Offen", "In Arbeit", "Erledigt", "Wartet", "Entfällt"],
+ "status_def": "Offen",
+ "tt_status": "Status: Offen / In Arbeit / Erledigt / Wartet / Entfällt",
+ "tt_note": "Lead/Firma, Verantwortlich, Datum, Link – max. 250 Zeichen",
+ "tt_done": "Erledigt abhaken",
+ "blind_banner": "Hinweise & DSGVO",
+ "blind_sub": "Ergänzende Hinweise zur Nachbereitung. Rechtliches ist markiert.",
+ "dp_title": "Datenschutz & Recht",
+ "dp": [
+  "• Internes Arbeitsdokument mit Teamnamen – vertraulich behandeln, nicht an Externe/Aussteller weitergeben.",
+  "• Lead-Erfassung, Foto/Video am Stand und CRM-Import nur mit Einwilligung/DSGVO-Hinweis.",
+  "• Bei vertraglichen, steuerlichen oder arbeitsrechtlichen Fragen gilt: bitte Rechtsabteilung prüfen."
+ ],
+ "src_title": "Quellen & Arbeitsflächen",
+ "links": ["Master · Messe Rotterdam 2027 (Notion)", "ToDo-Liste Rotterdam 2027 (Notion)", "Aufgaben-Tracker (ClickUp)", "InfraTech-Handbuch 2027 V1.3 (PDF)"],
+ "link_urls": ["https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db", "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a", "https://app.clickup.com/90122021025/v/l/li/901222034862", "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stand 5.209  ·  Stand 28.09.2026",
+ "page": "Seite",
+ "cont": "Fortsetzung",
+ "brand": "FOLLOW-UP · Rotterdam 2027",
+ "slim": "Follow-up Rotterdam 2027",
+ "sections": [
+  ["Lead-Erfassung & Qualifizierung", [
+   ["none", "Alle Leads aus digitalem Gesprächsnotiz-Formular zusammenführen"],
+   ["none", "Visitenkarten/Kontakte digitalisieren & entdoppeln"],
+   ["none", "Leads priorisieren (A/B/C nach Potenzial)"],
+   ["none", "Zuständigkeit je Lead festlegen (ins Notizfeld)"]
+  ]],
+  ["Sofort-Nachfassung (binnen 48 h)", [
+   ["warn", "Dankes-/Erstkontakt-Mail an alle relevanten Leads"],
+   ["none", "Individuelle Zusagen vom Stand einlösen (Unterlagen, Muster)"],
+   ["none", "Termine für Vertriebsgespräche vereinbaren"]
+  ]],
+  ["Angebot & Vertrieb (binnen 1 Woche)", [
+   ["none", "Angebote/Detailinfos versenden"],
+   ["none", "Wiedervorlagen/Erinnerungen setzen"],
+   ["none", "Heiße Leads telefonisch nachfassen"]
+  ]],
+  ["CRM & Datenpflege (DSGVO)", [
+   ["warn", "Leads DSGVO-konform ins CRM importieren (Einwilligung geprüft) – Rechtsabteilung prüfen"],
+   ["none", "Herkunft/Consent & Speicherfrist dokumentieren"],
+   ["none", "Opt-out/Abmeldung sicherstellen"]
+  ]],
+  ["Auswertung & Lessons Learned", [
+   ["none", "Lead-Zahlen & Qualität auswerten (KPIs)"],
+   ["none", "Kosten vs. Ertrag / ROI ermitteln"],
+   ["none", "Lessons Learned 2027 dokumentieren (für Folge-Messe)"]
+  ]]
+ ],
+ "blind": [
+  ["Hinweise & DSGVO", [
+   ["add", "Foto-/Video-Content nur mit Einwilligung nutzen (DSGVO) – Rechtsabteilung prüfen"],
+   ["add", "Nachfass-Texte mehrsprachig (NL/DE/EN/PL) bereithalten"],
+   ["add", "Feedback des Standteams einholen (kurzes Debrief)"]
+  ]]
+ ]
+}

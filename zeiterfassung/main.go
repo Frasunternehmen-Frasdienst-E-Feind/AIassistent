@@ -427,6 +427,80 @@ func (a *App) runSync() {
 	log.Printf("OptiTime: %s (%s), %d Dateien, %d Buchungen für %q übernommen", path, source, len(res.Files), len(bookings), res.Identity.MatchedPerson)
 }
 
+// lastBookingDate liefert das Datum der jüngsten Buchung und die Zahl der Tage,
+// deren letzte Buchung keine Endzeit hat. Ein solcher Tag ist nicht
+// zwangsläufig ein Fehler: schließt der Server den Tag ab, steht das im
+// lokalen Protokoll nicht.
+func lastBookingDate(bs []Booking) (string, int) {
+	last := ""
+	latestOfDay := map[string]Booking{}
+	for _, b := range bs {
+		if b.Date > last {
+			last = b.Date
+		}
+		if cur, ok := latestOfDay[b.Date]; !ok || b.Start > cur.Start {
+			latestOfDay[b.Date] = b
+		}
+	}
+	open := 0
+	for _, b := range latestOfDay {
+		if b.End == nil || *b.End == "" {
+			open++
+		}
+	}
+	return last, open
+}
+
+// collectReport fasst einen Lauf ohne Oberfläche zusammen (Startparameter
+// -sammeln). Der zweite Rückgabewert ist der Exit-Code: 0 in Ordnung, 1 wenn
+// etwas zu klären ist. Dadurch meldet die geplante Aufgabe in Windows einen
+// Fehlschlag, statt still nichts zu tun.
+func (a *App) collectReport(stillstand time.Duration, now time.Time) (string, int) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	res := a.sync
+	code := 0
+	var b strings.Builder
+	fmt.Fprintf(&b, "Stempeluhr %s – Sammellauf %s\n", version, now.Format("02.01.2006 15:04:05"))
+	fmt.Fprintf(&b, "Benutzer: %s (Quelle: %s), Rechner: %s\n", a.id.Username, a.id.Source, a.id.Host)
+	if res.Path == "" {
+		fmt.Fprintf(&b, "OptiTime-Ordner: nicht gefunden, %d Orte geprüft\n", len(res.Searched))
+		code = 1
+	} else {
+		fmt.Fprintf(&b, "OptiTime-Ordner: %s (%s)\n", res.Path, res.PathSource)
+	}
+	if person := res.Identity.MatchedPerson; person != "" {
+		fmt.Fprintf(&b, "Zuordnung: %s\n", person)
+	} else {
+		fmt.Fprintln(&b, "Zuordnung: keine – Kennung in den Einstellungen bestätigen")
+		code = 1
+	}
+	fmt.Fprintf(&b, "Gelesen: %d Buchungen aus %d Dateien\n", res.Imported, len(res.Files))
+	fmt.Fprintf(&b, "Gespeichert: %d Buchungen in %s\n", len(a.state.Bookings), a.dataFile)
+
+	last, offen := lastBookingDate(a.state.Bookings)
+	if last == "" {
+		fmt.Fprintln(&b, "Letzte Buchung: keine")
+		code = 1
+	} else {
+		fmt.Fprintf(&b, "Letzte Buchung: %s\n", last)
+		if t, err := time.Parse("2006-01-02", last); err == nil && stillstand > 0 {
+			if alter := now.Sub(t); alter > stillstand {
+				fmt.Fprintf(&b, "Warnung: seit %d Tagen keine neue Buchung – läuft BDE_PC auf diesem Rechner noch?\n", int(alter.Hours()/24))
+				code = 1
+			}
+		}
+	}
+	if offen > 0 {
+		fmt.Fprintf(&b, "Hinweis: %d Tag(e) ohne Gehen-Buchung. Schließt der Server einen Tag ab, ist das im Protokoll nicht sichtbar.\n", offen)
+	}
+	for _, e := range res.Errors {
+		fmt.Fprintf(&b, "Fehler: %s\n", e)
+		code = 1
+	}
+	return b.String(), code
+}
+
 // ---------- HTTP ----------
 
 func (a *App) writeJSON(w http.ResponseWriter, v interface{}) {
@@ -622,6 +696,8 @@ func main() {
 	noBrowser := flag.Bool("no-browser", false, "Browser nicht automatisch öffnen")
 	idle := flag.Duration("idle", 2*time.Minute, "Beenden, wenn so lange kein Browserfenster mehr offen ist (0 = nie)")
 	diag := flag.Bool("diagnose", false, "Diagnosebericht schreiben (%APPDATA%\\Stempeluhr\\diagnose.txt) und beenden")
+	sammeln := flag.Bool("sammeln", false, "Buchungen einlesen, speichern und beenden – ohne Oberfläche, für eine geplante Aufgabe")
+	stillstand := flag.Duration("stillstand", 168*time.Hour, "Warnung, wenn die jüngste Buchung älter ist (0 = nie); nur mit -sammeln")
 	flag.Parse()
 
 	a := &App{explicit: *optiFlag, quit: make(chan struct{}), startedAt: time.Now(), lastPing: time.Now()}
@@ -661,6 +737,13 @@ func main() {
 		fmt.Println(report)
 		showMessage("Stempeluhr – Diagnose", "Bericht gespeichert unter:\n"+out+"\n\nBitte diese Datei weitergeben.")
 		return
+	}
+
+	if *sammeln {
+		report, code := a.collectReport(*stillstand, time.Now())
+		fmt.Print(report)
+		log.Print(report)
+		os.Exit(code)
 	}
 
 	ln, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", *portFlag))
