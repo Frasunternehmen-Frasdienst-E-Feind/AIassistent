@@ -29,7 +29,7 @@ feind-marketing-cockpit/
 ├── skills/                         8 Fach-Skills
 │   ├── dashboard-builder/  content-pipeline/  lead-tracking/  tender-monitoring/
 │   └── event-planning/  seo-local/  reference-library/  messe-budget/
-├── dashboard/dashboard.html        das Cockpit (Artefakt mit Datenspeicher)
+├── dashboard/dashboard.html        Altstand, nicht veröffentlichen (Quelle: cockpit-a1/)
 ├── kontext/
 │   ├── datenmodell.md              Aufbau der Daten im Cockpit
 │   └── unternehmen.md              Unternehmensprofil mit Status je Fakt, Glossar
@@ -50,12 +50,9 @@ Danach Cowork neu laden. Prüfen: Die Commands `/tagesbrief` usw. erscheinen, un
 
 ## Ersteinrichtung
 
-1. **Dashboard öffnen:** Skill `dashboard-builder` veröffentlicht das Cockpit
-   (`dashboard/dashboard.html`) als Artefakt. Die URL ersetzt den Platzhalter
-   `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd` in allen Dateien des Plugins (Agent, Commands,
-   `kontext/datenmodell.md`, `geplante-aufgaben.md`).
-2. **`/cockpit-sync`** ausführen: legt `settings/general` mit Standardwerten an und
-   übernimmt vorhandene Dateien aus der SharePoint-Bibliothek „Marketing“. Vor dem
+1. **Dashboard öffnen:** https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd (Feind Cockpit A1,
+   Quelle `cockpit-a1/Feind-Cockpit-A1.html` im Repo). Das Plugin veröffentlicht die Seite nicht.
+2. **`/cockpit-sync`** ausführen: übernimmt vorhandene Dateien aus der SharePoint-Bibliothek „Marketing“. Vor dem
    Schreiben zeigt Claude eine Übersicht zur Bestätigung.
 3. **Connectors prüfen:** `connectors.md` durchgehen. Verbunden sind Gmail, Google
    Calendar, Google Drive, Dropbox, Notion, ClickUp, Firecrawl, Parallel Search,

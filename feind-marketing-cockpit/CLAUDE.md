@@ -32,14 +32,13 @@ Nutzer: David, Marketing & Eventmanager, Fräsdienst-Service E. Feind GmbH.
 ## Qualität: abschließender Testlauf (Wunsch von David, 30.09.2026)
 * Änderungen am Cockpit erst **global planen** (alle Welten und Module prüfen, die
   betroffen sind), dann umsetzen.
-* Vor jeder Ergebnismeldung läuft der Abschlusstest `node dashboard/test/smoke.cjs`
-  (jedes Modul, Desktop/Tablet/Handy, hell/dunkel: JS-Fehler, seitlicher Überlauf,
-  Reiterleiste, Tastatur). Nur mit „OK“ in allen Zeilen wird veröffentlicht.
+* Vor jeder Ergebnismeldung laufen `npm run test:cockpit-a1` und die A1-Abnahme aus dem CI-Job `cockpit`
+  (`cockpit-a1/e2e/actions-smoke.mjs`, `notion-smoke.mjs`). Nur wenn alles grün ist, wird veröffentlicht.
 
 ## Cockpit-Änderungen: ein Branch pro Sitzung (Wunsch von David, 04.10.2026)
 * Jede Sitzung ändert das Cockpit nur auf ihrem eigenen Branch und veröffentlicht von dort.
-* Was veröffentlicht ist, steht immer auch im Repo: `dashboard/dashboard.html` mit genau dem
-  Stand der Artefakt-Version, im selben Commit oder direkt danach, mit Versionsnummer in der
+* Was veröffentlicht ist, steht immer auch im Repo: `cockpit-a1/Feind-Cockpit-A1.html` mit genau dem
+  Stand der Artefakt-Version (`dashboard/dashboard.html` ist Altstand, nie veröffentlichen), im selben Commit oder direkt danach, mit Versionsnummer in der
   Commit-Message.
 * Meldet die Veröffentlichung eine neuere Version einer anderen Sitzung, deren Stand zuerst
   übernehmen, die eigenen Änderungen darauf setzen und den Abschlusstest wiederholen. Ungeprüfter
