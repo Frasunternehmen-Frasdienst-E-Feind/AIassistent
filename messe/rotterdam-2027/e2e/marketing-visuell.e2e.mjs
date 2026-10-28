@@ -7,6 +7,7 @@ import { PAGE } from '../test/load-module.mjs';
 import { marketingSeed } from './fixtures-marketing.mjs';
 
 const ORIGIN = 'http://cockpit.test';
+const SEED_DAY = '2026-10-07';
 const URL_ = ORIGIN + '/feind-cockpit-v3.html';
 const HTML = readFileSync(PAGE);
 
@@ -16,13 +17,15 @@ after(async () => { await browser?.close(); });
 
 async function open(tab) {
   const ctx = await browser.newContext({ locale: 'de-DE', timezoneId: 'Europe/Berlin', viewport: { width: 1280, height: 1000 }, reducedMotion: 'reduce' });
+  // Uhr der Seite auf den Stichtag der Beispieldaten stellen, sonst veralten relative Termine (z. B. Event in 18 Tagen).
+  await ctx.clock.setFixedTime(new Date(SEED_DAY + 'T10:00:00+02:00'));
   await ctx.route(URL_, r => r.fulfill({ body: HTML, contentType: 'text/html; charset=utf-8' }));
   await ctx.route(u => u.origin !== ORIGIN && !/^(data|blob):/.test(u.href), r => r.abort());
   await ctx.addInitScript(d => {
     if (sessionStorage.getItem('e2e-seeded')) return;
     sessionStorage.setItem('e2e-seeded', '1');
     localStorage.setItem('feind-cockpit:db', JSON.stringify(d));
-  }, marketingSeed());
+  }, marketingSeed(SEED_DAY));
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
