@@ -22,5 +22,9 @@ Regeln:
    Schreiben per `ArtifactData` `batch` erst nach Bestätigung durch David.
 2. Keine personenbezogenen Daten, keine Preise (Ausnahme: Messeausgaben je Kostenblock in `budget/actuals`); jeder Datensatz mit `source`.
 3. Danach `meta/sync.<bereich>` mit `{at, source}` setzen.
-4. Ist `settings/general` leer, Standardwerte aus `kontext/datenmodell.md` anlegen.
+4. `settings/*` nie schreiben (pflegt der Admin). Ist `settings/general` leer, mit den Standardwerten
+   aus `kontext/datenmodell.md` rechnen und David darauf hinweisen.
 5. Konflikte (gleiche ID, abweichende Werte) nicht auflösen, sondern auflisten.
+
+Gegenstück in Claude Code: Skill `.claude/skills/cockpit-sync/` im Repo AIassistent, Schema
+`cockpit/docs/SCHEMA.md`. Regeln in beiden Dateien gleich halten.

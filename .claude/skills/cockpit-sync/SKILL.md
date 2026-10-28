@@ -47,3 +47,8 @@ Cockpits** (`cockpit/Feind-Cockpit.html`). Verbindliches Schema: `cockpit/docs/S
 Liefert eine ältere Skill-Version Leads nach `leads/<id>`, dann **nicht** direkt schreiben, sondern
 `mkt_leads/<id>` verwenden. Bereits vorhandene Alt-Dokumente übernimmt die Migration
 (Cockpit → Admin → Migration bzw. `node cockpit/tools/migrate.mjs`), ohne etwas zu löschen.
+
+## Gegenstück im Plugin
+
+Für Cowork gibt es denselben Ablauf als Befehl `feind-marketing-cockpit/commands/cockpit-sync.md`.
+Ändert sich eine Regel hier, dort im selben Commit nachziehen.
