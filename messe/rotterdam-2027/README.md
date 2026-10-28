@@ -3,6 +3,15 @@
 Zentrale, konsolidierte Planung für den Messeauftritt der Fräsdienst-Service E. Feind GmbH
 auf der **InfraTech 2027, Rotterdam Ahoy, 12.–15. Januar 2027**.
 
+## Fokusthema: Pflasterschleifen (verbindlich)
+
+Vorgabe David, 28.10.2026: Auf der InfraTech 2027 in Rotterdam Ahoy steht
+**Pflasterschleifen** im Mittelpunkt (Vorher-Nachher-Pflasterfläche, Schleifwelle,
+Nutzen Barrierefreiheit und Erhalt des Bestands). Alle Messe-Inhalte –
+Webseite, Social Posts, Mailings, Standgrafik, Giveaways, Leadgespräche – richten
+sich danach aus. Kaltfräsen sowie Grinding & Grooving erscheinen nur als
+„außerdem im Portfolio“.
+
 ## Inhalt dieses Ordners
 
 | Datei | Zweck |
@@ -10,6 +19,7 @@ auf der **InfraTech 2027, Rotterdam Ahoy, 12.–15. Januar 2027**.
 | `feind-cockpit.html` | Altstand v1.1 (Artefakt `4zX58…`, inzwischen gelöscht). Enthält die Erstfassung des Reiters „Checkliste 26→27“. |
 | `feind-cockpit-v3.html` | **Quelle des führenden Live-Cockpits** „Feind Cockpit“ (ab 07.10.2026; vorher „Feind Cockpit (Copy)“) (v3.1, Leaflet-Karte): Kartenansicht mit Einwilligung, konfigurierbarem Kachelanbieter, Clustering, lokal eingebetteter Schrift. Doku: **`KARTE.md`**, Tests: `test/` (Unit) und `e2e/` (Playwright). |
 | `infratech-2027-liste.html` | Vorgängerstand des Cockpits (v2, Altstand – nicht mehr live). Aufgaben, Fristen, Budget, KPIs, Lessons Learned, Faktencheck, Wissensbasis. Kategorisiert, filterbar, mit Fortschritt und Terminwarnungen. |
+| `messeseite-pflasterschleifen.html` | Quelle der Messeseite „Feind auf der InfraTech 2027“ (Artefakt https://claude.ai/artifact/NenzWrrsorBsLBihYeS4Dj, Entwurf; Standnummer und Kontaktadresse oben im Skript eintragen). |
 | `MASTER-TODO.md` | Vollständige, kategorisierte Aufgabenliste als versionierbarer Text (Grundlage des Cockpits). |
 | `KATEGORISIERUNG-MANUS.md` | Kategorisierung der MANUS-Export-Inhalte + Plan, wie sie die ToDo-Liste ergänzen. |
 | `FUNKTIONS-BACKLOG.md` | Backlog neuer Funktionen/Installationen für die Weiterentwicklung des Cockpits. |
