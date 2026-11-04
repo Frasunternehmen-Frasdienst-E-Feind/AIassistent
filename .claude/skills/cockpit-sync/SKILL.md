@@ -31,6 +31,8 @@ Cockpits** (`cockpit/Feind-Cockpit.html`). Verbindliches Schema: `cockpit/docs/S
 
 **Nicht schreiben:** `tasks`, `settings/*`, `budget/*`, `leads/counts`, `acquisition/*`, `planning/*`,
 `admin/*`, `activity`. Diese Pfade pflegen die Seite selbst, der Manager-Agent (InfraTech) bzw. die Admins.
+Ausnahme `budget/actuals`: schreibt nur der Plugin-Skill `messe-budget`, nach Bestätigung durch David und nur als
+Summen je Kostenblock (Entscheidung David, 04.11.2026). `/cockpit-sync` selbst fasst `budget/*` nicht an.
 
 ## Ablauf
 
