@@ -122,6 +122,10 @@ sagt: Bei rein technischen Entwickler-/Git-Schritten NICHT nachfragen, sondern
 die beste Option wählen bzw. selbst entscheiden, was das Projekt braucht, und
 kurz in einfachem Deutsch berichten (ohne Fachjargon vorauszusetzen).
 
+Ausnahme (David, 04.11.2026): Einen PR mergen und einen Branch löschen nur
+nach Davids Freigabe – beides wirkt auf alle und ist schwer umkehrbar. Dafür
+eine klickbare Auswahl mit Empfehlung vorlegen.
+
 ### Geschäftlich / nach außen wirkende Aktionen → weiter zuerst nachfragen
 Bei realer Außen-/Geschäftswirkung (E-Mail an Dritte, Veröffentlichen, Geld
 ausgeben/Dienstleister, personenbezogene Daten, unwiderruflich löschen/
