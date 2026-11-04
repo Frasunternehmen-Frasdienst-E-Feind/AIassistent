@@ -31,6 +31,9 @@ credentials/
 # Plugin-Manifest und Connector-Datei des Marketing Cockpits (keine Geheimnisse)
 !feind-marketing-cockpit/.claude-plugin/plugin.json
 !feind-marketing-cockpit/.mcp.json
+# Messe-Generator: Inhalte und Team-Vorlage (ohne echte Personendaten)
+!messe/content/**/*.json
+!messe/data/team.example.json
 
 # Rohdaten mit möglichen personenbezogenen Daten (DSGVO)
 data/crm/*
@@ -59,10 +62,6 @@ node_modules/
 test-results/
 playwright-report/
 
-# Messe-Generator: versionierte Inhalte & Vorlagen wieder einschließen
-# (das globale *.json oben würde sie sonst ausschließen)
-!messe/content/**/*.json
-!messe/data/team.example.json
 # Personenbezogene Daten & generierte Dokumente NIE committen (DSGVO):
 messe/data/*.local.json
 messe/output/*
