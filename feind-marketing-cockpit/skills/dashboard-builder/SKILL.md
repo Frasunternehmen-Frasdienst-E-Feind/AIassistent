@@ -1,6 +1,6 @@
 ---
 name: dashboard-builder
-description: Aktualisiert und veröffentlicht das Marketing-Cockpit-Dashboard (dashboard/dashboard.html als Claude-Artefakt mit db und sample) und spiegelt die SharePoint-Ordner 02_Content & Kampagnen/, 03_Events/ und 05_Referenzen/ in den Artefakt-Speicher. Greift bei „Dashboard aktualisieren“, „Cockpit neu veröffentlichen“, „Daten synchronisieren“, „Sync fahren“, „Dashboard einrichten“, „Ersteinrichtung“, „Layout/Farben im Cockpit ändern“ oder wenn ein anderer Skill Daten geschrieben hat und meta/sync gepflegt werden muss.
+description: Spiegelt die SharePoint-Ordner 02_Content & Kampagnen/, 03_Events/ und 05_Referenzen/ in den Artefakt-Speicher des Feind Cockpits A1 und pflegt meta/sync. Veröffentlicht die Seite nicht (Quelle ist cockpit-a1/ im Repo). Greift bei „Dashboard aktualisieren“, „Daten synchronisieren“, „Sync fahren“ oder wenn ein anderer Skill Daten geschrieben hat und meta/sync gepflegt werden muss.
 ---
 
 # Dashboard-Builder – Marketing Cockpit
@@ -8,10 +8,13 @@ description: Aktualisiert und veröffentlicht das Marketing-Cockpit-Dashboard (d
 ## Zweck
 
 Du hältst das Marketing Cockpit von David (Marketing & Eventmanager, Fräsdienst-Service
-E. Feind GmbH) aktuell. Das Dashboard ist eine reine Anzeige: Die Seite
-`dashboard/dashboard.html` im Plugin liest alle Daten live aus dem Artefakt-Speicher (`db`).
-Du veröffentlichst die Seite, richtest den Speicher ein und synchronisierst die SharePoint-Ordner
-der Marketing-Bibliothek hinein. Verbindliches Datenmodell: `kontext/datenmodell.md` – Pfade und
+E. Feind GmbH) aktuell. Das Dashboard ist eine reine Anzeige und liest alle Daten live aus dem Artefakt-Speicher (`db`).
+Du synchronisierst die SharePoint-Ordner der Marketing-Bibliothek hinein.
+
+**Seite nie aus dem Plugin veröffentlichen.** Führende Quelle der Seite ist seit 14.10.2026
+`cockpit-a1/Feind-Cockpit-A1.html` im Repo AIassistent (siehe `cockpit/README.md`, „Live-Artefakt“).
+`dashboard/dashboard.html` im Plugin ist Altstand; ein Publish damit überschreibt die Live-Seite.
+Speicherschema: `cockpit/docs/SCHEMA.md`. Verbindliches Datenmodell: `kontext/datenmodell.md` – Pfade und
 Feldnamen exakt übernehmen, keine eigenen Felder erfinden.
 
 Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
@@ -44,7 +47,9 @@ Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 Alle Ordner liegen in der SharePoint-Bibliothek „Marketing“ (siehe `CLAUDE.md` › Ablage).
 Findest du einen Ordner nicht, frage nach dem Pfad, statt einen anzulegen.
 
-## Arbeitsablauf A – Ersteinrichtung
+## Arbeitsablauf A – Ersteinrichtung (erledigt, nicht mehr ausführen)
+
+A1 ist veröffentlicht, `settings/*` pflegt der Admin. Die Schritte bleiben nur als Protokoll stehen.
 
 1. Lade vor dem ersten Schreiben der Seite die Skills `artifact-design` und
    `artifact-capabilities`.
@@ -87,20 +92,11 @@ Findest du einen Ordner nicht, frage nach dem Pfad, statt einen anzulegen.
    Diese Pflicht gilt nach **jedem** Sync, auch wenn ein anderer Skill geschrieben hat.
 7. Melde David das Ergebnis im Ausgabeformat unten.
 
-## Arbeitsablauf C – Dashboard ändern und neu veröffentlichen
+## Arbeitsablauf C – Dashboard ändern
 
-1. Lies die veröffentlichte Fassung mit `Artifact` (action `read`, `url` = `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`)
-   und gleiche sie mit `dashboard/dashboard.html` ab. Weicht die veröffentlichte Fassung ab,
-   übernimm deren Änderungen, bevor du eigene machst.
-2. Lade `artifact-design` (und bei Datenzugriffen `artifact-capabilities`), bevor du das
-   HTML änderst. Bei Diagrammen zusätzlich `dataviz`.
-3. Ändere nur Darstellung und Logik. Datenzugriffe laufen über die `db`-Laufzeit
-   (live lesen, `onSnapshot`); die Capability `sample` dient ausschließlich dem Button
-   „Tagesbrief mit KI erzeugen“ (nur auf Klick, nur aus den db-Daten). Keine Beispiel-
-   oder Demodaten ins Dashboard einbauen.
-4. Veröffentliche mit `Artifact` publish, `url` = `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`, gleiches
-   `file_path`. Beim Redeploy kein `icon` und kein `capabilities` angeben, damit beides
-   erhalten bleibt.
+Layout, Farben und Logik ändern sich nur im Repo unter `cockpit-a1/` (eigener Branch,
+`npm run test:cockpit-a1` und CI-Job `cockpit` grün), veröffentlicht wird von dort. Aus dem
+Plugin heraus nichts veröffentlichen; Wünsche an David als Änderungsvorschlag melden.
 
 ## CI-Regeln (verbindlich)
 
@@ -108,7 +104,7 @@ Quelle ist allein `branding/feind-ci.tokens.json`. Übernimm die Werte als CSS-V
 `:root`; setze keine Farbwerte hart im Markup.
 
 * Grün `#84bb20` nur als Fläche oder Akzent. Auf Grün steht Anthrazit `#424e4e`, nie Weiß.
-* Grün nie als Textfarbe auf hellem Grund (2,3:1) – dort `accent-text` `#5e8a14`.
+* Grün nie als Textfarbe auf hellem Grund (2,3:1) – dort `accent-text` `#4d7311` (`#5e8a14` ist keine Textfarbe).
 * Rot `#e3000b` nur als Signal (Frist rot, Follow-up überfällig, kritische Briefing-Punkte,
   Minus). Auf dunklem Grund Rot nur als Fläche oder Linie, Text dort `signal-text`.
 * Schrift: Display `Exo`, Fließtext `Helvetica Neue / Helvetica / Arial`.
