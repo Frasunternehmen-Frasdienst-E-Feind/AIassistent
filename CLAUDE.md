@@ -58,6 +58,11 @@ Nur eigene Personaldaten (Personalnummer 1626) verarbeiten. Keine Buchungen,
 Namen oder Kontaktdaten Dritter in Repository, Artefakte oder Exporte
 übernehmen. Zugangsdaten gehören nicht in versionierte Dateien.
 
+JSON-Dateien sind in `.gitignore` pauschal gesperrt, weil Zugangsdaten meist
+als `.json` vorliegen. Soll eine JSON-Datei versioniert werden, gehört sie in
+den kommentierten Ausnahmeblock der `.gitignore` (Pfad plus Grund), nie per
+`git add -f`. Voraussetzung: keine Zugangsdaten, keine personenbezogenen Daten.
+
 ## Artefakt „Arbeitszeitkonto 1626“
 https://claude.ai/artifact/7Uvmb6GjyHjfwzo5TtmXmQ
 
@@ -109,15 +114,24 @@ Nur vorschlagen, nicht ungefragt ausführen. Die Skills liegen unter
 Kleinständerungen (Tippfehler, Farbwert, Einzeiler) entfällt der Vorschlag.
 
 ## Arbeitsweise bei Entscheidungen
-Bei schwer umkehrbaren oder nach außen wirkenden Aktionen (PR mergen, Branch
-löschen, E-Mail senden, Veröffentlichen, Daten überschreiben) und bei
-mehrdeutigen Anweisungen: **immer zuerst nachfragen** und dabei klar sagen,
-welche Option in diesem Fall die beste ist und warum. Erst nach ausdrücklicher
-Bestätigung ausführen.
 
-Auswahlmöglichkeiten (Optionen, Varianten, Rückfragen) immer **zum Anklicken**
-ausgeben (Multiple-Choice-Abfrage), nicht nur als Text – die empfohlene Option
-steht zuerst und ist als „(Empfohlen)“ markiert.
+### Technische Dev-/Git-Entscheidungen → selbst entscheiden
+David hat noch wenig technisches Verständnis für Git-/Entwickler-Begriffe
+(mergen, Branch, Rebase, Flags, Build, Abhängigkeiten). Bis David etwas anderes
+sagt: Bei rein technischen Entwickler-/Git-Schritten NICHT nachfragen, sondern
+die beste Option wählen bzw. selbst entscheiden, was das Projekt braucht, und
+kurz in einfachem Deutsch berichten (ohne Fachjargon vorauszusetzen).
+
+Ausnahme (David, 04.11.2026): Einen PR mergen und einen Branch löschen nur
+nach Davids Freigabe – beides wirkt auf alle und ist schwer umkehrbar. Dafür
+eine klickbare Auswahl mit Empfehlung vorlegen.
+
+### Geschäftlich / nach außen wirkende Aktionen → weiter zuerst nachfragen
+Bei realer Außen-/Geschäftswirkung (E-Mail an Dritte, Veröffentlichen, Geld
+ausgeben/Dienstleister, personenbezogene Daten, unwiderruflich löschen/
+überschreiben): immer zuerst nachfragen mit klarer Empfehlung, erst nach
+Bestätigung ausführen. Auswahlmöglichkeiten immer zum Anklicken, empfohlene
+Option zuerst und als „(Empfohlen)" markiert.
 
 ## Sparsamer Umgang mit Nutzungsguthaben
 Verbindlich gilt `docs/arbeitsanweisung-sparsamkeit.md` (Rangfolge: Sicherheit

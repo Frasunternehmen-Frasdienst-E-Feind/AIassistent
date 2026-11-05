@@ -3,6 +3,15 @@
 Zentrale, konsolidierte Planung für den Messeauftritt der Fräsdienst-Service E. Feind GmbH
 auf der **InfraTech 2027, Rotterdam Ahoy, 12.–15. Januar 2027**.
 
+## Fokusthema: Pflasterschleifen (verbindlich)
+
+Vorgabe David, 28.10.2026: Auf der InfraTech 2027 in Rotterdam Ahoy steht
+**Pflasterschleifen** im Mittelpunkt (Vorher-Nachher-Pflasterfläche, Schleifwelle,
+Nutzen Barrierefreiheit und Erhalt des Bestands). Alle Messe-Inhalte –
+Webseite, Social Posts, Mailings, Standgrafik, Giveaways, Leadgespräche – richten
+sich danach aus. Kaltfräsen sowie Grinding & Grooving erscheinen nur als
+„außerdem im Portfolio“.
+
 ## Inhalt dieses Ordners
 
 | Datei | Zweck |
@@ -12,6 +21,7 @@ auf der **InfraTech 2027, Rotterdam Ahoy, 12.–15. Januar 2027**.
 | `messe-hub.html` | **Messe-Hub** (LevelUp-Cluster 3): bündelt die 11 Einzel-Artefakte in den Modulen Hotels, Giveaways, Aufgaben (nur Fristen, führend bleibt Notion/A1) und Stand. Momentaufnahme vom 13.10.2026 eingebettet. Danach gilt der eigene `db` (`hotels/`, `giveaways/`, `fristen/`, `stand/info`): Er wird nur feldweise ergänzt und nie überschrieben. Tests: `test/hub-logic.test.mjs`. |
 | `grafik/rueckwand-varianten-16x9.png` | Entscheidungsgrafik mit vier Rückwand-Varianten im Maßstab und der Genehmigungsgrenze 2,75 m. Daneben liegt die HTML-Vorlage für Änderungen. |
 | `infratech-2027-liste.html` | Vorgängerstand des Cockpits (v2, Altstand – nicht mehr live). Aufgaben, Fristen, Budget, KPIs, Lessons Learned, Faktencheck, Wissensbasis. Kategorisiert, filterbar, mit Fortschritt und Terminwarnungen. |
+| `messeseite-pflasterschleifen.html` | Quelle der Messeseite „Feind auf der InfraTech 2027“ (Artefakt https://claude.ai/artifact/NenzWrrsorBsLBihYeS4Dj, Entwurf; Standnummer und Kontaktadresse oben im Skript eintragen). |
 | `MASTER-TODO.md` | Vollständige, kategorisierte Aufgabenliste als versionierbarer Text (Grundlage des Cockpits). |
 | `KATEGORISIERUNG-MANUS.md` | Kategorisierung der MANUS-Export-Inhalte + Plan, wie sie die ToDo-Liste ergänzen. |
 | `FUNKTIONS-BACKLOG.md` | Backlog neuer Funktionen/Installationen für die Weiterentwicklung des Cockpits. |
