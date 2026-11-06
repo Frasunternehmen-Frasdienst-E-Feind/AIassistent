@@ -872,7 +872,7 @@ const TASKS_SEED = [
   t('s6', 'steuerung', 'P2', null, 'David', 'Eskalationskontakt + 72-Stunden-Regel dokumentieren', 'Bei Nicht-Antwort des Veranstalters (E8).'),
   t('s7', 'steuerung', 'P1', '2026-09-30', 'Team', 'Wöchentlichen 15-min-Sync + Kanal „Messe2027_INFRATEC" einrichten', 'Fester Jour fixe bis Messe.'),
   t('s8', 'steuerung', 'P1', '2026-10-23', 'David', 'Budget-Forecast (24.200–26.500 € brutto) + Freigabegrenzen einrichten', 'Achtung: Marketing-Scan sieht nur 500 € für Messen vor – GL-Entscheidung 1 (Buchung, Budget, Standteam) offen. Bitte Rechtsabteilung prüfen bei Vertragsfragen.', ['recht']),
-  t('i1', 'innovation', 'P0', '2026-09-25', 'David', 'Innovationspreis-Einsendung abschließen', 'Frist laut Faktencheck 25.09.2026.', ['fakt']),
+  t('i1', 'innovation', 'P0', '2026-09-25', 'David', 'Innovationspreis-Einsendung abschließen', 'Einsendeschluss offiziell 25.09.2026, 17:00 (Reglement 2027). Ohne Einreichung: nächste Chance Edition 2029.', []),
   t('i2', 'innovation', 'P0', '2026-09-23', 'David', 'Problemdefinition & Nutzen formulieren', ''),
   t('i3', 'innovation', 'P0', '2026-09-24', 'Team', 'Video mit 3 Kernbotschaften erstellen', ''),
   t('i4', 'innovation', 'P1', '2026-09-24', 'David', 'Partner & Entwicklung dokumentieren', ''),
@@ -943,10 +943,11 @@ const TASKS_SEED = [
 ];
 /* Feste Meilensteine. st: r = bestätigt/kritisch, y = Referenz 2026 (verifizieren), g = Messe. */
 const DEADLINES = [
-  { d: '2026-09-25', t: 'Innovationspreis – Einsendung', s: 'Frist 2027 bestätigt (Faktencheck)', st: 'r', ref: 'i1' },
+  { d: '2026-09-25', t: 'Innovationspreis – Einsendeschluss (17:00 Uhr)', s: 'Offiziell bestätigt (Reglement 2027)', st: 'r', ref: 'i1' },
   { d: '2026-10-02', t: 'GL: Ziele, Budget, Zielmarkt freigeben', s: 'Notion-Meilenstein', st: 'r' },
   { d: '2026-10-16', t: 'Messebau-Angebote liegen vor', s: 'Notion-Meilenstein', st: 'y' },
   { d: '2026-11-15', t: 'Standentwurf-Genehmigung (Stand > 2,75 m)', s: 'Handbuch 2027 lt. Notion – bestätigen (Referenz 2026: 21.11.)', st: 'r' },
+  { d: '2026-12-11', t: 'Innovationspreis – öffentliche Pitch-Sitzung (Rotterdam Ahoy)', s: 'Offiziell bestätigt (Reglement 2027)', st: 'g' },
   { d: '2026-11-21', t: 'Katalog-Firmendaten + Produkte/Dienstleistungen', s: 'Referenz 2026 – 2027 verifizieren', st: 'y' },
   { d: '2026-12-01', t: 'Bestellungen im Webshop vor Zuschlagsfrist', s: 'Referenz 2026 – 2027 verifizieren', st: 'y' },
   { d: '2026-12-12', t: 'Namensblende, Teppichfarbe & Grafikdatei an Standbauer', s: 'Referenz 2026 – 2027 verifizieren', st: 'y' },
@@ -978,11 +979,14 @@ const LESSONS = [
   ['E10', 'Ausstellerabend laut/zu wenig Sitzplätze – kaum Networking.', 'Niedrig', 'Gezielte Termine außerhalb des Abends.']
 ];
 const FACTS = [
-  ['Messedatum', '12.–15. Januar 2027 (Di–Fr), Rotterdam Ahoy', 'Bestätigt', 'Auf-/Abbauplan an 4 Messetage anpassen.'],
-  ['Innovationspreis', 'Einsendung vóór 25.09.2026', 'Bestätigt', 'Status steht in Aufgabe i1 (Tab Aufgaben) – Alte ToDo-Frist 31.10. ist hinfällig.'],
+  ['Messedatum', '12.–15. Januar 2027 (Di–Fr), Rotterdam Ahoy (17. Edition)', 'Bestätigt', 'Auf-/Abbauplan an 4 Messetage anpassen.'],
+  ['Innovationspreis', 'Einsendeschluss 25.09.2026, 17:00 Uhr', 'Bestätigt', 'Reglement 2027. Status steht in Aufgabe i1. Pitch 11.12.2026, Bekanntgabe 13.01.2027. Alte ToDo-Frist 31.10. war falsch.'],
+  ['Turnus', 'Zweijährlich (ungerade Jahre); letzte Edition 2025', 'Bestätigt', 'Keine Edition 2026 – als „Referenz 2026" geführte Termine stammen aus 2025, für 2027 verifizieren.'],
+  ['Ansprechpartner', 'Account Manager laut infratech.nl/contact', 'Bestätigt', 'Verbindliche 2027-Fristen/Preise nur darüber bzw. im Exposanten-Portaal. Im Cockpit nur Funktionsadressen führen (s3).'],
+  ['Standpreis', 'Teilnahme ab 250 €/m² (2027)', 'Bestätigt', 'Aufschlüsselung nur über den Account Manager. Referenz 2025: Fläche 230 €/m² + Paket + Pflicht-Marketingpaket 275 €.'],
   ['Standentwurf', 'Frist 15.11.2026 lt. Handbuch 2027 (Notion)', 'Prüfen', 'Referenz 2026 war 21.11. – schriftlich bestätigen lassen.'],
   ['Hotels', 'Nur ibis Styles Rotterdam Ahoy fußläufig (~2 min)', 'Korrektur', 'Hilton/Postillion WTC/DoubleTree ~5 km Zentrum.'],
-  ['Kennzahlen', '500 Aussteller / >23.000 Besucher', 'Fortschreibung', '2025-Werte, keine testierte 2027-Prognose.'],
+  ['Kennzahlen', 'Ist 2025: 23.344 Besucher / >500 Aussteller', 'Fortschreibung', 'Werte der Edition 2025, keine testierte 2027-Prognose.'],
   ['Dienstleister', 'Global Expo Stand B.V. & LOCO verifiziert', 'Prüfen', 'Whimsical Exhibits & LIVE Event Staffing schwach belegt; „ExproGloble" streichen.'],
   ['Öffnungszeiten', 'Di 10–18 · Mi 10–21 · Do 10–18 · Fr 10–16', 'Bestätigt', 'Mittwoch langer Abend.'],
   ['Budget', 'Planrahmen 24.200–26.500 € vs. Marketing-Scan 500 € für Messen', 'Prüfen', 'GL-Entscheidung 1 (Buchung, Budget, Standteam) offen.']
