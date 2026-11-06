@@ -121,9 +121,9 @@
       const o = server.optitime || {};
       const found = !!o.path;
       const who = o.identity && o.identity.matchedPerson;
-      const noPersonColumn = found && !who && !(o.persons || []).length;
+      const noPersonColumn = found && !who && !o.persons;
       tiles.push({ k: 'OptiTime', v: found ? String(o.imported || 0) : '–', s: found ? 'Buchungen' : '',
-        m: !found ? 'Ordner nicht gefunden' : (who ? 'für ' + who : (noPersonColumn ? 'aus Ihrem Benutzerprofil' : 'Benutzer nicht zugeordnet')),
+        m: !found ? 'Ordner nicht gefunden' : (who ? 'für ' + who : (noPersonColumn ? 'aus Dateien mit Ihrem Anmeldenamen' : 'Benutzer nicht zugeordnet')),
         cls: !found || (!who && !noPersonColumn) ? 'crit' : (o.imported ? 'good' : 'warn') });
     }
     $('kpis').innerHTML = tiles.map(t =>
@@ -219,7 +219,7 @@
     const u = server.user || {};
     const id = o.identity || {};
     const prof = state.profile || {};
-    const persons = o.persons || [];
+    const persons = o.persons || 0; // nur die Anzahl – Namen anderer verlassen das Programm nicht
     const files = o.files || [];
     const searched = o.searched || [];
     const kv = [
@@ -229,8 +229,8 @@
       ['OptiTime-Ordner', o.path ? '<span class="mono">' + esc(o.path) + '</span> <span class="chip ok">' + ({ parameter: 'Startparameter', umgebung: 'OPTITIME_PATH', konfiguration: 'gespeichert', benutzerprofil: 'AppData\\Local des Benutzers', gefunden: 'automatisch gefunden' }[o.pathSource] || esc(o.pathSource)) + '</span>'
         : '<span class="chip crit">nicht gefunden</span> <span class="muted">' + searched.length + ' Orte geprüft</span>'],
       ['Zuordnung', id.matchedPerson
-        ? '<b>' + esc(id.matchedPerson) + '</b> ' + (id.autoMatched ? '<span class="chip open">automatisch erkannt – bitte bestätigen</span>' : '<span class="chip ok">bestätigt</span>')
-        : (persons.length ? '<span class="chip crit">keine Person passt zu ' + esc(u.username) + '</span>' : '<span class="muted">keine Personenspalte in den Dateien</span>')],
+        ? '<b>' + esc(id.matchedPerson) + '</b> ' + (id.autoMatched ? '<span class="chip open">automatisch erkannt – bitte bestätigen</span> <button class="btn sm" type="button" id="ot-confirm">Das bin ich</button>' : '<span class="chip ok">bestätigt</span>')
+        : (persons ? '<span class="chip crit">keine von ' + persons + ' Personen passt zu ' + esc(u.username) + ' – bitte Personalnummer eintragen</span>' : '<span class="muted">keine Personenspalte in den Dateien</span>')],
       ['Letzter Abgleich', o.at ? new Date(o.at).toLocaleString('de-DE') + ' · ' + (o.imported || 0) + ' Buchungen übernommen' : '–'],
       ['Weitere Dateien', (o.otherFiles && Object.keys(o.otherFiles).length)
         ? Object.entries(o.otherFiles).map(([ext, n]) => esc(ext) + ' ×' + n).join(', ') + ' <span class="muted">(Typ nicht lesbar – bitte melden)</span>'
@@ -240,30 +240,30 @@
     const errs = (o.errors || []).map(e => '<div class="error">' + esc(e) + '</div>').join('');
     const fileRows = files.map(f => '<tr><td class="mono">' + esc(f.path.replace(o.path || '', '').replace(/^[\\/]/, '')) + '</td><td>' + esc(f.format) + '</td>'
       + '<td class="num">' + f.rows + '</td><td class="num">' + f.taken + '</td><td class="num">' + f.skipped + '</td><td class="muted">' + esc(f.reason || '') + '</td></tr>').join('');
-    const personOpts = '<option value="">– Person wählen –</option>' + persons.map(p =>
-      '<option value="' + esc(p) + '"' + (p === id.matchedPerson ? ' selected' : '') + '>' + esc(p) + '</option>').join('');
     card.querySelector('#optitime-body').innerHTML = '<div class="stack">'
       + '<dl class="kv">' + kv.map(([k, v]) => '<dt>' + k + '</dt><dd>' + v + '</dd>').join('') + '</dl>' + errs
       + (files.length ? '<div class="table-wrap files"><table><thead><tr><th>Datei</th><th>Format</th><th class="num">Zeilen</th><th class="num">Übernommen</th><th class="num">Andere</th><th>Hinweis</th></tr></thead><tbody>' + fileRows + '</tbody></table></div>' : '')
       + '<form class="form" id="optitime-form"><div class="row">'
       + '<div class="field"><label for="ot-path">OptiTime-Ordner (leer = automatisch suchen)</label><input type="text" id="ot-path" value="' + esc(o.pathSource === 'konfiguration' ? o.path : '') + '" placeholder="z. B. \\\\server\\OptiTime\\Export"></div>'
-      + '<div class="field"><label for="ot-person">Das bin ich (aus den Dateien)</label><select id="ot-person">' + personOpts + '</select></div>'
       + '</div><div class="row">'
       + '<div class="field"><label for="ot-persnr">Personalnummer</label><input type="text" id="ot-persnr" value="' + esc(prof.personalnummer || '') + '"></div>'
       + '<div class="field"><label for="ot-name">Name wie in OptiTime</label><input type="text" id="ot-name" value="' + esc(prof.name || '') + '" placeholder="Nachname, Vorname"></div>'
       + '</div><div><button class="btn sm primary" type="submit">Speichern &amp; neu einlesen</button></div></form>'
-      + '<p class="foot">Es werden nur Zeilen übernommen, deren Personenspalte zu Ihrem Windows-Konto, der Personalnummer oder dem Namen passt. Dateien ohne Personenspalte werden nur übernommen, wenn Dateiname oder Ordner Ihren Namen enthalten oder sie in Ihrem Benutzerprofil liegen.</p>'
+      + '<p class="foot">Es werden nur Zeilen übernommen, deren Personenspalte zu Ihrer Personalnummer, Ihrem Windows-Konto oder Ihrem vollständigen Namen passt. Dateien ohne Personenspalte werden nur übernommen, wenn Dateiname oder Ordner Ihren vollständigen Anmeldenamen enthalten. Namen anderer Personen werden nicht angezeigt.</p>'
       + '</div>';
-    card.querySelector('#optitime-form').addEventListener('submit', async e => {
-      e.preventDefault();
-      const person = $('ot-person').value;
-      const keys = person ? [person] : [];
+    const saveConfig = async body => {
       try {
-        const r = await api('/api/config', { method: 'POST', body: JSON.stringify({ optitimePath: $('ot-path').value, personalnummer: $('ot-persnr').value, name: $('ot-name').value, keys }) });
+        const r = await api('/api/config', { method: 'POST', body: JSON.stringify(body) });
         server = r.info; state = normalizeState(r.state); render();
         toast((r.info.optitime.imported || 0) + ' Buchungen aus OptiTime übernommen');
       } catch (err) { toast('Fehler: ' + err.message); }
+    };
+    card.querySelector('#optitime-form').addEventListener('submit', e => {
+      e.preventDefault();
+      saveConfig({ optitimePath: $('ot-path').value, personalnummer: $('ot-persnr').value, name: $('ot-name').value });
     });
+    const confirmBtn = card.querySelector('#ot-confirm');
+    if (confirmBtn) confirmBtn.addEventListener('click', () => saveConfig({ keys: [id.matchedPerson] }));
   }
 
   function renderStorage() {
@@ -471,7 +471,7 @@
     const box = $('diagnose-box'); box.hidden = false;
     $('diagnose-area').value = 'Diagnose läuft …';
     try {
-      const r = await fetch('/api/optitime/diagnose', { cache: 'no-store' });
+      const r = await fetch('/api/optitime/diagnose', { method: 'POST', cache: 'no-store', headers: { 'Content-Type': 'application/json' } });
       $('diagnose-area').value = await r.text();
     } catch (e) { $('diagnose-area').value = 'Diagnose fehlgeschlagen: ' + e.message; }
   });
@@ -499,7 +499,7 @@
       const u = server.user || {};
       document.querySelector('.brand .sub').textContent = 'Zeiterfassung · ' + (u.fullName || u.username) + ' · Fräsdienst-Service E. Feind GmbH';
       $('foot-storage').textContent = 'Die Daten liegen je Windows-Benutzer unter ' + server.dataFile + '. OptiTime wird bei jedem Start neu eingelesen.';
-      setInterval(() => { fetch('/api/ping', { method: 'POST' }).catch(() => {}); }, 10000);
+      setInterval(() => { api('/api/ping', { method: 'POST' }).catch(() => {}); }, 10000);
     }
     const wantTab = new URLSearchParams(location.search).get('tab');
     if (wantTab && $('panel-' + wantTab)) showTab(wantTab);

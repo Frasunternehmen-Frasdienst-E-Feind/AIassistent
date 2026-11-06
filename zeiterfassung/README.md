@@ -48,15 +48,23 @@ Zeiterfassung. Zwei Betriebsarten:
      OLE-Datum) werden umgerechnet; Mitarbeiter-IDs über eine Stammdatentabelle zum Namen aufgelöst.
 4. **Nur eigene Daten übernehmen**:
    - Hat die Datei eine Personenspalte, werden nur Zeilen übernommen, die zum Benutzer
-     (Anmeldename, Anzeigename), zur Personalnummer oder zum in den Einstellungen bestätigten
-     Namen passen. Zeilen anderer Personen werden gezählt, aber nie importiert.
-   - Ist die Zuordnung nur automatisch über den Windows-Namen erfolgt, zeigt die App
-     „automatisch erkannt – bitte bestätigen". Mit „Das bin ich" wird sie fest gespeichert.
-   - Dateien **ohne** Personenspalte gelten als eigene, wenn sie im Profil des Benutzers liegen
-     (`C:\Users\<user>\…`) oder Dateiname bzw. Ordner den Benutzer nennen. Andernfalls erscheinen
-     sie als „nicht zugeordnet".
+     (Anmeldename, vollständiger Anzeigename), zur Personalnummer oder zum in den Einstellungen
+     bestätigten Namen passen. Namen gelten nur, wenn alle Wörter übereinstimmen (Reihenfolge
+     egal) – der Nachname allein oder ein längerer Name genügt nie. Zeilen anderer Personen
+     werden gezählt, aber nie importiert.
+   - Ist die Zuordnung nur automatisch über den vollständigen Windows-Namen erfolgt, zeigt die App
+     „automatisch erkannt – bitte bestätigen". Mit „Das bin ich" wird sie fest gespeichert. Passt
+     keine Person, bitte die eigene Personalnummer in den Einstellungen eintragen. Die Oberfläche zeigt nur die
+     **Anzahl** der Personen in den Dateien, keine Namen anderer.
+   - Dateien **ohne** Personenspalte gelten nur als eigene, wenn Dateiname bzw. Unterordner
+     innerhalb des OptiTime-Ordners den vollständigen Anmeldenamen als eigenes Wort nennen (z. B.
+     `buchungen_m.muster.csv`, nicht `m.musterfrau.csv`). Andernfalls erscheinen sie
+     als „nicht zugeordnet" – auch wenn sie im eigenen Benutzerprofil liegen.
 5. **Oberfläche öffnen**: lokaler Server nur auf `127.0.0.1` mit freiem Port, Standardbrowser
-   startet automatisch. Wird das Browserfenster geschlossen, beendet sich das Programm nach
+   startet automatisch. Der Server beantwortet nur Anfragen an `127.0.0.1:<Port>` bzw.
+   `localhost:<Port>` aus der eigenen Oberfläche: fremder Host-Header (DNS-Rebinding) oder fremder
+   `Origin` werden abgewiesen. Alles außer GET/HEAD braucht `Content-Type: application/json`;
+   Diagnose, Ping und Beenden gehen nur per POST. Wird das Browserfenster geschlossen, beendet sich das Programm nach
    zwei Minuten von selbst; „Stempeluhr beenden" beendet sofort.
 
 OptiTime ist führend: Bei jedem Abgleich ersetzt eine OptiTime-Buchung eine vorhandene Buchung
@@ -74,11 +82,29 @@ liegt weiterhin auf dem Server (`\\S21\OptiControl` laut `config.ini`).
 
 Wenn nichts oder das Falsche eingelesen wird: In der OptiTime-Karte auf **Diagnose** klicken
 (oder `Stempeluhr.exe --user d.halko --diagnose` starten). Der Bericht listet alle Dateien im
-OptiTime-Ordner mit Größe, Datum und erkanntem Typ, zeigt die ersten Zeilen der Textdateien bzw.
-Tabellen, Spalten und Beispielzeilen der Datenbanken und die Erkennung je Datei. Er liegt unter
-`%APPDATA%\Stempeluhr\diagnose.txt` und enthält Auszüge der eigenen Zeitdaten. Zugangsdaten werden
-entfernt: Konfigurationsschlüssel mit `PW`, `PASSWORT`, `KENNWORT`, `PIN`, `SECRET`, `TOKEN` oder
-`USER` im Namen sowie die Kennwortspalte der Mitarbeiterliste erscheinen als `<entfernt>`.
+OptiTime-Ordner mit Größe, Datum und erkanntem Typ und zeigt je Datei nur **Struktur und
+Anzahlen**, keine Datenzeilen:
+- `config.ini`: alle Schlüssel, Werte aber nur für `KSTPAUSE`, `DEFAULTKST`, `SERVERZEIT`,
+  `LOKALZEIT`, `RECONNECT`, `BUCHLISTETAGE` und `LOGGERSTUFE`; alle anderen als `<ausgeblendet>`.
+- Stammdatenlisten (`Offliste*`): Zahl der Zeilen und Felder, keine Inhalte – unabhängig vom
+  Dateinamen.
+- CSV/TXT/JSON/XML: Trennzeichen, Feldzahl, Zahl der Datensätze und Personen, davon eigene.
+- OptiTime-Protokoll (`logger*`): Zahl der Datensätze und Personen, davon eigene.
+- Bei beiden als Beispiel höchstens drei **eigene** Buchungen (Datum, Uhrzeit, Tätigkeit).
+- Dateinamen: nur OptiTime-Systemdateien (`config.ini`, `Offliste*`, `logger*`) mit Namen,
+  alle anderen als „Datei n“ mit Endung – Dateinamen können Namen Dritter enthalten.
+- SQLite: Tabellen- und Spaltennamen mit Zeilenzahl.
+- Fehlermeldungen des Dateisystems ohne Pfad.
+
+Der Bericht liegt unter `%APPDATA%\Stempeluhr\diagnose.txt`.
+
+### Datenschutz
+
+- Namen, Personalnummern und Buchungen anderer Personen verlassen das Programm nicht: weder in
+  der Oberfläche (`/api/info` liefert nur die Personenanzahl) noch im Diagnosebericht.
+- `data.json`, `config.json`, `diagnose.txt` und `stempeluhr.log` werden nur für den Benutzer
+  lesbar geschrieben (Rechte `0600`, neu angelegte Ordner `0700`). Unter Windows gelten die
+  Zugriffsrechte des Benutzerprofils bzw. des gewählten Datenordners.
 
 ### Startparameter
 
