@@ -2923,6 +2923,22 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tabs-wrap::before { background: linear-gradient(180deg, color-mix(in srgb, #000 52%, var(--ground)), color-mix(in srgb, #000 40%, var(--ground))); border-color: color-mix(in srgb, #000 45%, var(--line)); box-shadow: inset 0 7px 12px -6px #000, inset 0 -6px 10px -8px #000, 0 8px 18px -10px #000; }
   :root:not([data-theme="light"]) .tabs .tab:not([aria-selected="true"]) { background: color-mix(in srgb, var(--surface) 70%, transparent); } }
 .tabbar.d2-stuck { box-shadow: 0 12px 26px -16px rgba(0, 0, 0, .7); }
+
+/* ---- Mitglieder-Login (06.11.2026): ohne Freigabe nur die Sperrseite ---- */
+body.mg-on .topnav, body.mg-on .tabbar, body.mg-on #bannerSlot, body.mg-on #actionBar, body.mg-on .world,
+body.mg-on #cmdBtn, body.mg-on #dropBtn, body.mg-on .foot { display: none !important; }
+.member-gate { max-width: 560px; margin: clamp(24px, 6vh, 64px) auto; }
+.member-gate .card { text-align: center; padding: clamp(20px, 3vw, 36px); }
+.member-gate .gate-ic { width: 64px; height: 64px; margin: 0 auto 12px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 14%, var(--surface)); }
+.member-gate .gate-ic svg { width: 32px; height: 32px; }
+.member-gate textarea { width: 100%; text-align: left; }
+.mb-table { width: 100%; border-collapse: collapse; }
+.mb-table th, .mb-table td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+.mb-table td.c, .mb-table th.c { text-align: center; }
+.mb-table input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--accent); }
+@media (pointer: coarse) { .mb-table input[type=checkbox] { width: 26px; height: 26px; } }
+.mb-switch { display: flex; gap: 10px; align-items: center; font-weight: 600; }
+.mb-switch input { width: 22px; height: 22px; accent-color: var(--accent); }
 </style>
 <a class="skip" href="#main">Zum Inhalt springen</a>
 <header class="top">
@@ -6186,6 +6202,21 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
     return !!S.isOwner;
   };
   // Admin-Reiter nur für Admins; solange die Verbindung steht, bleibt er sichtbar, damit ein Neuladen auf #admin nicht wegspringt.
+  /* Mitglieder-Login (Wunsch David 06.11.2026): Ist er in admin/members aktiv, sehen im geteilten Cockpit nur
+     eingetragene Mitglieder etwas, und zwar nur ihre freigegebenen Bereiche. Owner und lokale Datei sehen alles.
+     shortcut: Sperre der Oberfläche, keine Datenbank-Regel – die Plattform trennt Rechte nur nach Freigabestufe.
+     Wer das Artefakt geteilt bekommt, könnte die Daten technisch weiter lesen; harte Grenze bleibt das Teilen-Menü. */
+  const AREAS = ['marketing', 'infratech', 'wissen'];
+  app.AREAS = AREAS;
+  app.membersDoc = () => S.docs.adminMembers || null;
+  app.allowedWorlds = function () {
+    if (S.mode !== 'shared' || S.isOwner) return AREAS;
+    if (!S.loaded['doc:adminMembers']) return [];
+    const d = app.membersDoc();
+    if (!d || !d.active) return AREAS;
+    const m = (d.list || {})[(S.me && S.me.id) || ''];
+    return m ? AREAS.filter(w => Array.isArray(m.areas) && m.areas.includes(w)) : [];
+  };
   const adminVisible = () => S.mode === 'connecting' || app.isAdmin();
   function syncAdminTab() {
     const ok = adminVisible(), b = $('wt-admin');
@@ -6211,6 +6242,8 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
   function navigate(world, key, opts) {
     const o = opts || {};
     if (!WORLDS.includes(world) || (world === 'admin' && !adminVisible())) world = 'marketing';
+    const okWorlds = app.allowedWorlds();
+    if (world !== 'admin' && !okWorlds.includes(world) && okWorlds.length) world = okWorlds[0];
     const mods = visibleModules(world);
     if (!key || !mods.some(m => m[0] === key)) key = (mods[0] || MODULES[world][0])[0];
     S.world = world;
@@ -6387,7 +6420,24 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
     const run = () => { pending = false; if (ptrDown) { deferred = true; return; } renderAll(); };
     if (typeof requestAnimationFrame === 'function' && !document.hidden) requestAnimationFrame(run); else setTimeout(run, 0);
   };
+  function renderGate() {
+    syncAdminTab();
+    const ok = app.allowedWorlds();
+    for (const w of AREAS) { const b = $('wt-' + w); if (b) b.hidden = !ok.includes(w); }
+    document.body.classList.toggle('mg-on', !ok.length);
+    let g = $('memberGate');
+    if (!ok.length) {
+      if (!g) { g = document.createElement('section'); g.id = 'memberGate'; g.className = 'member-gate'; $('main').prepend(g); }
+      g.hidden = false;
+      g.replaceChildren(...[].concat(app.gateView ? app.gateView() : []));
+      return true;
+    }
+    if (g) { g.hidden = true; g.replaceChildren(); }
+    if (S.world !== 'admin' && !ok.includes(S.world)) { navigate(ok[0], S.tab[ok[0]]); return true; }
+    return false;
+  }
   function renderAll() {
+    if (renderGate()) { updateHeader(); return; }
     if (!syncAdminTab() && S.world === 'admin') { navigate('marketing', S.tab.marketing); return; }
     updateHeader();
     renderBanners();
@@ -6775,7 +6825,7 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
 
   /* ---------- Store-Anbindung und Abonnements ---------- */
   const COLLECTIONS = ['content', 'mkt_leads', 'tenders', 'events', 'seo_keywords', 'seo_traffic', 'seo_gaps', 'kpis', 'references', 'ref_photos', 'knowledge', 'tasks', 'admin_requests', 'meetings', 'checkliste', 'kb_items', 'kb_projects'];
-  const DOC_WATCH = { settings: 'settings/general', meta: 'meta/sync', budget: 'budget/actuals', leadCounts: 'leads/counts', adminConfig: 'admin/config', adminDraft: 'admin/draft', adminRoles: 'admin/roles', planSnapshot: 'snapshot/aktuell' };
+  const DOC_WATCH = { settings: 'settings/general', meta: 'meta/sync', budget: 'budget/actuals', leadCounts: 'leads/counts', adminConfig: 'admin/config', adminDraft: 'admin/draft', adminRoles: 'admin/roles', adminMembers: 'admin/members', planSnapshot: 'snapshot/aktuell' };
   for (const c of COLLECTIONS.concat(['briefings', 'activity', 'legacy_leads'])) S.data[c] = [];
 
   // Befehle der Welten (commands.js); read liefert den zuletzt gesehenen Snapshot eines Dokuments.
@@ -7212,7 +7262,7 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
     }));
   }
   // Marketing-Event der InfraTech 2027: Checkliste kommt aus den Notion-Aufgaben (01.10.2026).
-  app.isFairEvent = e => !!e && (e._id === D.FAIR.slug || str(e.slug) === D.FAIR.slug || /infratech/i.test(str(e.title)));
+  app.isFairEvent = e => !!e && (e._id === D.FAIR.slug || str(e.slug) === D.FAIR.slug || /infratech[^0-9]*2027/i.test(str(e.title)));
   // Kennzahlen-Leiste (aus dem Floot-Entwurf übernommen, nur echte Daten): Kachel öffnet das Modul.
   function kpiStrip() {
     const t = today();
@@ -7315,7 +7365,7 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
     const inSt = since ? Math.max(0, dayDiff(since, today())) : null, lim = s().staleDraftDays;
     const ageTip = inSt == null ? null : inSt + (inSt === 1 ? ' Tag' : ' Tage') + ' in diesem Status' + (stale != null ? ' · hängt (Grenze ' + lim + ' Tage)' : '');
     const tip = [str(c.projectType), str(c.region), str(c.note)].filter(Boolean).join(' · ');
-    return h('article', { class: 'card ct-card ct-' + str(c.status), 'data-tip': tip || null, tabindex: tip ? '0' : null },
+    return h('article', { class: 'card ct-card ct-' + str(c.status), 'data-tip': tip || null, tabindex: '0', role: 'button', 'aria-label': str(c.title) + ' bearbeiten', style: 'cursor:pointer', onclick: () => openContentModal(c._id), onkeydown: e => { if (e.key === 'Enter') openContentModal(c._id); } },
       h('div', { class: 't', text: str(c.title) || '(ohne Titel)' }),
       h('div', { class: 'chips' }, h('span', { class: 'chip soft', text: channelLabel(c.channel) })),
       h('div', { class: 'meta', text: (c.status === 'veroeffentlicht' ? '✓ ' : '') + fmtDs(d) }),
@@ -7401,6 +7451,54 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
   app.mkContentIcs = contentIcs;
   app.mkContentStatusLabel = statusLabel;
   app.mkChannelLabel = channelLabel;
+  // Content-Editor: Beiträge anlegen und pflegen; Statuswechsel setzt statusSince,
+  // „veroeffentlicht" braucht publishedDate, Rückschritt und „freigegeben" brauchen eine Notiz (Freigabe erteilt David).
+  function openContentModal(id) {
+    const x = id ? (S.data.content || []).find(c => c._id === id) : { title: '', channel: 'linkedin', status: 'idee', region: '', projectType: '', plannedDate: '', publishedDate: '', note: '' };
+    if (!x) return;
+    const isNew = !id;
+    const ORDER = D.CONTENT_STATUS.map(s0 => s0[0]);
+    const title = h('input', { type: 'text', id: 'c_title', value: str(x.title), required: true, maxlength: '200', placeholder: 'Titel des Beitrags' });
+    const channel = app.dropdown('c_channel', Object.entries(D.CHANNELS_CONTENT), str(x.channel) || 'linkedin');
+    const status = app.dropdown('c_status', D.CONTENT_STATUS, str(x.status) || 'idee');
+    const region = h('input', { type: 'text', id: 'c_region', value: str(x.region), placeholder: 'z. B. Brandenburg' });
+    const ptype = h('input', { type: 'text', id: 'c_ptype', value: str(x.projectType), placeholder: 'z. B. Fahrbahnsanierung' });
+    const planned = h('input', { type: 'date', id: 'c_planned', value: str(x.plannedDate) });
+    const published = h('input', { type: 'date', id: 'c_published', value: str(x.publishedDate) });
+    const note = h('textarea', { id: 'c_note', placeholder: 'Notiz – Pflicht bei Rückschritt und bei Freigabe' });
+    note.value = str(x.note);
+    const slug = t => (t.toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60)) || 'beitrag';
+    const body = [
+      app.field('Titel', title),
+      h('div', { class: 'form-grid' }, app.field('Kanal', channel), app.field('Status', status), app.field('Region', region),
+        app.field('Projekttyp', ptype), app.field('Geplant am', planned), app.field('Veröffentlicht am', published)),
+      app.field('Notiz', note),
+      h('p', { class: 'muted small', text: 'Status „freigegeben" erteilt David – in der Notiz vermerken (z. B. „freigegeben durch David am ' + H.ymd(today()) + '"). Keine Preise, keine personenbezogenen Daten Dritter, Kundennamen nur mit Freigabe.' })
+    ];
+    app.modal({
+      title: isNew ? 'Neuer Beitrag' : 'Beitrag bearbeiten', body, focus: '#c_title',
+      actions: [{ label: 'Abbrechen' }, {
+        label: isNew ? 'Anlegen' : 'Speichern', primary: true, onClick: async () => {
+          const t = title.value.trim();
+          if (!t) { title.setAttribute('aria-invalid', 'true'); title.focus(); return true; }
+          const os = str(x.status) || 'idee', ns = status.value;
+          if (ns === 'veroeffentlicht' && !published.value) { published.setAttribute('aria-invalid', 'true'); published.focus(); app.toast('„veroeffentlicht" braucht ein Veröffentlichungsdatum.', true); return true; }
+          const regress = ORDER.indexOf(ns) < ORDER.indexOf(os);
+          if (!isNew && ns !== os && (regress || ns === 'freigegeben') && !note.value.trim()) { note.setAttribute('aria-invalid', 'true'); note.focus(); app.toast(regress ? 'Rückschritt bitte in der Notiz begründen.' : 'Freigabe bitte in der Notiz vermerken (erteilt David).', true); return true; }
+          const patch = { title: t.slice(0, 200), channel: channel.value, status: ns, region: region.value.trim(), projectType: ptype.value.trim(), plannedDate: planned.value || null, note: note.value.trim() };
+          if (isNew || ns !== os) patch.statusSince = H.ymd(today());
+          if (published.value) patch.publishedDate = published.value;
+          let did = id;
+          if (isNew) { did = slug(t); if ((S.data.content || []).some(c => c._id === did)) did += '-' + H.ymd(today()); patch.source = 'manuell: Cockpit-Editor'; }
+          const ok = await app.write('content/' + did, isNew ? 'set' : 'update', patch);
+          if (ok) app.log('Content', t + ' → ' + statusLabel(ns) + (isNew ? ' (neu)' : ''));
+          return !ok;
+        }
+      }]
+    });
+  }
+  app.openContentModal = openContentModal;
+
   app.module('marketing', 'content', {
     count: () => filteredContent().length,
     render() {
@@ -7409,7 +7507,8 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
       const tools = h('div', { class: 'tools' }, sharedFilters(),
         app.field('Kanal', app.dropdown('c-channel', [['', 'Alle Kanäle'], ...Object.entries(D.CHANNELS_CONTENT)], m.channel, v => { m.channel = v; rerender(); })),
         app.field('Projekttyp', app.dropdown('c-ptype', [['', 'Alle Projekttypen'], ...uniq(S.data.content.map(c => c.projectType)).map(x => [x, x])], m.ptype, v => { m.ptype = v; rerender(); })),
-        app.field('Status', app.dropdown('c-status', [['', 'Alle Status'], ...D.CONTENT_STATUS], m.status, v => { m.status = v; rerender(); })));
+        app.field('Status', app.dropdown('c-status', [['', 'Alle Status'], ...D.CONTENT_STATUS], m.status, v => { m.status = v; rerender(); })),
+        h('button', { class: 'btn small', type: 'button', id: 'c-new', onclick: () => openContentModal() }, '+ Neuer Beitrag'));
       const head = panelHead('Content-Pipeline', items.length + ' von ' + S.data.content.length, null, srcNote('content'));
       if (!items.length) return [head, tools, emptyState('content', S.data.content.length > 0)];
       const viewToggle = h('div', { class: 'row', role: 'group', 'aria-label': 'Kalenderansicht' },
@@ -7670,7 +7769,12 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
     const key = ev._id + ':' + idx;
     if (ui.pending.has(key)) return;
     ui.pending.add(key);
-    const checklist = arr(ev.checklist).map((c, i) => ({ area: str(c && c.area), item: str(c && c.item), done: i === idx ? done : !!(c && c.done) }));
+    // Zusatzfelder (due, role, idCode, state …) bleiben beim Abhaken erhalten; state folgt done.
+    const checklist = arr(ev.checklist).map((c, i) => {
+      const base = Object.assign({}, (c && typeof c === 'object') ? c : {}, { area: str(c && c.area), item: str(c && c.item), done: i === idx ? done : !!(c && c.done) });
+      if (i === idx && base.state !== undefined) base.state = done ? 'erledigt' : 'offen';
+      return base;
+    });
     const ok = await app.write('events/' + ev._id, 'update', { checklist });
     ui.pending.delete(key);
     if (ok) app.log('Checkliste', str(ev.title) + ': ' + str(checklist[idx].item) + (done ? ' erledigt' : ' wieder offen'));
@@ -7779,7 +7883,8 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
         const id = 'chk-' + e._id + '-' + i;
         const inp = h('input', { type: 'checkbox', id, checked: !!c.done, disabled: !writable || ui.pending.has(e._id + ':' + i) });
         inp.addEventListener('change', () => toggleCheck(e, i, inp.checked));
-        return h('li', {}, h('label', { for: id }, inp, h('span', { text: str(c.item) })));
+        const extra = [str(c.idCode), c.due ? 'bis ' + fmtD(parseDay(c.due)) : null, str(c.role)].filter(Boolean).join(' · ');
+        return h('li', {}, h('label', { for: id }, inp, h('span', { text: str(c.item) }), extra ? h('span', { class: 'muted small', text: ' · ' + extra }) : null));
       }))));
     }
     const allPct = cl.length ? Math.round(done / cl.length * 100) : 0;
@@ -7796,7 +7901,7 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
         h('div', { class: 'ev-top' },
           h('div', {}, h('div', { class: 'ev-date', text: fmtD(a) + (b && b > a ? ' – ' + fmtD(b) : '') }),
             h('h3', { style: 'font-size:17px;margin-top:2px', text: str(e.title) || '(ohne Titel)' }),
-            h('div', { class: 'muted small', text: [D.EVENT_TYPES[e.type] || str(e.type), str(e.location)].filter(Boolean).join(' · ') })),
+            h('div', { class: 'muted small', text: [D.EVENT_TYPES[e.type] || str(e.type), str(e.location), str(e.standNr) ? 'Stand ' + str(e.standNr) : null, e.areaSqm ? String(e.areaSqm) + ' m²' : null, e.status === 'gebucht' ? 'gebucht' : null].filter(Boolean).join(' · ') })),
           h('div', { class: 'ev-side' }, days != null ? h('span', { class: 'chip soft', text: days > 0 ? 'in ' + tageText(days) : days === 0 ? 'heute' : 'vor ' + tageText(-days) }) : null,
             cl.length ? CH.progressRing(allPct, { title: 'Checkliste ' + (str(e.title) || 'Event'), size: 84, stroke: 10, sub: done + '/' + cl.length, animate: !prevOf('events') }) : null)),
         str(e.note || e.notes) ? h('p', { class: 'small', text: str(e.note || e.notes) }) : null,
@@ -7820,7 +7925,7 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
         h('div', { class: 'ev-top' },
           h('div', {}, h('div', { class: 'ev-date', text: fmtD(a) + (b && b > a ? ' – ' + fmtD(b) : '') }),
             h('h3', { style: 'font-size:17px;margin-top:2px', text: str(e.title) || '(ohne Titel)' }),
-            h('div', { class: 'muted small', text: [D.EVENT_TYPES[e.type] || str(e.type), str(e.location)].filter(Boolean).join(' · ') })),
+            h('div', { class: 'muted small', text: [D.EVENT_TYPES[e.type] || str(e.type), str(e.location), str(e.standNr) ? 'Stand ' + str(e.standNr) : null, e.areaSqm ? String(e.areaSqm) + ' m²' : null, e.status === 'gebucht' ? 'gebucht' : null].filter(Boolean).join(' · ') })),
           h('div', { class: 'ev-side' }, days != null ? h('span', { class: 'chip soft', text: days > 0 ? 'in ' + tageText(days) : days === 0 ? 'heute' : 'vor ' + tageText(-days) }) : null,
             CH.progressRing(M.progress(app.tasks()).pct, { title: 'Aufgaben InfraTech 2027', size: 84, stroke: 10, sub: 'Aufgaben', animate: !prevOf('events') }))),
         str(e.note || e.notes) ? h('p', { class: 'small', text: str(e.note || e.notes) }) : null,
@@ -9512,6 +9617,7 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
       return [
         banner('liste', 'InfraTech 2027 · Aufgaben', live.filter(M.isOpen).length + ' offen' + (totalOver ? ' · ' + totalOver + ' überfällig' : '')),
         panelHead('Aufgaben', null, actions),
+        app.jiraBox ? app.jiraBox() : null,
         app.notionTaskStatus ? app.notionTaskStatus() : null,
         app.taskFallbackBanner ? app.taskFallbackBanner() : null,
         ui.archived ? null : h('div', { class: 'section grid2 it-visual' },
@@ -10503,7 +10609,8 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
   async function decide(r, ok) {
     const id = r.id || r._id;
     if (!await app.write('admin_requests/' + id, 'update', { status: ok ? 'genehmigt' : 'abgelehnt', decidedAt: nowIso(), decidedBy: meId() })) return;
-    if (ok && !await app.write('admin/roles', 'set', { admins: Array.from(new Set(roles().concat([id]))) })) return;
+    if (ok && r.kind === 'mitglied') { if (!await saveMembers(n => { n.list[id] = { areas: app.AREAS.slice(), at: nowIso(), by: meId() }; })) return; }
+    else if (ok && !await app.write('admin/roles', 'set', { admins: Array.from(new Set(roles().concat([id]))) })) return;
     app.log(ok ? 'Admin-Zugang erteilt' : 'Admin-Anfrage abgelehnt', 'Nutzer-ID ' + id);
     app.toast(ok ? 'Zugang erteilt. Schreibrechte zusätzlich im Teilen-Menü vergeben („Kann bearbeiten“).' : 'Anfrage abgelehnt.');
   }
@@ -10511,6 +10618,101 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
     const ok = await app.confirm({ title: 'Admin-Rolle entziehen?', text: 'Die Person sieht die Admin-Welt danach nur noch lesend. Die Freigabe im Teilen-Menü bleibt unverändert.', confirmLabel: 'Rolle entziehen', danger: true });
     if (ok && await app.write('admin/roles', 'set', { admins: roles().filter(x => x !== id) })) app.log('Admin-Rolle entzogen', 'Nutzer-ID ' + id);
   }
+  /* ---------- Mitglieder-Login: Liste, Bereiche, Sperrseite (06.11.2026) ---------- */
+  const AREA_LABEL = { marketing: 'Marketing', infratech: 'InfraTech 2027', wissen: 'Wissen' };
+  const mDoc = () => app.membersDoc() || { active: false, list: {} };
+  // Ganze Liste in einem Dokument; schreiben darf nur der Owner (Regel admin: write admin).
+  async function saveMembers(fn) {
+    const d = mDoc();
+    const next = { active: !!d.active, list: Object.assign({}, d.list || {}) };
+    fn(next);
+    next.changedAt = nowIso();
+    return app.write('admin/members', 'set', next);
+  }
+  async function setActive(on) {
+    if (on && !Object.keys(mDoc().list || {}).length) {
+      const go = await app.confirm({ title: 'Login ohne Mitglieder einschalten?', text: 'Noch ist niemand eingetragen. Außer dir (Owner) sieht dann niemand etwas, bis du Mitglieder hinzufügst.', confirmLabel: 'Trotzdem einschalten' });
+      if (!go) { app.refresh(); return; }
+    }
+    if (await saveMembers(n => { n.active = on; })) app.log(on ? 'Mitglieder-Login eingeschaltet' : 'Mitglieder-Login ausgeschaltet', '');
+  }
+  async function toggleArea(id, area, on) {
+    if (await saveMembers(n => { const m = Object.assign({ areas: [] }, n.list[id]); const a = new Set(m.areas); on ? a.add(area) : a.delete(area); m.areas = app.AREAS.filter(x => a.has(x)); n.list[id] = m; }))
+      app.log('Bereich ' + (on ? 'freigegeben' : 'gesperrt'), AREA_LABEL[area] + ' · Nutzer-ID ' + id);
+  }
+  async function addMember(id) {
+    if (!id || (mDoc().list || {})[id]) return;
+    if (await saveMembers(n => { n.list[id] = { areas: app.AREAS.slice(), at: nowIso(), by: meId() }; })) { app.log('Mitglied hinzugefügt', 'Nutzer-ID ' + id); app.toast('Mitglied hinzugefügt. Bereiche lassen sich unten je Person abwählen.'); }
+  }
+  async function removeMember(id) {
+    const ok = await app.confirm({ title: 'Mitglied entfernen?', text: who(id) + ' sieht das Cockpit danach nicht mehr, solange der Mitglieder-Login aktiv ist. Die Freigabe im Teilen-Menü bleibt unverändert.', confirmLabel: 'Entfernen', danger: true });
+    if (ok && await saveMembers(n => { delete n.list[id]; })) app.log('Mitglied entfernt', 'Nutzer-ID ' + id);
+  }
+  function membersCard(w) {
+    const d = mDoc(), ids = Object.keys(d.list || {});
+    app.resolveProfiles(ids);
+    const sw = h('input', { type: 'checkbox', id: 'mb-active', disabled: !w });
+    sw.checked = !!d.active;
+    sw.addEventListener('change', () => setActive(sw.checked));
+    const user = S.store && S.store.user, canSearch = !!(user && user.search);
+    const q = h('input', { type: 'search', id: 'mb-search', autocomplete: 'off', placeholder: canSearch ? 'Person aus der Organisation suchen' : 'Nur im geteilten Cockpit verfügbar', disabled: !canSearch || !w });
+    const hits = h('ul', { class: 'hits', hidden: true });
+    if (canSearch) {
+      const run = () => Promise.resolve(user.search(q.value)).then(r => {
+        const list = (Array.isArray(r) ? r : []).filter(p => p && p.id && !(d.list || {})[p.id]).slice(0, 8);
+        hits.replaceChildren(...list.map(p => h('li', {}, h('button', { type: 'button', onclick: () => { q.value = ''; hits.hidden = true; addMember(p.id); } }, p.name || 'Person aus der Organisation'))));
+        hits.hidden = !list.length;
+      }).catch(() => {});
+      q.addEventListener('focus', run);
+      q.addEventListener('input', run);
+    }
+    const box = (id, a) => {
+      const c = h('input', { type: 'checkbox', disabled: !w, 'aria-label': AREA_LABEL[a] + ' für ' + who(id) });
+      c.checked = arr((d.list[id] || {}).areas).includes(a);
+      c.addEventListener('change', () => toggleArea(id, a, c.checked));
+      return h('td', { class: 'c' }, c);
+    };
+    return h('div', { class: 'card section accentbar' },
+      h('h3', { text: 'Mitglieder-Login und Bereiche' }),
+      h('label', { class: 'mb-switch', for: 'mb-active' }, sw, d.active ? 'Aktiv: nur Mitglieder sehen das Cockpit' : 'Aus: alle mit Freigabe im Teilen-Menü sehen alles'),
+      h('p', { class: 'muted small', text: 'Erkannt wird jede Person über ihr claude.ai-Konto, ein eigenes Passwort gibt es nicht. Du als Owner siehst immer alles. Die Admin-Welt bleibt dir vorbehalten.' }),
+      h('div', { class: 'field' }, h('label', { for: 'mb-search', text: 'Mitglied hinzufügen' }), h('div', { class: 'hits-wrap' }, q, hits)),
+      ids.length
+        ? h('div', { class: 'tbl-wrap' }, h('table', { class: 'mb-table' },
+          h('thead', {}, h('tr', {}, h('th', { text: 'Person' }), ...app.AREAS.map(a => h('th', { class: 'c', text: AREA_LABEL[a] })), h('th', { text: '' }))),
+          h('tbody', {}, ids.map(id => h('tr', {}, h('td', {}, h('b', { text: who(id) })), ...app.AREAS.map(a => box(id, a)),
+            h('td', { class: 'c' }, h('button', { class: 'btn ghost danger small', type: 'button', disabled: !w, 'aria-label': 'Mitglied entfernen: ' + who(id), onclick: () => removeMember(id) }, 'Entfernen')))))))
+        : h('p', { class: 'muted', text: 'Noch keine Mitglieder eingetragen.' }),
+      h('p', { class: 'muted small', text: 'Wichtig: Das ist eine Sperre der Oberfläche. Wer das Cockpit über das Teilen-Menü bekommt, könnte die Daten mit Technikwissen trotzdem auslesen. Vertrauliches deshalb nur mit Personen teilen, die es sehen dürfen.' }));
+  }
+  async function requestMember() {
+    const id = meId();
+    if (!id) return;
+    const ok = await app.write('admin_requests/' + id, 'set', { id, kind: 'mitglied', reason: str(ui.reqText).trim().slice(0, 500), at: nowIso(), status: 'offen' });
+    if (ok) { ui.reqText = ''; app.toast('Anfrage gesendet. Der Owner sieht sie unter Admin › Zugänge.'); }
+    rerender();
+  }
+  // Sperrseite für Personen ohne Freigabe (Aufruf aus renderAll im Kern).
+  app.gateView = function () {
+    const card = h('div', { class: 'card' }, h('div', { class: 'gate-ic', 'aria-hidden': 'true' }, app.ico('schluessel')));
+    if (!S.loaded['doc:adminMembers']) { card.append(h('h2', { text: 'Zugang wird geprüft …' })); return [card]; }
+    card.append(h('h2', { text: 'Zugang nur für Mitglieder' }),
+      h('p', { text: 'Das Marketing-Cockpit ist für freigegebene Mitglieder sichtbar. Der Owner (Marketing) schaltet dich frei und legt fest, welche Bereiche du siehst.' }));
+    const id = meId();
+    if (!id) { card.append(h('p', { class: 'muted', text: 'Bitte das Cockpit in claude.ai öffnen und angemeldet sein.' })); return [card]; }
+    const mine = S.data.admin_requests.find(r => (r.id || r._id) === id);
+    if (mine && mine.status === 'offen') card.append(h('p', {}, chip('yellow', 'Anfrage offen · gestellt ' + tsText(mine.at))));
+    else if (S.readOnly) card.append(h('p', { class: 'muted', text: 'Du hast nur Lesezugriff und kannst hier keine Anfrage senden. Bitte den Owner direkt ansprechen.' }));
+    else {
+      if (mine && mine.status === 'abgelehnt') card.append(h('p', {}, chip('gone', 'Letzte Anfrage abgelehnt')));
+      const ta = h('textarea', { id: 'gate-reason', rows: '3', maxlength: '500', placeholder: 'Wofür brauchst du Zugang? (optional, keine personenbezogenen Daten Dritter)' });
+      ta.value = ui.reqText;
+      ta.addEventListener('input', () => { ui.reqText = ta.value; });
+      card.append(app.field('Begründung', ta), h('div', {}, h('button', { class: 'btn primary', type: 'button', onclick: requestMember }, app.ico('schluessel'), 'Zugang anfragen')),
+        h('p', { class: 'muted small', text: 'Gespeichert werden nur deine Nutzer-ID, der Zeitpunkt und die Begründung.' }));
+    }
+    return [card];
+  };
   function requestBox(reqs) {
     const id = meId();
     const box = h('div', { class: 'card' }, h('h3', { text: 'Admin-Zugang anfragen' }),
@@ -10536,12 +10738,12 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
     count: () => (isAdmin() ? S.data.admin_requests.filter(r => r.status === 'offen').length || null : null),
     render() {
       const reqs = S.data.admin_requests.slice().sort((a, b) => str(b.at).localeCompare(str(a.at)));
-      app.resolveProfiles(reqs.map(r => r.id || r._id).concat(roles()));
+      app.resolveProfiles(reqs.map(r => r.id || r._id).concat(roles()).concat(Object.keys(mDoc().list || {})));
       if (!isAdmin()) return [panelHead('Zugänge'), requestBox(reqs)];
       const w = canWrite();
       const pend = reqs.filter(r => r.status === 'offen'), done = reqs.filter(r => r.status !== 'offen');
       const card = r => h('div', { class: 'req-card' },
-        h('b', { text: who(r.id || r._id) }),
+        h('b', { text: who(r.id || r._id) + (r.kind === 'mitglied' ? ' · Mitglied' : ' · Admin') }),
         h('span', { class: 'muted small', text: 'gestellt ' + tsText(r.at) + (r.decidedAt ? ' · entschieden ' + tsText(r.decidedAt) : '') }),
         str(r.reason) ? h('span', { text: '„' + str(r.reason) + '“' }) : h('span', { class: 'muted small', text: 'ohne Begründung' }),
         r.status === 'offen'
@@ -10551,10 +10753,11 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
           : chip(r.status === 'genehmigt' ? 'green' : 'gone', str(r.status)));
       return [
         panelHead('Zugänge', pend.length ? pend.length + ' offen' : null),
+        membersCard(w),
         h('div', { class: 'grid2' },
           h('div', { class: 'card' }, h('h3', { text: 'Offene Anfragen (' + pend.length + ')' }),
             pend.length ? h('div', { class: 'stack' }, pend.map(card)) : h('p', { class: 'muted', text: 'Keine offenen Anfragen.' }),
-            h('p', { class: 'muted small', text: 'Die Freigabe hier steuert nur die Admin-Welt. Schreiben kann eine Person erst, wenn sie im Teilen-Menü des Artefakts „Kann bearbeiten“ hat.' })),
+            h('p', { class: 'muted small', text: 'Mitglieds-Anfragen schalten das Cockpit mit allen Bereichen frei (oben anpassbar). Admin-Anfragen betreffen die Admin-Welt. Schreiben kann eine Person erst mit „Kann bearbeiten“ im Teilen-Menü.' })),
           h('div', { class: 'card' }, h('h3', { text: 'Aktuelle Admins' }),
             h('div', { class: 'stack' },
               h('div', { class: 'req-card' }, h('b', { text: 'Owner des Artefakts' }), h('span', { class: 'muted small', text: 'immer Admin' })),
@@ -12121,7 +12324,7 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
   app.taskSource = function () {
     const kind = sourceKind();
     const at = kind === 'live' ? nt.at : kind === 'snapshot' ? nt.snap.at : D.TASKS_STAND;
-    const label = kind === 'live' ? 'Notion live' : kind === 'snapshot' ? 'Notion-Stand (Snapshot)' : 'Notfallstand, nicht aktuell';
+    const label = kind === 'live' ? 'Notion-Spiegel live' : kind === 'snapshot' ? 'Notion-Stand (Snapshot)' : 'Notfallstand, nicht aktuell';
     const tip = kind === 'live' ? 'Die Aufgaben kommen direkt aus der Notion-Datenbank „Aufgaben InfraTech 2027“ (Spiegel; führend ist Jira, Projekt MAR) und werden jede Minute neu geladen.'
       : kind === 'snapshot' ? 'Notion ist in dieser Ansicht nicht erreichbar. Angezeigt wird der zuletzt gespeicherte Notion-Stand (notion/tasks), nur lesend.'
         : 'Weder Notion noch ein gespeicherter Notion-Stand ist erreichbar. Angezeigt wird die beim Veröffentlichen eingebaute Liste vom ' + H.fmtD(D.TASKS_STAND) + '. Sie ist nicht aktuell; Änderungen bitte direkt in Notion.';
@@ -16076,6 +16279,73 @@ let shown = false, hideT = null;
     return [tools, bar, body, h('p', { class: 'muted small', text: 'Tipp: Mit gedrückter Umschalttaste einen Bereich markieren. Gruppen haben eigene Kästchen zum Markieren.' })];
   }
 
+  /* ---------- Gesamtabgleich: zuordnen, vergleichen, kategorisieren (nur Vorschläge, ohne KI, nichts wird geändert) ---------- */
+  // Läuft bei jedem Öffnen der Prüfung auf dem gesamten Bestand (Wissensarchiv, Projekte, freigegebene Referenzen),
+  // also auch nach jedem neuen Eintrag. Befunde bleiben Vorschläge: Geändert wird erst nach Klick auf „Details“ und Speichern.
+  const AUDIT_MAX = 600, AUDIT_SHOW = 8;
+  function auditSig(i) { return K.fold(str(i.title || i.name) + ' ' + str(i.fileTopic)).replace(/[^a-z0-9]+/g, ' ').trim(); }
+  function auditTok(i) { return new Set(K.tokens([i.title, i.name, i.summary, arr(i.tags).join(' ')].join(' '))); }
+  function abgleich() {
+    const all = items().filter(i => i && i.status !== 'archiviert' && i.status !== 'neu' && i.status !== 'in_arbeit');
+    const part = all.slice(0, AUDIT_MAX);
+    const toks = part.map(auditTok), sigs = part.map(auditSig);
+    const dupes = [];
+    for (let a = 0; a < part.length && dupes.length < 50; a++) {
+      for (let b = a + 1; b < part.length && dupes.length < 50; b++) {
+        const A = part[a], B = part[b];
+        const sameFile = A.size && A.size === B.size && str(A.name) && str(A.name) === str(B.name);
+        let why = '';
+        if (sameFile) why = 'gleicher Dateiname und gleiche Größe';
+        else if (sigs[a] && sigs[a].length > 8 && sigs[a] === sigs[b]) why = 'gleicher Titel';
+        else if (toks[a].size >= 5 && toks[b].size >= 5) {
+          let n = 0; for (const x of toks[a]) if (toks[b].has(x)) n++;
+          const j = n / (toks[a].size + toks[b].size - n);
+          if (j >= 0.8) why = 'sehr ähnlicher Inhalt (' + Math.round(j * 100) + ' %)';
+        }
+        if (why) dupes.push({ a: A, b: B, why });
+      }
+    }
+    const noCat = all.filter(i => !i.category || i.category === 'sonstiges');
+    const noSum = all.filter(i => !str(i.summary).trim());
+    const projNoPlace = all.filter(i => i.category === 'projekt' && !i.projectId);
+    const pr = projects().filter(p => p.kind !== 'thema');
+    const f = K.fold;
+    const projPairs = [];
+    for (let a = 0; a < pr.length; a++) {
+      for (let b = a + 1; b < pr.length; b++) {
+        const A = pr[a], B = pr[b];
+        if (f(A.name) && f(A.name) === f(B.name) && A.year && B.year && A.year !== B.year) projPairs.push({ a: A, b: B, why: 'gleicher Name, verschiedene Jahre (' + A.year + ' und ' + B.year + ')' });
+        else if (A.place && B.place && f(A.place) === f(B.place) && A.year && A.year === B.year) projPairs.push({ a: A, b: B, why: 'gleicher Ort und gleiches Jahr' });
+      }
+    }
+    const refs = (app.mkPubRefs ? app.mkPubRefs() : S.data.references || []);
+    const refNoProj = refs.filter(r => {
+      const t = new Set(K.tokens(str(r.title)));
+      return t.size && !pr.some(p => { let n = 0; for (const x of K.tokens(str(p.name) + ' ' + str(p.place))) if (t.has(x)) n++; return n >= 2 || p.refId === (r._id || r.id); });
+    });
+    const projEmpty = pr.filter(p => !arr(p.items).length);
+    return { total: all.length, cut: all.length > AUDIT_MAX, dupes, noCat, noSum, projNoPlace, projPairs, refNoProj, projEmpty,
+      n: dupes.length + noCat.length + noSum.length + projNoPlace.length + projPairs.length + refNoProj.length + projEmpty.length };
+  }
+  function abgleichView() {
+    const A = abgleich();
+    const row = (title, count, hint, kids) => h('details', { class: 'section', open: count > 0 && count <= 3 ? '' : null },
+      h('summary', {}, h('b', { text: title }), ' ', h('span', { class: 'chip ' + (count ? 'yellow' : 'green'), text: count ? String(count) : 'ok' })),
+      h('p', { class: 'muted small', text: hint }), count ? kids : null);
+    const link = it => h('button', { class: 'linkbtn', type: 'button', onclick: () => openDetail(it.id) }, nameOf(it));
+    const list = (rows, fn) => h('ul', { class: 'kb-review' }, rows.slice(0, AUDIT_SHOW).map(fn).concat(rows.length > AUDIT_SHOW ? [h('li', {}, h('span', { class: 'muted small', text: '… und ' + (rows.length - AUDIT_SHOW) + ' weitere' }))] : []));
+    return h('div', { class: 'section', id: 'kb-audit' }, h('h3', { text: 'Gesamtabgleich' }),
+      h('p', { class: 'muted small', text: A.total + ' Einträge' + (A.cut ? ' (die ersten ' + AUDIT_MAX + ' verglichen)' : '') + ', ' + projects().filter(p => p.kind !== 'thema').length + ' Projekte und die freigegebenen Referenzen verglichen. Stand: ' + H.fmtTs(new Date()) + '. ' + (A.n ? A.n + ' Vorschläge, nichts wurde geändert.' : 'Keine Auffälligkeiten.') }),
+      row('Mögliche Dubletten', A.dupes.length, 'Zwei Einträge, die dasselbe enthalten könnten. Prüfen und einen archivieren oder zusammenführen.', list(A.dupes, d => h('li', {}, h('div', { class: 'stack', style: 'min-width:0;flex:1' }, link(d.a), link(d.b), h('span', { class: 'muted small', text: d.why }))))),
+      row('Ohne Themengebiet', A.noCat.length, 'Kein Themengebiet oder „Sonstiges“: im Archiv schwerer zu finden.', list(A.noCat, i => h('li', {}, link(i)))),
+      row('Ohne Zusammenfassung', A.noSum.length, 'Weder Text noch Beschreibung erkannt: „Neu einordnen“ kann helfen.', list(A.noSum, i => h('li', {}, link(i)))),
+      row('Projektunterlagen ohne Projekt', A.projNoPlace.length, 'Als Projekt eingeordnet, aber keinem Projekt zugewiesen.', list(A.projNoPlace, i => h('li', {}, link(i)))),
+      row('Widersprüchliche Projekte', A.projPairs.length, 'Projekte, die zusammengehören oder sich widersprechen könnten.', list(A.projPairs, d => h('li', {}, h('div', { class: 'stack', style: 'min-width:0;flex:1' }, h('b', { text: str(d.a.name) }), h('b', { text: str(d.b.name) }), h('span', { class: 'muted small', text: d.why }))))),
+      row('Referenzen ohne Projekt', A.refNoProj.length, 'Freigegebene Referenzen, zu denen es im Wissensarchiv noch kein Projekt gibt.', list(A.refNoProj, r => h('li', {}, h('span', { text: str(r.title) })))),
+      row('Projekte ohne Unterlagen', A.projEmpty.length, 'Projekte, denen noch keine Unterlage zugeordnet ist.', list(A.projEmpty, p => h('li', {}, h('span', { text: str(p.name) })))));
+  }
+  app.kbAbgleich = abgleich;
+
   /* ---------- Modul Prüfung ---------- */
   const GEO_HOW = { verzeichnis: 'Ort aus Ortsverzeichnis', mehrdeutig: 'Ortsname mehrdeutig', ki: 'Ort von KI geschätzt', land: 'nur Bundesland bekannt', manuell: 'Position gesetzt', offen: 'Position offen' };
   app.kbGeoHow = GEO_HOW;
@@ -16099,6 +16369,7 @@ let shown = false, hideT = null;
             rowExtra: it => [h('button', { class: 'btn small primary', type: 'button', disabled: ro, onclick: () => ok(it) }, icon('check'), 'Passt'),
               h('button', { class: 'btn small', type: 'button', onclick: () => openDetail(it.id) }, 'Bearbeiten'),
               it.status === 'fehler' || imgRedo(it) ? h('button', { class: 'btn small', type: 'button', disabled: ro, onclick: () => reprocess(it.id) }, it.status === 'fehler' ? 'Erneut' : 'Neu auswerten') : null] }) : h('p', { class: 'muted', text: 'Nichts zu prüfen.' })),
+        abgleichView(),
         h('div', { class: 'section' }, h('h3', { text: 'Projekte bestätigen' }),
           projOpen.length ? h('ul', { class: 'kb-review' }, projOpen.map(p => h('li', {},
             h('div', { class: 'kb-thumb icon' }, app.ico('pin')),
@@ -16313,6 +16584,103 @@ let shown = false, hideT = null;
       h('div', { class: 'field' }, h('label', { for: 'fs-q', text: 'Suchbegriff' }), q),
       h('div', { class: 'grid2' }, localPart(), remotePart()),
       h('p', { class: 'muted small', text: 'Treffer können personenbezogene Dateien enthalten: Solche nur mit dokumentierter Einwilligung ablegen.' }));
+  };
+})();
+/* ---- jira-logic.js ---- */
+/* Feind Cockpit · Jira-Vorgänge (Projekt MAR) aus der Antwort von searchJiraIssuesUsingJql lesen. Reine Funktionen.
+   Datenschutz: Bearbeiter (Name, E-Mail, Konto) werden nicht übernommen, nur ob jemand zugewiesen ist. */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else (root.FC = root.FC || {}).jira = factory();
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const str = v => (v == null ? '' : String(v));
+  const safeUrl = u => (/^https:\/\/[a-z0-9-]+\.atlassian\.net\//i.test(str(u)) ? str(u) : '');
+  const DAY = /^\d{4}-\d{2}-\d{2}$/;
+
+  // payload: { issues: { nodes: [...], pageInfo: { hasNextPage } }, webUrl? } oder { issues: [...] }
+  function parse(payload) {
+    const box = payload && payload.issues;
+    const nodes = Array.isArray(box) ? box : (box && Array.isArray(box.nodes) ? box.nodes : []);
+    const rows = [];
+    for (const n of nodes) {
+      const f = (n && n.fields) || {};
+      if (!n || !n.key || !f.summary) continue;
+      const st = f.status || {};
+      rows.push({
+        key: str(n.key), title: str(f.summary), url: safeUrl(n.webUrl),
+        status: str(st.name), cat: str(st.statusCategory && st.statusCategory.key) || 'new',
+        due: DAY.test(str(f.duedate)) ? str(f.duedate) : '', prio: str(f.priority && f.priority.name),
+        labels: Array.isArray(f.labels) ? f.labels.map(str) : [], assigned: !!f.assignee
+      });
+    }
+    const more = !!(box && box.pageInfo && box.pageInfo.hasNextPage);
+    return { rows, more, url: safeUrl(payload && payload.webUrl) };
+  }
+
+  // Sortierung: mit Fälligkeit zuerst (früheste oben), dann ohne Fälligkeit nach Schlüssel.
+  const sort = rows => rows.slice().sort((a, b) => (a.due && b.due ? a.due.localeCompare(b.due) : a.due ? -1 : b.due ? 1 : a.key.localeCompare(b.key, 'de', { numeric: true })));
+  const overdue = (row, todayYmd) => !!row.due && row.cat !== 'done' && row.due < todayYmd;
+
+  return { parse, sort, overdue };
+});
+/* ---- app-jira.js ---- */
+/* Feind Cockpit · InfraTech › Aufgaben: Jira führt (Entscheidung David 09.11.2026, Spec SPEC-quellen-jira-katalog.md).
+   Liest die offenen Vorgänge im Projekt MAR lesend über den Atlassian-Connector der ansehenden Person; geschrieben wird
+   in Jira selbst. Darunter die Aufgabenliste des Teams aus SharePoint. Die Notion-Liste bleibt als Spiegel stehen. */
+(function () {
+  'use strict';
+  const FC = window.FC, app = FC.app, H = FC.helpers, J = FC.jira;
+  const { h, icon } = app;
+  const S = app.state;
+  const CFG = { server: 'Atlassian MCP', tool: 'searchJiraIssuesUsingJql', site: 'fraesdienst-feind.atlassian.net',
+    jql: 'project = MAR AND statusCategory != Done ORDER BY duedate ASC', board: 'https://fraesdienst-feind.atlassian.net/jira/software/projects/MAR' };
+  const st = S.ui.jira = { state: 'idle', rows: [], more: false, url: '', code: null, at: null };
+  const inViewer = () => !!(window.claude && window.claude.use);
+
+  async function load(force) {
+    if (st.state === 'busy') return;
+    st.state = 'busy'; st.code = null; app.refresh();
+    try {
+      const r = await app.mcpRead(CFG.server, CFG.tool,
+        { cloudId: CFG.site, jql: CFG.jql, maxResults: 50, fields: ['summary', 'status', 'duedate', 'priority', 'labels', 'assignee'] },
+        { cache: force ? { staleTime: 0, refresh: true } : { staleTime: 120000 } });
+      const p = J.parse(app.mcpBlocks(r)[0]);
+      st.rows = J.sort(p.rows); st.more = p.more; st.url = p.url; st.at = app.mcpStoredAt(r); st.state = 'ok';
+    } catch (e) {
+      st.state = 'err'; st.code = (e && e.code) || 'upstream_error';
+    }
+    app.refresh();
+  }
+
+  app.jiraBox = function () {
+    if (inViewer() && st.state === 'idle') setTimeout(() => load(false), 0);
+    const tk = H.ymd(H.today0(new Date()));
+    const src = st.state === 'ok' ? 'Quelle: Jira live · ' + H.fmtTs(new Date(st.at)) : st.state === 'err' ? 'Quelle: Jira nicht erreichbar' : 'Quelle: Jira';
+    const head = h('div', { class: 'tools', style: 'margin:0;justify-content:space-between' },
+      h('h3', { text: 'Jira · Projekt MAR (führend)' }),
+      h('div', { class: 'row' },
+        h('span', { class: 'pill ' + (st.state === 'ok' ? 'ready' : st.state === 'err' ? 'block' : 'wait'), id: 'jira-src', text: src }),
+        inViewer() ? h('button', { class: 'btn small', type: 'button', id: 'jira-load', disabled: st.state === 'busy', onclick: () => load(true) }, icon('refresh'), 'Aktualisieren') : null,
+        h('a', { class: 'btn small', href: st.url || CFG.board, target: '_blank', rel: 'noopener noreferrer' }, icon('ext'), 'In Jira öffnen')));
+    let body;
+    if (!inViewer()) body = h('p', { class: 'muted small', text: 'Die Jira-Vorgänge gibt es im geteilten Cockpit in claude.ai. Beim ersten Laden fragt claude.ai nach der Freigabe für Atlassian.' });
+    else if (st.state === 'busy' || st.state === 'idle') body = app.skeleton(4, 'Lade Jira-Vorgänge');
+    else if (st.state === 'err') body = h('p', { class: 'small', role: 'status', style: 'color:var(--signal-text)', text: app.mcpErrText('Atlassian (Jira)', st.code) });
+    else body = st.rows.length
+      ? h('div', { class: 'tbl-wrap' }, h('table', { class: 'data' }, h('caption', { class: 'sr', text: 'Offene Jira-Vorgänge im Projekt MAR' }),
+        h('thead', {}, h('tr', {}, ['Vorgang', 'Titel', 'Status', 'Fällig', 'Priorität'].map(t => h('th', { scope: 'col', text: t })))),
+        h('tbody', {}, st.rows.map(r => h('tr', {},
+          h('td', {}, r.url ? h('a', { href: r.url, target: '_blank', rel: 'noopener noreferrer', text: r.key }) : r.key),
+          h('td', { text: r.title }),
+          h('td', { text: r.status }),
+          h('td', {}, r.due ? H.fmtD(r.due) : '–', J.overdue(r, tk) ? h('span', { class: 'pill over', style: 'margin-left:8px', text: 'überfällig' }) : null),
+          h('td', { text: r.prio || '–' }))))))
+      : h('p', { class: 'muted small', text: 'Keine offenen Vorgänge im Projekt MAR.' });
+    return h('div', { class: 'section' }, head, body,
+      st.more ? h('p', { class: 'muted small', text: 'Angezeigt werden die ersten 50 Vorgänge; alle weiteren in Jira.' }) : null,
+      h('p', { class: 'muted small', text: 'Nur lesend. Ändern und neu anlegen bitte direkt in Jira. Bearbeiter werden aus Datenschutzgründen nicht angezeigt.' }),
+      app.teamTasksBox ? h('div', { class: 'src-box' }, app.teamTasksBox()) : null);
   };
 })();
 /* ---- app-karte.js ---- */
