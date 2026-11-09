@@ -1,0 +1,251 @@
+<title>Wissens-Upload Ablauf</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo:wght@600;700&display=swap">
+<style>
+/* Layout: eine Lesespalte, Diagramme dürfen breiter laufen und scrollen in ihrem Rahmen. Werte aus branding/feind-ci.tokens.json */
+:root {
+  --accent: #84bb20; --accent-text: #4d7311; --on-accent-strong: #1f2525;
+  --signal: #e3000b; --signal-text: #b8000a;
+  --surface: #ffffff; --surface-muted: #f2f4f4; --surface-inverse: #424e4e;
+  --ink: #3c5457; --ink-strong: #424e4e; --ink-muted: #6b7575; --ink-inverse: #ffffff;
+  --line: #d5dada; --focus: #424e4e;
+  --display: Exo, "Arial Black", Arial, sans-serif;
+  --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --accent-text: #84bb20; --signal-text: #ff9a9f;
+  --surface: #2e3737; --surface-muted: #384242; --surface-inverse: #1f2525;
+  --ink: #e7ecec; --ink-strong: #ffffff; --ink-muted: #b8bfbf; --line: #4d5858; --focus: #84bb20;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --accent-text: #84bb20; --signal-text: #ff9a9f;
+  --surface: #2e3737; --surface-muted: #384242; --surface-inverse: #1f2525;
+  --ink: #e7ecec; --ink-strong: #ffffff; --ink-muted: #b8bfbf; --line: #4d5858; --focus: #84bb20;
+  color-scheme: dark }
+
+body { background: var(--surface); color: var(--ink); font: 15px/1.55 var(--sans);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 64px; }
+main { max-width: 1080px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 8px; max-width: 68ch; }
+.eyebrow { font: 700 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--accent-text); }
+h1 { font: 700 clamp(26px, 4vw, 36px)/1.15 var(--display); color: var(--ink-strong); margin: 0; text-wrap: balance; }
+h2 { font: 600 20px/1.25 var(--display); color: var(--ink-strong); margin: 0; text-wrap: balance; }
+p { margin: 0; max-width: 68ch; }
+section { display: grid; gap: 16px; min-width: 0; }
+figure { margin: 0; display: grid; gap: 8px; min-width: 0; }
+.scroll { overflow-x: auto; border-top: 4px solid var(--accent); background: var(--surface); padding-block: 16px; }
+svg { display: block; width: 100%; min-width: 760px; height: auto; color: var(--ink-strong); }
+figcaption { color: var(--ink-muted); font-size: 13px; max-width: 80ch; }
+code { font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--ink-strong); }
+
+/* SVG-Bausteine: höchstens drei Füllfarben (Grün, Anthrazit, Hellgrau mit Kontur) */
+.bx-g { fill: var(--surface-muted); stroke: var(--line); stroke-width: 1.5; }
+.bx-a { fill: var(--surface-inverse); }
+.bx-k { fill: var(--accent); }
+.bx-d { fill: var(--surface); stroke: var(--ink-muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.bx-s { fill: var(--surface); stroke: var(--signal); stroke-width: 2; }
+.t  { font: 700 13px var(--sans); fill: var(--ink-strong); }
+.ts { font: 12px var(--sans); fill: var(--ink-muted); }
+.t-a { fill: var(--ink-inverse); }
+.ts-a { fill: var(--ink-inverse); opacity: .85; }
+.t-k, .ts-k { fill: var(--on-accent-strong); }
+.t-s { fill: var(--signal-text); }
+.lbl { font: 12px var(--sans); fill: var(--ink); }
+.edge { stroke: currentColor; stroke-width: 1.5; fill: none; }
+.edge-d { stroke: var(--ink-muted); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+.limits { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; padding: 0; margin: 0; list-style: none; }
+.limits li { display: grid; gap: 4px; padding-block: 8px; border-top: 1px solid var(--line); }
+.limits b { font: 700 22px/1.1 var(--display); color: var(--ink-strong); font-variant-numeric: tabular-nums; }
+.limits span { font-size: 13px; color: var(--ink-muted); }
+details { border-top: 1px solid var(--line); padding-top: 8px; }
+summary { cursor: pointer; font-weight: 700; color: var(--ink-strong); padding-block: 4px; }
+summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14px; margin-top: 8px; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-muted); }
+</style>
+
+<main>
+  <header>
+    <span class="eyebrow">Feind-Cockpit · Wissensarchiv · Stand M1</span>
+    <h1>Was mit einer Datei im Wissens-Upload passiert</h1>
+    <p>Jede Datei wird geprüft, gespeichert, gelesen und eingeordnet. Eine Sperre und die Fassungsnummer <code>rev</code> sorgen dafür, dass zwei offene Cockpits nichts doppelt bearbeiten und kein altes Ergebnis eine neue Fassung überschreibt.</p>
+  </header>
+
+  <section>
+    <h2>Der Weg einer Datei</h2>
+    <figure>
+      <div class="scroll">
+        <svg viewBox="0 0 1040 430" role="img" aria-label="Ablauf: Datei ablegen, Prüfsumme prüfen, Original speichern, Eintrag mit Status neu anlegen; danach Sperre setzen, Inhalt lesen, bei Scans Texterkennung, Text speichern, einordnen und nur bei unveränderter Fassung das Ergebnis schreiben.">
+          <defs>
+            <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+            <marker id="ard" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ts"/></marker>
+          </defs>
+
+          <!-- Reihe A: Hochladen -->
+          <rect class="bx-g" x="20" y="40" width="170" height="60" rx="2"/>
+          <text class="t" x="105" y="66" text-anchor="middle">Datei ablegen</text>
+          <text class="ts" x="105" y="84" text-anchor="middle">Drop-Zone</text>
+
+          <rect class="bx-g" x="240" y="40" width="170" height="60" rx="2"/>
+          <text class="t" x="325" y="66" text-anchor="middle">Prüfsumme</text>
+          <text class="ts" x="325" y="84" text-anchor="middle">SHA-256 gegen Archiv</text>
+
+          <rect class="bx-a" x="460" y="40" width="170" height="60" rx="2"/>
+          <text class="t t-a" x="545" y="66" text-anchor="middle">Original speichern</text>
+          <text class="ts ts-a" x="545" y="84" text-anchor="middle">Asset-Speicher</text>
+
+          <rect class="bx-k" x="680" y="40" width="170" height="60" rx="2"/>
+          <text class="t t-k mono" x="765" y="66" text-anchor="middle">kb_items/&lt;id&gt;</text>
+          <text class="ts ts-k" x="765" y="84" text-anchor="middle">Status: neu</text>
+
+          <line class="edge" x1="190" y1="70" x2="238" y2="70" marker-end="url(#ar)"/>
+          <line class="edge" x1="410" y1="70" x2="458" y2="70" marker-end="url(#ar)"/>
+          <line class="edge" x1="630" y1="70" x2="678" y2="70" marker-end="url(#ar)"/>
+
+          <line class="edge-d" x1="325" y1="100" x2="325" y2="134"/>
+          <text class="ts" x="335" y="128">schon im Archiv: abgewiesen</text>
+
+          <!-- Warteschlange -->
+          <path class="edge" d="M765 100V170H95V218" marker-end="url(#ar)"/>
+          <text class="lbl" x="430" y="162" text-anchor="middle">nächster freier Eintrag (Status neu, Sperre frei, unter 3 Versuche)</text>
+
+          <!-- Reihe B: Verarbeitung -->
+          <rect class="bx-g" x="20" y="220" width="150" height="64" rx="2"/>
+          <text class="t" x="95" y="247" text-anchor="middle">Sperre setzen</text>
+          <text class="ts mono" x="95" y="265" text-anchor="middle">{by, at, rev}</text>
+
+          <rect class="bx-g" x="210" y="220" width="170" height="64" rx="2"/>
+          <text class="t" x="295" y="247" text-anchor="middle">Inhalt lesen</text>
+          <text class="ts" x="295" y="265" text-anchor="middle">Text · PDF · Bild</text>
+
+          <rect class="bx-a" x="420" y="220" width="150" height="64" rx="2"/>
+          <text class="t t-a mono" x="495" y="247" text-anchor="middle">kb_text/&lt;id&gt;</text>
+          <text class="ts ts-a" x="495" y="265" text-anchor="middle">gelesener Text</text>
+
+          <rect class="bx-g" x="610" y="220" width="170" height="64" rx="2"/>
+          <text class="t" x="695" y="247" text-anchor="middle">Einordnen</text>
+          <text class="ts" x="695" y="265" text-anchor="middle">KI oder Regeln</text>
+
+          <rect class="bx-g" x="820" y="220" width="200" height="64" rx="2"/>
+          <text class="t" x="920" y="247" text-anchor="middle">Noch dieselbe Fassung?</text>
+          <text class="ts" x="920" y="265" text-anchor="middle">rev gleich, nicht gelöscht</text>
+
+          <line class="edge" x1="170" y1="252" x2="208" y2="252" marker-end="url(#ar)"/>
+          <line class="edge" x1="380" y1="252" x2="418" y2="252" marker-end="url(#ar)"/>
+          <line class="edge" x1="570" y1="252" x2="608" y2="252" marker-end="url(#ar)"/>
+          <line class="edge" x1="780" y1="252" x2="818" y2="252" marker-end="url(#ar)"/>
+
+          <!-- Reihe C: Texterkennung und Ausgang -->
+          <line class="edge" x1="295" y1="284" x2="295" y2="348" marker-end="url(#ar)"/>
+          <text class="lbl" x="303" y="322">Scan: unter 20 Zeichen je Seite</text>
+
+          <rect class="bx-g" x="210" y="350" width="170" height="60" rx="2"/>
+          <text class="t" x="295" y="376" text-anchor="middle">Texterkennung</text>
+          <text class="ts" x="295" y="394" text-anchor="middle">deu + eng, bis 20 Seiten</text>
+          <path class="edge" d="M380 380H495V286" marker-end="url(#ar)"/>
+
+          <line class="edge" x1="920" y1="284" x2="920" y2="348" marker-end="url(#ar)"/>
+          <text class="lbl" x="928" y="322">ja</text>
+          <rect class="bx-k" x="820" y="350" width="200" height="60" rx="2"/>
+          <text class="t t-k" x="920" y="376" text-anchor="middle">Ergebnis schreiben</text>
+          <text class="ts ts-k" x="920" y="394" text-anchor="middle">fertig oder pruefen, Sperre weg</text>
+
+          <path class="edge-d" d="M860 284V320H695V348" marker-end="url(#ard)"/>
+          <text class="lbl" x="770" y="312" text-anchor="middle">nein</text>
+          <rect class="bx-d" x="610" y="350" width="170" height="60" rx="2"/>
+          <text class="t" x="695" y="376" text-anchor="middle">Ergebnis verwerfen</text>
+          <text class="ts" x="695" y="394" text-anchor="middle">nichts überschreiben</text>
+        </svg>
+      </div>
+      <figcaption>Grün sind die Stellen, an denen das Archiv sichtbar etwas anlegt oder abschließt, Anthrazit die beiden Speicher für Original und Text. Bilder liest die Texterkennung direkt und übernimmt den Text nur ab 60 % Erkennungssicherheit.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Status eines Eintrags</h2>
+    <figure>
+      <div class="scroll">
+        <svg viewBox="0 0 1000 380" role="img" aria-label="Statusübergänge: neu wird mit Sperre zu in_arbeit; von dort fertig, pruefen, zurück zu neu bei Fehler oder KI-Grenze, fehler beim dritten echten Fehler; eine über 10 Minuten alte Sperre gibt den Eintrag wieder frei; eine neue Fassung setzt jeden Status auf neu zurück.">
+          <defs>
+            <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+            <marker id="ar2d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ts"/></marker>
+          </defs>
+
+          <rect class="bx-g" x="40" y="140" width="150" height="56" rx="2"/>
+          <text class="t mono" x="115" y="173" text-anchor="middle">neu</text>
+
+          <rect class="bx-g" x="340" y="140" width="170" height="56" rx="2"/>
+          <text class="t mono" x="425" y="173" text-anchor="middle">in_arbeit</text>
+
+          <rect class="bx-k" x="700" y="60" width="150" height="56" rx="2"/>
+          <text class="t t-k mono" x="775" y="93" text-anchor="middle">fertig</text>
+
+          <rect class="bx-g" x="700" y="220" width="150" height="56" rx="2"/>
+          <text class="t mono" x="775" y="245" text-anchor="middle">pruefen</text>
+          <text class="ts" x="775" y="263" text-anchor="middle">wartet auf dich</text>
+
+          <rect class="bx-s" x="340" y="272" width="170" height="48" rx="2"/>
+          <text class="t t-s mono" x="425" y="301" text-anchor="middle">fehler</text>
+
+          <!-- neu ↔ in_arbeit -->
+          <line class="edge" x1="190" y1="156" x2="338" y2="156" marker-end="url(#ar2)"/>
+          <text class="lbl" x="264" y="148" text-anchor="middle">Sperre setzen</text>
+          <line class="edge" x1="340" y1="182" x2="192" y2="182" marker-end="url(#ar2)"/>
+          <text class="lbl" x="264" y="201" text-anchor="middle">Fehler, Versuch 1–2</text>
+          <text class="lbl" x="264" y="217" text-anchor="middle">KI-Grenze: 10 Min Pause</text>
+
+          <!-- veraltete Sperre -->
+          <path class="edge-d" d="M425 140C425 66 115 66 115 138" marker-end="url(#ar2d)"/>
+          <text class="lbl" x="270" y="72" text-anchor="middle">Sperre älter als 10 Min: wieder frei</text>
+
+          <!-- Ausgänge -->
+          <line class="edge" x1="510" y1="150" x2="698" y2="92" marker-end="url(#ar2)"/>
+          <text class="lbl" x="600" y="108" text-anchor="middle">ohne Hinweis</text>
+          <line class="edge" x1="510" y1="186" x2="698" y2="244" marker-end="url(#ar2)"/>
+          <text class="lbl" x="625" y="206" text-anchor="middle">mit Hinweis</text>
+          <line class="edge" x1="425" y1="196" x2="425" y2="270" marker-end="url(#ar2)"/>
+          <text class="lbl" x="433" y="240">3. echter Fehler</text>
+
+          <!-- neue Fassung -->
+          <path class="edge-d" d="M850 88H900V355H115V198" marker-end="url(#ar2d)"/>
+          <line class="edge-d" x1="850" y1="248" x2="900" y2="248"/>
+          <line class="edge-d" x1="425" y1="320" x2="425" y2="355"/>
+          <text class="lbl" x="660" y="347" text-anchor="middle">Neue Fassung hochladen: rev + 1, Versuche auf 0</text>
+        </svg>
+      </div>
+      <figcaption>Durchgezogene Pfeile laufen im normalen Betrieb, gestrichelte bei Sonderfällen. Abbruch und KI-Nutzungsgrenze zählen nicht als Versuch, nur echte Fehler.</figcaption>
+    </figure>
+    <details>
+      <summary>Übergänge als Tabelle</summary>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Von</th><th>Nach</th><th>Auslöser</th></tr></thead>
+          <tbody>
+            <tr><td><code>neu</code></td><td><code>in_arbeit</code></td><td>Cockpit setzt die Sperre <code>{by, at, rev}</code>, wenn der Eintrag frei ist und weniger als 3 Versuche hat.</td></tr>
+            <tr><td><code>in_arbeit</code></td><td><code>fertig</code></td><td>Einordnung ohne Hinweis, Fassung unverändert.</td></tr>
+            <tr><td><code>in_arbeit</code></td><td><code>pruefen</code></td><td>Mindestens ein Hinweis: personenbezogene Daten, unsichere Einordnung (unter 60 %), ohne KI eingeordnet, Projektort fehlt oder Seiten über der Texterkennungsgrenze.</td></tr>
+            <tr><td><code>in_arbeit</code></td><td><code>neu</code></td><td>Echter Fehler bei Versuch 1 oder 2; KI-Nutzungsgrenze (zählt nicht, Pause 10 Minuten); Sperre älter als 10 Minuten.</td></tr>
+            <tr><td><code>in_arbeit</code></td><td><code>fehler</code></td><td>Dritter echter Fehler.</td></tr>
+            <tr><td>jeder Status</td><td><code>neu</code></td><td>Neue Fassung hochgeladen: <code>rev</code> + 1, alte Fassung in <code>versions</code>, gelesener Text gelöscht. Ein noch laufendes Ergebnis zur alten Fassung wird verworfen.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <section>
+    <h2>Feste Grenzen</h2>
+    <ul class="limits">
+      <li><b>10 Min</b><span>Sperre, danach darf ein anderes Cockpit übernehmen</span></li>
+      <li><b>3</b><span>echte Fehlversuche bis Status <code>fehler</code></span></li>
+      <li><b>20 Seiten</b><span>Texterkennung je PDF, der Rest kommt als Hinweis</span></li>
+      <li><b>60 %</b><span>Mindestsicherheit, damit Bildtext übernommen wird</span></li>
+      <li><b>10</b><span>frühere Fassungen je Eintrag, ältere Originale werden gelöscht</span></li>
+    </ul>
+  </section>
+</main>

@@ -31,7 +31,7 @@ var CI = { gruen:'#84bb20', anthrazit:'#424e4e', rot:'#e3000b', ink:'#3c5457',
 function messeTasks_() {
   return [
     {a:'2027-Handbuch, Standnummer & Portalzugänge bei Rotterdam Ahoy anfordern/bestätigen', p:'Hoch', off:-102, n:'Voraussetzung für alle weiteren Fristen.'},
-    {a:'Buchungsstatus Stand 5.209 (Rotterdam) intern klären – ggf. bereits angemeldet?', p:'Hoch', off:-110, n:'Ausstellerliste infratech.nl führt Feind unter Stand 5.209; Portal zeigt nur Essen 2028 → Login/Konto prüfen. Quelle: Notion-Hub.'},
+    {a:'Buchungsstatus Stand 5.209 (Rotterdam) intern klären – ggf. bereits angemeldet?', p:'Hoch', off:-110, s:'Erledigt', n:'Erledigt 02.10.2026: Buchung Stand 5.209 für Rotterdam 2027 bestätigt.'},
     {a:'Projektleitung/Owner InfraTech 2027 benennen (Geschäftsführung)', p:'Hoch', off:-120, s:'Erledigt', n:'Erledigt 29.09.2026: Owner = David Halko (Marketing Manager).'},
     {a:'ILB-Förderung „Markt International" prüfen – VOR jeder neuen Anmeldung (Anmeldung = Vorhabenbeginn)', p:'Mittel', off:-115, n:'Details unbestätigt; keine Förderberatung. Quelle: Notion-Hub.'},
     {a:'DSV-VRS Anliefer-Slots buchen (fairs.rotterdam@dsv.com); keine eigenen Stapler', p:'Hoch', off:-8, n:'Offizieller Logistikkontakt Ahoy 2027. Quelle: Handbuch V1.3.'},

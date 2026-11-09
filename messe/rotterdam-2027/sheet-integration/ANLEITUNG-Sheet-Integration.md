@@ -16,6 +16,10 @@ damit in eurer vorhandenen Automatik (IDs, Wochenmail, Log, Backup).
   Claude-Cockpit bleibt die visuelle Planungs-/Übersichtsebene und verweist auf das Sheet.
   *(Optional möglich: ein periodischer Abgleich durch den Messe-Manager-Agenten – auf Wunsch.)*
 
+> **Stand 21.10.2026:** Für InfraTech-Aufgaben ist die Notion-Datenbank „Aufgaben InfraTech 2027“
+> führend; der Tab „Messe-Aufgaben" ist nur noch Lesesicht. Das Sheet bleibt führend für
+> Team-Aufgaben außerhalb der Messe.
+
 ## Einrichtung (einmalig, nur David als Eigentümer)
 > Empfehlung: zuerst an einer **Kopie** testen (Datei › Kopie erstellen). Das Skript **löscht nichts** –
 > es legt nur den Tab „Messe-Aufgaben" an und hängt beim Import Zeilen unten am Aufgaben-Tab an.

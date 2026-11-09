@@ -44,41 +44,45 @@ Verwaltung der Aufgabenliste ab, damit er im Tagesgeschäft nicht daran denken m
 - **Rechtliches:** Bei arbeitsrechtlichen/vertraglichen/zoll-/versicherungsbezogenen Fragen stets
   „Bitte Rechtsabteilung prüfen" ergänzen.
 - **Corporate Design:** Farben/Schriften ausschließlich aus `branding/feind-ci.tokens.json`.
-- **Zuständigkeit / keine Kollision:** Das Cockpit-HTML (`feind-cockpit.html`, Artefakt 4zX58) wird von der
+- **Zuständigkeit / keine Kollision:** Das Cockpit-HTML (`cockpit-a1/Feind-Cockpit-A1.html`, Artefakt TfuzbG „Feind Cockpit“, führend seit 14.10.2026) wird von der
   Claude-Code-Session gepflegt. Du schreibst **nicht** in diese Datei; deine Änderungen laufen über
   die geteilte DB (`tasks`, `overrides`, `settings/general`), Recherche-Notizen und Erinnerungen.
+  `settings/general` enthält auch die Marketing-Schwellenwerte: nur einzelne Felder aktualisieren (update),
+  das Dokument nie komplett ersetzen.
+- **Datenschutz im Team:** Zuständigkeiten nur als Rolle (Werkstatt, Standbau, Vertrieb …), Personen
+  höchstens als opake Konto-ID (`userId`) – keine Klarnamen in der DB.
   So vermeiden wir parallele, widersprüchliche Stände.
 - **Fakten:** Alte ToDo-Angaben, die dem Faktencheck widersprechen (Messedatum 12.–15.01.,
   Innovationspreis-Frist), nicht ungeprüft übernehmen – verifizieren und markieren.
 
 ## Kontextdateien
-- `messe/rotterdam-2027/feind-cockpit.html` – das Live-Cockpit (Quelle, v1.1); `infratech-2027-liste.html` = Altstand
+- `cockpit-a1/Feind-Cockpit-A1.html` – Quelle des führenden Cockpits (https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd); einzige Quelle seit 20.10.2026 (`messe/rotterdam-2027/feind-cockpit-v3.html` entfallen); `feind-cockpit.html` (v1.1) und `infratech-2027-liste.html` = Altstände
 - `messe/rotterdam-2027/MASTER-TODO.md` – Aufgabenquelle
 - `messe/rotterdam-2027/FUNKTIONS-BACKLOG.md` – Feature-Backlog
 - `messe/rotterdam-2027/KATEGORISIERUNG-MANUS.md` – Herkunft/Integration der Daten
 - Artefakt-DB:
   - `tasks/<taskId>` = `{ id, title, cat, prio, owner, due, note, flags, deps, archived, origin, links, attachments, updatedAt }`
-  - `overrides/<taskId>` = `{ id, status, note, updatedAt }` (Alt-Bestand v1)
+  - `overrides/<taskId>` = `{ id, status, note, updatedAt }` (Alt-Bestand v1, nie löschen)
   - `checkliste/<Kategorie-Punkt>` = `{ status: offen|inArbeit|erledigt|zurueckgestellt, rolle, frist, budget, beschluss, notiz, updatedAt }` – Reiter „Checkliste 26→27“ (übernommene ToDo-Liste 2FT2wp; Texte stehen im HTML, nur die Erfassung in der DB; Verantwortliche nur als Rolle)
   - `settings/general` = `{ team, reminders:{ leadDays, escalateDays }, updatedAt }`
   - `budget/actuals` = `{ blocks:{ <key>:{ forecast, ist } }, updatedAt }`
   - `leads/counts` = `{ days:{ <JJJJ-MM-TT>:{ a,b,c } }, follow:{ a,b,c }, updatedAt }` (nur Stückzahlen, keine PII)
   - `acquisition/plan` = `{ slots:{ "<JJJJ-MM-TT>#<0|1>":{ target, note, done } }, targets:[{ id, name, segment, done }], updatedAt }` (nur Firmennamen)
   - `planning/materials` = `{ packing:[{ id, name, qty, detail, owner, packed, ret }], giveaways:[{ id, name, benefit, volume, qty, decision, note }], vendors:[{ id, name, role, status, note }], updatedAt }`
-  - `activity/<id>` = `{ id, ts, actorId, action, detail }` (Aktivitätsprotokoll, opake IDs)
+  - `activity/<id>` = `{ id, ts, actorId, action, detail }` (Aktivitätsprotokoll, opake IDs, max. 400)
 
 ## Check-In-Rhythmus (Vorschlag)
 - **Wöchentlich (Mo):** Fristen der nächsten 14 Tage prüfen, Fortschritt melden, Blocker eskalieren.
 - **Anlassbezogen:** Sobald der Veranstalter neue 2027-Infos veröffentlicht, Fristenmatrix aktualisieren.
 - Der Rhythmus wird über eine geplante Routine ausgelöst; Zeitpunkt/Kanal bestätigt David.
 
-## Google-Sheet-Integration (Team-Aufgaben)
-- **Führende Statusquelle für Team-Aufgaben ist das Google Sheet** „Aufgabenliste_Team_Marketing_FEIND"
-  (Tab „Messe-Aufgaben" = Live-Sicht auf Thema Events/InfraTech). Gepflegt wird dort; das Cockpit
-  ist die Messe-Steuerungs-/Übersichtsebene.
-- **Wochencheck (read-only):** Sheet über Google Drive lesen, InfraTech-Aufgaben (Thema Events,
-  Unterthema enthält „INFRA") mit dem Cockpit-Stand vergleichen und **Abweichungen/überfällige
-  Fristen an David melden**. **Nicht** automatisch ins Sheet zurückschreiben (kein Sheets-Schreib-
-  Connector; das Sheet hat eigene Automatik) – Änderungen schlägt der Agent vor, David/Team pflegen sie.
+## Aufgabenquellen (Notion führend für die Messe)
+- **Führende Quelle für InfraTech-Aufgaben ist die Notion-Datenbank „Aufgaben InfraTech 2027“**
+  (Entscheidung David, 21.10.2026). Cockpit A1 liest sie und schreibt zurück.
+- Das Google Sheet „Aufgabenliste_Team_Marketing_FEIND" bleibt Quelle für Team-Aufgaben außerhalb
+  der Messe; sein Tab „Messe-Aufgaben" ist für InfraTech nur noch Lesesicht.
+- **Wochencheck (read-only):** Notion-Datenbank lesen, mit dem Cockpit-Stand vergleichen und
+  **Abweichungen/überfällige Fristen an David melden**. **Nicht** automatisch zurückschreiben –
+  Änderungen schlägt der Agent vor, David/Team pflegen sie.
 - Systemlandkarte & blinde Flecken: `messe/rotterdam-2027/SYSTEM-UEBERSICHT.md`.
 - Sheet-Integrationspaket: `messe/rotterdam-2027/sheet-integration/` (Apps Script + Anleitung).

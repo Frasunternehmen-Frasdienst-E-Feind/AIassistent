@@ -1,0 +1,235 @@
+{
+ "code": "EN",
+ "file": "Agenda_Rotterdam_2027_EN.pdf",
+ "title": "Stand Duty & Schedule Rotterdam 2027",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Booth 5.209 · Tue 12–Fri 15 January 2027",
+ "chip": "Schedule",
+ "src": "Fillable schedule · Source: Project Hub + To-Do focus sheet · as of 30 Sep 2026",
+ "intern": "INTERNAL / confidential – contains team names, do not publish.",
+ "basis": "Base: Project Hub (dates, build-up) + InfraTech 2027 handbook",
+ "howto": "How to use this schedule",
+ "howto_lines": [
+  "1)  Tick the box = done.   2)  Status dropdown on the right: Open / Confirmed / In progress / Done / N/A.",
+  "3)  Note field per item – time, names, location, link (max. 250 characters).",
+  "Opening Tue–Thu 10:00–18:00, Fri 10:00–16:00 (per handbook – confirm before printing); build-up/teardown slots via Ahoy portal.",
+  "Default “Open”; enter stand-duty names in the note field. Prints in any PDF viewer."
+ ],
+ "legend_label": "Legend:",
+ "legend": [
+  [
+   "ok",
+   "fixed / confirmed"
+  ],
+  [
+   "warn",
+   "to confirm"
+  ],
+  [
+   "none",
+   "open / to do"
+  ],
+  [
+   "no",
+   "dropped"
+  ],
+  [
+   "add",
+   "note"
+  ]
+ ],
+ "blocker_title": "Core times & key facts (binding)",
+ "blockers": [
+  [
+   "Fair days",
+   "Tue 12–Fri 15 January 2027 (verified)"
+  ],
+  [
+   "Venue",
+   "Rotterdam Ahoy, Ahoyweg 10 · Booth 5.209"
+  ],
+  [
+   "Opening hours",
+   "Tue–Thu 10:00–18:00 · Fri 10:00–16:00 (per handbook – to confirm)"
+  ],
+  [
+   "Build-up",
+   "from Wed 7 Jan 2027 – slot per Ahoy portal"
+  ],
+  [
+   "Teardown",
+   "Fri 15 Jan from 16:00 (after close) – slot per Ahoy portal"
+  ]
+ ],
+ "blocker_note": "Opening Tue–Thu 10:00–18:00, Fri 10:00–16:00 (per handbook – confirm before printing). Book build-up and teardown time slots via the Ahoy exhibitor portal.",
+ "status": [
+  "Open",
+  "Confirmed",
+  "In progress",
+  "Done",
+  "N/A"
+ ],
+ "status_def": "Open",
+ "tt_status": "Status: Open / Confirmed / In progress / Done / N/A",
+ "tt_note": "Time, names, location, link – max. 250 characters",
+ "tt_done": "Tick when done",
+ "blind_banner": "On-site notes & emergency",
+ "blind_sub": "Additional notes for on-site operations. Legal items are flagged.",
+ "dp_title": "Data protection & legal",
+ "dp": [
+  "• Internal working document with team names – keep confidential, do not share with external parties/exhibitors.",
+  "• Lead capture, photo/video at the stand and CRM import only with consent/GDPR notice.",
+  "• For contractual, tax or employment-law questions: please have legal review."
+ ],
+ "src_title": "Sources & workspaces",
+ "links": [
+  "Master · Rotterdam 2027 fair (Notion)",
+  "Rotterdam 2027 To-Do list (Notion)",
+  "Task tracker (ClickUp)",
+  "InfraTech handbook 2027 V1.3 (PDF)"
+ ],
+ "link_urls": [
+  "https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db",
+  "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a",
+  "https://app.clickup.com/90122021025/v/l/li/901222034862",
+  "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"
+ ],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Booth 5.209  ·  As of 30 Sep 2026",
+ "page": "Page",
+ "cont": "continued",
+ "brand": "SCHEDULE · Rotterdam 2027",
+ "slim": "Rotterdam 2027 Schedule",
+ "sections": [
+  [
+   "Build-up (from Wed 7 Jan 2027)",
+   [
+    [
+     "none",
+     "Delivery & Ahoy access – clarify time slot/parking permit"
+    ],
+    [
+     "none",
+     "Stand build Global Expo Stand B.V. / LOCO – on-site coordination"
+    ],
+    [
+     "none",
+     "Position exhibits (large grinding shaft, grinding sign, customer stopper)"
+    ],
+    [
+     "none",
+     "Connect tech: power, internet/LAN, TV, LED, presentation"
+    ],
+    [
+     "warn",
+     "Final check & cleaning before day 1"
+    ]
+   ]
+  ],
+  [
+   "Fair-day flow (daily Tue–Fri)",
+   [
+    [
+     "ok",
+     "Team on site from 09:00 (1 h before opening) – short briefing, coffee on"
+    ],
+    [
+     "ok",
+     "Opening 10:00: start outreach on the show floor (not just at the stand)"
+    ],
+    [
+     "none",
+     "Ongoing lead capture in the digital conversation-note form"
+    ],
+    [
+     "warn",
+     "Shift change/rotation ~14:00 – breaks per working-time law (>6 h: 30 min)"
+    ],
+    [
+     "none",
+     "End of day from close (Tue–Thu 18:00, Fri 16:00): secure leads, restock material & giveaways"
+    ]
+   ]
+  ],
+  [
+   "Stand-duty shifts · 2-shift model (names in the note field)",
+   [
+    [
+     "ok",
+     "Team on site from 09:00 – short briefing (1 h before opening 10:00)"
+    ],
+    [
+     "none",
+     "Early shift 09:00–14:00 – enter staffing"
+    ],
+    [
+     "ok",
+     "Handover 13:45–14:00 – brief leads & open conversations"
+    ],
+    [
+     "none",
+     "Late shift 13:45 until close +30 min (Tue–Thu until 18:30, Fri until 16:30) – enter staffing"
+    ],
+    [
+     "add",
+     "Friday shortened (close 16:00): bring shift change forward to ~13:00 if needed"
+    ],
+    [
+     "none",
+     "Floater/reserve – name someone"
+    ],
+    [
+     "none",
+     "2026 team list (reference): {{TEAM_2026}}"
+    ]
+   ]
+  ],
+  [
+   "Catering & breaks",
+   [
+    [
+     "none",
+     "Restock coffee/water/snacks at the stand"
+    ],
+    [
+     "warn",
+     "Define team catering & break times (not just customer catering)"
+    ]
+   ]
+  ],
+  [
+   "Teardown (Fri 15 Jan from 16:00 after close)",
+   [
+    [
+     "none",
+     "Secure/pack exhibits & tech"
+    ],
+    [
+     "none",
+     "Clear the stand, hand over to service provider"
+    ],
+    [
+     "none",
+     "Organise return transport & disposal of leftovers"
+    ]
+   ]
+  ]
+ ],
+ "blind": [
+  [
+   "On-site notes & emergency",
+   [
+    [
+     "add",
+     "Record first-aid/emergency contacts & Ahoy contact person"
+    ],
+    [
+     "add",
+     "Respect photo/video consent of persons shown (GDPR) – legal to review"
+    ],
+    [
+     "add",
+     "Daily 5-min debrief for lessons learned 2027"
+    ]
+   ]
+  ]
+ ]
+}

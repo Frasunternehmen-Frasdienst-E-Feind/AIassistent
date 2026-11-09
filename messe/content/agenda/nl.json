@@ -1,0 +1,235 @@
+{
+ "code": "NL",
+ "file": "Agenda_Rotterdam_2027_NL.pdf",
+ "title": "Standdienst- & Draaiboek Rotterdam 2027",
+ "event": "InfraTech 2027 · Rotterdam Ahoy · Stand 5.209 · di 12 – vr 15 januari 2027",
+ "chip": "Draaiboek",
+ "src": "Invulbaar draaiboek · Bron: Projecthub + focusdocument taken · per 30-09-2026",
+ "intern": "INTERN / vertrouwelijk – bevat teamnamen, niet publiceren.",
+ "basis": "Basis: Projecthub (data, opbouw) + InfraTech-handboek 2027",
+ "howto": "Zo werkt het draaiboek",
+ "howto_lines": [
+  "1)  Vakje aanvinken = klaar.   2)  Statuslijst rechts: Open / Bevestigd / Loopt / Klaar / N.v.t.",
+  "3)  Notitieveld per punt – tijd, namen, locatie, link (max. 250 tekens).",
+  "Opening di–do 10:00–18:00, vr 10:00–16:00 (volgens handboek – vóór printen bevestigen); op-/afbouwslots via Ahoy-portaal.",
+  "Standaard „Open”; standdienst-namen in het notitieveld invullen. Print in elke pdf-viewer."
+ ],
+ "legend_label": "Legenda:",
+ "legend": [
+  [
+   "ok",
+   "vast / bevestigd"
+  ],
+  [
+   "warn",
+   "nog bevestigen"
+  ],
+  [
+   "none",
+   "open / te doen"
+  ],
+  [
+   "no",
+   "vervalt"
+  ],
+  [
+   "add",
+   "let op"
+  ]
+ ],
+ "blocker_title": "Kerntijden & kerngegevens (bindend)",
+ "blockers": [
+  [
+   "Beursdagen",
+   "di 12 – vr 15 januari 2027 (geverifieerd)"
+  ],
+  [
+   "Locatie",
+   "Rotterdam Ahoy, Ahoyweg 10 · Stand 5.209"
+  ],
+  [
+   "Openingstijden",
+   "di–do 10:00–18:00 · vr 10:00–16:00 (volgens handboek – bevestigen)"
+  ],
+  [
+   "Opbouw",
+   "vanaf wo 7 jan 2027 – slot volgens Ahoy-portaal"
+  ],
+  [
+   "Afbouw",
+   "vr 15 jan vanaf 16:00 (na sluiting) – slot volgens Ahoy-portaal"
+  ]
+ ],
+ "blocker_note": "Opening di–do 10:00–18:00, vr 10:00–16:00 (volgens handboek – vóór het printen definitief bevestigen). Op- en afbouwtijdslots via het Ahoy-exposantenportaal boeken.",
+ "status": [
+  "Open",
+  "Bevestigd",
+  "Loopt",
+  "Klaar",
+  "N.v.t."
+ ],
+ "status_def": "Open",
+ "tt_status": "Status: Open / Bevestigd / Loopt / Klaar / N.v.t.",
+ "tt_note": "Tijd, namen, locatie, link – max. 250 tekens",
+ "tt_done": "Aanvinken indien klaar",
+ "blind_banner": "Aandachtspunten & noodgevallen",
+ "blind_sub": "Aanvullende aandachtspunten voor de beursdagen. Juridische punten zijn gemarkeerd.",
+ "dp_title": "Gegevensbescherming & juridisch",
+ "dp": [
+  "• Intern werkdocument met teamnamen – vertrouwelijk behandelen, niet delen met externen/exposanten.",
+  "• Leadregistratie, foto/video op de stand en CRM-import alleen met toestemming/AVG-melding.",
+  "• Bij contractuele, fiscale of arbeidsrechtelijke vragen: laat de juridische afdeling toetsen."
+ ],
+ "src_title": "Bronnen & werkruimtes",
+ "links": [
+  "Master · Beurs Rotterdam 2027 (Notion)",
+  "Takenlijst Rotterdam 2027 (Notion)",
+  "Takentracker (ClickUp)",
+  "InfraTech-handboek 2027 V1.3 (pdf)"
+ ],
+ "link_urls": [
+  "https://app.notion.com/p/3d840f8bbabb8158ae35e2ea8340c8db",
+  "https://app.notion.com/p/3e240f8bbabb81569f5af910a73da34a",
+  "https://app.clickup.com/90122021025/v/l/li/901222034862",
+  "https://www.infratech.nl/files/files/Handboek%20InfraTech%202027%20Handboek%20V1_3_EN.pdf"
+ ],
+ "footer": "Fräsdienst-Service E. Feind GmbH  ·  InfraTech 2027, Rotterdam Ahoy, Stand 5.209  ·  Per 30-09-2026",
+ "page": "Pagina",
+ "cont": "vervolg",
+ "brand": "DRAAIBOEK · Rotterdam 2027",
+ "slim": "Draaiboek Rotterdam 2027",
+ "sections": [
+  [
+   "Opbouw (vanaf wo 7 jan 2027)",
+   [
+    [
+     "none",
+     "Aanlevering & toegang Ahoy – tijdslot/parkeervergunning uitzoeken"
+    ],
+    [
+     "none",
+     "Standopbouw Global Expo Stand B.V. / LOCO – coördinatie ter plaatse"
+    ],
+    [
+     "none",
+     "Exponaten plaatsen (grote slijpas, grinding-bord, klantstopper)"
+    ],
+    [
+     "none",
+     "Techniek aansluiten: stroom, internet/LAN, tv, led, presentatie"
+    ],
+    [
+     "warn",
+     "Eindcontrole stand & schoonmaak vóór dag 1"
+    ]
+   ]
+  ],
+  [
+   "Beursdag-verloop (dagelijks di–vr)",
+   [
+    [
+     "ok",
+     "Team vanaf 09:00 aanwezig (1 u vóór opening) – korte briefing, koffie aan"
+    ],
+    [
+     "ok",
+     "Opening 10:00: aanspreken op de beursvloer starten (niet alleen bij de stand)"
+    ],
+    [
+     "none",
+     "Doorlopende leadregistratie in het digitale gespreksnotitie-formulier"
+    ],
+    [
+     "warn",
+     "Dienstwissel/rotatie ~14:00 – pauzes volgens arbeidstijd (>6 u: 30 min)"
+    ],
+    [
+     "none",
+     "Einde dag vanaf sluiting (di–do 18:00, vr 16:00): leads veiligstellen, materiaal & weggevers aanvullen"
+    ]
+   ]
+  ],
+  [
+   "Standdienst-diensten · 2-diensten-model (namen in het notitieveld)",
+   [
+    [
+     "ok",
+     "Team aanwezig vanaf 09:00 – korte briefing (1 u vóór opening 10:00)"
+    ],
+    [
+     "none",
+     "Vroege dienst 09:00–14:00 – bezetting invullen"
+    ],
+    [
+     "ok",
+     "Overdracht 13:45–14:00 – leads & lopende gesprekken briefen"
+    ],
+    [
+     "none",
+     "Late dienst 13:45 tot sluiting +30 min (di–do tot 18:30, vr tot 16:30) – bezetting invullen"
+    ],
+    [
+     "add",
+     "Vrijdag korter (sluiting 16:00): dienstwissel eventueel naar ~13:00 vervroegen"
+    ],
+    [
+     "none",
+     "Invaller/reserve – aanwijzen"
+    ],
+    [
+     "none",
+     "Teamlijst 2026 (referentie): {{TEAM_2026}}"
+    ]
+   ]
+  ],
+  [
+   "Catering & pauzes",
+   [
+    [
+     "none",
+     "Koffie/water/snacks bij de stand aanvullen"
+    ],
+    [
+     "warn",
+     "Teamcatering & pauzetijden vastleggen (niet alleen klantcatering)"
+    ]
+   ]
+  ],
+  [
+   "Afbouw (vr 15 jan vanaf 16:00 na sluiting)",
+   [
+    [
+     "none",
+     "Exponaten & techniek veiligstellen/inpakken"
+    ],
+    [
+     "none",
+     "Stand ontruimen, overdracht aan dienstverlener"
+    ],
+    [
+     "none",
+     "Retourtransport & afvoer restanten regelen"
+    ]
+   ]
+  ]
+ ],
+ "blind": [
+  [
+   "Aandachtspunten & noodgevallen",
+   [
+    [
+     "add",
+     "EHBO-/noodcontacten & contactpersoon Ahoy vastleggen"
+    ],
+    [
+     "add",
+     "Foto-/videotoestemming van afgebeelde personen respecteren (AVG) – juridisch toetsen"
+    ],
+    [
+     "add",
+     "Dagelijkse 5-min debrief voor lessons learned 2027"
+    ]
+   ]
+  ]
+ ]
+}

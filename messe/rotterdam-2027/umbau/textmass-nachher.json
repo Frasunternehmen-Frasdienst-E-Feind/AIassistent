@@ -1,0 +1,216 @@
+{
+  "stand": "2026-10-07",
+  "rows": [
+    {
+      "welt": "Marketing",
+      "reiter": "Auf einen Blick",
+      "zeichen": 2717,
+      "bloecke": 8
+    },
+    {
+      "welt": "Marketing",
+      "reiter": "Copilot",
+      "zeichen": 980,
+      "bloecke": 8
+    },
+    {
+      "welt": "Marketing",
+      "reiter": "Content",
+      "zeichen": 584,
+      "bloecke": 11
+    },
+    {
+      "welt": "Marketing",
+      "reiter": "Leads",
+      "zeichen": 871,
+      "bloecke": 19
+    },
+    {
+      "welt": "Marketing",
+      "reiter": "Ausschreibungen",
+      "zeichen": 975,
+      "bloecke": 8
+    },
+    {
+      "welt": "Marketing",
+      "reiter": "Events",
+      "zeichen": 397,
+      "bloecke": 4
+    },
+    {
+      "welt": "Marketing",
+      "reiter": "SEO",
+      "zeichen": 460,
+      "bloecke": 7
+    },
+    {
+      "welt": "Marketing",
+      "reiter": "Referenzen",
+      "zeichen": 448,
+      "bloecke": 0
+    },
+    {
+      "welt": "Marketing",
+      "reiter": "Wissensbibliothek",
+      "zeichen": 930,
+      "bloecke": 7
+    },
+    {
+      "welt": "Marketing",
+      "reiter": "90-Tage-Plan",
+      "zeichen": 5481,
+      "bloecke": 25
+    },
+    {
+      "welt": "Marketing",
+      "reiter": "Ablage",
+      "zeichen": 1920,
+      "bloecke": 6
+    },
+    {
+      "welt": "InfraTech 2027",
+      "reiter": "Dashboard",
+      "zeichen": 1240,
+      "bloecke": 15
+    },
+    {
+      "welt": "InfraTech 2027",
+      "reiter": "Aufgaben",
+      "zeichen": 1623,
+      "bloecke": 3
+    },
+    {
+      "welt": "InfraTech 2027",
+      "reiter": "Checkliste 26→27",
+      "zeichen": 7313,
+      "bloecke": 6
+    },
+    {
+      "welt": "InfraTech 2027",
+      "reiter": "Fristen",
+      "zeichen": 368,
+      "bloecke": 4
+    },
+    {
+      "welt": "InfraTech 2027",
+      "reiter": "Budget",
+      "zeichen": 245,
+      "bloecke": 6
+    },
+    {
+      "welt": "InfraTech 2027",
+      "reiter": "Ziele & KPIs",
+      "zeichen": 253,
+      "bloecke": 8
+    },
+    {
+      "welt": "InfraTech 2027",
+      "reiter": "Lead-Zähler",
+      "zeichen": 282,
+      "bloecke": 9
+    },
+    {
+      "welt": "InfraTech 2027",
+      "reiter": "Lessons Learned",
+      "zeichen": 1322,
+      "bloecke": 1
+    },
+    {
+      "welt": "InfraTech 2027",
+      "reiter": "Faktencheck",
+      "zeichen": 1127,
+      "bloecke": 2
+    },
+    {
+      "welt": "InfraTech 2027",
+      "reiter": "Team",
+      "zeichen": 563,
+      "bloecke": 3
+    },
+    {
+      "welt": "InfraTech 2027",
+      "reiter": "Protokolle",
+      "zeichen": 320,
+      "bloecke": 0
+    },
+    {
+      "welt": "InfraTech 2027",
+      "reiter": "Aktivität",
+      "zeichen": 233,
+      "bloecke": 0
+    },
+    {
+      "welt": "InfraTech 2027",
+      "reiter": "Wissensbasis",
+      "zeichen": 814,
+      "bloecke": 1
+    },
+    {
+      "welt": "Wissen",
+      "reiter": "Eingang",
+      "zeichen": 1681,
+      "bloecke": 9
+    },
+    {
+      "welt": "Wissen",
+      "reiter": "Archiv",
+      "zeichen": 501,
+      "bloecke": 1
+    },
+    {
+      "welt": "Wissen",
+      "reiter": "Prüfung",
+      "zeichen": 296,
+      "bloecke": 2
+    },
+    {
+      "welt": "Wissen",
+      "reiter": "Projektkarte",
+      "zeichen": 845,
+      "bloecke": 3
+    },
+    {
+      "welt": "Admin",
+      "reiter": "Status",
+      "zeichen": 1132,
+      "bloecke": 5
+    },
+    {
+      "welt": "Admin",
+      "reiter": "Konfiguration",
+      "zeichen": 801,
+      "bloecke": 3
+    },
+    {
+      "welt": "Admin",
+      "reiter": "Zugänge",
+      "zeichen": 233,
+      "bloecke": 2
+    },
+    {
+      "welt": "Admin",
+      "reiter": "Datenschutz",
+      "zeichen": 1625,
+      "bloecke": 4
+    },
+    {
+      "welt": "Admin",
+      "reiter": "Link-Protokoll",
+      "zeichen": 940,
+      "bloecke": 4
+    },
+    {
+      "welt": "Admin",
+      "reiter": "Daten",
+      "zeichen": 1003,
+      "bloecke": 4
+    },
+    {
+      "welt": "Admin",
+      "reiter": "Icons",
+      "zeichen": 7763,
+      "bloecke": 2
+    }
+  ],
+  "errors": []
+}

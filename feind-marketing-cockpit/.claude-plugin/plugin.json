@@ -1,0 +1,9 @@
+{
+  "name": "feind-marketing-cockpit",
+  "version": "1.0.0",
+  "description": "Zentrales Marketing-Dashboard mit KI-Assistenz für Fräsdienst-Service E. Feind GmbH",
+  "author": {
+    "name": "David – Marketing & Eventmanager"
+  },
+  "keywords": ["marketing", "dashboard", "b2b", "fraesdienst", "cowork"]
+}
