@@ -6,7 +6,7 @@ on:
 
 jobs:
   pytest:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -22,7 +22,7 @@ jobs:
           test -f output/monthly_2026-08-01_2026-08-31_demo.md
 
   cockpit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -52,3 +52,24 @@ jobs:
           node cockpit-a1/e2e/notion-smoke.mjs "$V" | tee /tmp/notion-smoke.txt
           ! grep -qE ': false\b|FEHLT|kein Dialog|Create-Aufruf: 0' /tmp/notion-smoke.txt
           grep -qx 'Fehler: \[\]' /tmp/notion-smoke.txt
+
+  zeiterfassung:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: zeiterfassung/go.mod
+          cache: false
+      - name: Go vet + Tests der Stempeluhr
+        working-directory: zeiterfassung
+        run: |
+          go vet ./...
+          go test ./...
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: JS-Tests der Zeiterfassung
+        run: npm test

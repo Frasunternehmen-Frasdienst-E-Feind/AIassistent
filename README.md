@@ -65,5 +65,7 @@ tests/              pytest
 pip install -e ".[dev]" && pytest -q
 ```
 
-Datenschutz: `credentials/`, `config.yaml` und `data/crm/` sind vom Repo ausgeschlossen.
-Der CRM-Export enthält nur Datum, Quelle, Status und Wert.
+Datenschutz: `credentials/`, `config.yaml`, `data/crm/` und alle `*.json` sind vom Repo
+ausgeschlossen. Versionierte JSON-Dateien stehen ausschließlich im kommentierten
+Ausnahmeblock der `.gitignore` (Pfad plus Grund). Der CRM-Export enthält nur Datum,
+Quelle, Status und Wert.
