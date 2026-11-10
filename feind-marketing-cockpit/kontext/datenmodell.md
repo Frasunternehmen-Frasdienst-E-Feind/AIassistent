@@ -5,7 +5,9 @@ Einzige Datenquelle des Dashboards. Der Feind Copilot und die Skills schreiben h
 `batch`, `list`, `query`), das Dashboard liest live (`onSnapshot`).
 Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
 
-## Aufgaben InfraTech 2027: Notion ist führend (Entscheidung David, 01.10.2026)
+## Aufgaben InfraTech 2027: Jira führt (Entscheidung David, 09.11.2026), Notion ist Spiegel
+
+* Seit 09.11.2026 ist Jira, Projekt MAR, führend. Die folgende Notion-Beschreibung gilt für den Spiegel.
 
 * Einzige führende Aufgabenliste ist die Notion-Datenbank „Aufgaben InfraTech 2027“
   (https://app.notion.com/p/5718273f9a2c4ba085d5da4e62c0c878, Data Source
