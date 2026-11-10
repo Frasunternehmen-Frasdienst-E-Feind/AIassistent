@@ -2727,7 +2727,7 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
 
 /* Startseite „Heute“: drei Einstiegskacheln (19.10.2026) */
 .ov-top3 { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: var(--s3); }
-@media (max-width: 520px) { .ov-top3 { gap: 6px; } .ov-top3 .ov-stat { padding: 10px 8px; } .ov-top3 .sub, .ov-top3 .src { display: none; } .ov-top3 .k { font-size: 12px; line-height: 1.25; } .ov-top3 .v { font-size: 28px; } }
+@media (max-width: 520px) { .ov-top3 { gap: 6px; } .ov-top3 .ov-stat { padding: 10px 8px; } .ov-top3 .src { display: none; } .ov-top3 .sub { overflow-wrap: anywhere; } .ov-top3 .k { font-size: 12px; line-height: 1.25; } .ov-top3 .v { font-size: 28px; } }
 
 /* Mobil (19.10.2026): Bereichs-Tabs als untere Leiste, Statuszeile im Kopf einklappbar. */
 .meta-toggle { display: none; }
