@@ -31,6 +31,8 @@ credentials/
 # Plugin-Manifest und Connector-Datei des Marketing Cockpits (keine Geheimnisse)
 !feind-marketing-cockpit/.claude-plugin/plugin.json
 !feind-marketing-cockpit/.mcp.json
+# Plugin-Manifest Multiagenten-Orchestrierung (keine Geheimnisse)
+!multiagent-orchestrierung/.claude-plugin/plugin.json
 # Messe-Generator: Inhalte und Team-Vorlage (ohne echte Personendaten)
 !messe/content/**/*.json
 !messe/data/team.example.json
