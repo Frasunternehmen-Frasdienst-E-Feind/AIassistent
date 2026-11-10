@@ -8786,7 +8786,10 @@ main:focus-visible { outline: 2px dashed var(--accent-text); outline-offset: -2p
   function syncBase() { const b = base(); for (const k of KEYS) if (!LIVE[k]) STATE[k] = b[k]; }
   let sync = { cls: '', text: '', base: true };
 
-  const clean = v => String(v == null ? '' : v).replace(/\\([|~*_`[\]\\#>+\-.!])/g, '$1').trim();
+  // Markdown-Links auflösen, danach Escapes entfernen (inkl. "<")
+  const clean = v => String(v == null ? '' : v)
+    .replace(/\[([^\]]+)\]\([^)\s]+\)/g, '$1')
+    .replace(/\\([|~*_`[\]\\#>+\-.!<])/g, '$1').trim();
   const yes = v => v === true || v === '__YES__';
   const byNum = k => (a, b) => (+a[k] || 0) - (+b[k] || 0);
   const T0 = H.parseDay(P.t0);
