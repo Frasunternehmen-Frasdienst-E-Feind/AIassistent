@@ -24,8 +24,16 @@ Speichern durchgeht und nicht mehr kostet als nötig. Die Regeln stehen in
 3. **Entwurf schreiben** im Format, das gewünscht ist (Standard: Markdown-Dateien für
    `ant apply`, weil dort Pfade statt IDs genügen; sonst JSON oder SDK-Code).
    Unbekannte IDs als Platzhalter `agent_…[PRÜFEN]` – nie erfinden.
+   **Modelle:** Nimm die aktuelle Generation (z. B. Arbeitsmodell `claude-sonnet-5-5`,
+   Advisor `claude-opus-5-5`; Lead mit Opus nur, wenn die Synthese schwer ist), keine
+   älteren Versionen wie 4.x, außer der Nutzer will sie. Der Grund: Ältere Modelle
+   sind meist teurer pro Leistung, und die Advisor-Paarung braucht ein Agentenmodell,
+   das nicht stärker ist als der Advisor.
 4. **System-Prompt-Satz mitliefern**, der sagt, wann ein Workflow-Run genutzt wird
    und wann nicht, sobald Workflows aktiv sind. Ohne ihn entscheidet der Agent frei.
+   Ergänze dort eine Ausfall-Regel („scheitert ein Agent, bricht der Run nicht ab;
+   das Teil wird als nicht abgedeckt gemeldet“) und ein Zeitlimit für den Run –
+   sonst fehlen bei 30+ Teilen still Ergebnisse oder der Run läuft offen weiter.
 5. **Prüfen:** den `multiagent`-Block (oder die ganze Agentendefinition als JSON)
    speichern und `python3 scripts/check_multiagent.py <datei>` ausführen. Fehler
    beheben, Hinweise übernehmen. Das Skript prüft nur, was ohne API geht; die
