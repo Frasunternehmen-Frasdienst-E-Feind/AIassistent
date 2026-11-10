@@ -1,0 +1,9 @@
+{
+  "name": "multiagent-orchestrierung",
+  "version": "0.1.0",
+  "description": "Konfig-Assistent für Multiagenten-Orchestrierung in Claude Managed Agents: erzeugt und prüft multiagent-Blöcke (Subagents, dynamische Workflows, Advisor).",
+  "author": {
+    "name": "David – Marketing & Eventmanager"
+  },
+  "keywords": ["managed-agents", "multiagent", "subagents", "workflows", "advisor"]
+}
