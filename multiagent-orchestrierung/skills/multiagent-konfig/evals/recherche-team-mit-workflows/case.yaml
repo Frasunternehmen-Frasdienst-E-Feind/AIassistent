@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: recherche-team-mit-workflows
+expected_outcome: |
+  Eine Agent-Datei mit multiagent_20261001, workflows aktiv mit inline_agents disabled und agent_01RechercheX gelistet, subagents disabled, advisor enabled mit model; ein System-Prompt-Satz, wann ein Run genutzt wird; Hinweis auf Session-Budget; Prüfskript gelaufen.

@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: coordinator-umstieg
+expected_outcome: |
+  Erklärt, dass das Update den ganzen Block ersetzt und so Liste und Advisor verloren gingen und Workflows aktiviert würden; liefert korrigierten Block mit beiden Agenten, Advisor und workflows disabled; Hinweis, Sessions neu zu erstellen.
