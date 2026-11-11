@@ -1,0 +1,15 @@
+{
+  "name": "dnp-preisverleihung",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio src/index.ts --public-dir=../../messe/rotterdam-2027/assets",
+    "render": "remotion render src/index.ts DnpPreis out/dnp-preisverleihung.mp4 --public-dir=../../messe/rotterdam-2027/assets --muted --codec=h264 --pixel-format=yuv420p --color-space=bt709"
+  },
+  "dependencies": {
+    "@fontsource/exo": "^5.0.0",
+    "@remotion/cli": "^4.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.0"
+  }
+}
