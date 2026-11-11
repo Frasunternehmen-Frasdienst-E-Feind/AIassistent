@@ -207,7 +207,11 @@
         + '<span>Überstunden <b class="' + signClass(w.overtimeMin) + '">' + dur(w.overtimeMin, { signed: true }) + '</b></span>'
         + '<span>Pausen <b>' + dur(w.breakMin) + '</b></span><span>Tage <b>' + w.days.length + '</b></span>'
         + (w.hints ? '<span class="hint">' + w.hints + ' Hinweis' + (w.hints > 1 ? 'e' : '') + '</span>' : '') + '</div>'
-        + '<div class="bars">' + bars + '</div></div>';
+        + '<div class="bars">' + bars + '</div>'
+        // CI: Diagramme immer auch als Tabelle (Barrierefreiheit)
+        + '<details><summary>Als Tabelle</summary><table><thead><tr><th>Tag</th><th class="num">Netto</th><th class="num">Soll</th></tr></thead><tbody>'
+        + w.days.map(d => '<tr><td>' + Z.weekdayShort(d.date) + ' ' + Z.toGermanDate(d.date) + '</td><td class="num">' + dur(d.workMin) + '</td><td class="num">' + dur(d.target) + '</td></tr>').join('')
+        + '</tbody></table></details></div>';
     }).join('');
   }
 
