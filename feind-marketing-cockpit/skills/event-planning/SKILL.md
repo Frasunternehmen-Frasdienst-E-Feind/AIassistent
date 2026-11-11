@@ -24,7 +24,9 @@ Dashboard-URL: `https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd`
   `kontext/unternehmen.md` (wird parallel von einem Kollegen erstellt). Fehlt etwas, frage David.
 * Leads aus Events gehen in `mkt_leads` (Skill lead-tracking, `channel: "messe"` bzw. passend).
 
-## Sonderfall InfraTech 2027: Notion führt die Aufgaben (seit 01.10.2026)
+## Sonderfall InfraTech 2027: Jira führt die Aufgaben (seit 09.11.2026, vorher Notion)
+
+* Führend ist Jira, Projekt MAR (Entscheidung David, 09.11.2026). Die Notion-Datenbank unten bleibt Spiegel; neue Punkte gehören nach Jira.
 
 * Die Checkliste der InfraTech 2027 (`events/infratech-2027`) wird **nicht** mehr in `checklist`
   gepflegt. Führend ist die Notion-Datenbank „Aufgaben InfraTech 2027“

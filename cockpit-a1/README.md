@@ -30,7 +30,8 @@ mit `not_in_manifest` ab (Stand v17: deklariert):
 (plus die Werkzeuge für Microsoft 365 und Canva).
 
 Regeln:
-- Notion ist führend. Titel, Bereich, Zuständig (Rolle), Budget und „Blockiert durch“ werden nur in Notion gepflegt.
+- Seit 09.11.2026 führt Jira (Projekt MAR, Entscheidung David); das Cockpit zeigt die offenen MAR-Vorgänge oben im Modul
+  Aufgaben nur lesend (`src/app-jira.js`). Die Notion-Liste darunter ist der Spiegel. Für sie gilt weiter: Titel, Bereich, Zuständig (Rolle), Budget und „Blockiert durch“ werden nur in Notion gepflegt.
 - Zuordnung über das Feld „Cockpit-ID“; Zeilen ohne ID erscheinen als `n-<Nr>`.
 - Vor jedem Schreiben wird neu gelesen; ein inzwischen in Notion geändertes Feld wird nur nach Rückfrage überschrieben.
 - Änderungen an derselben Aufgabe laufen nacheinander; eine zweite schnelle Änderung wartet auf die erste.

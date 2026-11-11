@@ -9,16 +9,33 @@ venv/
 # Lokale Konfiguration & Geheimnisse (nie committen)
 config.yaml
 credentials/
+.env
+
+# JSON-Dateien: pauschal gesperrt, weil Zugangsdaten (Google-Service-Account-
+# Schlüssel, Tokens, Exporte) meist als .json vorliegen.
+# Ausnahmen NUR hier eintragen, je mit Grund – nie per `git add -f` umgehen.
+# Eine Ausnahme darf keine Zugangsdaten und keine personenbezogenen Daten
+# enthalten (siehe CLAUDE.md, Abschnitt Datenschutz).
 *.json
-!config.schema.json
+# npm-Manifest und Lockfile (reproduzierbare Installation, CI nutzt npm ci)
+!package.json
+!package-lock.json
+# MCP-Server-Registrierung: nur Paketname und Version
 !.mcp.json
+# Hook-Registrierung für Claude Code: nur ein Dateipfad
+!.claude/settings.json
+# Corporate-Design-Tokens: einzige Quelle für Farben/Schriften laut CLAUDE.md
+!branding/feind-ci.tokens.json
+# Messwerte des visuellen Umbaus (Cockpit), bewusst versioniert
+!messe/rotterdam-2027/umbau/*.json
 # Plugin-Manifest und Connector-Datei des Marketing Cockpits (keine Geheimnisse)
 !feind-marketing-cockpit/.claude-plugin/plugin.json
 !feind-marketing-cockpit/.mcp.json
-# Hook-Registrierung für Claude Code; enthält nur einen Dateipfad,
-# keine Zugangsdaten.
-!.claude/settings.json
-.env
+# Plugin-Manifest Multiagenten-Orchestrierung (keine Geheimnisse)
+!multiagent-orchestrierung/.claude-plugin/plugin.json
+# Messe-Generator: Inhalte und Team-Vorlage (ohne echte Personendaten)
+!messe/content/**/*.json
+!messe/data/team.example.json
 
 # Rohdaten mit möglichen personenbezogenen Daten (DSGVO)
 data/crm/*
@@ -44,15 +61,9 @@ dist/
 # Node-Abhängigkeiten (npm install)
 node_modules/
 
-# Messwerte des visuellen Umbaus (Cockpit) – versioniert
-!messe/rotterdam-2027/umbau/*.json
 test-results/
 playwright-report/
 
-# Messe-Generator: versionierte Inhalte & Vorlagen wieder einschließen
-# (das globale *.json oben würde sie sonst ausschließen)
-!messe/content/**/*.json
-!messe/data/team.example.json
 # Personenbezogene Daten & generierte Dokumente NIE committen (DSGVO):
 messe/data/*.local.json
 messe/output/*

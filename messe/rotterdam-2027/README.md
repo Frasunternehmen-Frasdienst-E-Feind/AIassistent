@@ -3,6 +3,15 @@
 Zentrale, konsolidierte Planung für den Messeauftritt der Fräsdienst-Service E. Feind GmbH
 auf der **InfraTech 2027, Rotterdam Ahoy, 12.–15. Januar 2027**.
 
+## Fokusthema: Pflasterschleifen (verbindlich)
+
+Vorgabe David, 28.10.2026: Auf der InfraTech 2027 in Rotterdam Ahoy steht
+**Pflasterschleifen** im Mittelpunkt (Vorher-Nachher-Pflasterfläche, Schleifwelle,
+Nutzen Barrierefreiheit und Erhalt des Bestands). Alle Messe-Inhalte –
+Webseite, Social Posts, Mailings, Standgrafik, Giveaways, Leadgespräche – richten
+sich danach aus. Kaltfräsen sowie Grinding & Grooving erscheinen nur als
+„außerdem im Portfolio“.
+
 ## Inhalt dieses Ordners
 
 | Datei | Zweck |
@@ -12,6 +21,7 @@ auf der **InfraTech 2027, Rotterdam Ahoy, 12.–15. Januar 2027**.
 | `messe-hub.html` | **Messe-Hub** (LevelUp-Cluster 3): bündelt die 11 Einzel-Artefakte in den Modulen Hotels, Giveaways, Aufgaben (nur Fristen, führend bleibt Notion/A1) und Stand. Momentaufnahme (Stand 24.10.2026) eingebettet. Danach gilt der eigene `db` (`hotels/`, `giveaways/`, `fristen/`, `stand/info`): Er wird nur feldweise ergänzt und nie überschrieben. Mockup-Bilder liegen im Asset-Speicher des Hubs. Reiter „Stand“ mit schematischer 3D-Ansicht und Grundriss 8 × 7 m; bearbeitbar im Design-Canvas „Standansichten 5.209“ (https://claude.ai/artifact/UdE4sNpC4c4Ur9H2i2CDKw). Tests: `test/hub-logic.test.mjs`. |
 | `grafik/rueckwand-varianten-16x9.png` | Entscheidungsgrafik mit vier Rückwand-Varianten im Maßstab und der Genehmigungsgrenze 2,75 m. Daneben liegt die HTML-Vorlage für Änderungen. |
 | `infratech-2027-liste.html` | Vorgängerstand des Cockpits (v2, Altstand – nicht mehr live). Aufgaben, Fristen, Budget, KPIs, Lessons Learned, Faktencheck, Wissensbasis. Kategorisiert, filterbar, mit Fortschritt und Terminwarnungen. |
+| `messeseite-pflasterschleifen.html` | Quelle der Messeseite „Feind auf der InfraTech 2027“ (Artefakt https://claude.ai/artifact/NenzWrrsorBsLBihYeS4Dj, Entwurf). Seit 09.11.2026 im Aufbau des Designs „Landingpage Editor“, Vorlage Messe (Claude-Design-Projekt „InfraTech 2027 Messestand“): Hero, Messe-Band auf Grün, Verfahren, Vorher/Nachher, Auszeichnung, Terminanfrage. Dreisprachig DE/EN/NL (`?lang=nl`), Bilder in `assets/`, Tests: `e2e/messeseite.e2e.mjs`. Offen: Jury-Zitat DE/NL, Urkunde prüfen, EN/NL von Muttersprachlern gegenlesen. |
 | `MASTER-TODO.md` | Vollständige, kategorisierte Aufgabenliste als versionierbarer Text (Grundlage des Cockpits). |
 | `KATEGORISIERUNG-MANUS.md` | Kategorisierung der MANUS-Export-Inhalte + Plan, wie sie die ToDo-Liste ergänzen. |
 | `FUNKTIONS-BACKLOG.md` | Backlog neuer Funktionen/Installationen für die Weiterentwicklung des Cockpits. |
@@ -27,7 +37,7 @@ Einstieg/Überblick über das Gesamtsystem: **`SYSTEM-UEBERSICHT.md`**.
 - **Führendes Cockpit (ab 07.10.2026):** „Feind Cockpit“ – https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd. Es enthält alles aus „Feind Cockpit (Copy)“ (GRG81) plus Aktionsleiste, Tooltips, Bibliothek, Links, PDF-Rückgabe, Schutz und Brennglas. Ziel des visuellen Umbaus (`umbau/`).
 - Vorher führend: „Feind Cockpit (Copy)“ – https://claude.ai/artifact/GRG81suHXorrC1Lekymu9i (Stand 02.10.2026, bleibt bis zur Stilllegung unverändert).
   Seit 02.10.2026 wieder mit dem Reiter **„Checkliste 26→27“** (64 Punkte der ToDo-Liste `2FT2wp…`).
-  `cockpit-a1/Feind-Cockpit-A1.html` entspricht dem Live-Stand von „Feind Cockpit“ vom 21.10.2026 (Version 68f4); `feind-cockpit-v3.html` ist entfallen (eine Quelle statt zwei).
+  `cockpit-a1/Feind-Cockpit-A1.html` entspricht dem Live-Stand von „Feind Cockpit“ vom 10.11.2026 (Version 112, 1794323765-6542: Aufgaben aus Jira MAR, EU-Vorlage Stadia Maps aus PR #42); `feind-cockpit-v3.html` ist entfallen (eine Quelle statt zwei).
 - Das frühere Cockpit `4zX58…` existiert nicht mehr.
 - Datenhaltung: geteilte Artefakt-Datenbank (`db`): `tasks/<id>` (Aufgaben), `checkliste/<Kategorie-Punkt>` = `{ status, rolle, frist, budget, beschluss, notiz }` (Checkliste 26→27), Alt-Bestand `overrides/<taskId>`.
   Fällt die Datenbank aus, speichert die Seite pro Gerät lokal (localStorage).

@@ -53,6 +53,13 @@ Der Befehl `seo-report` funktioniert nach der Installation aus jedem Ordner. Die
 Konfiguration findet er über `--config`, die Umgebungsvariable `SEO_REPORTING_CONFIG`
 oder eine `config.yaml` im aktuellen Ordner.
 
+**Umgebungsvariablen (`.env`):** Alle unten genannten ENV-Variablen (und die
+Berichtsvariablen des Datenschutzberichts) sind in `.env.example` im Repository-Wurzel
+als ausfüllbare Vorlage hinterlegt. Zum Verwenden `cp .env.example .env` und Werte
+eintragen. Die echte `.env` ist per `.gitignore` ausgeschlossen und wird nie committet;
+Geheimnisse (Service-Account-JSON, `SMTP_PASSWORD`) gehören ausschließlich dorthin oder
+in CI-Secrets, niemals in `config.yaml`.
+
 Ergebnis liegt in `output/monthly_2026-08-01_2026-08-31.md` (+ `.json`).
 
 ## 4. CRM-Export (ca. 5 Min. pro Monat, bis eine automatische Schnittstelle da ist)
