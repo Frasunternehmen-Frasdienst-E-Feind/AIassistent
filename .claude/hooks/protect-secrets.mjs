@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // PreToolUse-Hook: setzt die Datenschutzregeln aus CLAUDE.md technisch durch.
-// Blockiert (Exit 2) Schreibzugriffe auf Dateien mit Zugangsdaten und `git add -f`.
+// Blockiert (Exit 2) Schreibzugriffe auf Dateien mit Zugangsdaten, `git add -f` und schwer
+// umkehrbare Git-Befehle (Force-Push, reset --hard, Branch löschen, clean -f).
 // shortcut: prüft nur Edit/Write-Werkzeuge und git-Befehle, nicht Bash-Umleitungen (`> .env`, tee);
 // ersetzt keinen Secret-Scan. Fehlt node oder ist die Eingabe unlesbar, blockiert er nicht.
 import { fileURLToPath } from 'node:url';
@@ -21,6 +22,17 @@ const SECRET_FILE = [
 // `git [-C dir] add|stage` mit -f, --force (auch abgekürzt) oder kombiniert wie -Af
 const FORCE_ADD =
   /\bgit\b[^;&|\n]*\s(add|stage)(?=\s|$)[^;&|\n]*\s["']?(--f(o(r(c(e)?)?)?)?|-[A-Za-z]*f[A-Za-z]*)\b/;
+// Git-Sicherheitsgurt: schwer umkehrbare Befehle. Branch löschen nur nach Davids Freigabe (CLAUDE.md),
+// dann führt David den Befehl selbst aus.
+const GIT = String.raw`\bgit\b[^;&|\n]*\s`;
+const REST = String.raw`(?=\s|$)[^;&|\n]*\s`;
+const GIT_DANGER = [
+  [new RegExp(`${GIT}push${REST}(--force(-with-lease)?\\b|-[A-Za-z]*f[A-Za-z]*\\b|\\+\\S)`), 'Force-Push überschreibt fremde Historie'],
+  [new RegExp(`${GIT}push${REST}(--delete\\b|-d\\b|:\\S)`), 'Branch auf GitHub löschen'],
+  [new RegExp(`${GIT}reset${REST}--hard\\b`), '`reset --hard` verwirft Änderungen unwiderruflich'],
+  [new RegExp(`${GIT}branch${REST}(-[A-Za-z]*[dD][A-Za-z]*\\b|--delete\\b)`), 'Branch löschen'],
+  [new RegExp(`${GIT}clean${REST}-[A-Za-z]*f`), '`clean -f` löscht ungesicherte Dateien'],
+];
 // Commit-Nachrichten (-m/-F) sind Text, kein Befehl
 const MESSAGE_ARG = /(\s(?:-m|--message|-F|--file))(=|\s+)("(?:\\.|[^"\\])*"|'[^']*'|\S+)/g;
 
@@ -35,6 +47,10 @@ export function check({ tool_name, tool_input } = {}) {
   const cmd = String(input.command || '').replace(MESSAGE_ARG, '$1 ""');
   if (tool_name === 'Bash' && FORCE_ADD.test(cmd)) {
     return 'Gesperrt: `git add -f` umgeht .gitignore. JSON-Ausnahmen gehören in den kommentierten Ausnahmeblock der .gitignore (CLAUDE.md).';
+  }
+  const danger = tool_name === 'Bash' && GIT_DANGER.find(([re]) => re.test(cmd));
+  if (danger) {
+    return `Gesperrt: ${danger[1]}. Schwer umkehrbar – nur nach Davids ausdrücklicher Freigabe, dann führt David den Befehl selbst aus (CLAUDE.md).`;
   }
   return null;
 }
