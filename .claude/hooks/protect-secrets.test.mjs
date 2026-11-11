@@ -58,3 +58,21 @@ test('stürzt bei unerwarteter Eingabe nicht ab', () => {
   assert.equal(check({ tool_name: 'Write', tool_input: { file_path: 42 } }), null);
   assert.equal(check({}), null);
 });
+
+test('Git-Sicherheitsgurt sperrt schwer umkehrbare Befehle', () => {
+  for (const c of ['git push --force origin main', 'git push -f', 'git push --force-with-lease -u origin x',
+    'git push origin +main', 'git push origin --delete feature', 'git push origin :feature',
+    'git reset --hard origin/main', 'git -C repo reset --hard', 'git branch -D alt', 'git branch -d alt',
+    'git branch --delete alt', 'git clean -fd', 'cd repo && git push -f']) {
+    assert.ok(bash(c), c);
+  }
+});
+
+test('Git-Sicherheitsgurt lässt Alltagsbefehle durch', () => {
+  for (const c of ['git push -u origin claude/x', 'git push origin HEAD:main', 'git reset HEAD~1',
+    'git reset --soft HEAD~1', 'git branch', 'git branch -a', 'git branch --show-current',
+    'git checkout -q -B x origin/main', 'git clean -n', 'git commit -m "reset --hard und push -f verboten"',
+    'git merge --no-edit origin/x', 'git fetch origin main']) {
+    assert.equal(bash(c), null, c);
+  }
+});
