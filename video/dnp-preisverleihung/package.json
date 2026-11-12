@@ -1,0 +1,10 @@
+{
+  "name": "dnp-preisverleihung",
+  "private": true,
+  "scripts": {
+    "render": "node render.js"
+  },
+  "dependencies": {
+    "@fontsource/exo": "^5.0.0"
+  }
+}
