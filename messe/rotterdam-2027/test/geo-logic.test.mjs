@@ -118,19 +118,22 @@ test('Vorlage Stadia EU: gültige URL mit EU-Host, Namensnennung und Datenschutz
   assert.equal(p.error, '');
   assert.equal(p.host, 'tiles-eu.stadiamaps.com');
   assert.equal(p.eu, true);
-  assert.equal(p.warning, '');
+  assert.equal(p.testOnly, false);
   assert.match(p.attributionHtml, /OpenStreetMap-Mitwirkende/);
   assert.match(p.attributionHtml, /© Stadia Maps © OpenMapTiles/);
   assert.match(p.privacyUrl, /^https:\/\/stadiamaps\.com\//);
 });
 
-test('Anbieter: leerer API-Key in der URL ergibt eine Warnung, kein Rückfall', () => {
+test('Anbieter: leerer API-Key in der URL ist ungültig, es gilt OpenStreetMap', () => {
   const x = G.presets()[0];
   const p = G.provider(x);
-  assert.equal(p.testOnly, false);
-  assert.match(p.warning, /API-Key fehlt/);
-  assert.equal(G.provider({ url: 'https://t.example.eu/{z}/{x}/{y}.png?key=&style=a' }).warning !== '', true);
-  assert.equal(G.provider({ url: 'https://t.example.eu/{z}/{x}/{y}.png?key=abc' }).warning, '');
+  assert.match(p.error, /API-Key fehlt/);
+  assert.equal(p.testOnly, true);
+  assert.equal(p.host, 'tile.openstreetmap.org');
+  assert.equal(p.eu, false);
+  assert.match(G.provider({ url: 'https://t.example.eu/{z}/{x}/{y}.png?key=&style=a' }).error, /API-Key fehlt/);
+  assert.equal(G.provider({ url: 'https://t.example.eu/{z}/{x}/{y}.png?key=abc' }).error, '');
+  assert.equal(G.provider({ url: 'https://t.example.eu/{z}/{x}/{y}.png' }).error, '');
 });
 
 test('Vorlagen: Änderungen an der Rückgabe verändern die Vorlage nicht', () => {

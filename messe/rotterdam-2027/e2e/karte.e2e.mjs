@@ -187,10 +187,43 @@ test('Admin: Vorlage Stadia EU füllt die Felder und meldet den fehlenden API-Ke
   assert.match(await page.locator('#mt-url').inputValue(), /^https:\/\/tiles-eu\.stadiamaps\.com\/tiles\/alidade_smooth\/\{z\}\/\{x\}\/\{y\}\{r\}\.png\?api_key=$/);
   assert.equal(await page.locator('#mt-attribution').inputValue(), '© Stadia Maps © OpenMapTiles');
   const card = page.locator('.card', { has: page.locator('#mt-preset') });
-  assert.match(await card.innerText(), /EU-Endpunkt/);
-  assert.match(await card.innerText(), /API-Key fehlt/);
+  // Ohne Key ist die Konfiguration ungültig: es gilt OpenStreetMap, kein Rückfall auf einen Anbieter, der jede Kachel ablehnt.
+  assert.match(await card.innerText(), /Ungültig: API-Key fehlt in der Kachel-URL\. Es gilt OpenStreetMap\./);
+  assert.match(await card.innerText(), /Key ist nicht geheim/);
   assert.deepEqual(ext, []);
   assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('Admin: Vorlage ersetzt einen eingetragenen Anbieter nur nach Rückfrage', async () => {
+  const mapTiles = { name: 'Eigener Anbieter', url: 'https://tiles.example.eu/{z}/{x}/{y}.png?key=geheim', attribution: '© Beispiel' };
+  const { page, ctx, errors } = await open({ db: { 'admin/config': { version: 1, mapTiles } } });
+  await page.locator('#wt-admin').click();
+  await page.locator('.tab', { hasText: 'Konfiguration' }).click();
+  await page.getByRole('button', { name: /Funktionen und Quellen/ }).first().click();
+  await page.locator('#mt-preset').selectOption('stadia-eu');
+  await page.getByRole('button', { name: 'Vorlage übernehmen' }).click();
+  const dlg = page.getByRole('dialog', { name: /Kachelanbieter ersetzen/ });
+  await dlg.waitFor();
+  await dlg.getByRole('button', { name: 'Abbrechen' }).click();
+  await page.waitForTimeout(200);
+  assert.equal(await page.locator('#mt-url').inputValue(), mapTiles.url, 'Abbrechen lässt den Anbieter stehen');
+  await page.getByRole('button', { name: 'Vorlage übernehmen' }).click();
+  await page.getByRole('dialog', { name: /Kachelanbieter ersetzen/ }).getByRole('button', { name: 'Vorlage übernehmen' }).click();
+  await page.waitForFunction(() => (document.getElementById('mt-url') || {}).value?.startsWith('https://tiles-eu.stadiamaps.com/'));
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('Vorlage ohne API-Key: Karte fragt nur für OpenStreetMap, keine Anfrage an Stadia', async () => {
+  const mapTiles = { name: 'Stadia Maps (EU)', url: 'https://tiles-eu.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=', attribution: '© Stadia Maps © OpenMapTiles' };
+  const { page, ext, ctx } = await open({ db: { 'admin/config': { version: 1, mapTiles } } });
+  await page.getByRole('button', { name: 'Straßenkarte laden' }).click();
+  const dlg = page.getByRole('dialog', { name: /Einwilligung/ });
+  assert.match(await dlg.innerText(), /tile\.openstreetmap\.org/);
+  assert.doesNotMatch(await dlg.innerText(), /stadiamaps/);
+  assert.match(await dlg.innerText(), /Konfigurierter Anbieter ungültig \(API-Key fehlt/);
+  assert.deepEqual(ext.filter(u => u.includes('stadiamaps')), []);
   await ctx.close();
 });
 
