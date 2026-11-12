@@ -10521,20 +10521,23 @@ body.mg-on #cmdBtn, body.mg-on #dropBtn, body.mg-on .foot { display: none !impor
     const sel = h('select', { id: 'mt-preset', disabled: dis, onchange: ev => { ui.tilePreset = ev.target.value; } },
       h('option', { value: '', text: 'Vorlage wählen …' }), presets.map(x => h('option', { value: x.id, text: x.label, selected: ui.tilePreset === x.id })));
     const use = h('button', { class: 'btn', type: 'button', disabled: dis, onclick: () => {
-      const x = presets.find(q => q.id === (sel.value || ui.tilePreset));
+      const x = presets.find(q => q.id === ui.tilePreset);
       if (!x) { sel.focus(); return; }
-      e.mapTiles = { name: x.name, url: x.url, attribution: x.attribution, privacyUrl: x.privacyUrl };
-      ui.tilePreset = '';
-      changed();
+      const apply = () => { e.mapTiles = { name: x.name, url: x.url, attribution: x.attribution, privacyUrl: x.privacyUrl }; ui.tilePreset = ''; changed(); };
+      // Ein eingetragener Anbieter (samt angehängtem Key) wird nur nach Rückfrage ersetzt.
+      const cur = e.mapTiles && e.mapTiles.url ? String(e.mapTiles.url) : '';
+      if (!cur || cur === x.url) { apply(); return; }
+      app.confirm({ title: 'Kachelanbieter ersetzen?', text: 'Die Vorlage „' + x.label + '“ ersetzt den eingetragenen Anbieter samt Kachel-URL und API-Key. Der bisherige Key geht dabei verloren.', confirmLabel: 'Vorlage übernehmen', danger: true })
+        .then(ok => { if (ok) apply(); });
     } }, 'Vorlage übernehmen');
     const state = !p ? '' : p.error ? 'Ungültig: ' + p.error + ' Es gilt OpenStreetMap.'
-      : 'Wirksam: ' + p.name + ' (' + p.host + ')' + (p.testOnly ? ' · Testbetrieb' : p.eu ? ' · EU-Endpunkt' : ' · EU-Verarbeitung nicht belegt, Anbieter prüfen') + (p.warning ? ' · ' + p.warning : '');
+      : 'Wirksam: ' + p.name + ' (' + p.host + ')' + (p.testOnly ? ' · Testbetrieb' : p.eu ? ' · EU-Endpunkt' : ' · EU-Verarbeitung nicht belegt, Anbieter prüfen');
     return h('div', { class: 'card', style: 'margin-top:var(--s3)' }, h('h3', { text: 'Straßenkarte: Kachelanbieter' }),
       h('p', { class: 'muted small', text: 'Leer lassen: OpenStreetMap, nur für Test und geringe Last (Tile Usage Policy). Für den Dauerbetrieb einen Anbieter mit EU-Verarbeitung eintragen. „© OpenStreetMap-Mitwirkende“ wird immer angezeigt. Nach einem Wechsel fragt die Karte alle Personen neu nach ihrer Einwilligung. Den Anbieter in der Datenschutzerklärung nennen – bitte Rechtsabteilung prüfen.' }),
       presets.length ? h('div', { class: 'tools' }, app.field('Vorlage (EU-Endpunkt)', sel), use,
-        h('p', { class: 'muted small', text: 'Danach den API-Key des Anbieters an die Kachel-URL anhängen. Den Key nur hier pflegen, nicht im Repository.' })) : null,
+        h('p', { class: 'muted small', text: 'Danach den API-Key des Anbieters an die Kachel-URL anhängen. Achtung: Der Key ist nicht geheim. Er steht in der veröffentlichten Konfiguration und in jeder Kachel-Anfrage und ist für alle sichtbar, die das Cockpit öffnen. Deshalb beim Anbieter einen Key anlegen, der nur für die Cockpit-Domain gilt, mit Nutzungslimit. Nicht ins Repository übernehmen.' })) : null,
       h('div', { class: 'form-grid' }, fields),
-      p ? h('p', { class: p.error || p.warning ? 'small st y' : 'small', text: state }) : null);
+      p ? h('p', { class: p.error ? 'small st y' : 'small', text: state }) : null);
   }
 
   function secAusbau(e, dis) {
@@ -17024,7 +17027,7 @@ let shown = false, hideT = null;
     name: 'Stadia Maps (EU)', url: 'https://tiles-eu.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=',
     attribution: '© Stadia Maps © OpenMapTiles', privacyUrl: 'https://stadiamaps.com/privacy/privacy-policy/'
   }];
-  // Leerer Schlüssel-Parameter am Ende (…?api_key= oder …&key=): Kacheln würden abgelehnt.
+  // Leerer Schlüssel-Parameter (…?api_key= oder …&key=): Kacheln würden abgelehnt, gilt als ungültige Konfiguration.
   const keyMissing = url => /[?&](api_?key|key)=(&|$)/i.test(url);
 
   function provider(cfg) {
@@ -17033,6 +17036,8 @@ let shown = false, hideT = null;
     let error = '';
     if (url && (!/\{z\}/.test(url) || !/\{x\}/.test(url) || !/\{y\}/.test(url))) error = 'Kachel-URL braucht {z}, {x} und {y}.';
     else if (url && !hostOf(url)) error = 'Kachel-URL muss mit https:// beginnen.';
+    // Ohne Key lehnt der Anbieter jede Kachel ab; dann gar nicht erst um Einwilligung bitten und IPs übertragen.
+    else if (url && keyMissing(url)) error = 'API-Key fehlt in der Kachel-URL.';
     const own = url && !error;
     const base = own ? { name: str(c.name) || hostOf(url), url, privacyUrl: httpsUrl(c.privacyUrl) ? str(c.privacyUrl) : '' } : OSM;
     // ODbL/CC BY-SA: die OSM-Namensnennung steht immer da; eigener Text des Anbieters folgt als reiner Text.
@@ -17041,8 +17046,7 @@ let shown = false, hideT = null;
     return {
       name: base.name, url: base.url, host, privacyUrl: base.privacyUrl,
       attributionHtml: OSM_LINK + (extra ? ' · ' + extra : ''),
-      testOnly: !own, error, eu: EU_HOSTS.includes(host),
-      warning: own && keyMissing(url) ? 'API-Key fehlt in der Kachel-URL.' : ''
+      testOnly: !own, error, eu: EU_HOSTS.includes(host)
     };
   }
 
@@ -17168,7 +17172,7 @@ let shown = false, hideT = null;
     const revoke = c.granted ? h('button', { class: 'linkbtn', type: 'button', onclick: () => saveConsent(null) }, 'Einwilligung widerrufen') : null;
     const bar = h('div', { class: 'gm-bar' }, toggle, revoke,
       h('span', { class: 'muted small', text: on ? 'Straßenkarte von ' + p.name + ' (' + p.host + ')' + (p.testOnly ? ' · Testbetrieb' : '') + '.'
-        : c.on && failedHosts.has(p.host) ? 'Die Straßenkarte von ' + p.name + ' ließ sich nicht laden (Anbieter nicht erreichbar oder vom Viewer blockiert). Umrisskarte aktiv, „Straßenkarte laden“ versucht es erneut.'
+        : c.on && failedHosts.has(p.host) ? 'Die Straßenkarte von ' + p.name + ' ließ sich nicht laden (Anbieter nicht erreichbar, API-Key abgelehnt oder vom Viewer blockiert). Umrisskarte aktiv, „Straßenkarte laden“ versucht es erneut.'
         : 'Umrisskarte offline: keine Datenübertragung an Dritte.' }));
     const st = opts.states || null;
     const sb = opts.stateBubbles && typeof opts.stateBubbles === 'object' ? opts.stateBubbles : null;

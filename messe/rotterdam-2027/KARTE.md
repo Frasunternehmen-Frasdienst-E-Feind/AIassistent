@@ -59,7 +59,11 @@ Admin › Konfiguration › **Funktionen und Quellen** › Karte „Straßenkart
 
 **Schnellweg über die Vorlage:** Unter „Vorlage (EU-Endpunkt)“ den Eintrag „Stadia Maps, EU-Endpunkt
 (Alidade Smooth)“ wählen und auf „Vorlage übernehmen“ klicken. Danach den API-Key an die Kachel-URL
-anhängen. Solange er fehlt, meldet die Karte „API-Key fehlt in der Kachel-URL“.
+anhängen. Solange er fehlt, gilt die Konfiguration als ungültig: Die Admin-Karte meldet
+„Ungültig: API-Key fehlt in der Kachel-URL. Es gilt OpenStreetMap.“, und die Straßenkarte bittet
+weiter nur um Einwilligung für OpenStreetMap. So geht keine IP-Adresse an einen Anbieter, der jede
+Kachel ablehnen würde. Ist schon ein Anbieter eingetragen, fragt „Vorlage übernehmen“ vorher nach,
+weil Kachel-URL und Key dabei ersetzt werden.
 
 | Feld | Vorlage Stadia Maps (EU) |
 |---|---|
@@ -86,9 +90,10 @@ Dann veröffentlichen. Gespeichert wird in `admin/config` → `mapTiles`, berein
 `{z}`, `{x}` und `{y}` sind Pflicht. Ist die URL ungültig, gilt OpenStreetMap und die Karte zeigt den Grund an.
 
 Hinweise:
-- Ein API-Key in der Kachel-URL ist im Browser sichtbar. Beim Anbieter auf die Domain des
-  Artefakts beschränken. Den Key nicht ins Repository schreiben, sondern nur in der
-  Admin-Konfiguration pflegen.
+- Der API-Key ist **nicht geheim**: Er steht in der veröffentlichten Konfiguration und in jeder
+  Kachel-Anfrage und ist für alle sichtbar, die das Cockpit öffnen. Beim Anbieter deshalb einen
+  eigenen Key anlegen, der nur für die Domain des Artefakts gilt, mit Nutzungslimit. Den Key
+  nicht ins Repository schreiben.
 - Ob der claude.ai-Viewer Kacheln eines Hosts zulässt, hängt von dessen Inhaltsrichtlinie ab. Lädt
   nichts, schaltet die Karte nach drei Fehlern auf die Umrisskarte zurück und meldet das.
 - Self-Hosting (PMTiles/OpenMapTiles) passt nicht ins Artefakt (Größenlimit 16 MB). Dafür bräuchte
@@ -98,7 +103,7 @@ Hinweise:
 
 | Modul in `Feind-Cockpit-A1.html` | Aufgabe |
 |---|---|
-| `geo-logic.js` | reine Funktionen: `classes()`, `provider()` (inkl. `eu`, `warning`), `presets()`, `consent.read/grant/setOn` |
+| `geo-logic.js` | reine Funktionen: `classes()`, `provider()` (inkl. `eu`; leerer API-Key gilt als `error`), `presets()`, `consent.read/grant/setOn` |
 | `geomap.js` | `app.geoMap(opts)`: Leaflet, Einwilligungsdialog, Legende, Cluster, Lazy-Init per IntersectionObserver, Ladehinweis (`aria-busy`) |
 | `config.js` | `mapTiles` in `merge()` |
 | `app-admin.js` | Karte „Straßenkarte: Kachelanbieter“ mit Vorlage „Stadia Maps, EU-Endpunkt“ |
