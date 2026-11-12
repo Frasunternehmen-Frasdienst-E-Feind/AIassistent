@@ -76,3 +76,21 @@ test('Git-Sicherheitsgurt lässt Alltagsbefehle durch', () => {
     assert.equal(bash(c), null, c);
   }
 });
+
+test('Git-Sicherheitsgurt sperrt das Verwerfen ungesicherter Änderungen', () => {
+  for (const c of ['git checkout .', 'git checkout -- .', 'git -C repo checkout -- .', 'git checkout :/',
+    'git checkout -f main', 'git checkout --force main', 'git restore .', 'git restore -- .',
+    'git restore --worktree .', 'git restore -s HEAD :/', 'git stash drop', 'git stash drop stash@{1}',
+    'git stash clear', 'cd repo && git restore .', 'git restore --staged --worktree .', 'git restore -S -W .']) {
+    assert.ok(bash(c), c);
+  }
+});
+
+test('Git-Sicherheitsgurt lässt gezieltes Zurücknehmen und Stash-Alltag durch', () => {
+  for (const c of ['git checkout main', 'git checkout -b neu', 'git checkout -- zeiterfassung/app.js',
+    'git restore zeiterfassung/app.js', 'git restore --staged .', 'git restore --staged -- .',
+    'git stash', 'git stash push -m "zwischenstand"', 'git stash pop', 'git stash list', 'git stash show -p',
+    'git commit -m "git checkout . und git stash clear verboten"']) {
+    assert.equal(bash(c), null, c);
+  }
+});

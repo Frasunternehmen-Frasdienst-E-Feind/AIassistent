@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // PreToolUse-Hook: setzt die Datenschutzregeln aus CLAUDE.md technisch durch.
 // Blockiert (Exit 2) Schreibzugriffe auf Dateien mit Zugangsdaten, `git add -f` und schwer
-// umkehrbare Git-Befehle (Force-Push, reset --hard, Branch löschen, clean -f).
+// umkehrbare Git-Befehle (Force-Push, reset --hard, Branch löschen, clean -f, checkout/restore ., stash drop/clear).
 // shortcut: prüft nur Edit/Write-Werkzeuge und git-Befehle, nicht Bash-Umleitungen (`> .env`, tee);
 // ersetzt keinen Secret-Scan. Fehlt node oder ist die Eingabe unlesbar, blockiert er nicht.
 import { fileURLToPath } from 'node:url';
@@ -32,6 +32,13 @@ const GIT_DANGER = [
   [new RegExp(`${GIT}reset${REST}--hard\\b`), '`reset --hard` verwirft Änderungen unwiderruflich'],
   [new RegExp(`${GIT}branch${REST}(-[A-Za-z]*[dD][A-Za-z]*\\b|--delete\\b)`), 'Branch löschen'],
   [new RegExp(`${GIT}clean${REST}-[A-Za-z]*f`), '`clean -f` löscht ungesicherte Dateien'],
+  // Ganzen Arbeitsstand verwerfen (`.` oder `:/`); einzelne Dateien zurücknehmen bleibt erlaubt
+  [new RegExp(`${GIT}checkout${REST}(?:[^;&|\\n]*\\s)?(\\.|:/)(?=\\s|$)`), '`checkout .` verwirft alle ungesicherten Änderungen'],
+  [new RegExp(`${GIT}checkout${REST}(-[A-Za-z]*f[A-Za-z]*\\b|--force\\b)`), '`checkout -f` verwirft ungesicherte Änderungen'],
+  // `restore --staged .` nimmt nur die Vormerkung zurück und bleibt erlaubt, außer zusammen mit --worktree/-W
+  [new RegExp(`${GIT}restore(?=(?![^;&|\\n]*\\s(--staged|-S)\\b)|[^;&|\\n]*\\s(--worktree|-W)\\b)${REST}(?:[^;&|\\n]*\\s)?(\\.|:/)(?=\\s|$)`),
+    '`restore .` verwirft alle ungesicherten Änderungen'],
+  [new RegExp(`${GIT}stash${REST}(drop|clear)\\b`), '`stash drop/clear` löscht zwischengespeicherte Änderungen'],
 ];
 // Commit-Nachrichten (-m/-F) sind Text, kein Befehl
 const MESSAGE_ARG = /(\s(?:-m|--message|-F|--file))(=|\s+)("(?:\\.|[^"\\])*"|'[^']*'|\S+)/g;
