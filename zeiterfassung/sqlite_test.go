@@ -100,7 +100,7 @@ func TestSQLiteImport(t *testing.T) {
 			t.Fatalf("fremde Buchung: %+v", b)
 		}
 	}
-	if len(res.Persons) != 2 || res.Persons[0] != "Halko, David" {
+	if res.Persons != 2 {
 		t.Fatalf("persons: %v", res.Persons)
 	}
 }

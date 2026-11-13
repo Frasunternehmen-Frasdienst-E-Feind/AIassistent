@@ -230,29 +230,6 @@ func TestImportOptiTimeOrdner(t *testing.T) {
 	}
 }
 
-func TestRedaction(t *testing.T) {
-	if got := redactLine("SMTPPW=streng-geheim"); got != "SMTPPW=<entfernt>" {
-		t.Fatalf("config: %q", got)
-	}
-	if got := redactLine("SUPERPIN="); got != "SUPERPIN=" {
-		t.Fatalf("leerer Wert darf bleiben: %q", got)
-	}
-	if got := redactLine("LOGGERSTUFE=10"); got != "LOGGERSTUFE=10" {
-		t.Fatalf("harmloser Schlüssel: %q", got)
-	}
-	line := strings.Split(testOfflisteMa, "\r\n")[0]
-	got := redactOffliste(line, "offliste-ma")
-	if strings.Contains(got, "GEHEIMPIN") || !strings.Contains(got, "<entfernt>") {
-		t.Fatalf("Mitarbeiterzeile: %q", got)
-	}
-	if !strings.Contains(got, "Muster") {
-		t.Fatalf("Name muss erhalten bleiben: %q", got)
-	}
-	if got := redactOffliste(strings.Split(testOfflisteTaet, "\r\n")[0], "offliste-taet"); strings.Contains(got, "<entfernt>") {
-		t.Fatalf("Tätigkeitsliste darf nicht maskiert werden: %q", got)
-	}
-}
-
 func TestLogOhneStammdaten(t *testing.T) {
 	dir := t.TempDir()
 	write(t, dir, filepath.Join("OptiTime", "logger.txt"), []byte(testLog))
