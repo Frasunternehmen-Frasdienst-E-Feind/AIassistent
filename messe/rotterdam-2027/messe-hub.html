@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#424e4e">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1f2525">
-<title>Messe-Hub InfraTech 2027</title>
+<title>Messe-Hub: Countdown, Fristen und Stand der Dinge</title>
 <style>
 /* tokens:start – erzeugt mit .claude/skills/feind-brand/scripts/tokens-to-css.mjs, nicht von Hand ändern */
 :root {
@@ -128,6 +128,9 @@ section[hidden] { display: none; }
 .karte dl { display: grid; grid-template-columns: auto 1fr; gap: var(--space-1) var(--space-2); margin: var(--space-2) 0; font-size: 14px; }
 .karte dt { color: var(--ink-muted); }
 .karte dd { margin: 0; }
+.mockup { margin: calc(-1 * var(--space-3)) calc(-1 * var(--space-3)) var(--space-2); }
+.mockup img { display: block; width: 100%; height: auto; }
+.mockup figcaption { padding: var(--space-1) var(--space-3) 0; }
 .zeile { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; margin-top: var(--space-2); }
 .zeile input { flex: 1 1 160px; }
 .chip { display: inline-block; font-size: 13px; font-weight: 600; padding: 2px var(--space-2); border-radius: var(--radius-button); background: var(--surface); border: 1px solid var(--line); color: var(--ink-strong); }
@@ -166,52 +169,140 @@ button:active { transform: scale(.97); }
 .wand .offen { fill: none; stroke: var(--ink-muted); stroke-width: 2; stroke-dasharray: 4 4; }
 .wand .boden { stroke: var(--ink-strong); stroke-width: 2; }
 footer { font-size: 13px; color: var(--ink-muted); margin-top: var(--space-5); }
+
+/* Symbole: Strich in currentColor, damit beide Themes ohne eigene Farben auskommen */
+.ico { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -4px; }
+h1 .ico { width: 24px; height: 24px; color: var(--accent); margin-right: var(--space-2); }
+h2 .ico, h3 .ico { color: var(--ink-strong); margin-right: var(--space-2); }
+nav [role="tab"] .ico { margin-right: 6px; }
+.kpi .ico { color: var(--ink-strong); margin-bottom: var(--space-1); }
+
+.hero { background: var(--surface-inverse); color: var(--ink-inverse); padding: var(--space-4) var(--space-4) 0; margin-bottom: var(--space-4); position: relative; overflow: hidden; }
+.hero-zahl { display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
+.hero-zahl b { font: 800 clamp(56px, 12vw, 96px)/.9 var(--font-display); color: var(--accent); font-variant-numeric: tabular-nums; }
+.hero-zahl span { font: 600 18px var(--font-display); }
+.hero p { margin: var(--space-2) 0 0; opacity: .85; font-size: 14px; }
+.zeitleiste { position: relative; margin: var(--space-5) var(--space-5) var(--space-3) 0; height: 8px; background: color-mix(in srgb, var(--ink-inverse) 18%, transparent); }
+.zeitleiste .fort { position: absolute; inset: 0 auto 0 0; background: var(--accent); width: 0; }
+.zeitleiste .mark { position: absolute; top: -6px; width: 2px; height: 20px; background: var(--ink-inverse); }
+.zeitleiste .mark span { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 12px; }
+.zeitleiste .mark.unten span { bottom: auto; top: 24px; }
+.zeitleiste .heute { background: var(--accent); width: 4px; height: 28px; top: -10px; }
+.strasse { height: 18px; margin: var(--space-5) calc(-1 * var(--space-4)) 0; background: var(--ink-strong); position: relative; }
+.strasse::after { content: ""; position: absolute; left: 0; right: 0; top: 8px; height: 3px; background: repeating-linear-gradient(90deg, var(--ink-inverse) 0 26px, transparent 26px 44px); opacity: .7; }
+
+.iso svg { width: 100%; height: auto; display: block; }
+.iso .boden { fill: var(--surface-muted); stroke: var(--line); stroke-width: 1; }
+.iso .wandf { fill: var(--surface-inverse); }
+.iso .ledf { fill: var(--on-accent-strong); }
+.iso .ledrahmen { fill: none; stroke: var(--accent); stroke-width: 2; }
+.iso .gruen { fill: var(--accent); }
+.iso .grau { fill: var(--surface); stroke: var(--ink-muted); stroke-width: 1; }
+.iso .schatten1 { fill: var(--ink-strong); opacity: .14; }
+.iso .schatten2 { fill: var(--ink-strong); opacity: .28; }
+.iso .offen { fill: none; stroke: var(--ink-muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.iso .mass { stroke: var(--ink-muted); stroke-width: 1; }
+.iso text { font: 20px var(--font-sans); fill: var(--ink); }
+.iso .marke { font: 700 1px var(--font-display); fill: var(--ink-inverse); }
+.iso .zone { font-size: 18px; fill: var(--ink-strong); }
+.iso .zone.auf-gruen { fill: var(--on-accent-strong); }
+.legende { display: flex; gap: var(--space-3); flex-wrap: wrap; font-size: 13px; color: var(--ink-muted); margin: var(--space-2) 0 0; padding: 0; list-style: none; }
+.legende i { display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: -1px; }
+.legende .l-wand { background: var(--surface-inverse); }
+.legende .l-gruen { background: var(--accent); }
+.legende .l-grau { background: var(--surface); outline: 1px solid var(--ink-muted); outline-offset: -1px; }
+#standTabelle { border-collapse: collapse; margin-top: var(--space-2); }
+#standTabelle th, #standTabelle td { text-align: left; padding: var(--space-1) var(--space-2); border-bottom: 1px solid var(--line); }
+.zwei { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes rein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes fahrt { to { background-position: -44px 0; } }
+  .rein { animation: rein .35s ease-out; }
+  .rein .raster > * { animation: rein .45s ease-out both; }
+  .rein .raster > :nth-child(2) { animation-delay: 50ms; } .rein .raster > :nth-child(3) { animation-delay: 100ms; }
+  .rein .raster > :nth-child(4) { animation-delay: 150ms; } .rein .raster > :nth-child(n+5) { animation-delay: 200ms; }
+  .zeitleiste .fort { transition: width 1.2s cubic-bezier(.2,.7,.2,1); }
+  .strasse::after { animation: fahrt 1.6s linear infinite; }
+  .iso .bau { animation: rein .5s ease-out both; }
+}
 @media (hover: hover) and (pointer: fine) {
   nav [role="tab"]:hover { border-bottom-color: var(--line); }
   .filter button:hover { border-color: var(--ink-muted); }
+  .karte { transition: transform .15s ease-out, box-shadow .15s ease-out; }
+  .karte:hover { transform: translateY(-2px); box-shadow: 0 6px 18px -10px var(--ink-strong); }
 }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-fraese" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.5"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></symbol>
+  <symbol id="i-uebersicht" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></symbol>
+  <symbol id="i-hotel" viewBox="0 0 24 24"><path d="M3 19V6M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6M7 11.5a1.5 1.5 0 1 0 0-.01"/></symbol>
+  <symbol id="i-giveaway" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4"/><path d="M5 12v9h14v-9M12 8v13M12 8C10 4 6.5 4.5 7.5 7 8 8 12 8 12 8zM12 8c2-4 5.5-3.5 4.5-1C16 8 12 8 12 8z"/></symbol>
+  <symbol id="i-frist" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4M8 15h2M14 15h2"/></symbol>
+  <symbol id="i-stand" viewBox="0 0 24 24"><path d="M2 17l10 4 10-4-10-4zM6 15.4V5l6 2.4v7.8M12 7.4L18 5v10.4"/></symbol>
+  <symbol id="i-uhr" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-haken" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></symbol>
+  <symbol id="i-ort" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></symbol>
+</svg>
 <header>
   <div class="kopf">
-    <h1>Messe-Hub InfraTech 2027</h1>
+    <h1><svg class="ico"><use href="#i-fraese"/></svg>Messe-Hub InfraTech 2027</h1>
     <span class="small" id="countdown">Rotterdam Ahoy · Stand 5.209 · 12.–15.01.2027</span>
   </div>
   <nav role="tablist" aria-label="Module">
-    <button role="tab" aria-selected="true" data-tab="uebersicht">Übersicht</button>
-    <button role="tab" aria-selected="false" data-tab="hotels">Hotels</button>
-    <button role="tab" aria-selected="false" data-tab="giveaways">Giveaways</button>
-    <button role="tab" aria-selected="false" data-tab="aufgaben">Aufgaben</button>
-    <button role="tab" aria-selected="false" data-tab="stand">Stand</button>
+    <button role="tab" aria-selected="true" data-tab="uebersicht"><svg class="ico"><use href="#i-uebersicht"/></svg>Übersicht</button>
+    <button role="tab" aria-selected="false" data-tab="hotels"><svg class="ico"><use href="#i-hotel"/></svg>Hotels</button>
+    <button role="tab" aria-selected="false" data-tab="giveaways"><svg class="ico"><use href="#i-giveaway"/></svg>Giveaways</button>
+    <button role="tab" aria-selected="false" data-tab="aufgaben"><svg class="ico"><use href="#i-frist"/></svg>Aufgaben</button>
+    <button role="tab" aria-selected="false" data-tab="stand"><svg class="ico"><use href="#i-stand"/></svg>Stand</button>
   </nav>
 </header>
 <main>
   <section id="uebersicht" role="tabpanel">
+    <div class="hero" id="hero">
+      <div class="hero-zahl"><b id="heroTage">–</b><span>Tage bis InfraTech 2027</span></div>
+      <p><svg class="ico"><use href="#i-ort"/></svg> Rotterdam Ahoy · Halle 5 · Stand 5.209 · 12.–15.01.2027</p>
+      <div class="zeitleiste" id="zeitleiste" role="img" aria-label="Zeitleiste von Projektstart bis Messe"><div class="fort" id="fort"></div></div>
+      <div class="strasse" aria-hidden="true"></div>
+    </div>
     <div class="kpis" id="kpis"></div>
     <div class="raster">
-      <div class="karte"><h3>Nächste Fristen</h3><ul class="fristen" id="naechste"></ul></div>
-      <div class="karte"><h3>Giveaways je Stufe (aktiv)</h3><div class="balken" id="stufen" role="img" aria-label="Aktive Giveaway-Ideen je Stufe"></div><p class="small muted">Verworfene Ideen zählen nicht.</p></div>
-      <div class="karte"><h3>Offene Entscheidungen</h3><dl id="offen"></dl></div>
+      <div class="karte"><h3><svg class="ico"><use href="#i-frist"/></svg>Nächste Fristen</h3><ul class="fristen" id="naechste"></ul></div>
+      <div class="karte"><h3><svg class="ico"><use href="#i-giveaway"/></svg>Giveaways je Stufe (aktiv)</h3><div class="balken" id="stufen" role="img" aria-label="Aktive Giveaway-Ideen je Stufe"></div><p class="small muted">Verworfene Ideen zählen nicht.</p></div>
+      <div class="karte"><h3><svg class="ico"><use href="#i-haken"/></svg>Offene Entscheidungen</h3><dl id="offen"></dl></div>
     </div>
   </section>
   <section id="hotels" role="tabpanel" hidden>
-    <h2>Hotels</h2>
+    <h2><svg class="ico"><use href="#i-hotel"/></svg>Hotels</h2>
     <p class="hinweis" id="hotelEmpfehlung"></p>
     <div class="raster" id="hotelListe"></div>
   </section>
   <section id="giveaways" role="tabpanel" hidden>
-    <h2>Giveaways</h2>
+    <h2><svg class="ico"><use href="#i-giveaway"/></svg>Giveaways</h2>
     <div class="filter" id="gwFilter"></div>
     <div class="raster" id="gwListe"></div>
   </section>
   <section id="aufgaben" role="tabpanel" hidden>
-    <h2>Fristen &amp; Aufgaben</h2>
+    <h2><svg class="ico"><use href="#i-frist"/></svg>Fristen &amp; Aufgaben</h2>
     <p class="hinweis">Aufgaben werden hier nicht gepflegt. Führend ist die <a href="https://app.notion.com/p/5718273f9a2c4ba085d5da4e62c0c878" target="_blank" rel="noopener">Notion-Datenbank „Aufgaben InfraTech 2027“</a>, bearbeitet über <a href="https://claude.ai/artifact/TfuzbGaWokUSoaqNGRFuRd" target="_blank" rel="noopener">Cockpit A1</a>. Hier stehen nur Fristen.</p>
     <ul class="fristen" id="alleFristen"></ul>
   </section>
   <section id="stand" role="tabpanel" hidden>
-    <h2>Stand 5.209</h2>
+    <h2><svg class="ico"><use href="#i-stand"/></svg>Stand 5.209</h2>
+    <div class="zwei" style="margin-bottom: var(--space-3)">
+      <figure class="karte iso" style="margin: 0"><h3>Ansicht (schematisch)</h3>
+        <svg viewBox="0 0 640 480" role="img" aria-labelledby="isoTitel" id="isoSvg"><title id="isoTitel">Schematische 3D-Ansicht des Stands 5.209, 8 × 7 m</title></svg>
+        <figcaption class="small muted" id="isoText"></figcaption>
+      </figure>
+      <figure class="karte iso" style="margin: 0"><h3>Grundriss (Zonen)</h3>
+        <svg viewBox="0 0 640 430" role="img" aria-labelledby="grTitel" id="grSvg"><title id="grTitel">Grundriss 8 × 7 m mit Zonen</title></svg>
+        <ul class="legende"><li><i class="l-wand"></i>Wand</li><li><i class="l-gruen"></i>Demo-Fläche (Pflaster)</li><li><i class="l-grau"></i>Möbel</li></ul>
+        <p class="small">Zum Bearbeiten im Design-Editor: <a href="https://claude.ai/artifact/UdE4sNpC4c4Ur9H2i2CDKw" target="_blank" rel="noopener">Standansichten 5.209</a></p>
+      </figure>
+    </div>
+    <details class="small"><summary>Maße als Tabelle</summary><table id="standTabelle" class="small"></table></details>
     <div class="raster">
       <div class="karte"><h3>Eckdaten</h3><dl id="standDaten"></dl></div>
       <div class="karte"><h3>Entscheidungen</h3>
@@ -233,7 +324,7 @@ footer { font-size: 13px; color: var(--ink-muted); margin-top: var(--space-5); }
   <footer id="datenstand"></footer>
 </main>
 
-<script type="application/json" id="seed">{"stand_vom":"2026-10-13","quellen":{"hotels":"https://claude.ai/artifact/UvpMEjstrhcc1J92Pd9uVy","giveaways":"https://claude.ai/artifact/2WNjsVpYq5oiN7yoUctvm1"},"empfehlungHotel":"Alleinreise → ibis Styles (günstig, direkt am Ahoy, Giacobbe gegenüber). Business + Abendessen → Hotel New York (bestes Ambiente, dichte Restaurantmeile, 4★). Gruppe → nhow Rotterdam (Design + Parkhaus + eigenes Restaurant).","hotels":[{"id":"ibis-styles-rotterdam-ahoy","name":"ibis Styles Rotterdam Ahoy","sterne":"★★★","lage":"Accor · Charlois","fahrzeit":"2 Min zu Fuß · 150 m vom Haupteingang","adresse":"Jacob Kleiboerweg 80, 3084 BG Rotterdam","oepnv":"Metro E Zuidplein (700 m)","booking":"8.2","ez":"~65 €","dz":"~85 €","messeEz":"85–110 €","messeDz":"110–145 €","link":"https://www.booking.com/hotel/nl/ibis-styles-rotterdam-ahoy.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=ibis%20Styles%20Rotterdam%20Ahoy%2C%20Jacob%20Kleiboerweg%2080%2C%203084%20BG%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"bastion-hotel-rotterdam-zuid","name":"Bastion Hotel Rotterdam Zuid","sterne":"★★★","lage":"Bastion Hotels · Zuid","fahrzeit":"ca. 5 Min Auto","adresse":"Driemanssteeweg 5, Rotterdam (lt. OpenStreetMap)","oepnv":"Bus 75 Pernis","booking":"7.9","ez":"~59 €","dz":"~79 €","messeEz":"79–99 €","messeDz":"99–125 €","link":"https://www.booking.com/hotel/nl/bastion-deluxe-rotterdam-south.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Bastion%20Hotel%20Rotterdam%20Zuid%2C%20Driemanssteeweg%205%2C%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"nhow-rotterdam","name":"nhow Rotterdam","sterne":"★★★★","lage":"NH Hotels · Kop van Zuid","fahrzeit":"ca. 8 Min Auto / 10 Min Metro","adresse":"Wilhelminakade 137, 3072 AP Rotterdam","oepnv":"Metro D Wilhelminaplein","booking":"8.4","ez":"~100 €","dz":"~130 €","messeEz":"130–175 €","messeDz":"160–220 €","link":"https://www.booking.com/hotel/nl/nhow-rotterdam.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=nhow%20Rotterdam%2C%20Wilhelminakade%20137%2C%203072%20AP%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"hotel-new-york-by-westcord","name":"Hotel New York by WestCord","sterne":"★★★★","lage":"WestCord · Wilhelminapier","fahrzeit":"ca. 8 Min Auto","adresse":"Koninginnenhoofd 1, 3072 AD Rotterdam","oepnv":"Metro D Wilhelminaplein","booking":"8.6","ez":"~110 €","dz":"~145 €","messeEz":"145–190 €","messeDz":"185–240 €","link":"https://www.booking.com/hotel/nl/hotel-new-york-rotterdam.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Hotel%20New%20York%20by%20WestCord%2C%20Koninginnenhoofd%201%2C%203072%20AD%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"eurostars-rijnhaven","name":"Eurostars Rijnhaven","sterne":"★★★★","lage":"Eurostars Hotels · Rijnhaven","fahrzeit":"ca. 7 Min Metro","adresse":"Rijnhaven 30, 3071 HH Rotterdam","oepnv":"Metro E Rijnhaven","booking":"8.1","ez":"~90 €","dz":"~120 €","messeEz":"115–155 €","messeDz":"150–195 €","link":"https://www.booking.com/hotel/nl/eurostars-rijnhaven-rotterdam.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Eurostars%20Rijnhaven%2C%20Rijnhaven%2030%2C%203071%20HH%20Rotterdam&travelmode=driving","ungefaehr":true,"status":"offen"},{"id":"ss-rotterdam-by-westcord","name":"ss Rotterdam by WestCord","sterne":"★★★★","lage":"WestCord · Kreuzfahrtschiff","fahrzeit":"ca. 8 Min Auto","adresse":"3e Katendrechtse Hoofd 25, 3072 AM Rotterdam","oepnv":"Metro D Katendrecht (8 Min)","booking":"8.0","ez":"~95 €","dz":"~125 €","messeEz":"120–160 €","messeDz":"155–200 €","link":"https://www.booking.com/hotel/nl/ss-rotterdam.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=ss%20Rotterdam%20by%20WestCord%2C%203e%20Katendrechtse%20Hoofd%2025%2C%203072%20AM%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"art-hotel-rotterdam","name":"ART Hotel Rotterdam","sterne":"★★★","lage":"Unabhängig · Maashaven","fahrzeit":"ca. 10–12 Min Metro","adresse":"Mijnsherenlaan 9, 3081 GA Rotterdam","oepnv":"Metro D/E Maashaven (100 m)","booking":"7.6","ez":"~70 €","dz":"~90 €","messeEz":"90–120 €","messeDz":"115–150 €","link":"https://www.booking.com/hotel/nl/arthotelrotterdam.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=ART%20Hotel%20Rotterdam%2C%20Mijnsherenlaan%209%2C%203081%20GA%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"flex-inn-rotterdam","name":"Flex-Inn Rotterdam","sterne":"★★","lage":"Budget · Feijenoord","fahrzeit":"ca. 12 Min","adresse":"Rosestraat 49, 3071 JS Rotterdam","oepnv":"Metro E Zuidplein (1,2 km)","booking":"7.2","ez":"~45 €","dz":"~60 €","messeEz":"60–85 €","messeDz":"80–110 €","link":"https://www.booking.com/searchresults.de.html?ss=Flex-Inn%20Rotterdam%20Rotterdam&selected_currency=EUR&group_adults=1&no_rooms=1","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Flex-Inn%20Rotterdam%2C%20Rosestraat%2049%2C%203071%20JS%20Rotterdam&travelmode=driving","ungefaehr":true,"status":"offen"},{"id":"the-usual-rotterdam","name":"The Usual Rotterdam","sterne":"★★★★","lage":"Boutique · Centrum","fahrzeit":"12–15 Min (Rushhour länger)","adresse":"Westblaak 10–14, 3012 KL Rotterdam","oepnv":"Metro Beurs / Tram Westblaak","booking":"8.5","ez":"~120 €","dz":"~155 €","messeEz":"150–200 €","messeDz":"190–250 €","link":"https://www.booking.com/searchresults.de.html?ss=The%20Usual%20Rotterdam%20Rotterdam&selected_currency=EUR&group_adults=1&no_rooms=1","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=The%20Usual%20Rotterdam%2C%20Westblaak%2010%E2%80%9314%2C%203012%20KL%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"hilton-rotterdam","name":"Hilton Rotterdam","sterne":"★★★★","lage":"Hilton · Centrum","fahrzeit":"12–15 Min (Rushhour länger)","adresse":"Weena 10, 3012 CM Rotterdam","oepnv":"Rotterdam Centraal","booking":"8.2","ez":"~130 €","dz":"~170 €","messeEz":"165–220 €","messeDz":"210–275 €","link":"https://www.booking.com/searchresults.de.html?ss=Hilton%20Rotterdam%20Rotterdam&selected_currency=EUR&group_adults=1&no_rooms=1","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Hilton%20Rotterdam%2C%20Weena%2010%2C%203012%20CM%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"rotterdam-marriott-hotel","name":"Rotterdam Marriott Hotel","sterne":"★★★★★","lage":"Marriott · Centrum","fahrzeit":"12–15 Min (Rushhour länger)","adresse":"Weena 686, 3012 CN Rotterdam","oepnv":"Rotterdam Centraal","booking":"8.4","ez":"~155 €","dz":"~195 €","messeEz":"195–260 €","messeDz":"245–320 €","link":"https://www.booking.com/searchresults.de.html?ss=Rotterdam%20Marriott%20Hotel%20Rotterdam&selected_currency=EUR&group_adults=1&no_rooms=1","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Rotterdam%20Marriott%20Hotel%2C%20Weena%20686%2C%203012%20CN%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"}],"giveaways":[{"id":"thermobecher","title":"Thermobecher","tier":"B","top":true,"qty":"200–300","supplier":"Loopper / GIFFITS","audience":"Bauleiter, Poliere, Büro","slogan":"Kalt fräsen. Heiß trinken.","flags":[],"status":"offen"},{"id":"pflasterstein","title":"Pflasterstein mit Rückseiten-Aufkleber","tier":"A","top":true,"qty":"offen","supplier":"Werkstatt (Stein) + WIRmachenDRUCK (Aufkleber)","audience":"Fachbesucher, Kommunen, Straßenbau","slogan":"Einmal anfassen. Dann erklärt sich Grinding von selbst.","flags":["2026 bewährt: kommen gut an (Checkliste Rotterdam/Essen)","Gewicht und Transport in der Goodie-Bag prüfen"],"status":"offen"},{"id":"lakritz","title":"Lakritz-Tütchen","tier":"A","top":true,"qty":"1.000","supplier":"GIFFITS / Brandible","audience":"Laufpublikum (Streuartikel)","slogan":"Das einzige Asphalt-Schwarz, das man naschen darf.","flags":["Lebensmittel-Kennzeichnung klären"],"status":"offen"},{"id":"eiskratzer","title":"Eiskratzer","tier":"A","top":true,"qty":"500","supplier":"GIFFITS","audience":"Besucher mit Auto","slogan":"Wir kratzen nicht nur an der Oberfläche.","flags":[],"status":"offen"},{"id":"zollstock","title":"Zollstock, beidseitig","tier":"B","top":true,"qty":"300","supplier":"HACH / WIRmachenDRUCK / Werbemittel24","audience":"Bauleiter, Poliere, Vermesser","slogan":"Auf den Millimeter. Seit über 30 Jahren.","flags":["Vorderseite: Logo, Website, QR-Code","2026 bewährt – beibehalten (Checkliste Rotterdam/Essen)"],"status":"offen"},{"id":"schluesselband","title":"Schlüsselband (Lanyard)","tier":"A","top":true,"qty":"offen","supplier":"GIFFITS / Loopper","audience":"Alle Messebesucher","slogan":"Hängt an uns.","flags":["2026 bewährt – beibehalten (Checkliste Rotterdam/Essen)"],"status":"offen"},{"id":"einkaufswagenloeser","title":"Einkaufswagenlöser","tier":"A","top":true,"qty":"offen","supplier":"GIFFITS / Werbemittel24","audience":"Laufpublikum, Fachbesucher","slogan":"Löst kleine Probleme. Große lösen wir mit der Fräse.","flags":["2026 bewährt – beibehalten (Checkliste Rotterdam/Essen)"],"status":"offen"},{"id":"kugelschreiber","title":"Kugelschreiber","tier":"A","top":false,"qty":"offen","supplier":"GIFFITS / WIRmachenDRUCK","audience":"Alle Messebesucher","slogan":"Schreibt so sauber, wie wir fräsen.","flags":["2026 bewährt – beibehalten (Checkliste Rotterdam/Essen)"],"status":"offen"},{"id":"feuerzeug","title":"Feuerzeug","tier":"A","top":false,"qty":"offen","supplier":"GIFFITS","audience":"Laufpublikum","slogan":"Wir arbeiten kalt. Sie zünden warm.","flags":["2026 bewährt – beibehalten (Checkliste Rotterdam/Essen)","Versand und Gefahrgut-Vorgaben prüfen"],"status":"offen"},{"id":"beanie","title":"Mütze (Beanie) mit Stick","tier":"C","top":false,"qty":"offen","supplier":"Loopper","audience":"Standteam, Bestandskunden","slogan":"Wir fräsen kalt. Sie bleiben warm.","flags":[],"status":"offen"},{"id":"humorkarte","title":"Humor-Karte zum Namen","tier":"A","top":false,"qty":"offen","supplier":"WIRmachenDRUCK","audience":"Beileger für alle Artikel","slogan":"Feindliche Übernahme? Nur beim alten Asphalt.","flags":["GL-Freigabe nötig","Rechtsabteilung prüfen"],"status":"offen"},{"id":"gurkendose","title":"Gurke in der Dose","tier":"A","top":false,"qty":"offen","supplier":"offen","audience":"Laufpublikum, NL-Humor","slogan":"Die einzige Gurke auf unserer Baustelle.","flags":["Idee aus dem Board-Kommentar – in der Checkliste nicht belegt, bitte bestätigen","Lebensmittel-Kennzeichnung klären"],"status":"offen"},{"id":"fraesmeissel","title":"Fräsmeißel mit Gravur","tier":"C","top":false,"qty":"20–30","supplier":"Brandible (Sonderanfertigung)","audience":"Entscheider, Bestandskunden","slogan":"Im Ruhestand nach [X] km Autobahn.","flags":["Machbarkeit ungeprüft","km-Wert von der Technik bestätigen"],"status":"offen"},{"id":"powerbank","title":"Powerbank / Stirnlampe","tier":"P","top":false,"qty":"offen","supplier":"Loopper / GIFFITS","audience":"Nachtbaustellen-Teams","slogan":"Energie für die Nachtschicht.","flags":[],"status":"offen"},{"id":"flaschenoeffner","title":"Flaschenöffner (Metall)","tier":"P","top":false,"qty":"offen","supplier":"offen","audience":"offen","slogan":"Wir öffnen Straßen. Und den Feierabend.","flags":[],"status":"offen"},{"id":"massband","title":"Maßband 5 m","tier":"P","top":false,"qty":"offen","supplier":"Brandible / HACH","audience":"Bauleiter, Poliere","slogan":"Wo andere aufhören, fängt unser Maßband an.","flags":[],"status":"offen"},{"id":"notizblock","title":"Notizblock","tier":"P","top":false,"qty":"offen","supplier":"WIRmachenDRUCK","audience":"Alle","slogan":"Erst messen. Dann notieren. Dann fräsen.","flags":[],"status":"offen"},{"id":"toolstift","title":"Tool-Stift","tier":"P","top":false,"qty":"offen","supplier":"Brandible","audience":"Bauleiter, Einkauf","slogan":"Präzision – auch auf Papier.","flags":[],"status":"offen"},{"id":"stressball","title":"Stressball „Fräswalze“","tier":"P","top":false,"qty":"offen","supplier":"offen","audience":"Laufpublikum","slogan":"Für Tage, an denen der Asphalt nicht nachgibt.","flags":[],"status":"offen"},{"id":"warnweste","title":"Warnweste EN ISO 20471","tier":"P","top":false,"qty":"offen","supplier":"WIRmachenDRUCK / Brandible","audience":"Baustellenbesucher","slogan":"Vorsicht, feiner Fräser!","flags":["Norm-Konformität nach Druck prüfen"],"status":"offen"},{"id":"samentuetchen","title":"Samentütchen","tier":"P","top":false,"qty":"offen","supplier":"offen","audience":"Alle Messebesucher","slogan":"Wir fräsen Straßen – die Bienen bekommen Blumen.","flags":[],"status":"offen"},{"id":"multitool","title":"Multitool","tier":"P","top":false,"qty":"offen","supplier":"Brandible","audience":"Entscheider, Einkauf","slogan":"Die scharfe Lösung für Ihre Straße.","flags":[],"status":"offen"},{"id":"minzspender","title":"Minz-Spender","tier":"P","top":false,"qty":"–","supplier":"GIFFITS","audience":"Laufpublikum","slogan":"Frischer Atem, aber kein Gesprächsanlass.","flags":["2026 getestet: nicht attraktiv – streichen (Checkliste Rotterdam/Essen)"],"status":"verworfen"},{"id":"kalenderbuch","title":"Kalenderbuch","tier":"P","top":false,"qty":"–","supplier":"offen","audience":"Bestandskunden","slogan":"Wertig – und genau deshalb zu schwer für die Goodie-Bag.","flags":["2026: zu wertig und im Transport unpraktisch – streichen (Checkliste Rotterdam/Essen)"],"status":"verworfen"}],"fristen":[{"id":"f01","datum":"2026-10-15","titel":"Hotel buchen – ibis Styles (einziges fußläufig)","bereich":"Hotel","quelle":"MASTER-TODO"},{"id":"f02","datum":"2026-10-16","titel":"Flächenentscheidung 25 m² vs. größer","bereich":"Stand","quelle":"MASTER-TODO"},{"id":"f03","datum":"2026-10-30","titel":"Layout: Besucherweg, Gesprächszone, Lager","bereich":"Stand","quelle":"MASTER-TODO"},{"id":"f04","datum":"2026-11-06","titel":"Standbau-Partner bestätigen","bereich":"Stand","quelle":"MASTER-TODO"},{"id":"f05","datum":"2026-11-13","titel":"Zimmerliste finalisieren","bereich":"Hotel","quelle":"MASTER-TODO"},{"id":"f06","datum":"2026-11-13","titel":"Giveaway-Strategie finalisieren","bereich":"Giveaway","quelle":"MASTER-TODO"},{"id":"f07","datum":"2026-11-15","titel":"Standentwurf (Individualstand) an Ahoy","bereich":"Stand","quelle":"Ahoy-Handbuch V1.3"},{"id":"f08","datum":"2026-11-20","titel":"Standdesign > 2,75 m genehmigen lassen","bereich":"Stand","quelle":"MASTER-TODO"},{"id":"f09","datum":"2026-11-27","titel":"Grafik-Druck freigeben","bereich":"Stand","quelle":"MASTER-TODO"},{"id":"f10","datum":"2026-12-01","titel":"Standbau-Bestellungen · Strom bestätigen","bereich":"Stand","quelle":"Ahoy-Handbuch V1.3"},{"id":"f11","datum":"2026-12-02","titel":"Hestex/Stabilo bestellen","bereich":"Stand","quelle":"Ahoy-Handbuch V1.3"},{"id":"f12","datum":"2026-12-04","titel":"QR-Code + Landingpage DE/EN/NL, Sprüche freigeben","bereich":"Giveaway","quelle":"MASTER-TODO"},{"id":"f13","datum":"2026-12-15","titel":"Eigenes Catering anmelden","bereich":"Logistik","quelle":"Ahoy-Handbuch V1.3"},{"id":"f14","datum":"2026-12-18","titel":"Anreisezeiten Team koordinieren","bereich":"Hotel","quelle":"MASTER-TODO"},{"id":"f15","datum":"2027-01-04","titel":"Internet · Parken bestellen","bereich":"Logistik","quelle":"Ahoy-Handbuch V1.3"},{"id":"f16","datum":"2027-01-06","titel":"Strom/Wasser · Möbel (ab 29.12. +10 %)","bereich":"Stand","quelle":"Ahoy-Handbuch V1.3"},{"id":"f17","datum":"2027-01-07","titel":"Aufbau beginnt (schwere Güter 07:30–14:00)","bereich":"Logistik","quelle":"Ahoy-Handbuch V1.3"},{"id":"f18","datum":"2027-01-12","titel":"Messebeginn InfraTech 2027","bereich":"Messe","quelle":"Ahoy"}],"stand":[{"id":"info","nummer":"5.209","ort":"Rotterdam Ahoy, Ahoyweg 10","messe":"12.–15.01.2027","aufbau":"07.–11.01.2027","abbau":"15.01. ab 16:00 – 18.01.2027","flaeche":"56 m² (8 × 7 m) – gebucht, bestätigt Okt 2026","flaecheOptionen":["56 m² (8 × 7 m) – gebucht, bestätigt Okt 2026","ca. 18 m² (Mockups, Annahme)","25 m² (wie 2026, zu eng)","≥ 36 m² Eckstand (Vorlage C, Voraussetzung Zipper-Wand)"],"rueckwand":"offen","rueckwandOptionen":["LED-Backwall (BAS Innovation, Maße offen)","Zipper-Wand 7,5 m (BAS, nur bei ≥ 36 m²)","Rückwand 6 × 3 m (Giveaway-Mockups)","Fotowand 7 m mit Wirtgen W 210 XF 1:1 (≥ 4,0 m Höhe)"],"hinweise":["LED-Backwall (BAS): Maße nicht angegeben, deshalb nicht im Maßstabsbild","Standdesign über 2,75 m braucht Genehmigung (Frist 20.11.2026)","Messewand 7 m braucht mind. ca. 4,0 m Wandhöhe → Genehmigung zwingend","Kosten: 250 €/m² + Paket 95–230 €/m² + Marketingpaket 295 €","Wirtgen-Marken- und Bildrechte: bitte Rechtsabteilung prüfen"],"waende":[{"name":"Rückwand Mockups","breite":6,"hoehe":3},{"name":"Fotowand W 210 XF","breite":7,"hoehe":4},{"name":"Zipper-Wand BAS","breite":7.5,"hoehe":null}],"standtyp":"56 m² (8 × 7 m), Halle 5, offene Seiten – bestätigt Okt 2026","maxHoehe":"5,6 m (Floorplan); über 2,75 m Genehmigung nötig"}]}</script>
+<script type="application/json" id="seed">{"stand_vom":"2026-10-24","quellen":{"hotels":"https://claude.ai/artifact/UvpMEjstrhcc1J92Pd9uVy","giveaways":"https://claude.ai/artifact/2WNjsVpYq5oiN7yoUctvm1","mockups":"https://claude.ai/artifact/SLjE2AewaXUq14xoHt3Tjy"},"empfehlungHotel":"Alleinreise → ibis Styles (günstig, direkt am Ahoy, Giacobbe gegenüber). Business + Abendessen → Hotel New York (bestes Ambiente, dichte Restaurantmeile, 4★). Gruppe → nhow Rotterdam (Design + Parkhaus + eigenes Restaurant).","hotels":[{"id":"ibis-styles-rotterdam-ahoy","name":"ibis Styles Rotterdam Ahoy","sterne":"★★★","lage":"Accor · Charlois","fahrzeit":"2 Min zu Fuß · 150 m vom Haupteingang","adresse":"Jacob Kleiboerweg 80, 3084 BG Rotterdam","oepnv":"Metro E Zuidplein (700 m)","booking":"8.2","ez":"~65 €","dz":"~85 €","messeEz":"85–110 €","messeDz":"110–145 €","link":"https://www.booking.com/hotel/nl/ibis-styles-rotterdam-ahoy.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=ibis%20Styles%20Rotterdam%20Ahoy%2C%20Jacob%20Kleiboerweg%2080%2C%203084%20BG%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"bastion-hotel-rotterdam-zuid","name":"Bastion Hotel Rotterdam Zuid","sterne":"★★★","lage":"Bastion Hotels · Zuid","fahrzeit":"ca. 5 Min Auto","adresse":"Driemanssteeweg 5, Rotterdam (lt. OpenStreetMap)","oepnv":"Bus 75 Pernis","booking":"7.9","ez":"~59 €","dz":"~79 €","messeEz":"79–99 €","messeDz":"99–125 €","link":"https://www.booking.com/hotel/nl/bastion-deluxe-rotterdam-south.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Bastion%20Hotel%20Rotterdam%20Zuid%2C%20Driemanssteeweg%205%2C%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"nhow-rotterdam","name":"nhow Rotterdam","sterne":"★★★★","lage":"NH Hotels · Kop van Zuid","fahrzeit":"ca. 8 Min Auto / 10 Min Metro","adresse":"Wilhelminakade 137, 3072 AP Rotterdam","oepnv":"Metro D Wilhelminaplein","booking":"8.4","ez":"~100 €","dz":"~130 €","messeEz":"130–175 €","messeDz":"160–220 €","link":"https://www.booking.com/hotel/nl/nhow-rotterdam.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=nhow%20Rotterdam%2C%20Wilhelminakade%20137%2C%203072%20AP%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"hotel-new-york-by-westcord","name":"Hotel New York by WestCord","sterne":"★★★★","lage":"WestCord · Wilhelminapier","fahrzeit":"ca. 8 Min Auto","adresse":"Koninginnenhoofd 1, 3072 AD Rotterdam","oepnv":"Metro D Wilhelminaplein","booking":"8.6","ez":"~110 €","dz":"~145 €","messeEz":"145–190 €","messeDz":"185–240 €","link":"https://www.booking.com/hotel/nl/hotel-new-york-rotterdam.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Hotel%20New%20York%20by%20WestCord%2C%20Koninginnenhoofd%201%2C%203072%20AD%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"eurostars-rijnhaven","name":"Eurostars Rijnhaven","sterne":"★★★★","lage":"Eurostars Hotels · Rijnhaven","fahrzeit":"ca. 7 Min Metro","adresse":"Rijnhaven 30, 3071 HH Rotterdam","oepnv":"Metro E Rijnhaven","booking":"8.1","ez":"~90 €","dz":"~120 €","messeEz":"115–155 €","messeDz":"150–195 €","link":"https://www.booking.com/hotel/nl/eurostars-rijnhaven-rotterdam.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Eurostars%20Rijnhaven%2C%20Rijnhaven%2030%2C%203071%20HH%20Rotterdam&travelmode=driving","ungefaehr":true,"status":"offen"},{"id":"ss-rotterdam-by-westcord","name":"ss Rotterdam by WestCord","sterne":"★★★★","lage":"WestCord · Kreuzfahrtschiff","fahrzeit":"ca. 8 Min Auto","adresse":"3e Katendrechtse Hoofd 25, 3072 AM Rotterdam","oepnv":"Metro D Katendrecht (8 Min)","booking":"8.0","ez":"~95 €","dz":"~125 €","messeEz":"120–160 €","messeDz":"155–200 €","link":"https://www.booking.com/hotel/nl/ss-rotterdam.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=ss%20Rotterdam%20by%20WestCord%2C%203e%20Katendrechtse%20Hoofd%2025%2C%203072%20AM%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"art-hotel-rotterdam","name":"ART Hotel Rotterdam","sterne":"★★★","lage":"Unabhängig · Maashaven","fahrzeit":"ca. 10–12 Min Metro","adresse":"Mijnsherenlaan 9, 3081 GA Rotterdam","oepnv":"Metro D/E Maashaven (100 m)","booking":"7.6","ez":"~70 €","dz":"~90 €","messeEz":"90–120 €","messeDz":"115–150 €","link":"https://www.booking.com/hotel/nl/arthotelrotterdam.de.html?selected_currency=EUR&room1=A","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=ART%20Hotel%20Rotterdam%2C%20Mijnsherenlaan%209%2C%203081%20GA%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"flex-inn-rotterdam","name":"Flex-Inn Rotterdam","sterne":"★★","lage":"Budget · Feijenoord","fahrzeit":"ca. 12 Min","adresse":"Rosestraat 49, 3071 JS Rotterdam","oepnv":"Metro E Zuidplein (1,2 km)","booking":"7.2","ez":"~45 €","dz":"~60 €","messeEz":"60–85 €","messeDz":"80–110 €","link":"https://www.booking.com/searchresults.de.html?ss=Flex-Inn%20Rotterdam%20Rotterdam&selected_currency=EUR&group_adults=1&no_rooms=1","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Flex-Inn%20Rotterdam%2C%20Rosestraat%2049%2C%203071%20JS%20Rotterdam&travelmode=driving","ungefaehr":true,"status":"offen"},{"id":"the-usual-rotterdam","name":"The Usual Rotterdam","sterne":"★★★★","lage":"Boutique · Centrum","fahrzeit":"12–15 Min (Rushhour länger)","adresse":"Westblaak 10–14, 3012 KL Rotterdam","oepnv":"Metro Beurs / Tram Westblaak","booking":"8.5","ez":"~120 €","dz":"~155 €","messeEz":"150–200 €","messeDz":"190–250 €","link":"https://www.booking.com/searchresults.de.html?ss=The%20Usual%20Rotterdam%20Rotterdam&selected_currency=EUR&group_adults=1&no_rooms=1","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=The%20Usual%20Rotterdam%2C%20Westblaak%2010%E2%80%9314%2C%203012%20KL%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"hilton-rotterdam","name":"Hilton Rotterdam","sterne":"★★★★","lage":"Hilton · Centrum","fahrzeit":"12–15 Min (Rushhour länger)","adresse":"Weena 10, 3012 CM Rotterdam","oepnv":"Rotterdam Centraal","booking":"8.2","ez":"~130 €","dz":"~170 €","messeEz":"165–220 €","messeDz":"210–275 €","link":"https://www.booking.com/searchresults.de.html?ss=Hilton%20Rotterdam%20Rotterdam&selected_currency=EUR&group_adults=1&no_rooms=1","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Hilton%20Rotterdam%2C%20Weena%2010%2C%203012%20CM%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"},{"id":"rotterdam-marriott-hotel","name":"Rotterdam Marriott Hotel","sterne":"★★★★★","lage":"Marriott · Centrum","fahrzeit":"12–15 Min (Rushhour länger)","adresse":"Weena 686, 3012 CN Rotterdam","oepnv":"Rotterdam Centraal","booking":"8.4","ez":"~155 €","dz":"~195 €","messeEz":"195–260 €","messeDz":"245–320 €","link":"https://www.booking.com/searchresults.de.html?ss=Rotterdam%20Marriott%20Hotel%20Rotterdam&selected_currency=EUR&group_adults=1&no_rooms=1","route":"https://www.google.com/maps/dir/?api=1&origin=Rotterdam%20Ahoy%2C%20Ahoyweg%2010%2C%203084%20BD%20Rotterdam&destination=Rotterdam%20Marriott%20Hotel%2C%20Weena%20686%2C%203012%20CN%20Rotterdam&travelmode=driving","ungefaehr":false,"status":"offen"}],"giveaways":[{"id":"thermobecher","title":"Thermobecher","tier":"B","top":true,"qty":"200–300","supplier":"Loopper / GIFFITS","audience":"Bauleiter, Poliere, Büro","slogan":"Kalt fräsen. Heiß trinken.","flags":[],"status":"offen","bild":"/_blob/26383f43bc39140a232e8c669b91db7a"},{"id":"pflasterstein","title":"Pflasterstein mit Rückseiten-Aufkleber","tier":"A","top":true,"qty":"offen","supplier":"Werkstatt (Stein) + WIRmachenDRUCK (Aufkleber)","audience":"Fachbesucher, Kommunen, Straßenbau","slogan":"Einmal anfassen. Dann erklärt sich Grinding von selbst.","flags":["2026 bewährt: kommen gut an (Checkliste Rotterdam/Essen)","Gewicht und Transport in der Goodie-Bag prüfen"],"status":"offen"},{"id":"lakritz","title":"Lakritz-Tütchen","tier":"A","top":true,"qty":"1.000","supplier":"GIFFITS / Brandible","audience":"Laufpublikum (Streuartikel)","slogan":"Das einzige Asphalt-Schwarz, das man naschen darf.","flags":["Lebensmittel-Kennzeichnung klären"],"status":"offen","bild":"/_blob/f2406de1daa5c1e9c73f92fd9d66186b"},{"id":"eiskratzer","title":"Eiskratzer","tier":"A","top":true,"qty":"500","supplier":"GIFFITS","audience":"Besucher mit Auto","slogan":"Wir kratzen nicht nur an der Oberfläche.","flags":[],"status":"offen","bild":"/_blob/629a0521d15ab2a3a0487247e8b74f20"},{"id":"zollstock","title":"Zollstock, beidseitig","tier":"B","top":true,"qty":"300","supplier":"HACH / WIRmachenDRUCK / Werbemittel24","audience":"Bauleiter, Poliere, Vermesser","slogan":"Auf den Millimeter. Seit über 30 Jahren.","flags":["Vorderseite: Logo, Website, QR-Code","2026 bewährt – beibehalten (Checkliste Rotterdam/Essen)"],"status":"offen","bild":"/_blob/9fbd3ac6215b4e0243cbc4fd7fff5252"},{"id":"schluesselband","title":"Schlüsselband (Lanyard)","tier":"A","top":true,"qty":"offen","supplier":"GIFFITS / Loopper","audience":"Alle Messebesucher","slogan":"Hängt an uns.","flags":["2026 bewährt – beibehalten (Checkliste Rotterdam/Essen)"],"status":"offen","bild":"/_blob/3266d9bb7a482bfed6660aa04014b1da"},{"id":"einkaufswagenloeser","title":"Einkaufswagenlöser","tier":"A","top":true,"qty":"offen","supplier":"GIFFITS / Werbemittel24","audience":"Laufpublikum, Fachbesucher","slogan":"Löst kleine Probleme. Große lösen wir mit der Fräse.","flags":["2026 bewährt – beibehalten (Checkliste Rotterdam/Essen)"],"status":"offen"},{"id":"kugelschreiber","title":"Kugelschreiber","tier":"A","top":false,"qty":"offen","supplier":"GIFFITS / WIRmachenDRUCK","audience":"Alle Messebesucher","slogan":"Schreibt so sauber, wie wir fräsen.","flags":["2026 bewährt – beibehalten (Checkliste Rotterdam/Essen)"],"status":"offen"},{"id":"feuerzeug","title":"Feuerzeug","tier":"A","top":false,"qty":"offen","supplier":"GIFFITS","audience":"Laufpublikum","slogan":"Wir arbeiten kalt. Sie zünden warm.","flags":["2026 bewährt – beibehalten (Checkliste Rotterdam/Essen)","Versand und Gefahrgut-Vorgaben prüfen"],"status":"offen"},{"id":"beanie","title":"Mütze (Beanie) mit Stick","tier":"C","top":false,"qty":"offen","supplier":"Loopper","audience":"Standteam, Bestandskunden","slogan":"Wir fräsen kalt. Sie bleiben warm.","flags":[],"status":"offen","bild":"/_blob/aca039ce2d9edb02155905cfd5b898f5"},{"id":"humorkarte","title":"Humor-Karte zum Namen","tier":"A","top":false,"qty":"offen","supplier":"WIRmachenDRUCK","audience":"Beileger für alle Artikel","slogan":"Feindliche Übernahme? Nur beim alten Asphalt.","flags":["GL-Freigabe nötig","Rechtsabteilung prüfen"],"status":"offen"},{"id":"gurkendose","title":"Gurke in der Dose","tier":"A","top":false,"qty":"offen","supplier":"offen","audience":"Laufpublikum, NL-Humor","slogan":"Die einzige Gurke auf unserer Baustelle.","flags":["Idee aus dem Board-Kommentar – in der Checkliste nicht belegt, bitte bestätigen","Lebensmittel-Kennzeichnung klären"],"status":"offen"},{"id":"fraesmeissel","title":"Fräsmeißel mit Gravur","tier":"C","top":false,"qty":"20–30","supplier":"Brandible (Sonderanfertigung)","audience":"Entscheider, Bestandskunden","slogan":"Im Ruhestand nach [X] km Autobahn.","flags":["Machbarkeit ungeprüft","km-Wert von der Technik bestätigen"],"status":"offen"},{"id":"powerbank","title":"Powerbank / Stirnlampe","tier":"P","top":false,"qty":"offen","supplier":"Loopper / GIFFITS","audience":"Nachtbaustellen-Teams","slogan":"Energie für die Nachtschicht.","flags":[],"status":"offen"},{"id":"flaschenoeffner","title":"Flaschenöffner (Metall)","tier":"P","top":false,"qty":"offen","supplier":"offen","audience":"offen","slogan":"Wir öffnen Straßen. Und den Feierabend.","flags":[],"status":"offen"},{"id":"massband","title":"Maßband 5 m","tier":"P","top":false,"qty":"offen","supplier":"Brandible / HACH","audience":"Bauleiter, Poliere","slogan":"Wo andere aufhören, fängt unser Maßband an.","flags":[],"status":"offen"},{"id":"notizblock","title":"Notizblock","tier":"P","top":false,"qty":"offen","supplier":"WIRmachenDRUCK","audience":"Alle","slogan":"Erst messen. Dann notieren. Dann fräsen.","flags":[],"status":"offen"},{"id":"toolstift","title":"Tool-Stift","tier":"P","top":false,"qty":"offen","supplier":"Brandible","audience":"Bauleiter, Einkauf","slogan":"Präzision – auch auf Papier.","flags":[],"status":"offen"},{"id":"stressball","title":"Stressball „Fräswalze“","tier":"P","top":false,"qty":"offen","supplier":"offen","audience":"Laufpublikum","slogan":"Für Tage, an denen der Asphalt nicht nachgibt.","flags":[],"status":"offen"},{"id":"warnweste","title":"Warnweste EN ISO 20471","tier":"P","top":false,"qty":"offen","supplier":"WIRmachenDRUCK / Brandible","audience":"Baustellenbesucher","slogan":"Vorsicht, feiner Fräser!","flags":["Norm-Konformität nach Druck prüfen"],"status":"offen"},{"id":"samentuetchen","title":"Samentütchen","tier":"P","top":false,"qty":"offen","supplier":"offen","audience":"Alle Messebesucher","slogan":"Wir fräsen Straßen – die Bienen bekommen Blumen.","flags":[],"status":"offen"},{"id":"multitool","title":"Multitool","tier":"P","top":false,"qty":"offen","supplier":"Brandible","audience":"Entscheider, Einkauf","slogan":"Die scharfe Lösung für Ihre Straße.","flags":[],"status":"offen"},{"id":"minzspender","title":"Minz-Spender","tier":"P","top":false,"qty":"–","supplier":"GIFFITS","audience":"Laufpublikum","slogan":"Frischer Atem, aber kein Gesprächsanlass.","flags":["2026 getestet: nicht attraktiv – streichen (Checkliste Rotterdam/Essen)"],"status":"verworfen"},{"id":"kalenderbuch","title":"Kalenderbuch","tier":"P","top":false,"qty":"–","supplier":"offen","audience":"Bestandskunden","slogan":"Wertig – und genau deshalb zu schwer für die Goodie-Bag.","flags":["2026: zu wertig und im Transport unpraktisch – streichen (Checkliste Rotterdam/Essen)"],"status":"verworfen"}],"fristen":[{"id":"f01","datum":"2026-10-15","titel":"Hotel buchen – ibis Styles (einziges fußläufig)","bereich":"Hotel","quelle":"MASTER-TODO"},{"id":"f02","datum":"2026-10-16","titel":"Flächenentscheidung 25 m² vs. größer","bereich":"Stand","quelle":"MASTER-TODO"},{"id":"f03","datum":"2026-10-30","titel":"Layout: Besucherweg, Gesprächszone, Lager","bereich":"Stand","quelle":"MASTER-TODO"},{"id":"f04","datum":"2026-11-06","titel":"Standbau-Partner bestätigen","bereich":"Stand","quelle":"MASTER-TODO"},{"id":"f05","datum":"2026-11-13","titel":"Zimmerliste finalisieren","bereich":"Hotel","quelle":"MASTER-TODO"},{"id":"f06","datum":"2026-11-13","titel":"Giveaway-Strategie finalisieren","bereich":"Giveaway","quelle":"MASTER-TODO"},{"id":"f07","datum":"2026-11-15","titel":"Standentwurf (Individualstand) an Ahoy","bereich":"Stand","quelle":"Ahoy-Handbuch V1.3"},{"id":"f08","datum":"2026-11-20","titel":"Standdesign > 2,75 m genehmigen lassen","bereich":"Stand","quelle":"MASTER-TODO"},{"id":"f09","datum":"2026-11-27","titel":"Grafik-Druck freigeben","bereich":"Stand","quelle":"MASTER-TODO"},{"id":"f10","datum":"2026-12-01","titel":"Standbau-Bestellungen · Strom bestätigen","bereich":"Stand","quelle":"Ahoy-Handbuch V1.3"},{"id":"f11","datum":"2026-12-02","titel":"Hestex/Stabilo bestellen","bereich":"Stand","quelle":"Ahoy-Handbuch V1.3"},{"id":"f12","datum":"2026-12-04","titel":"QR-Code + Landingpage DE/EN/NL, Sprüche freigeben","bereich":"Giveaway","quelle":"MASTER-TODO"},{"id":"f13","datum":"2026-12-15","titel":"Eigenes Catering anmelden","bereich":"Logistik","quelle":"Ahoy-Handbuch V1.3"},{"id":"f14","datum":"2026-12-18","titel":"Anreisezeiten Team koordinieren","bereich":"Hotel","quelle":"MASTER-TODO"},{"id":"f15","datum":"2027-01-04","titel":"Internet · Parken bestellen","bereich":"Logistik","quelle":"Ahoy-Handbuch V1.3"},{"id":"f16","datum":"2027-01-06","titel":"Strom/Wasser · Möbel (ab 29.12. +10 %)","bereich":"Stand","quelle":"Ahoy-Handbuch V1.3"},{"id":"f17","datum":"2027-01-07","titel":"Aufbau beginnt (schwere Güter 07:30–14:00)","bereich":"Logistik","quelle":"Ahoy-Handbuch V1.3"},{"id":"f18","datum":"2027-01-12","titel":"Messebeginn InfraTech 2027","bereich":"Messe","quelle":"Ahoy"}],"stand":[{"id":"info","nummer":"5.209","ort":"Rotterdam Ahoy, Ahoyweg 10","messe":"12.–15.01.2027","aufbau":"07.–11.01.2027","abbau":"15.01. ab 16:00 – 18.01.2027","flaeche":"56 m² (8 × 7 m) – gebucht, bestätigt Okt 2026","flaecheOptionen":["56 m² (8 × 7 m) – gebucht, bestätigt Okt 2026","ca. 18 m² (Mockups, Annahme)","25 m² (wie 2026, zu eng)","≥ 36 m² Eckstand (Vorlage C, Voraussetzung Zipper-Wand)"],"rueckwand":"offen","rueckwandOptionen":["LED-Wand 7 × 2,75 m (3D-Editor, Konzept B · LED-Durchfahrt)","LED-Backwall (BAS Innovation, Maße offen)","Zipper-Wand 7,5 m (BAS, nur bei ≥ 36 m²)","Rückwand 6 × 3 m (Giveaway-Mockups)","Fotowand 7 m mit Wirtgen W 210 XF 1:1 (≥ 4,0 m Höhe)"],"hinweise":["LED-Variante aus „Stand in 3D“: Bauhöhe dort 2,75 m (Standard ohne Genehmigung); Theke und Pflasterprobe übernommen","LED-Backwall (BAS): Maße nicht angegeben, deshalb nicht im Maßstabsbild","Standdesign über 2,75 m braucht Genehmigung (Frist 20.11.2026)","Messewand 7 m braucht mind. ca. 4,0 m Wandhöhe → Genehmigung zwingend","Kosten: 250 €/m² + Paket 95–230 €/m² + Marketingpaket 295 €","Wirtgen-Marken- und Bildrechte: bitte Rechtsabteilung prüfen"],"waende":[{"name":"Rückwand Mockups","breite":6,"hoehe":3},{"name":"Fotowand W 210 XF","breite":7,"hoehe":4},{"name":"Zipper-Wand BAS","breite":7.5,"hoehe":null}],"standtyp":"56 m² (8 × 7 m), Halle 5, offene Seiten – bestätigt Okt 2026","maxHoehe":"5,6 m (Floorplan); über 2,75 m Genehmigung nötig"}]}</script>
 <script>
 /* ---- hub-logic.js ---- */
 (function (root, factory) {
@@ -338,11 +429,15 @@ footer { font-size: 13px; color: var(--ink-muted); margin-top: var(--space-5); }
     const gebucht = hotels.filter(h => h.status === 'gebucht').length;
     const aktiv = gw.filter(g => g.status !== 'verworfen').length;
     $('countdown').textContent = 'Rotterdam Ahoy · Stand ' + st.nummer + ' · noch ' + bisMesse + ' Tage';
+    zaehle($('heroTage'), bisMesse);
+    zeichneZeitleiste();
+    const kpi = (ico, wert, text, suffix) => el('div', { class: 'kpi' }, symbol(ico), zaehle(el('b'), wert, suffix), el('span', null, text));
     $('kpis').replaceChildren(
-      el('div', { class: 'kpi' }, el('b', null, bisMesse), el('span', null, 'Tage bis Messebeginn')),
-      el('div', { class: 'kpi' }, el('b', null, offen.filter(f => L.ampel(f.datum, heute()).stufe === 'dringend').length), el('span', null, 'Fristen in den nächsten 14 Tagen')),
-      el('div', { class: 'kpi' }, el('b', null, gebucht), el('span', null, 'Hotel(s) als gebucht markiert')),
-      el('div', { class: 'kpi' }, el('b', null, aktiv + ' / ' + gw.length), el('span', null, 'Giveaway-Ideen aktiv')));
+      kpi('i-uhr', bisMesse, 'Tage bis Messebeginn'),
+      kpi('i-frist', offen.filter(f => L.ampel(f.datum, heute()).stufe === 'dringend').length, 'Fristen in den nächsten 14 Tagen'),
+      kpi('i-hotel', gebucht, 'Hotel(s) als gebucht markiert'),
+      kpi('i-giveaway', aktiv, 'Giveaway-Ideen aktiv', ' / ' + gw.length));
+    gezaehlt = true;
     $('naechste').replaceChildren(...offen.slice(0, 5).map(fristZeile));
     const n = L.stufen(gw), max = Math.max(1, ...Object.values(n));
     const namen = { A: 'Stufe A', B: 'Stufe B', C: 'Stufe C', P: 'Premium (P)' };
@@ -354,6 +449,33 @@ footer { font-size: 13px; color: var(--ink-muted); margin-top: var(--space-5); }
       el('dt', null, 'Fläche'), el('dd', null, st.flaeche),
       el('dt', null, 'Rückwand'), el('dd', null, st.rueckwand),
       el('dt', null, 'Hotel'), el('dd', null, gebucht ? gebucht + ' gebucht' : 'noch nichts gebucht'));
+  }
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const sv = (tag, a, txt) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const symbol = id => { const s = sv('svg', { class: 'ico', 'aria-hidden': 'true' }); s.append(sv('use', { href: '#' + id })); return s; };
+  const ruhig = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let gezaehlt = false;
+
+  // Zahl einmalig hochzählen (nur beim ersten Rendern, nicht bei jeder Speicher-Aktualisierung).
+  function zaehle(e, ziel, suffix = '') {
+    if (gezaehlt || ruhig() || !(ziel > 0)) { e.textContent = ziel + suffix; return e; }
+    const t0 = performance.now(), dauer = 700;
+    const schritt = t => { const k = Math.min(1, (t - t0) / dauer); e.textContent = Math.round(ziel * (1 - Math.pow(1 - k, 3))) + suffix; if (k < 1) requestAnimationFrame(schritt); };
+    e.textContent = '0' + suffix; requestAnimationFrame(schritt);
+    return e;
+  }
+
+  // Projektstart laut Notion-Projektseite (11.09.2026) bis Messebeginn; Meilensteine aus den Fristen.
+  function zeichneZeitleiste() {
+    const start = Date.parse('2026-09-11'), ende = Date.parse('2027-01-12');
+    const pos = d => Math.max(0, Math.min(100, (Date.parse(d) - start) / (ende - start) * 100));
+    const leiste = $('zeitleiste'), fort = $('fort');
+    leiste.querySelectorAll('.mark').forEach(m => m.remove());
+    [['2026-11-15', 'Standentwurf'], ['2026-12-01', 'Bestellungen'], ['2027-01-07', 'Aufbau'], ['2027-01-12', 'Messe']].forEach(([d, t], i) =>
+      leiste.append(el('div', { class: 'mark' + (i % 2 ? ' unten' : ''), style: 'left:' + pos(d) + '%' }, el('span', null, t + ' ' + datumDe(d).slice(0, 6)))));
+    leiste.append(el('div', { class: 'mark heute unten', style: 'left:' + pos(heute()) + '%' }, el('span', null, 'heute')));
+    requestAnimationFrame(() => { fort.style.width = pos(heute()) + '%'; });
   }
 
   function renderHotels() {
@@ -378,6 +500,7 @@ footer { font-size: 13px; color: var(--ink-muted); margin-top: var(--space-5); }
     $('gwFilter').replaceChildren(...stufenListe.map(s => el('button', { 'aria-pressed': String(gwStufe === s), onclick: () => { gwStufe = s; renderGiveaways(); } }, s === 'alle' ? 'Alle' : 'Stufe ' + s)));
     const liste = daten('giveaways').filter(g => gwStufe === 'alle' || g.tier === gwStufe);
     $('gwListe').replaceChildren(...liste.map(g => el('article', { class: 'karte' + (g.top ? ' top' : '') + (g.status === 'verworfen' ? ' aus' : '') },
+      g.bild ? el('figure', { class: 'mockup' }, el('img', { src: g.bild, alt: 'KI-Mockup ' + g.title, loading: 'lazy' }), el('figcaption', { class: 'small muted' }, 'KI-Mockup aus dem Design-Editor, kein Anbieterfoto · ', link(SEED.quellen.mockups, 'Editor öffnen'))) : null,
       el('h3', null, g.title, ' ', el('span', { class: 'chip' + (g.top ? ' gruen' : '') }, 'Stufe ' + g.tier + (g.top ? ' · Top' : ''))),
       g.slogan ? el('p', { class: 'small' }, '„' + g.slogan + '“') : null,
       el('dl', null,
@@ -407,6 +530,85 @@ footer { font-size: 13px; color: var(--ink-muted); margin-top: var(--space-5); }
     $('speicherStand').textContent = schreibbar ? 'Auswahl wird im Hub-Speicher gesichert.' : 'Nur Ansicht – Speichern nicht verfügbar.';
     $('standHinweise').replaceChildren(...st.hinweise.map(h => el('li', null, h)));
     zeichneWand(st.waende || []);
+    zeichneStand(st);
+  }
+
+  // Wandmaß aus der Rückwand-Auswahl; ohne belegte Maße gestrichelt mit Annahme.
+  function wandMass(wahl) {
+    if (/LED-Wand/.test(wahl)) return { b: 7, h: 2.75, belegt: true, led: true };
+    if (/6 × 3/.test(wahl)) return { b: 6, h: 3, belegt: true };
+    if (/Fotowand 7/.test(wahl)) return { b: 7, h: 4, belegt: true };
+    if (/Zipper/.test(wahl)) return { b: 7.5, h: 3, belegt: false };
+    return { b: 6, h: 3, belegt: false };
+  }
+  // Annahme-Layout in Metern (x = Breite 8 m, y = Tiefe 7 m); Pflasterfläche aus der Bestätigung (187 × 400 cm).
+  // zone/zx/zy: Beschriftung im Grundriss (Meter ab hinten links).
+  const LAYOUT = [
+    { name: 'Demo-Fläche Pflaster', x: 2, y: 1.4, b: 4, t: 1.87, h: 0.15, art: 'gruen', zone: 'Demo 4 × 1,87 m', zx: 4, zy: 2.4 },
+    { name: 'Lager (Annahme)', x: 0, y: 0.3, b: 1.4, t: 1.2, h: 2.5, art: 'grau', zone: 'Lager', zx: 0.7, zy: 1.0 },
+    { name: 'Tisch 1', x: 0.8, y: 4.4, b: 0.8, t: 0.8, h: 0.75, art: 'grau' },
+    { name: 'Tisch 2', x: 2.3, y: 5.2, b: 0.8, t: 0.8, h: 0.75, art: 'grau', zone: 'Gesprächszone', zx: 1.9, zy: 6.4 },
+    { name: 'Theke', x: 5.4, y: 5.6, b: 2, t: 0.6, h: 1.1, art: 'wandf', zone: 'Theke', zx: 6.4, zy: 5.4 }
+  ];
+  // Aus „Stand in 3D“, Konzept B · LED-Durchfahrt (Mittelpunkt-Koordinaten dort in Meter ab hinten links umgerechnet).
+  const LAYOUT_LED = [
+    { name: 'Pflasterprobe vorher/nachher', x: 0.95, y: 1.55, b: 1.3, t: 0.9, h: 0.4, art: 'gruen', zone: 'Pflasterprobe', zx: 1.6, zy: 2.9 },
+    { name: 'Theke mit Tablet', x: 6.2, y: 4.7, b: 0.8, t: 2, h: 1.05, art: 'wandf', zone: 'Theke', zx: 6.6, zy: 4.5 }
+  ];
+
+  function zeichneStand(st) {
+    const w = wandMass(st.rueckwand), wx = (8 - w.b) / 2, LAY = w.led ? LAYOUT_LED : LAYOUT;
+    const C = Math.cos(Math.PI / 6), S = 34, OX = 50 + 7 * C * S, OY = 26 + 5.6 * S;
+    const P = (x, y, z) => [OX + (x - y) * C * S, OY + (x + y) * 0.5 * S - z * S];
+    const poly = pts => pts.map(p => P(...p).map(n => n.toFixed(1)).join(',')).join(' ');
+    const iso = $('isoSvg'); iso.replaceChildren(iso.querySelector('title'));
+    const g = sv('g', { class: 'bau' }); iso.append(g);
+    const quader = (x, y, z, b, t, hh, art, offen) => {
+      const x1 = x + b, y1 = y + t, z1 = z + hh;
+      const oben = [[x, y, z1], [x1, y, z1], [x1, y1, z1], [x, y1, z1]], vorn = [[x, y1, z], [x1, y1, z], [x1, y1, z1], [x, y1, z1]], rechts = [[x1, y, z], [x1, y1, z], [x1, y1, z1], [x1, y, z1]];
+      if (offen) { [oben, vorn, rechts].forEach(f => g.append(sv('polygon', { points: poly(f), class: 'offen' }))); return; }
+      g.append(sv('polygon', { points: poly(oben), class: art }));
+      g.append(sv('polygon', { points: poly(vorn), class: art })); g.append(sv('polygon', { points: poly(vorn), class: 'schatten1' }));
+      g.append(sv('polygon', { points: poly(rechts), class: art })); g.append(sv('polygon', { points: poly(rechts), class: 'schatten2' }));
+    };
+    quader(0, 0, -0.05, 8, 7, 0.05, 'boden');
+    // Claim statt nachgezeichnetem Logo (CI: Logo nie nachzeichnen)
+    // Max. Aufbauhöhe 5,6 m als Maßlinie an der hinteren Ecke
+    const [hx, hy] = P(0, 0, 0), [, hy2] = P(0, 0, 5.6);
+    g.append(sv('line', { x1: hx - 14, y1: hy, x2: hx - 14, y2: hy2, class: 'mass' }));
+    g.append(sv('text', { x: hx - 20, y: hy2 + 16, 'text-anchor': 'end' }, 'max. 5,6 m'));
+    quader(wx, 0, 0, w.b, 0.3, w.h, w.led ? 'ledf' : 'wandf', !w.belegt);
+    if (w.led) {
+      // LED-Fläche: Leuchtrahmen und Schleifspur am Fuß wie im 3D-Editor
+      g.append(sv('polygon', { points: poly([[wx, 0.3, 0.05], [wx + w.b, 0.3, 0.05], [wx + w.b, 0.3, w.h - 0.05], [wx, 0.3, w.h - 0.05]]), class: 'ledrahmen' }));
+      quader(wx, 0.3, 0, w.b, 0.02, 0.12, 'gruen');
+    } else if (w.belegt) {
+      quader(wx, 0.3, 0, w.b, 0.02, 0.45, 'gruen');
+      const [tx, ty] = P(wx + 0.4, 0.32, w.h - 0.9);
+      g.append(sv('text', { class: 'marke', 'font-size': '0.4', textLength: (w.b - 0.8).toFixed(2), lengthAdjust: 'spacingAndGlyphs', transform: 'matrix(' + [C * S, 0.5 * S, 0, S, tx, ty].map(n => n.toFixed(2)).join(' ') + ')' }, 'Präzision bewegt Zukunft.'));
+    }
+    LAY.forEach(o => quader(o.x, o.y, 0, o.b, o.t, o.h, o.art));
+    const [ax, ay] = P(4, 7.6, 0), [bx, by] = P(8.6, 3.5, 0);
+    g.append(sv('text', { x: ax - 60, y: ay + 10 }, '8 m'));
+    g.append(sv('text', { x: bx, y: by + 6 }, '7 m'));
+    $('isoText').textContent = 'Rückwand: ' + (st.rueckwand === 'offen' ? 'noch offen – gestrichelt 6 × 3 m als Platzhalter' : st.rueckwand + (w.belegt ? '' : ' – Maße nicht belegt, gestrichelt')) + '. Layout ist eine Annahme zur Diskussion, kein Standbauentwurf.';
+
+    // Grundriss: 50 px pro Meter
+    const M = 50, GX = 120, GY = 40, gr = $('grSvg');
+    gr.replaceChildren(gr.querySelector('title'));
+    const rechteck = (x, y, b, t, art, txt) => {
+      gr.append(sv('rect', { x: GX + x * M, y: GY + y * M, width: b * M, height: t * M, class: art }));
+      if (txt) gr.append(sv('text', { x: GX + (x + b / 2) * M, y: GY + (y + t / 2) * M + 4, 'text-anchor': 'middle', class: 'zone' + (art === 'gruen' ? ' auf-gruen' : '') }, txt));
+    };
+    rechteck(0, 0, 8, 7, 'boden');
+    rechteck(wx, 0, w.b, 0.3, w.led ? 'ledf' : w.belegt ? 'wandf' : 'offen');
+    LAY.forEach(o => rechteck(o.x, o.y, o.b, o.t, o.art));
+    LAY.filter(o => o.zone).forEach(o => gr.append(sv('text', { x: GX + o.zx * M, y: GY + o.zy * M + 4, 'text-anchor': 'middle', class: 'zone' + (o.art === 'gruen' && o.zy > o.y && o.zy < o.y + o.t ? ' auf-gruen' : '') }, o.zone)));
+    gr.append(sv('text', { x: GX + 4 * M, y: GY + 7 * M + 24, 'text-anchor': 'middle' }, '8 m · offen (Annahme)'));
+    gr.append(sv('text', { x: GX + 8 * M + 10, y: GY + 3.5 * M, }, '7 m'));
+    $('standTabelle').replaceChildren(el('tr', null, el('th', null, 'Element'), el('th', null, 'Maße (B × T × H)'), el('th', null, 'Lage ab hinten links')),
+      el('tr', null, el('td', null, 'Rückwand'), el('td', null, w.b + ' × 0,3 × ' + String(w.h).replace('.', ',') + ' m' + (w.belegt ? '' : ' (Annahme)')), el('td', null, 'mittig hinten')),
+      ...LAY.map(o => el('tr', null, el('td', null, o.name), el('td', null, [o.b, o.t, o.h].map(n => n.toLocaleString('de-DE')).join(' × ') + ' m'), el('td', null, o.x.toLocaleString('de-DE') + ' / ' + o.y.toLocaleString('de-DE') + ' m'))));
   }
 
   // Maßstab: 1 m = 50 px, Boden bei y = 230; Schrift groß, weil das Bild mobil auf ~340 px schrumpft.
@@ -437,7 +639,10 @@ footer { font-size: 13px; color: var(--ink-muted); margin-top: var(--space-5); }
 
   document.querySelectorAll('[role="tab"]').forEach(t => t.addEventListener('click', () => {
     document.querySelectorAll('[role="tab"]').forEach(x => x.setAttribute('aria-selected', String(x === t)));
-    document.querySelectorAll('[role="tabpanel"]').forEach(p => { p.hidden = p.id !== t.dataset.tab; });
+    document.querySelectorAll('[role="tabpanel"]').forEach(p => {
+      p.hidden = p.id !== t.dataset.tab;
+      if (!p.hidden) { p.classList.add('rein'); const fertig = e => { if (e.target === p) { p.classList.remove('rein'); p.removeEventListener('animationend', fertig); } }; p.addEventListener('animationend', fertig); }
+    });
     try { localStorage.setItem('hub-tab', t.dataset.tab); } catch (e) { /* ohne Speicher kein gemerkter Reiter */ }
   }));
   try { const t = localStorage.getItem('hub-tab'); if (t) document.querySelector('[data-tab="' + t + '"]')?.click(); } catch (e) { /* s. o. */ }
