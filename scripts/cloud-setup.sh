@@ -21,4 +21,4 @@ apt-get -o Acquire::Retries=3 install -y --no-install-recommends \
 
 # Weitere Tools hier ergänzen: Paketliste oben erweitern, Laufzeit < 5 min beachten.
 
-echo "[setup] Fertig."
+echo "[setup] Fertig nach ${SECONDS} s."
